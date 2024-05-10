@@ -1,10 +1,54 @@
-import { Cast as CastType } from "@/types"
+import { Cast as CastType, Category } from "@/types"
 
+import {
+  addCategoryFieldsToCasts,
+  filterDuplicateCategories,
+  searchCastsForCategories,
+  searchCastsForTerm,
+} from "@/lib/helpers"
+import Categories from "@/components/categories"
 import CastFeed from "@/components/feed/Casts"
-import { fetchChannelCasts } from "@/app/actions"
+import RedirectButton from "@/components/redirect/Button"
+import { categorizeCastsAsRequests, fetchChannelCasts } from "@/app/actions"
 
-export default async function IndexPage() {
+export default async function IndexPage({
+  params,
+  searchParams,
+}: {
+  params: { slug: string }
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
+  const searchTerm = Array.isArray(searchParams.search)
+    ? searchParams.search.join(",")
+    : searchParams.search
+    ? searchParams.search
+    : ""
+  const categoryParam = Array.isArray(searchParams.categories)
+    ? searchParams.categories.join(",")
+    : searchParams.categories
+    ? searchParams.categories
+    : ""
+
   const casts = (await fetchChannelCasts("someone-build")) as CastType[]
+  let filteredCasts = casts
+
+  // Filter by search term if it exists
+  if (searchTerm && searchTerm.length) {
+    filteredCasts = searchCastsForTerm(filteredCasts, searchTerm)
+  }
+
+  const categories = (await categorizeCastsAsRequests(
+    filteredCasts
+  )) as Category[]
+  const filteredCategories = filterDuplicateCategories(categories)
+
+  const castsWithCategories = addCategoryFieldsToCasts(
+    filteredCasts,
+    categories
+  )
+  if (categoryParam && categoryParam.length) {
+    filteredCasts = searchCastsForCategories(castsWithCategories, categoryParam)
+  }
 
   return (
     <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
@@ -18,8 +62,19 @@ export default async function IndexPage() {
         </p>
       </div>
       <div className="flex flex-col gap-4">
-        {/* <Categories casts={casts} /> */}
-        <CastFeed casts={casts} />
+        {filteredCasts && filteredCasts.length ? (
+          <>
+            <Categories categories={filteredCategories} />
+            <CastFeed casts={filteredCasts} />
+          </>
+        ) : (
+          <div className="flex flex-col items-center gap-y-4">
+            <h6 className="mt-20 text-center text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
+              No casts found 😭
+            </h6>
+            <RedirectButton path={"/"} buttonText="Clear Search" />
+          </div>
+        )}
       </div>
     </section>
   )

@@ -1,33 +1,37 @@
 import { openai } from "@ai-sdk/openai"
-import { streamObject } from "ai"
+import { generateObject } from "ai"
 import { z } from "zod"
+
+import { PRODUCT_CATEGORIES } from "@/lib/constants"
 
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json()
-    const prompt = `Generate concise product categories for an online product idea discovery site based on the following product requests. Ensure that each category should be broad enough to avoid overlap and encompass multiple requests. Use a maximum of 3 words for each category. Only send back the categories. Nothing else should be included in the response. Here are 3 examples of a good category: Example 1: Farcaster Client. Example 2: Developer API. Example 3: Music creation tools. Please use conventional categories. The product requests to generate categories for are as follows: ${messages
+    const prompt = `Based on the following product categories: ${PRODUCT_CATEGORIES}, categorize each product request into the category that fits it best. Ensure that each request is categorized and done so effectively. Please include in the response for each categorization both the Product Request and categorization. The product requests to categorize for are as follows: ${messages
       .map((message: any, i: number) => `Request ${i + 1}:\n${message.text}`)
-      .join("\n\n")}`
-    const result = await streamObject({
-      model: openai("gpt-4"),
+      .join("\n\n")}
+      
+      For example, if a request is about 'AMA Frames' it should be categorized under the 'Frames' category. Please follow similar guidelines for all requests.
+      `
+    const result = await generateObject({
+      model: openai("gpt-3.5-turbo"),
       prompt,
-      maxTokens: 600,
-      temperature: 0.7,
-      topP: 1,
-      frequencyPenalty: 1,
-      presencePenalty: 0,
+      // maxTokens: 600,
       schema: z.object({
-        name: z.string(),
-        class: z.string().describe("Product Category"),
-        description: z.string(),
+        categorizedRequests: z.array(
+          z.object({
+            request: z.string(),
+            category: z.string(),
+          })
+        ),
       }),
     })
-    const categoriesArray = []
-    for await (const partialObject of result.partialObjectStream) {
-      categoriesArray.push(partialObject)
-    }
-    return Response.json(categoriesArray)
+    console.log("the result", result.object.categorizedRequests)
+    return Response.json(result.object.categorizedRequests)
   } catch (error) {
-    return Response.json(error)
+    return new Response(
+      JSON.stringify({ error: "Failed to process request", message: error }),
+      { status: 500 }
+    )
   }
 }

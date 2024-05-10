@@ -1,5 +1,6 @@
 "use server"
 
+import { Cast } from "@/types"
 import { openai } from "@ai-sdk/openai"
 import {
   FeedType,
@@ -7,11 +8,13 @@ import {
   NeynarAPIClient,
   isApiErrorResponse,
 } from "@neynar/nodejs-sdk"
-import { streamText } from "ai"
-import { createStreamableValue } from "ai/rsc"
+import { generateObject } from "ai"
 import axios from "axios"
-// import { google } from "googleapis"
 import { mnemonicToAccount } from "viem/accounts"
+import { z } from "zod"
+
+// import { google } from "googleapis"
+import { PRODUCT_CATEGORIES } from "@/lib/constants"
 
 //NEYNAR INFO
 
@@ -45,7 +48,9 @@ const generate_signature = async function (public_key: string) {
     { name: "deadline", type: "uint256" },
   ]
 
-  const account = mnemonicToAccount(FARCASTER_DEVELOPER_MNEMONIC)
+  const account = mnemonicToAccount(
+    FARCASTER_DEVELOPER_MNEMONIC ? FARCASTER_DEVELOPER_MNEMONIC : ""
+  )
 
   // Generates an expiration date for the signature
   // e.g. 1693927665
@@ -224,87 +229,29 @@ export const fetchChannelCasts = async (channelId: string, cursor = "") => {
   }
 }
 
-export const getCategoriesFromCasts = async (casts) => {
+export const categorizeCastsAsRequests = async (casts: Cast[]) => {
   try {
-    const result = await streamText({
-      model: openai("gpt-3.5-turbo"),
-      prompt: `Generate concise product categories for an online product idea discovery site based on the following product requests. Ensure that each category should be broad enough to avoid overlap and encompass multiple requests. 
-      Use a maximum of 3 words for each category. Only send back the categories, in the shape of an array of categories. Nothing else should be included in the response.
+    const prompt = `Based on the following product categories: ${PRODUCT_CATEGORIES}, categorize each product request into the category that fits it best. Ensure that each request is categorized and done so effectively. Please include in the response for each categorization both the Product Request and categorization. The product requests to categorize for are as follows: ${casts
+      .map((message: any, i: number) => `Request ${i + 1}:\n${message.text}`)
+      .join("\n\n")}
       
-      Here are 3 examples of a good category:
-      Example 1: Farcaster Client.
-      Example 2: Developer API.
-      Example 3: Music creation tools. 
-  
-      The requests are as follows: ${casts.map(
-        (cast, i) => `Request ${i + 1}:\n${cast.text}`
-      )}
-      `,
-      // maxTokens: 512,
-      // temperature: 0.3,
-      // maxRetries: 5,
+      For example, if a request is about 'AMA Frames' it should be categorized under the 'Frames' category. Please follow similar guidelines for all requests.
+      `
+    const result = await generateObject({
+      model: openai("gpt-4"),
+      prompt,
+      // maxTokens: 600,
+      schema: z.object({
+        categorizedRequests: z.array(
+          z.object({
+            request: z.string(),
+            category: z.string(),
+          })
+        ),
+      }),
     })
-
-    const stream = createStreamableValue(result.textStream)
-    return stream.value
-  } catch (e) {
-    console.log("the e", e)
+    return result.object.categorizedRequests
+  } catch (error) {
+    return { error: "Failed to process request", message: error }
   }
 }
-
-// export const retrieveGmailEmails = async (accessToken: string) => {
-//   const gmail = google.gmail({ version: "v1", auth: accessToken })
-
-//   try {
-//     const response = await gmail.users.messages.list({
-//       userId: "me",
-//     })
-
-//     const messages = response.data.messages
-
-//     return messages
-//   } catch (error) {
-//     console.error("Error fetching emails:", error)
-//     return { error: "Failed to fetch emails" }
-//   }
-// }
-
-// export const sendGmailEmail = async (
-//   accessToken: string,
-//   to: string,
-//   subject: string,
-//   message: string
-// ) => {
-//   const gmail = google.gmail({ version: "v1", auth: accessToken })
-
-//   const raw = makeEmail(to, subject, message)
-
-//   try {
-//     const response = await gmail.users.messages.send({
-//       userId: "me",
-//       requestBody: {
-//         raw: raw,
-//       },
-//     })
-
-//     return response.data
-//   } catch (error) {
-//     console.error("Error sending email:", error)
-//     return { error: "Failed to send email" }
-//   }
-// }
-
-// export const fetchLeads = async () => {
-//   try {
-//     const response = await axios.get("/api/leads", {
-//       // params: userParams,
-//       // headers: {
-//       // 	api_key: process.env.NEYNAR_API_KEY,
-//       // },
-//     })
-//     return response.data
-//   } catch (error) {
-//     console.error(error)
-//     return { error: "Internal Server Error" }
-//   }
-// }

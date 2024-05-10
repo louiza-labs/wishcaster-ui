@@ -1,3 +1,4 @@
+import { Cast as CastType, Category } from "@/types"
 import { ErrorRes } from "@neynar/nodejs-sdk/build/neynar-api/v2"
 import axios, { AxiosError } from "axios"
 import { toast } from "react-toastify"
@@ -59,4 +60,49 @@ export const makeEmail = (to: string, subject: string, message: string) => {
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/, "")
+}
+
+export const addCategoryFieldsToCasts = (
+  casts: CastType[],
+  categories: Category[]
+) => {
+  return casts.map((cast) => {
+    const categoryMatch = categories.find(
+      (category) => category.request === cast.text
+    )
+    return { ...cast, category: categoryMatch ? categoryMatch.category : null }
+  })
+}
+export const filterDuplicateCategories = (categories: Category[]) => {
+  const uniqueCategories = categories.filter(
+    (category, index, self) =>
+      index === self.findIndex((c) => c.category === category.category)
+  )
+  return uniqueCategories
+}
+export const searchCastsForTerm = (
+  casts: CastType[],
+  searchTerm: string
+): CastType[] => {
+  const lowerCaseSearchTerm = searchTerm.toLowerCase().trim()
+  return casts.filter((cast) =>
+    cast.text.toLowerCase().includes(lowerCaseSearchTerm)
+  )
+}
+
+export const searchCastsForCategories = (
+  casts: CastType[],
+  searchTerm: string
+): CastType[] => {
+  const searchTerms = searchTerm
+    .toLowerCase()
+    .split(",")
+    .map((term) => term.trim())
+  return casts.filter(
+    (cast) =>
+      cast.category &&
+      searchTerms.some(
+        (term) => cast.category && cast.category.toLowerCase() === term
+      )
+  )
 }
