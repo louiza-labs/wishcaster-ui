@@ -9,6 +9,11 @@ export const siteConfig = {
       href: "/",
     },
   ],
+  mainFooter: [
+    {
+      title: "Made with ❤️ by Louiza Labs",
+    },
+  ],
   links: {
     twitter: "https://twitter.com/shadcn",
     github: "https://github.com/shadcn/ui",

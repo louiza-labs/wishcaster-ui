@@ -75,7 +75,7 @@ const CategoriesFeed = ({ categories }: any) => {
                   variant={
                     badgeIsToggled(category.category) ? "default" : "outline"
                   }
-                  className="h-10 w-fit whitespace-nowrap"
+                  className="h-10 w-fit cursor-pointer whitespace-nowrap"
                 >
                   {category.category}
                 </Badge>

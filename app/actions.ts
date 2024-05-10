@@ -221,11 +221,14 @@ export const fetchChannelCasts = async (channelId: string, cursor = "") => {
       parentUrl: memesChannelUrl,
       cursor: cursor && cursor.length ? cursor : undefined,
     })
-
-    return feed.casts
+    const returnObject = {
+      casts: feed.casts,
+      nextCursor: feed.next.cursor,
+    }
+    return returnObject
   } catch (error) {
     console.error(error)
-    return { error: "Internal Server Error" }
+    return { casts: [], nextCursor: "", error: error }
   }
 }
 

@@ -29,8 +29,14 @@ export default async function IndexPage({
     ? searchParams.categories
     : ""
 
-  const casts = (await fetchChannelCasts("someone-build")) as CastType[]
-  let filteredCasts = casts
+  const castsResponse = await fetchChannelCasts("someone-build")
+  const castsCursor =
+    castsResponse && castsResponse.nextCursor ? castsResponse.nextCursor : ""
+  const casts =
+    castsResponse && castsResponse.casts
+      ? castsResponse.casts
+      : ([] as CastType[])
+  let filteredCasts = casts as CastType[]
 
   // Filter by search term if it exists
   if (searchTerm && searchTerm.length) {
@@ -42,12 +48,9 @@ export default async function IndexPage({
   )) as Category[]
   const filteredCategories = filterDuplicateCategories(categories)
 
-  const castsWithCategories = addCategoryFieldsToCasts(
-    filteredCasts,
-    categories
-  )
+  filteredCasts = addCategoryFieldsToCasts(filteredCasts, categories)
   if (categoryParam && categoryParam.length) {
-    filteredCasts = searchCastsForCategories(castsWithCategories, categoryParam)
+    filteredCasts = searchCastsForCategories(filteredCasts, categoryParam)
   }
 
   return (
@@ -65,7 +68,7 @@ export default async function IndexPage({
         {filteredCasts && filteredCasts.length ? (
           <>
             <Categories categories={filteredCategories} />
-            <CastFeed casts={filteredCasts} />
+            <CastFeed casts={filteredCasts} nextCursor={castsCursor} />
           </>
         ) : (
           <div className="flex flex-col items-center gap-y-4">
