@@ -7,8 +7,8 @@ import {
   searchCastsForCategories,
   searchCastsForTerm,
 } from "@/lib/helpers"
-import Categories from "@/components/categories"
-import CastFeed from "@/components/feed/Casts"
+import CastFeed from "@/components/feed/casts"
+import Categories from "@/components/feed/categories"
 import Rankings from "@/components/rankings"
 import RedirectButton from "@/components/redirect/Button"
 import { categorizeCastsAsRequests, fetchChannelCasts } from "@/app/actions"
