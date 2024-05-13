@@ -14,13 +14,7 @@ import { z } from "zod"
 // import { google } from "googleapis"
 import { PRODUCT_CATEGORIES } from "@/lib/constants"
 
-//NEYNAR INFO
-
-const testKey = "NEYNAR_API_DOCS"
-// Instantiate the client
 const neynarClient = new NeynarAPIClient(process.env.NEYNAR_API_KEY as string)
-const FARCASTER_DEVELOPER_MNEMONIC = process.env.FARCASTER_DEVELOPER_MNEMONIC
-const FARCASTER_DEVELOPER_FID = process.env.FARCASTER_DEVELOPER_FID
 
 export const fetchFarcasterCast = async (hash: string) => {
   try {
@@ -80,7 +74,7 @@ export const categorizeCastsAsRequests = async (casts: Cast[]) => {
        Please follow similar guidelines for all requests.
       `
     const result = await generateObject({
-      model: openai("gpt-4"),
+      model: openai("gpt-4-0613"),
       prompt,
       maxRetries: 4,
       // maxTokens: 600,
@@ -96,6 +90,6 @@ export const categorizeCastsAsRequests = async (casts: Cast[]) => {
     return result.object.categorizedRequests
   } catch (error) {
     console.log(error)
-    return { error: "Failed to process request", message: error }
+    return casts
   }
 }

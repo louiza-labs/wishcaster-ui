@@ -216,7 +216,8 @@ export function generateWhimsicalErrorMessages(is404 = false) {
   return messages[Math.floor(Math.random() * messages.length)]
 }
 
-export function isImageUrl(url: string | undefined | null): boolean {
+// Check if a URL is an image URL
+export function isImageUrl(url: string | null | undefined) {
   if (!url || typeof url !== "string") return false
   const imageExtensions = [
     ".jpg",
@@ -230,4 +231,49 @@ export function isImageUrl(url: string | undefined | null): boolean {
   const lowerCaseUrl = url.toLowerCase()
   if (lowerCaseUrl.includes("imagedelivery")) return true
   return imageExtensions.some((ext) => lowerCaseUrl.endsWith(ext))
+}
+
+// Load image and calculate aspect ratio
+export function loadImageAspectRatio(url: string, setAspectRatio: any) {
+  if (typeof window === "undefined") return // Ensure it's executed on the client side
+  const img = new window.Image()
+  img.src = url
+  img.onload = () => {
+    const ratio = (img.height / img.width) * 100
+    setAspectRatio(`${ratio}%`)
+  }
+}
+
+// Render text with clickable links
+export function renderTextWithLinks(text: string) {
+  const urlRegex =
+    /(?:https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(com|co|io|org|net|edu|gov|uk|frame|xyz|us|ca|de|jp|fr|au|us|ru|ch|it|nl|se|no|es|mil)(\/[\w-]*)*/gi
+  const parts = text.split(urlRegex)
+
+  return parts.map((part: string, index: number) => {
+    if (part.match(urlRegex)) {
+      return (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="link"
+        >
+          {part}
+        </a>
+      )
+    } else {
+      return <span key={index}>{part}</span>
+    }
+  })
+}
+
+export const debounce = (func: Function, delay: number) => {
+  let timer: NodeJS.Timeout
+  return function (...args: any[]) {
+    clearTimeout(timer)
+    //@ts-ignore
+    timer = setTimeout(() => func.apply(this, args), delay)
+  }
 }

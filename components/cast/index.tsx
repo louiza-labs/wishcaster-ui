@@ -1,40 +1,11 @@
-"use-client"
+"use client"
 
-import { useState } from "react"
-import Image from "next/image"
 import { Cast as CastType } from "@/types"
 
-import useGetCast from "@/hooks/farcaster/useGetCast"
-import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import EmbeddedCast from "@/components/embeddedCast"
-import { Icons } from "@/components/icons"
-import LinkPreview from "@/components/linkPreview"
-
-function isImageUrl(url: string | undefined | null): boolean {
-  if (!url || typeof url !== "string") return false
-  const imageExtensions = [
-    ".jpg",
-    ".jpeg",
-    ".png",
-    ".gif",
-    ".bmp",
-    ".svg",
-    ".webp",
-  ]
-  const lowerCaseUrl = url.toLowerCase()
-  if (lowerCaseUrl.includes("imagedelivery")) return true
-  return imageExtensions.some((ext) => lowerCaseUrl.endsWith(ext))
-}
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import AuthorAvatar from "@/components/cast/CastAvatar"
+import CastContent from "@/components/cast/CastContent"
+import CastFooter from "@/components/cast/CastFooter"
 
 const Cast = ({
   timestamp,
@@ -49,159 +20,33 @@ const Cast = ({
   handleToggleCategoryClick,
   badgeIsToggled,
 }: CastType) => {
-  const [isExpanded, setIsExpanded] = useState(false)
-  const maxCharacters = 150 // Maximum characters to display initially
-
-  const toggleText = () => {
-    setIsExpanded(!isExpanded)
-  }
-
-  const hasUrl = embeds.find((embed: any) => embed.url) !== undefined
-  const hasCast = embeds.find((embed: any) => embed.cast_id) !== undefined
-  const embeddedCastHash =
-    embeds && Array.isArray(embeds)
-      ? embeds.find((embed: any) => embed.cast_id)?.cast_id?.hash
-      : undefined
-  const { fetchedCast: embeddedCast } = useGetCast(embeddedCastHash) as any
-
-  const potentialUrl = hasUrl
-    ? embeds[0].url
-    : hasCast
-    ? `https://www.warpcast.com/${embeddedCastHash}`
-    : null
-  let isImageUrlToShow
-
-  if (isImageUrl(potentialUrl)) {
-    isImageUrlToShow = true
-  }
-  const renderTextWithLinks = (text: string) => {
-    // Regular expression to match URLs
-    const urlRegex =
-      /(?:https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(com|co|io|org|net|edu|gov|uk|frame|xyz|us|ca|de|jp|fr|au|us|ru|ch|it|nl|se|no|es|mil)(\/[\w-]*)*/gi
-    // Split the text by URLs
-    const parts = text.split(urlRegex)
-
-    // Render each part of the text, making URLs clickable
-    return parts.map((part: string, index: number) => {
-      if (part.match(urlRegex)) {
-        // Render URLs as clickable links
-        return (
-          <a
-            key={index}
-            href={part}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="link"
-          >
-            {part}
-          </a>
-        )
-      } else {
-        // Render regular text
-        return <span key={index}>{part}</span>
-      }
-    })
-  }
-
   return (
-    <Card className=" flex flex-col justify-between lg:h-fit">
+    <Card className="flex flex-col justify-between lg:h-fit">
       <CardHeader>
-        <div className="flex flex-row justify-between ">
-          <a
-            href={`https://www.warpcast.com/${author.username}`}
-            target={"_blank"}
-            rel={"noReferrer"}
-          >
-            <div className="flex flex-row items-center gap-x-2">
-              <Avatar className="size-10 ">
-                <AvatarImage src={author.pfp_url} alt={author.username} />
-                {/* <AvatarFallback>{author</AvatarFallback> */}
-              </Avatar>
-              <div className="flex flex-col items-start gap-x-4">
-                <CardTitle className="text-sm">{author.display_name}</CardTitle>
-                <CardDescription className="whitespace-nowrap text-xs">
-                  {author.username}
-                </CardDescription>
-              </div>
-            </div>
-          </a>
-          {category && category.length ? (
-            <Badge
-              onClick={() => handleToggleCategoryClick(category)}
-              variant={badgeIsToggled ? "default" : "outline"}
-              className="w-30 h-10 cursor-pointer whitespace-nowrap"
-            >
-              {category}
-            </Badge>
-          ) : null}
-        </div>
+        <AuthorAvatar
+          author={author}
+          category={category}
+          handleToggleCategoryClick={handleToggleCategoryClick}
+          badgeIsToggled={badgeIsToggled}
+        />
       </CardHeader>
       <CardContent>
-        <a
-          href={`https://www.warpcast.com/${author.username}/${hash}`}
-          target={"_blank"}
-          rel={"noReferrer"}
-          className="relative "
-        >
-          <div
-            className={`flex  flex-col ${
-              embeddedCastHash ? "gap-y-4" : "gap-y-10"
-            }`}
-          >
-            {renderTextWithLinks(text)}
-
-            {text.length > maxCharacters && !toggleText ? null : (
-              <>
-                {hasUrl && isImageUrlToShow && potentialUrl ? (
-                  <div className="size-full overflow-y-scroll">
-                    <AspectRatio ratio={1 / 1}>
-                      <Image src={potentialUrl} alt={text} fill />
-                    </AspectRatio>
-                  </div>
-                ) : potentialUrl && !embeddedCastHash ? (
-                  <LinkPreview url={potentialUrl} />
-                ) : embeddedCastHash && embeddedCast && embeddedCast.hash ? (
-                  <EmbeddedCast
-                    key={embeddedCast.hash}
-                    text={embeddedCast.text}
-                    timestamp={embeddedCast.timestamp}
-                    parent_url={embeddedCast.parent_url}
-                    reactions={embeddedCast.reactions}
-                    replies={embeddedCast.replies}
-                    embeds={embeddedCast.embeds}
-                    author={embeddedCast.author}
-                    // object={cast.object}
-                    hash={embeddedCast.hash}
-                    thread_hash={embeddedCast.thread_hash}
-                    parent_hash={embeddedCast.parent_hash}
-                    parent_author={embeddedCast.parent_author}
-                    mentioned_profiles={embeddedCast.mentioned_profiles}
-                    root_parent_url={embeddedCast.root_parent_url}
-                    category={embeddedCast.category}
-                    handleToggleCategoryClick={handleToggleCategoryClick}
-                    badgeIsToggled={false}
-                  />
-                ) : null}
-              </>
-            )}
-          </div>
-        </a>
+        <CastContent
+          text={text}
+          embeds={embeds}
+          hash={hash}
+          author={author}
+          handleToggleCategoryClick={handleToggleCategoryClick}
+          badgeIsToggled={badgeIsToggled}
+          maxCharacters={150}
+        />
       </CardContent>
-      <CardFooter className="  flex flex-row items-center justify-between gap-x-4">
-        {/* <p>Pin</p> */}
-        <div className="flex flex-row items-center gap-x-4">
-          <div className="flex flex-row items-center gap-x-2">
-            <p className="gap-x-2  font-medium">{reactions.likes_count}</p>
-            <Icons.likes className="size-4" />
-          </div>
-          <div className="flex flex-row items-center gap-x-2">
-            <p className="gap-x-2 font-medium">{replies.count}</p>
-            <Icons.replies className="size-4" />
-          </div>
-        </div>
-        <p className="gap-x-2 font-medium">
-          {new Date(timestamp).toLocaleDateString()}{" "}
-        </p>
+      <CardFooter>
+        <CastFooter
+          timestamp={timestamp}
+          reactions={reactions}
+          replies={replies}
+        />
       </CardFooter>
     </Card>
   )

@@ -1,12 +1,11 @@
 "use client"
 
-import { Suspense, useCallback, useEffect, useState } from "react"
+import { Suspense, useCallback } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Cast as CastType } from "@/types"
-import { useInView } from "react-intersection-observer"
 
+import { useLoadMoreCasts } from "@/hooks/farcaster/useLoadMoreCasts"
 import Cast from "@/components/cast"
-import { fetchChannelCasts } from "@/app/actions"
 
 interface CastFeedProps {
   casts: CastType[]
@@ -16,50 +15,9 @@ interface CastFeedProps {
 const CastFeed = ({ casts, nextCursor }: CastFeedProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [castsToShow, setCastsToShow] = useState(casts)
-  const [cursorToUse, setCursorToUse] = useState(nextCursor)
-  const { ref, inView } = useInView()
+  const { castsToShow, ref } = useLoadMoreCasts(casts, nextCursor)
+
   const categoriesFromParams = searchParams.getAll("categories").join(",")
-
-  const loadMoreCasts = useCallback(async () => {
-    try {
-      const castsResponse = await fetchChannelCasts(
-        "someone-build",
-        cursorToUse
-      )
-      const newCasts = castsResponse.casts
-      const newCursor: any = castsResponse.nextCursor
-      setCastsToShow((prevCasts: any) => [...prevCasts, ...newCasts])
-      setCursorToUse(newCursor)
-    } catch (error) {
-      console.error("Error fetching casts:", error)
-    }
-  }, [cursorToUse])
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout
-
-    const debouncedLoadMore = debounce(loadMoreCasts, 500) // Debounce loadMoreCasts
-
-    if (inView) {
-      timer = setTimeout(() => {
-        debouncedLoadMore()
-      }, 1000) // Adjust the delay as needed
-    }
-
-    return () => {
-      clearTimeout(timer)
-    }
-  }, [inView, loadMoreCasts])
-
-  const debounce = (func: Function, delay: number) => {
-    let timer: NodeJS.Timeout
-    return function (...args: any[]) {
-      clearTimeout(timer)
-      //@ts-ignore
-      timer = setTimeout(() => func.apply(this, args), delay)
-    }
-  }
 
   const createQueryString = useCallback(
     (name: string, value: string, addValue: boolean) => {
@@ -120,7 +78,7 @@ const CastFeed = ({ casts, nextCursor }: CastFeedProps) => {
 
   return (
     <Suspense>
-      <div className="grid grid-cols-1 gap-4  px-4 lg:col-span-6 lg:col-start-4 lg:grid-cols-1 lg:px-10">
+      <div className="grid grid-cols-1 gap-4 px-4 lg:col-span-6 lg:col-start-4 lg:grid-cols-1 lg:px-10">
         {castsToShow && castsToShow.length
           ? castsToShow.map((cast: CastType) => (
               <Cast
@@ -132,7 +90,6 @@ const CastFeed = ({ casts, nextCursor }: CastFeedProps) => {
                 replies={cast.replies}
                 embeds={cast.embeds}
                 author={cast.author}
-                // object={cast.object}
                 hash={cast.hash}
                 thread_hash={cast.thread_hash}
                 parent_hash={cast.parent_hash}

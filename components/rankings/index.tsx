@@ -53,7 +53,6 @@ const Rankings = ({ casts }: any) => {
 
   return (
     <Suspense>
-      ≈
       <div className="sticky top-20 flex h-fit flex-col gap-y-6 lg:col-span-3">
         <h3 className="gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
           Trending

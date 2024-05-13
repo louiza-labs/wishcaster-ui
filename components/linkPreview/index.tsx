@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react"
 import axios from "axios"
 
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+
 interface LinkPreviewProps {
   url: string
 }
@@ -39,27 +41,26 @@ const LinkPreview: React.FC<LinkPreviewProps> = ({ url }) => {
   }
 
   return (
-    <div className="overflow-hidden rounded-lg bg-white shadow-lg">
-      {metadata.image && (
-        <img
-          src={metadata.image}
-          alt={metadata.title}
-          className="h-auto w-full"
-        />
-      )}
-      <div className="p-4">
-        <h3 className="mb-2 text-lg font-semibold">{metadata.title}</h3>
-        <p className="mb-4 text-sm text-gray-700">{metadata.description}</p>
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block rounded bg-blue-500 px-4 py-2 font-bold text-white transition duration-300 hover:bg-blue-700"
-        >
-          Read more
-        </a>
-      </div>
-    </div>
+    <Card className=" relative flex w-fit flex-col justify-between lg:h-fit">
+      <a href={url} target="_blank" rel="noopener noreferrer">
+        <CardHeader>
+          {metadata.image && (
+            <img
+              src={metadata.image}
+              alt={metadata.title}
+              className="h-auto w-fit"
+            />
+          )}
+        </CardHeader>
+        <CardContent>
+          <div className="p-2">
+            <h3 className="mb-2 text-lg font-semibold">{metadata.title}</h3>
+            <p className=" text-sm ">{metadata.description}</p>
+          </div>
+        </CardContent>
+        <CardFooter></CardFooter>
+      </a>
+    </Card>
   )
 }
 
