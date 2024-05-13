@@ -12,7 +12,7 @@ interface CastFeedProps {
   nextCursor: string
 }
 
-const CastFeed = ({ casts, nextCursor }: CastFeedProps) => {
+const Casts = ({ casts, nextCursor }: CastFeedProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { castsToShow, ref } = useLoadMoreCasts(casts, nextCursor)
@@ -110,4 +110,4 @@ const CastFeed = ({ casts, nextCursor }: CastFeedProps) => {
   )
 }
 
-export default CastFeed
+export default Casts
