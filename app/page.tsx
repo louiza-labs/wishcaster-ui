@@ -73,7 +73,6 @@ export default async function IndexPage({
         {filteredCasts && filteredCasts.length ? (
           <>
             <Rankings casts={filteredCasts} />
-
             <CastFeed casts={filteredCasts} nextCursor={castsCursor} />
             <Categories categories={filteredCategories} />
           </>
