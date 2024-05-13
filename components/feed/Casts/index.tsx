@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { Suspense, useCallback, useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Cast as CastType } from "@/types"
 import { useInView } from "react-intersection-observer"
@@ -19,7 +19,6 @@ const CastFeed = ({ casts, nextCursor }: CastFeedProps) => {
   const [castsToShow, setCastsToShow] = useState(casts)
   const [cursorToUse, setCursorToUse] = useState(nextCursor)
   const { ref, inView } = useInView()
-  const searchTermFromParams = searchParams.get("search")
   const categoriesFromParams = searchParams.getAll("categories").join(",")
 
   const loadMoreCasts = useCallback(async () => {
@@ -29,8 +28,8 @@ const CastFeed = ({ casts, nextCursor }: CastFeedProps) => {
         cursorToUse
       )
       const newCasts = castsResponse.casts
-      const newCursor = castsResponse.nextCursor
-      setCastsToShow((prevCasts) => [...prevCasts, ...newCasts])
+      const newCursor: any = castsResponse.nextCursor
+      setCastsToShow((prevCasts: any) => [...prevCasts, ...newCasts])
       setCursorToUse(newCursor)
     } catch (error) {
       console.error("Error fetching casts:", error)
@@ -57,6 +56,7 @@ const CastFeed = ({ casts, nextCursor }: CastFeedProps) => {
     let timer: NodeJS.Timeout
     return function (...args: any[]) {
       clearTimeout(timer)
+      //@ts-ignore
       timer = setTimeout(() => func.apply(this, args), delay)
     }
   }
@@ -119,35 +119,37 @@ const CastFeed = ({ casts, nextCursor }: CastFeedProps) => {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4  px-4 lg:col-span-6 lg:col-start-4 lg:grid-cols-1 lg:px-10">
-      {castsToShow && castsToShow.length
-        ? castsToShow.map((cast: CastType) => (
-            <Cast
-              key={cast.hash}
-              text={cast.text}
-              timestamp={cast.timestamp}
-              parent_url={cast.parent_url}
-              reactions={cast.reactions}
-              replies={cast.replies}
-              embeds={cast.embeds}
-              author={cast.author}
-              // object={cast.object}
-              hash={cast.hash}
-              thread_hash={cast.thread_hash}
-              parent_hash={cast.parent_hash}
-              parent_author={cast.parent_author}
-              mentioned_profiles={cast.mentioned_profiles}
-              root_parent_url={cast.root_parent_url}
-              category={cast.category}
-              handleToggleCategoryClick={handleToggleCategoryClick}
-              badgeIsToggled={badgeIsToggled(
-                cast.category ? cast.category : ""
-              )}
-            />
-          ))
-        : null}
-      <div ref={ref}></div>
-    </div>
+    <Suspense>
+      <div className="grid grid-cols-1 gap-4  px-4 lg:col-span-6 lg:col-start-4 lg:grid-cols-1 lg:px-10">
+        {castsToShow && castsToShow.length
+          ? castsToShow.map((cast: CastType) => (
+              <Cast
+                key={cast.hash}
+                text={cast.text}
+                timestamp={cast.timestamp}
+                parent_url={cast.parent_url}
+                reactions={cast.reactions}
+                replies={cast.replies}
+                embeds={cast.embeds}
+                author={cast.author}
+                // object={cast.object}
+                hash={cast.hash}
+                thread_hash={cast.thread_hash}
+                parent_hash={cast.parent_hash}
+                parent_author={cast.parent_author}
+                mentioned_profiles={cast.mentioned_profiles}
+                root_parent_url={cast.root_parent_url}
+                category={cast.category}
+                handleToggleCategoryClick={handleToggleCategoryClick}
+                badgeIsToggled={badgeIsToggled(
+                  cast.category ? cast.category : ""
+                )}
+              />
+            ))
+          : null}
+        <div ref={ref}></div>
+      </div>
+    </Suspense>
   )
 }
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { Suspense, useCallback, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
 import { Input } from "@/components/ui/input"
@@ -65,30 +65,32 @@ const Search = () => {
   }
 
   return (
-    <div className="flex  items-center justify-center">
-      <div className="w-full max-w-md px-4 sm:px-0">
-        <div className="relative">
-          <Input
-            className="w-full rounded-md border border-gray-300 px-4 py-2 pr-10 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-gray-500 dark:focus:ring-gray-500"
-            placeholder="Search casts or categories..."
-            type="search"
-            onChange={handleSearchTermChange}
-            value={searchTerm}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                handleSubmitSearchTerm()
-              }
-            }}
-          />
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <SearchIcon
-              handleClick={handleSubmitSearchTerm}
-              className="size-5 text-gray-400 dark:text-gray-500"
+    <Suspense>
+      <div className="flex  items-center justify-center">
+        <div className="w-full max-w-md px-4 sm:px-0">
+          <div className="relative">
+            <Input
+              className="w-full rounded-md border border-gray-300 px-4 py-2 pr-10 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-gray-500 dark:focus:ring-gray-500"
+              placeholder="Search casts or categories..."
+              type="search"
+              onChange={handleSearchTermChange}
+              value={searchTerm}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleSubmitSearchTerm()
+                }
+              }}
             />
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+              <SearchIcon
+                handleClick={handleSubmitSearchTerm}
+                className="size-5 text-gray-400 dark:text-gray-500"
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Suspense>
   )
 }
 
