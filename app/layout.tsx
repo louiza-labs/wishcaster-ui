@@ -1,5 +1,3 @@
-import { AppProvider } from "@/context/"
-
 import "@/styles/globals.css"
 import { Metadata, type Viewport } from "next"
 import { ToastContainer } from "react-toastify"
@@ -50,17 +48,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
             fontSans.variable
           )}
         >
-          <AppProvider>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              <div className="relative flex min-h-screen flex-col">
-                <SiteHeader />
-                <div className="flex-1">{children}</div>
-                <SiteFooter />
-                <ToastContainer />
-              </div>
-              <TailwindIndicator />
-            </ThemeProvider>
-          </AppProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <div className="relative flex min-h-screen flex-col">
+              <SiteHeader />
+              <div className="flex-1">{children}</div>
+              <SiteFooter />
+              <ToastContainer />
+            </div>
+            <TailwindIndicator />
+          </ThemeProvider>
         </body>
       </html>
     </>
