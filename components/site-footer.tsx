@@ -1,8 +1,4 @@
-import Link from "next/link"
-
 import { siteConfig } from "@/config/site"
-import { buttonVariants } from "@/components/ui/button"
-import { Icons } from "@/components/icons"
 import { MainFooter } from "@/components/main-footer"
 
 export function SiteFooter() {
@@ -13,7 +9,7 @@ export function SiteFooter() {
 
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-1">
-            <Link
+            {/* <Link
               href={siteConfig.links.github}
               target="_blank"
               rel="noreferrer"
@@ -42,7 +38,7 @@ export function SiteFooter() {
                 <Icons.twitter className="size-5 fill-current" />
                 <span className="sr-only">Twitter</span>
               </div>
-            </Link>
+            </Link> */}
           </nav>
         </div>
       </div>

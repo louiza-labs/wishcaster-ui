@@ -20,7 +20,9 @@ import { PRODUCT_CATEGORIES } from "@/lib/constants"
 
 const testKey = "NEYNAR_API_DOCS"
 // Instantiate the client
-const neynarClient = new NeynarAPIClient(process.env.NEYNAR_API_KEY as string)
+const neynarClient = new NeynarAPIClient(
+  testKey ? testKey : (process.env.NEYNAR_API_KEY as string)
+)
 const FARCASTER_DEVELOPER_MNEMONIC = process.env.FARCASTER_DEVELOPER_MNEMONIC
 const FARCASTER_DEVELOPER_FID = process.env.FARCASTER_DEVELOPER_FID
 

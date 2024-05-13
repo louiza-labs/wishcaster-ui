@@ -12,11 +12,10 @@ interface CastFeedProps {
   casts: CastType[]
   nextCursor: string
 }
+
 const CastFeed = ({ casts, nextCursor }: CastFeedProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
-  console.log("the new cursorTo", nextCursor)
-
   const [castsToShow, setCastsToShow] = useState(casts)
   const [cursorToUse, setCursorToUse] = useState(nextCursor)
   const { ref, inView } = useInView()
@@ -24,46 +23,43 @@ const CastFeed = ({ casts, nextCursor }: CastFeedProps) => {
   const categoriesFromParams = searchParams.getAll("categories").join(",")
 
   const loadMoreCasts = useCallback(async () => {
-    const castsResponse = await fetchChannelCasts("someone-build", cursorToUse)
-    const newCasts = castsResponse.casts
-    let filteredCasts = casts as CastType[]
-
-    // // Filter by search term if it exists
-    // if (searchTermFromParams && searchTermFromParams.length) {
-    //   filteredCasts = searchCastsForTerm(filteredCasts, searchTermFromParams)
-    // }
-
-    // const categories = (await categorizeCastsAsRequests(
-    //   filteredCasts
-    // )) as Category[]
-    // const filteredCategories = filterDuplicateCategories(categories)
-
-    // const castsWithCategories = addCategoryFieldsToCasts(
-    //   filteredCasts,
-    //   categories
-    // )
-    // if (categoriesFromParams && categoriesFromParams.length) {
-    //   filteredCasts = searchCastsForCategories(
-    //     castsWithCategories,
-    //     categoriesFromParams
-    //   )
-    // }
-    const newCursor = castsResponse.nextCursor
-    setCastsToShow([...casts, ...filteredCasts])
-    setCursorToUse(newCursor as string)
-  }, [casts, categoriesFromParams, cursorToUse, searchTermFromParams])
+    try {
+      const castsResponse = await fetchChannelCasts(
+        "someone-build",
+        cursorToUse
+      )
+      const newCasts = castsResponse.casts
+      const newCursor = castsResponse.nextCursor
+      setCastsToShow((prevCasts) => [...prevCasts, ...newCasts])
+      setCursorToUse(newCursor)
+    } catch (error) {
+      console.error("Error fetching casts:", error)
+    }
+  }, [cursorToUse])
 
   useEffect(() => {
     let timer: NodeJS.Timeout
 
+    const debouncedLoadMore = debounce(loadMoreCasts, 500) // Debounce loadMoreCasts
+
     if (inView) {
       timer = setTimeout(() => {
-        loadMoreCasts()
-      }, 5000) // 5 seconds in milliseconds
+        debouncedLoadMore()
+      }, 1000) // Adjust the delay as needed
     }
 
-    return () => clearTimeout(timer)
+    return () => {
+      clearTimeout(timer)
+    }
   }, [inView, loadMoreCasts])
+
+  const debounce = (func: Function, delay: number) => {
+    let timer: NodeJS.Timeout
+    return function (...args: any[]) {
+      clearTimeout(timer)
+      timer = setTimeout(() => func.apply(this, args), delay)
+    }
+  }
 
   const createQueryString = useCallback(
     (name: string, value: string, addValue: boolean) => {
@@ -123,7 +119,7 @@ const CastFeed = ({ casts, nextCursor }: CastFeedProps) => {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-10 p-20 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4  px-4 lg:col-span-6 lg:col-start-4 lg:grid-cols-1 lg:px-10">
       {castsToShow && castsToShow.length
         ? castsToShow.map((cast: CastType) => (
             <Cast

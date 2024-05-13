@@ -1,7 +1,10 @@
+"use-client"
+
+import { useState } from "react"
 import Image from "next/image"
 import { Cast as CastType } from "@/types"
-import axios from "axios"
 
+import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -12,6 +15,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Icons } from "@/components/icons"
+import LinkPreview from "@/components/linkPreview"
 
 function isImageUrl(url: string): boolean {
   if (!url || typeof url !== "string") return false
@@ -29,15 +34,6 @@ function isImageUrl(url: string): boolean {
   return imageExtensions.some((ext) => lowerCaseUrl.endsWith(ext))
 }
 
-async function isWebpageUrl(url: string): Promise<boolean> {
-  try {
-    const response = await axios.head(url)
-    return response.status >= 200 && response.status < 300
-  } catch (error) {
-    return false // Failed to fetch URL or other network error
-  }
-}
-
 const Cast = ({
   timestamp,
   text,
@@ -51,6 +47,14 @@ const Cast = ({
   handleToggleCategoryClick,
   badgeIsToggled,
 }: CastType) => {
+  const [isExpanded, setIsExpanded] = useState(false)
+  const maxCharacters = 150 // Maximum characters to display initially
+
+  const toggleText = () => {
+    setIsExpanded(!isExpanded)
+  }
+
+  const displayText = isExpanded ? text : text.slice(0, maxCharacters) + "..."
   const hasUrl = embeds.find((embed) => embed.url) !== undefined
   const potentialUrl = hasUrl ? embeds[0].url : null
   let isImageUrlToShow
@@ -58,9 +62,36 @@ const Cast = ({
   if (isImageUrl(potentialUrl)) {
     isImageUrlToShow = true
   }
+  const renderTextWithLinks = (text) => {
+    // Regular expression to match URLs
+    const urlRegex = /(https?:\/\/[^\s/]+(?:\/\w+)*\/?)/g
+    // Split the text by URLs
+    const parts = text.split(urlRegex)
+
+    // Render each part of the text, making URLs clickable
+    return parts.map((part, index) => {
+      if (part.match(urlRegex)) {
+        // Render URLs as clickable links
+        return (
+          <a
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="link"
+          >
+            {part}
+          </a>
+        )
+      } else {
+        // Render regular text
+        return <span key={index}>{part}</span>
+      }
+    })
+  }
 
   return (
-    <Card className=" flex flex-col justify-between">
+    <Card className=" flex flex-col justify-between lg:h-80">
       <CardHeader>
         <div className="flex flex-row justify-between ">
           <a
@@ -99,42 +130,63 @@ const Cast = ({
           rel={"noReferrer"}
           className="relative "
         >
-          <div className="flex flex-col gap-y-10">
-            <p>{text} </p>
-            {hasUrl && isImageUrlToShow ? (
-              <Image src={potentialUrl} alt={text} width={400} height={400} />
-            ) : (
-              <a
-                href={potentialUrl}
-                rel="noReferrer"
-                className="break-all text-blue-600"
-                target={"_blank"}
+          <div className="flex  flex-col gap-y-10">
+            {renderTextWithLinks(displayText)}
+
+            {text.length > maxCharacters && (
+              <button
+                onClick={toggleText}
+                className="cursor-pointer text-blue-600"
               >
-                {" "}
-                {potentialUrl}{" "}
-              </a>
+                {isExpanded ? "Read Less" : "Read More"}
+              </button>
+            )}
+            {text.length > maxCharacters && !toggleText ? null : (
+              <>
+                {hasUrl && isImageUrlToShow ? (
+                  <div className="size-full overflow-y-scroll">
+                    <AspectRatio ratio={1 / 1}>
+                      <Image
+                        src={potentialUrl}
+                        alt={text}
+                        layout="intrinsic"
+                        width={200}
+                        height={200}
+                      />
+                    </AspectRatio>
+                  </div>
+                ) : potentialUrl ? (
+                  // <a
+                  //   href={potentialUrl}
+                  //   rel="noReferrer"
+                  //   className="break-all text-blue-600"
+                  //   target={"_blank"}
+                  // >
+                  //   {" "}
+                  //   {potentialUrl}{" "}
+                  // </a>
+                  <LinkPreview url={potentialUrl} />
+                ) : null}
+              </>
             )}
           </div>
         </a>
       </CardContent>
-      <CardFooter className=" flex flex-row items-center gap-x-4">
+      <CardFooter className="  flex flex-row items-center justify-between gap-x-4">
         {/* <p>Pin</p> */}
-
-        <p className="gap-x-2 font-bold">
-          {reactions.likes_count}{" "}
-          <span className="text-muted-foreground text-sm font-semibold">
-            Likes
-          </span>
-        </p>
-        <p className="gap-x-2 font-bold">
-          {replies.count}{" "}
-          <span className="text-muted-foreground text-sm font-semibold">
-            Replies
-          </span>
-        </p>
-        {/* <p className="gap-x-2 font-thin">
+        <div className="flex flex-row items-center gap-x-4">
+          <div className="flex flex-row items-center gap-x-2">
+            <p className="gap-x-2  font-medium">{reactions.likes_count}</p>
+            <Icons.likes className="size-4" />
+          </div>
+          <div className="flex flex-row items-center gap-x-2">
+            <p className="gap-x-2 font-medium">{replies.count}</p>
+            <Icons.replies className="size-4" />
+          </div>
+        </div>
+        <p className="gap-x-2 font-medium">
           {new Date(timestamp).toLocaleDateString()}{" "}
-        </p> */}
+        </p>
       </CardFooter>
     </Card>
   )

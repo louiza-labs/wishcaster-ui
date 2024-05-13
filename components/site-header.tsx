@@ -1,8 +1,4 @@
-import Link from "next/link"
-
 import { siteConfig } from "@/config/site"
-import { buttonVariants } from "@/components/ui/button"
-import { Icons } from "@/components/icons"
 import { MainNav } from "@/components/main-nav"
 import Search from "@/components/search"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -17,7 +13,7 @@ export function SiteHeader() {
         </div>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-1">
-            <Link
+            {/* <Link
               href={siteConfig.links.github}
               target="_blank"
               rel="noreferrer"
@@ -46,7 +42,7 @@ export function SiteHeader() {
                 <Icons.twitter className="size-5 fill-current" />
                 <span className="sr-only">Twitter</span>
               </div>
-            </Link>
+            </Link> */}
             <ThemeToggle />
           </nav>
         </div>

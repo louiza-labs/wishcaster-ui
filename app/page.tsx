@@ -8,6 +8,7 @@ import {
 } from "@/lib/helpers"
 import Categories from "@/components/categories"
 import CastFeed from "@/components/feed/Casts"
+import Rankings from "@/components/rankings"
 import RedirectButton from "@/components/redirect/Button"
 import { categorizeCastsAsRequests, fetchChannelCasts } from "@/app/actions"
 
@@ -54,21 +55,23 @@ export default async function IndexPage({
   }
 
   return (
-    <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
-      <div className="flex max-w-[980px] flex-col items-start gap-2">
+    <section className="container grid items-center gap-6 px-20 pb-8 pt-6 md:py-10">
+      <div className="flex flex-col items-start gap-2 pb-10 ">
         <h1 className="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
           What people want! <br className="hidden sm:inline" />
         </h1>
-        <p className="text-muted-foreground max-w-[700px] text-lg">
+        <p className="text-muted-foreground text-lg lg:max-w-[700px]">
           Sourced directly from Farcaster&apos;s{" "}
           <span className="font-bold">someone-build channel</span>
         </p>
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="relative grid h-full grid-cols-12 gap-x-10 ">
         {filteredCasts && filteredCasts.length ? (
           <>
-            <Categories categories={filteredCategories} />
+            <Rankings casts={filteredCasts} />
+
             <CastFeed casts={filteredCasts} nextCursor={castsCursor} />
+            <Categories categories={filteredCategories} />
           </>
         ) : (
           <div className="flex flex-col items-center gap-y-4">

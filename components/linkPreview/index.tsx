@@ -1,38 +1,66 @@
-import React from "react"
-import { getLinkPreview } from "react-link-preview"
+import React, { useEffect, useState } from "react"
+import axios from "axios"
 
-const LinkCard = ({ url }) => {
-  const [previewData, setPreviewData] = React.useState(null)
+interface LinkPreviewProps {
+  url: string
+}
 
-  React.useEffect(() => {
-    const fetchLinkPreview = async () => {
+interface LinkMetadata {
+  title: string
+  description: string
+  image: string
+}
+
+const LinkPreview: React.FC<LinkPreviewProps> = ({ url }) => {
+  const [metadata, setMetadata] = useState<LinkMetadata | null>(null)
+
+  useEffect(() => {
+    const fetchMetadata = async () => {
       try {
-        const data = await getLinkPreview(url)
-        setPreviewData(data)
+        const response = await axios.get(
+          `https://api.microlink.io/?url=${encodeURIComponent(url)}`
+        )
+        const { data } = response.data
+        setMetadata({
+          title: data.title || "",
+          description: data.description || "",
+          image: data.image?.url || "",
+        })
       } catch (error) {
-        console.error("Error fetching link preview:", error)
+        console.error("Error fetching metadata:", error)
       }
     }
 
-    fetchLinkPreview()
+    fetchMetadata()
   }, [url])
 
+  if (!metadata) {
+    return <div>Loading...</div>
+  }
+
   return (
-    <div className="link-card">
-      {previewData && (
-        <div className="card-content">
-          <img src={previewData.images[0]} alt={previewData.title} />
-          <div className="card-text">
-            <h3>{previewData.title}</h3>
-            <p>{previewData.description}</p>
-            <a href={url} target="_blank" rel="noopener noreferrer">
-              Go to link
-            </a>
-          </div>
-        </div>
+    <div className="overflow-hidden rounded-lg bg-white shadow-lg">
+      {metadata.image && (
+        <img
+          src={metadata.image}
+          alt={metadata.title}
+          className="h-auto w-full"
+        />
       )}
+      <div className="p-4">
+        <h3 className="mb-2 text-lg font-semibold">{metadata.title}</h3>
+        <p className="mb-4 text-sm text-gray-700">{metadata.description}</p>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block rounded bg-blue-500 px-4 py-2 font-bold text-white transition duration-300 hover:bg-blue-700"
+        >
+          Read more
+        </a>
+      </div>
     </div>
   )
 }
 
-export default LinkCard
+export default LinkPreview

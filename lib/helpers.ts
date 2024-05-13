@@ -106,3 +106,46 @@ export const searchCastsForCategories = (
       )
   )
 }
+
+export const buildRankings = (
+  casts: CastType[],
+  focus: keyof CastType,
+  metric: "likes_count" | "replies_count" | "recasts_count" | "count",
+  limit: number
+): { name: string; value: number }[] => {
+  if (!casts || casts.length === 0) {
+    return []
+  }
+
+  // Create an object to accumulate metrics
+  const metricsMap = new Map<string, number>()
+
+  casts.forEach((cast) => {
+    const focusValue = cast[focus] as string // Ensuring the value is treated as a string
+    if (metric === "count") {
+      // Count occurrences of each focus value
+      metricsMap.set(focusValue, (metricsMap.get(focusValue) || 0) + 1)
+    } else if (metric === "replies_count") {
+      metricsMap.set(
+        focusValue,
+        (metricsMap.get(focusValue) || 0) + (cast["replies"]["count"] || 0)
+      )
+    } else {
+      metricsMap.set(
+        focusValue,
+        (metricsMap.get(focusValue) || 0) + (cast["reactions"][metric] || 0)
+      )
+
+      // Sum the metric values for each focus value
+    }
+  })
+
+  // Convert the map into an array, sort it, and slice it to the limit
+  const sorted = Array.from(metricsMap)
+    .map(([name, value]) => ({ name, value }))
+    .filter((metric) => metric.name && metric.name.length > 0)
+    .sort((a, b) => b.value - a.value) // Sort in descending order by value
+    .slice(0, limit)
+
+  return sorted
+}
