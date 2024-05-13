@@ -66,6 +66,13 @@ export const addCategoryFieldsToCasts = (
   casts: CastType[],
   categories: Category[]
 ) => {
+  if (
+    !categories ||
+    (Array.isArray(categories) && !categories.length) ||
+    !Array.isArray(categories)
+  ) {
+    return {}
+  }
   return casts.map((cast) => {
     const categoryMatch = categories.find(
       (category) => category.request === cast.text
@@ -74,6 +81,13 @@ export const addCategoryFieldsToCasts = (
   })
 }
 export const filterDuplicateCategories = (categories: Category[]) => {
+  if (
+    !categories ||
+    (Array.isArray(categories) && !categories.length) ||
+    !Array.isArray(categories)
+  ) {
+    return []
+  }
   const uniqueCategories = categories.filter(
     (category, index, self) =>
       index === self.findIndex((c) => c.category === category.category)
@@ -148,4 +162,46 @@ export const buildRankings = (
     .slice(0, limit)
 
   return sorted
+}
+
+export function generateWhimsicalErrorMessages() {
+  const messages = [
+    "These aren't the casts you're looking for. 🌌",
+    "Houston, we have a problem... with finding casts!",
+    "I'm sorry, Dave. I'm afraid I can't find those casts.",
+    "One does not simply walk into Mordor, or find these casts.",
+    "No casts for you!",
+    "Winter is coming, but these casts are not.",
+    "I've got a bad feeling about this... No casts detected!",
+    "May the Force be with you, because the casts are not.",
+    "In the galaxy of casts, this is not the droid you are looking for.",
+    "You're gonna need a bigger boat... to find these casts.",
+    "I'm Groot... which means I can't find your casts.",
+    "Yer a wizard, Harry! But even magic can't find these casts.",
+    "What's in the box?! Not the casts, sadly.",
+    "Life finds a way, but we couldn't find the casts.",
+    "I feel the need—the need for... finding those missing casts!",
+    "They may take our lives, but they’ll never take... our casts!",
+    "We're not in Kansas anymore. We are, however, missing casts.",
+    "The truth is out there... but these casts certainly are not.",
+    "Hold onto your butts, because these casts are missing.",
+    "There's no place like home... to search for more casts.",
+  ]
+  return messages[Math.floor(Math.random() * messages.length)]
+}
+
+export function isImageUrl(url: string | undefined | null): boolean {
+  if (!url || typeof url !== "string") return false
+  const imageExtensions = [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".bmp",
+    ".svg",
+    ".webp",
+  ]
+  const lowerCaseUrl = url.toLowerCase()
+  if (lowerCaseUrl.includes("imagedelivery")) return true
+  return imageExtensions.some((ext) => lowerCaseUrl.endsWith(ext))
 }

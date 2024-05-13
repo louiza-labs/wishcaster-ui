@@ -3,6 +3,7 @@ import { Cast as CastType, Category } from "@/types"
 import {
   addCategoryFieldsToCasts,
   filterDuplicateCategories,
+  generateWhimsicalErrorMessages,
   searchCastsForCategories,
   searchCastsForTerm,
 } from "@/lib/helpers"
@@ -49,7 +50,10 @@ export default async function IndexPage({
   )) as Category[]
   const filteredCategories = filterDuplicateCategories(categories)
 
-  filteredCasts = addCategoryFieldsToCasts(filteredCasts, categories)
+  filteredCasts = addCategoryFieldsToCasts(
+    filteredCasts,
+    categories
+  ) as Array<CastType>
   if (categoryParam && categoryParam.length) {
     filteredCasts = searchCastsForCategories(filteredCasts, categoryParam)
   }
@@ -74,11 +78,16 @@ export default async function IndexPage({
             <Categories categories={filteredCategories} />
           </>
         ) : (
-          <div className="flex flex-col items-center gap-y-4">
+          <div className="col-span-12 flex flex-col  items-center gap-y-4">
             <h6 className="mt-20 text-center text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
-              No casts found 😭
+              There is an issue getting or categorizing casts 😭
             </h6>
-            <RedirectButton path={"/"} buttonText="Clear Search" />
+            <h5 className="mt-4 text-center text-2xl font-light leading-tight tracking-tighter md:text-3xl">
+              {generateWhimsicalErrorMessages()}
+            </h5>
+            {searchTerm && searchTerm.length ? (
+              <RedirectButton path={"/"} buttonText="Clear Search" />
+            ) : null}
           </div>
         )}
       </div>

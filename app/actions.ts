@@ -20,9 +20,7 @@ import { PRODUCT_CATEGORIES } from "@/lib/constants"
 
 const testKey = "NEYNAR_API_DOCS"
 // Instantiate the client
-const neynarClient = new NeynarAPIClient(
-  testKey ? testKey : (process.env.NEYNAR_API_KEY as string)
-)
+const neynarClient = new NeynarAPIClient(process.env.NEYNAR_API_KEY as string)
 const FARCASTER_DEVELOPER_MNEMONIC = process.env.FARCASTER_DEVELOPER_MNEMONIC
 const FARCASTER_DEVELOPER_FID = process.env.FARCASTER_DEVELOPER_FID
 
@@ -150,6 +148,23 @@ export const fetchFarcasterUser = async (userFID: number, viewerFID = 0) => {
   }
 }
 
+export const fetchFarcasterCast = async (hash: string) => {
+  try {
+    const castResponse = await neynarClient.lookUpCastByHashOrWarpcastUrl(
+      hash,
+      "hash"
+    )
+    const cast = castResponse.cast
+    return cast
+  } catch (error) {
+    if (isApiErrorResponse(error)) {
+      console.log("API Error", error.response.data)
+    } else {
+      console.log("Generic Error", error)
+    }
+  }
+}
+
 export const fetchFarcasterFollowers = async (
   userFID: number,
   viewerFID: number
@@ -208,18 +223,15 @@ export const sendCast = async (castInfo: CastPayload) => {
 
 export const fetchChannelCasts = async (channelId: string, cursor = "") => {
   try {
-    // let url = `https://api.neynar.com/v2/farcaster/feed?feed_type=following&channel_id=${channelId}&with_recasts=true&limit=100`
-    // if (cursor && cursor.length) {
-    //   url += `&cursor=${cursor}`
-    // }
-
-    const memesChannelUrl = "https://warpcast.com/~/channel/someone-build"
+    const buildItChannelUrl = "https://warpcast.com/~/channel/someone-build"
 
     const feed = await neynarClient.fetchFeed(FeedType.Filter, {
       filterType: FilterType.ParentUrl,
       channelId,
-      parentUrl: memesChannelUrl,
+      parentUrl: buildItChannelUrl,
       cursor: cursor && cursor.length ? cursor : undefined,
+      limit: 100,
+      withRecasts: false,
     })
     const returnObject = {
       casts: feed.casts,
@@ -234,15 +246,25 @@ export const fetchChannelCasts = async (channelId: string, cursor = "") => {
 
 export const categorizeCastsAsRequests = async (casts: Cast[]) => {
   try {
-    const prompt = `Based on the following product categories: ${PRODUCT_CATEGORIES}, categorize each product request into the category that fits it best. Ensure that each request is categorized and done so effectively. Please include in the response for each categorization both the Product Request and categorization. The product requests to categorize for are as follows: ${casts
+    const prompt = `Based on the following product categories: ${PRODUCT_CATEGORIES}, categorize each product request into the category that fits it best. Ensure that each request is categorized and done so effectively. Please include in the response for each categorization both the Product Request and categorization. For each product request, you are to only provide a single category, that is the one of the best fit. The product requests to categorize for are as follows: ${casts
       .map((message: any, i: number) => `Request ${i + 1}:\n${message.text}`)
       .join("\n\n")}
       
-      For example, if a request is about 'AMA Frames' it should be categorized under the 'Frames' category. Please follow similar guidelines for all requests.
+      Here are some examples to follow:
+       1. if a request is about 'AMA Frames', it should be categorized under the 'Frames' category. 
+       2. if a request is about 'browser extensions', it should be categorized under the 'Extensions' category.
+       3. if a request is about 'grant programs', it should be categorized under the 'Grants' category
+       4. if a request is about 'Swaps', it should be categorized under the 'DeFi' category
+       5. if a request is about 'Staking or Lending', it should be categorized under the 'DeFi' category
+       6. if a request is about 'Clients', it should be categorized under the clients category
+       
+      
+       Please follow similar guidelines for all requests.
       `
     const result = await generateObject({
       model: openai("gpt-4"),
       prompt,
+      maxRetries: 4,
       // maxTokens: 600,
       schema: z.object({
         categorizedRequests: z.array(
@@ -255,6 +277,7 @@ export const categorizeCastsAsRequests = async (casts: Cast[]) => {
     })
     return result.object.categorizedRequests
   } catch (error) {
+    console.log(error)
     return { error: "Failed to process request", message: error }
   }
 }

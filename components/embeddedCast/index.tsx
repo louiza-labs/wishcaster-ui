@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { Cast as CastType } from "@/types"
 
-import useGetCast from "@/hooks/farcaster/useGetCast"
+import { isImageUrl } from "@/lib/helpers"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -16,27 +16,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import EmbeddedCast from "@/components/embeddedCast"
 import { Icons } from "@/components/icons"
 import LinkPreview from "@/components/linkPreview"
 
-function isImageUrl(url: string | undefined | null): boolean {
-  if (!url || typeof url !== "string") return false
-  const imageExtensions = [
-    ".jpg",
-    ".jpeg",
-    ".png",
-    ".gif",
-    ".bmp",
-    ".svg",
-    ".webp",
-  ]
-  const lowerCaseUrl = url.toLowerCase()
-  if (lowerCaseUrl.includes("imagedelivery")) return true
-  return imageExtensions.some((ext) => lowerCaseUrl.endsWith(ext))
-}
-
-const Cast = ({
+const EmbeddedCast = ({
   timestamp,
   text,
   author,
@@ -57,18 +40,8 @@ const Cast = ({
   }
 
   const hasUrl = embeds.find((embed: any) => embed.url) !== undefined
-  const hasCast = embeds.find((embed: any) => embed.cast_id) !== undefined
-  const embeddedCastHash =
-    embeds && Array.isArray(embeds)
-      ? embeds.find((embed: any) => embed.cast_id)?.cast_id?.hash
-      : undefined
-  const { fetchedCast: embeddedCast } = useGetCast(embeddedCastHash) as any
 
-  const potentialUrl = hasUrl
-    ? embeds[0].url
-    : hasCast
-    ? `https://www.warpcast.com/${embeddedCastHash}`
-    : null
+  const potentialUrl = hasUrl ? embeds[0].url : null
   let isImageUrlToShow
 
   if (isImageUrl(potentialUrl)) {
@@ -143,44 +116,28 @@ const Cast = ({
           rel={"noReferrer"}
           className="relative "
         >
-          <div
-            className={`flex  flex-col ${
-              embeddedCastHash ? "gap-y-4" : "gap-y-10"
-            }`}
-          >
+          <div className="flex  flex-col gap-y-10">
             {renderTextWithLinks(text)}
 
             {text.length > maxCharacters && !toggleText ? null : (
               <>
                 {hasUrl && isImageUrlToShow && potentialUrl ? (
-                  <div className="size-full overflow-y-scroll">
+                  <div className="size-full w-full overflow-y-scroll">
                     <AspectRatio ratio={1 / 1}>
-                      <Image src={potentialUrl} alt={text} fill />
+                      <Image src={potentialUrl} alt={text} layout="fill" />
                     </AspectRatio>
                   </div>
-                ) : potentialUrl && !embeddedCastHash ? (
+                ) : potentialUrl ? (
+                  // <a
+                  //   href={potentialUrl}
+                  //   rel="noReferrer"
+                  //   className="break-all text-blue-600"
+                  //   target={"_blank"}
+                  // >
+                  //   {" "}
+                  //   {potentialUrl}{" "}
+                  // </a>
                   <LinkPreview url={potentialUrl} />
-                ) : embeddedCastHash && embeddedCast && embeddedCast.hash ? (
-                  <EmbeddedCast
-                    key={embeddedCast.hash}
-                    text={embeddedCast.text}
-                    timestamp={embeddedCast.timestamp}
-                    parent_url={embeddedCast.parent_url}
-                    reactions={embeddedCast.reactions}
-                    replies={embeddedCast.replies}
-                    embeds={embeddedCast.embeds}
-                    author={embeddedCast.author}
-                    // object={cast.object}
-                    hash={embeddedCast.hash}
-                    thread_hash={embeddedCast.thread_hash}
-                    parent_hash={embeddedCast.parent_hash}
-                    parent_author={embeddedCast.parent_author}
-                    mentioned_profiles={embeddedCast.mentioned_profiles}
-                    root_parent_url={embeddedCast.root_parent_url}
-                    category={embeddedCast.category}
-                    handleToggleCategoryClick={handleToggleCategoryClick}
-                    badgeIsToggled={false}
-                  />
                 ) : null}
               </>
             )}
@@ -207,4 +164,4 @@ const Cast = ({
   )
 }
 
-export default Cast
+export default EmbeddedCast

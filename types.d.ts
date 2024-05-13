@@ -28,10 +28,11 @@ export interface User {
 }
 
 export interface Embed {
-  cast_id: {
+  cast_id?: {
     fid: number
     hash: string
   }
+  url?: string
 }
 
 export interface Reaction {
@@ -46,7 +47,7 @@ export interface Cast {
   parent_hash: string | null
   parent_url: string
   root_parent_url: string
-  category: string | null
+  category?: string | null
   parent_author: {
     fid: any // Assuming this can be null or a number
   }
