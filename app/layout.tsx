@@ -5,12 +5,14 @@ import { ToastContainer } from "react-toastify"
 import { siteConfig } from "@/config/site"
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
+import InitialLoading from "@/components/loading/initial"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
 
 import "react-toastify/dist/ReactToastify.css"
+import { Suspense } from "react/"
 
 export const metadata: Metadata = {
   title: {
@@ -49,13 +51,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
           )}
         >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <div className="relative flex min-h-screen flex-col">
-              <SiteHeader />
-              <div className="flex-1">{children}</div>
-              <SiteFooter />
-              <ToastContainer />
-            </div>
-            <TailwindIndicator />
+            <Suspense fallback={<InitialLoading />}>
+              <div className="relative flex min-h-screen flex-col">
+                <SiteHeader />
+                <div className="flex-1">{children}</div>
+                <SiteFooter />
+                <ToastContainer />
+              </div>
+              <TailwindIndicator />
+            </Suspense>
           </ThemeProvider>
         </body>
       </html>

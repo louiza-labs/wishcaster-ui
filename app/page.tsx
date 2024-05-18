@@ -57,31 +57,37 @@ export default async function IndexPage({
   if (categoryParam && categoryParam.length) {
     filteredCasts = searchCastsForCategories(filteredCasts, categoryParam)
   }
-
+  console.log("the filtered categories", filteredCategories)
   return (
-    <section className="container grid items-center gap-6 px-20 pb-8 pt-6 md:py-10">
-      <div className="flex flex-col items-start gap-2 pb-10 ">
-        <h1 className="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
+    <section className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
+      <div className="flex flex-col items-center gap-2 pb-10 md:items-start">
+        <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
           What people want! <br className="hidden sm:inline" />
         </h1>
-        <p className="text-muted-foreground text-lg lg:max-w-[700px]">
+        <p className="text-center text-sm sm:text-lg md:text-left lg:max-w-[700px]">
           Sourced directly from Farcaster&apos;s{" "}
           <span className="font-bold">someone-build channel</span>
         </p>
       </div>
-      <div className="relative grid h-full grid-cols-12 gap-x-10 ">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-12 sm:gap-x-10">
         {filteredCasts && filteredCasts.length ? (
           <>
-            <Rankings casts={filteredCasts} />
-            <Casts casts={filteredCasts} nextCursor={castsCursor} />
-            <Categories categories={filteredCategories} />
+            <div className="hidden sm:col-span-3 sm:block"></div>
+            <div className="sm:col-span-6">
+              <Casts casts={filteredCasts} nextCursor={castsCursor} />
+            </div>
+            <div className="hidden sm:col-span-3 sm:block">
+              <Categories categories={filteredCategories} />
+
+              <Rankings casts={filteredCasts} />
+            </div>
           </>
         ) : (
-          <div className="col-span-12 flex flex-col  items-center gap-y-4">
-            <h6 className="mt-20 text-center text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
+          <div className="col-span-12 flex flex-col items-center gap-y-4">
+            <h6 className="mt-20 text-xl font-extrabold leading-tight tracking-tighter sm:text-3xl">
               There is an issue getting or categorizing casts 😭
             </h6>
-            <h5 className="mt-4 text-center text-2xl font-light leading-tight tracking-tighter md:text-3xl">
+            <h5 className="mt-4 text-lg font-light leading-tight tracking-tighter sm:text-2xl">
               {generateWhimsicalErrorMessages()}
             </h5>
             {searchTerm && searchTerm.length ? (

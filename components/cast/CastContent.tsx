@@ -63,48 +63,44 @@ const CastContent = ({
         <div className="flex flex-col gap-y-4">
           {renderTextWithLinks(text)}
 
-          {text.length > maxCharacters && !isExpanded ? (
-            <button onClick={() => setIsExpanded(true)}>Read more</button>
-          ) : (
-            <>
-              {hasUrl && isImageUrlToShow && potentialUrl ? (
-                <div
-                  className="relative size-full w-full"
-                  style={{ paddingTop: aspectRatio }}
-                >
-                  <Image
-                    src={potentialUrl}
-                    alt={text}
-                    layout="fill"
-                    objectFit="contain"
-                    className="object-contain"
-                  />
-                </div>
-              ) : potentialUrl && !embeddedCastHash ? (
-                <LinkPreview url={potentialUrl} />
-              ) : embeddedCastHash && embeddedCast && embeddedCast.hash ? (
-                <EmbeddedCast
-                  key={embeddedCast.hash}
-                  text={embeddedCast.text}
-                  timestamp={embeddedCast.timestamp}
-                  parent_url={embeddedCast.parent_url}
-                  reactions={embeddedCast.reactions}
-                  replies={embeddedCast.replies}
-                  embeds={embeddedCast.embeds}
-                  author={embeddedCast.author}
-                  hash={embeddedCast.hash}
-                  thread_hash={embeddedCast.thread_hash}
-                  parent_hash={embeddedCast.parent_hash}
-                  parent_author={embeddedCast.parent_author}
-                  mentioned_profiles={embeddedCast.mentioned_profiles}
-                  root_parent_url={embeddedCast.root_parent_url}
-                  category={embeddedCast.category}
-                  handleToggleCategoryClick={handleToggleCategoryClick}
-                  badgeIsToggled={badgeIsToggled}
+          <>
+            {hasUrl && isImageUrlToShow && potentialUrl ? (
+              <div
+                className="relative size-full w-full"
+                style={{ paddingTop: aspectRatio }}
+              >
+                <Image
+                  src={potentialUrl}
+                  alt={text}
+                  layout="fill"
+                  objectFit="contain"
+                  className="object-contain"
                 />
-              ) : null}
-            </>
-          )}
+              </div>
+            ) : potentialUrl && !embeddedCastHash ? (
+              <LinkPreview url={potentialUrl} />
+            ) : embeddedCastHash && embeddedCast && embeddedCast.hash ? (
+              <EmbeddedCast
+                key={embeddedCast.hash}
+                text={embeddedCast.text}
+                timestamp={embeddedCast.timestamp}
+                parent_url={embeddedCast.parent_url}
+                reactions={embeddedCast.reactions}
+                replies={embeddedCast.replies}
+                embeds={embeddedCast.embeds}
+                author={embeddedCast.author}
+                hash={embeddedCast.hash}
+                thread_hash={embeddedCast.thread_hash}
+                parent_hash={embeddedCast.parent_hash}
+                parent_author={embeddedCast.parent_author}
+                mentioned_profiles={embeddedCast.mentioned_profiles}
+                root_parent_url={embeddedCast.root_parent_url}
+                category={embeddedCast.category}
+                handleToggleCategoryClick={handleToggleCategoryClick}
+                badgeIsToggled={badgeIsToggled}
+              />
+            ) : null}
+          </>
         </div>
       </a>
     </div>

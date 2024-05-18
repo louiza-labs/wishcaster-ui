@@ -47,6 +47,15 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        animation: {
+          bounce: "bounce 1s infinite",
+        },
+        keyframes: {
+          bounce: {
+            "0%, 100%": { transform: "translateY(-25%)" },
+            "50%": { transform: "translateY(0)" },
+          },
+        },
       },
       borderRadius: {
         lg: `var(--radius)`,

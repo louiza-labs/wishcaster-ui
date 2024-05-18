@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useMemo } from "react"
 
 import { buildRankings } from "@/lib/helpers"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -25,6 +25,19 @@ const Rankings = ({ casts }: any) => {
     "recasts_count",
     3
   )
+  const hasResults = useMemo(() => {
+    return (
+      (rankedTopicsByCount && rankedTopicsByCount.length) ||
+      (rankedTopicsByLikes && rankedTopicsByLikes.length) ||
+      (rankedTopicsByReplies && rankedTopicsByReplies.length) ||
+      (rankedTopicsByRecasts && rankedTopicsByRecasts.length)
+    )
+  }, [
+    rankedTopicsByCount,
+    rankedTopicsByLikes,
+    rankedTopicsByRecasts,
+    rankedTopicsByReplies,
+  ])
 
   const RankedValues = ({ values }: { values: RankedValueType[] }) => {
     return (
@@ -53,31 +66,37 @@ const Rankings = ({ casts }: any) => {
 
   return (
     <Suspense>
-      <div className="sticky top-20 flex h-fit flex-col gap-y-6 lg:col-span-3">
+      {hasResults ? (
+        <div className="sticky top-20 flex h-fit flex-col gap-y-6 lg:col-span-3">
+          <h3 className="gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
+            Trending
+          </h3>
+          <Tabs defaultValue="count" className="w-fit gap-y-2">
+            <TabsList className="">
+              <TabsTrigger value="count">Count</TabsTrigger>
+              <TabsTrigger value="likes">Likes</TabsTrigger>
+              <TabsTrigger value="replies">Replies</TabsTrigger>
+              <TabsTrigger value="recasts">Recasts</TabsTrigger>
+            </TabsList>
+            <TabsContent value="count">
+              <RankedValues values={rankedTopicsByCount} />
+            </TabsContent>
+            <TabsContent value="likes">
+              <RankedValues values={rankedTopicsByLikes} />
+            </TabsContent>
+            <TabsContent value="replies">
+              <RankedValues values={rankedTopicsByReplies} />
+            </TabsContent>
+            <TabsContent value="recasts">
+              <RankedValues values={rankedTopicsByRecasts} />
+            </TabsContent>
+          </Tabs>
+        </div>
+      ) : (
         <h3 className="gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
-          Trending
+          Error getting Topics
         </h3>
-        <Tabs defaultValue="count" className="w-fit gap-y-2">
-          <TabsList className="">
-            <TabsTrigger value="count">Count</TabsTrigger>
-            <TabsTrigger value="likes">Likes</TabsTrigger>
-            <TabsTrigger value="replies">Replies</TabsTrigger>
-            <TabsTrigger value="recasts">Recasts</TabsTrigger>
-          </TabsList>
-          <TabsContent value="count">
-            <RankedValues values={rankedTopicsByCount} />
-          </TabsContent>
-          <TabsContent value="likes">
-            <RankedValues values={rankedTopicsByLikes} />
-          </TabsContent>
-          <TabsContent value="replies">
-            <RankedValues values={rankedTopicsByReplies} />
-          </TabsContent>
-          <TabsContent value="recasts">
-            <RankedValues values={rankedTopicsByRecasts} />
-          </TabsContent>
-        </Tabs>
-      </div>
+      )}
     </Suspense>
   )
 }

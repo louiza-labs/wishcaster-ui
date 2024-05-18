@@ -74,7 +74,7 @@ export const categorizeCastsAsRequests = async (casts: Cast[]) => {
        Please follow similar guidelines for all requests.
       `
     const result = await generateObject({
-      model: openai("gpt-4-0613"),
+      model: openai("gpt-3.5-turbo"),
       prompt,
       maxRetries: 4,
       // maxTokens: 600,

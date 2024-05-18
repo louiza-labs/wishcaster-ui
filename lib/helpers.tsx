@@ -246,12 +246,13 @@ export function loadImageAspectRatio(url: string, setAspectRatio: any) {
 
 // Render text with clickable links
 export function renderTextWithLinks(text: string) {
+  if (!text || (text && text.length === 0)) return <span>{text}</span>
   const urlRegex =
     /(?:https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(com|co|io|org|net|edu|gov|uk|frame|xyz|us|ca|de|jp|fr|au|us|ru|ch|it|nl|se|no|es|mil)(\/[\w-]*)*/gi
   const parts = text.split(urlRegex)
 
   return parts.map((part: string, index: number) => {
-    if (part.match(urlRegex)) {
+    if (part && part.match(urlRegex)) {
       return (
         <a
           key={index}
