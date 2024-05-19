@@ -93,7 +93,7 @@ function MobileNav() {
               <h4 className="font-medium">Selected topics</h4>
               <div className="sticky flex h-fit flex-wrap gap-2 lg:col-span-3">
                 {categoriesFromParams && categoriesFromParams.length > 0
-                  ? categoriesFromParams.map((category) => (
+                  ? categoriesFromParams.map((category: any) => (
                       <div className="cols-span-3" key={category}>
                         <Badge
                           onClick={() =>

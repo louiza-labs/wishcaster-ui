@@ -2,7 +2,19 @@
 
 import { Checkbox } from "@/components/ui/checkbox"
 
-export function InteractionsCheckbox({ id, text, handleChange, value }) {
+interface IntereractionsCheckboxProps {
+  id: string
+  text: string
+  handleChange: () => void
+  value: boolean
+}
+
+export function InteractionsCheckbox({
+  id,
+  text,
+  handleChange,
+  value,
+}: IntereractionsCheckboxProps) {
   return (
     <div className="flex items-center space-x-2">
       <Checkbox onCheckedChange={handleChange} checked={value} id={id} />

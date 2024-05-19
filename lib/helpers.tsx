@@ -284,7 +284,7 @@ function tokenize(text: string): Set<string> {
   return new Set(text.toLowerCase().split(/\W+/))
 }
 
-function categorizeText(text: string, categories: Categories): string {
+function categorizeText(text: string, categories: Categories): string | null {
   // Normalize text
   const normalizedText = text.toLowerCase()
 
@@ -297,6 +297,7 @@ function categorizeText(text: string, categories: Categories): string {
     keywordCounts[category] = 0
 
     // Check for the presence of each keyword in the text using regex
+    // @ts-ignore
     for (const keyword of keywords) {
       const regex = new RegExp(`\\b${keyword}\\b`, "i")
       if (regex.test(normalizedText)) {

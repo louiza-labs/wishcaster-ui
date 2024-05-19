@@ -7,7 +7,16 @@ import { Separator } from "@/components/ui/separator"
 import Categories from "@/components/feed/categories"
 import { InteractionsCheckbox } from "@/components/filters/Interactions"
 
-const Filters = ({ filteredCategories }) => {
+interface Category {
+  category: string
+  request: string
+}
+
+interface CategoriesFeedProps {
+  filteredCategories: Category[]
+}
+
+const Filters = ({ filteredCategories }: CategoriesFeedProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -61,16 +70,16 @@ const Filters = ({ filteredCategories }) => {
     [filtersFromParams, createQueryString, router]
   )
 
-  const handlePriorityBadgeFilterChange = (e) => {
+  const handlePriorityBadgeFilterChange = () => {
     handleToggleFilterClick("priority-badge")
   }
-  const handleFollowingFilterChange = (e) => {
+  const handleFollowingFilterChange = () => {
     handleToggleFilterClick("following")
   }
-  const handleLikesFilterChange = (e) => {
+  const handleLikesFilterChange = () => {
     handleToggleFilterClick("liked")
   }
-  const handleRepliedFilterChange = (e) => {
+  const handleRepliedFilterChange = () => {
     handleToggleFilterClick("replied")
   }
 

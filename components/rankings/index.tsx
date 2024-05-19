@@ -45,7 +45,7 @@ const Rankings = ({ casts }: any) => {
     rankedTopicsByReplies,
   ])
 
-  const RankedCard = ({ value, index }) => {
+  const RankedCard = ({ value, index }: any) => {
     return (
       <Card className="my-2">
         <CardHeader>
