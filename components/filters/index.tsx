@@ -3,7 +3,11 @@
 import { useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
-const Filters = ({}) => {
+import { Separator } from "@/components/ui/separator"
+import Categories from "@/components/feed/categories"
+import { InteractionsCheckbox } from "@/components/filters/Interactions"
+
+const Filters = ({ filteredCategories }) => {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -48,7 +52,7 @@ const Filters = ({}) => {
     (categoryName: string) => {
       const isToggled = filtersFromParams.includes(categoryName)
       const newSearchParams = createQueryString(
-        "categories",
+        "filters",
         categoryName,
         !isToggled
       )
@@ -57,11 +61,68 @@ const Filters = ({}) => {
     [filtersFromParams, createQueryString, router]
   )
 
+  const handlePriorityBadgeFilterChange = (e) => {
+    handleToggleFilterClick("priority-badge")
+  }
+  const handleFollowingFilterChange = (e) => {
+    handleToggleFilterClick("following")
+  }
+  const handleLikesFilterChange = (e) => {
+    handleToggleFilterClick("liked")
+  }
+  const handleRepliedFilterChange = (e) => {
+    handleToggleFilterClick("replied")
+  }
+
   return (
-    <div className="sticky top-20 flex h-fit flex-col gap-y-6 lg:col-span-3">
-      <h3 className="gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
+    <div className=" flex h-fit flex-col gap-y-6 lg:col-span-12">
+      <p className="gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
         Filters
-      </h3>
+      </p>
+      <div className="grid grid-cols-1 gap-y-6">
+        <div className="container flex flex-col">
+          <Categories categories={filteredCategories} />
+        </div>
+        <div className="container flex flex-col">
+          <p className="pb-4 text-center text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
+            User
+          </p>
+          <div className="grid grid-cols-2">
+            <InteractionsCheckbox
+              handleChange={handlePriorityBadgeFilterChange}
+              value={filterIsSelected("priority-badge")}
+              text={"Priority Badge"}
+              id={"priority"}
+            />
+            <InteractionsCheckbox
+              handleChange={handleFollowingFilterChange}
+              value={filterIsSelected("following")}
+              text={"Following"}
+              id={"following"}
+            />
+          </div>
+        </div>
+        <Separator />
+        <div className="container flex flex-col">
+          <p className="pb-4 text-center text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
+            Engagement
+          </p>
+          <div className="grid grid-cols-2 gap-y-6">
+            <InteractionsCheckbox
+              handleChange={handleLikesFilterChange}
+              value={filterIsSelected("liked")}
+              text={"Liked"}
+              id={"liked"}
+            />
+            <InteractionsCheckbox
+              handleChange={handleRepliedFilterChange}
+              value={filterIsSelected("replied")}
+              text={"Replied"}
+              id={"replied"}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

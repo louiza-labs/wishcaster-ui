@@ -1,7 +1,8 @@
-import { Cast as CastType, Category } from "@/types"
+import { Cast as CastType, Categories, Category } from "@/types"
 import { ErrorRes } from "@neynar/nodejs-sdk/build/neynar-api/v2"
 import axios, { AxiosError } from "axios"
-import { toast } from "react-toastify"
+
+import { PRODUCT_CATEGORIES_AS_SETS } from "@/lib/constants"
 
 export const welcomeMessages = [
   "Wowow Farcaster",
@@ -29,13 +30,13 @@ export const verifyUser = async (signerUuid: string, fid: string) => {
     _isVerifiedUser = isVerifiedUser
   } catch (err) {
     const { message } = (err as AxiosError).response?.data as ErrorRes
-    toast(message, {
-      type: "error",
-      theme: "dark",
-      autoClose: 3000,
-      position: "bottom-right",
-      pauseOnHover: true,
-    })
+    // toast(message, {
+    //   type: "error",
+    //   theme: "dark",
+    //   autoClose: 3000,
+    //   position: "bottom-right",
+    //   pauseOnHover: true,
+    // })
   }
   return _isVerifiedUser
 }
@@ -277,4 +278,54 @@ export const debounce = (func: Function, delay: number) => {
     //@ts-ignore
     timer = setTimeout(() => func.apply(this, args), delay)
   }
+}
+
+function tokenize(text: string): Set<string> {
+  return new Set(text.toLowerCase().split(/\W+/))
+}
+
+function categorizeText(text: string, categories: Categories): string {
+  // Normalize text
+  const normalizedText = text.toLowerCase()
+
+  // Initialize a dictionary to keep count of keyword matches for each category
+  const keywordCounts: { [category: string]: number } = {}
+
+  // Iterate through each category and its keywords
+  for (const [category, keywords] of Object.entries(categories)) {
+    // Initialize count for the category
+    keywordCounts[category] = 0
+
+    // Check for the presence of each keyword in the text using regex
+    for (const keyword of keywords) {
+      const regex = new RegExp(`\\b${keyword}\\b`, "i")
+      if (regex.test(normalizedText)) {
+        keywordCounts[category]++
+      }
+    }
+  }
+
+  // Find the category with the highest count of matching keywords
+  let bestCategory = null
+  let maxCount = 0
+  for (const [category, count] of Object.entries(keywordCounts)) {
+    if (count > maxCount) {
+      bestCategory = category
+      maxCount = count
+    }
+  }
+
+  return bestCategory
+}
+
+export function categorizeArrayOfCasts(casts: CastType[]) {
+  if (!casts || !Array.isArray(casts)) return []
+  return casts.map((cast: CastType) => {
+    const castText = cast.text
+    const category = categorizeText(castText, PRODUCT_CATEGORIES_AS_SETS)
+    return {
+      request: castText,
+      category,
+    }
+  })
 }

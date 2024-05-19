@@ -73,3 +73,7 @@ export interface Category {
   request: string
   category: string
 }
+
+export type Categories = {
+  [category: string]: Set<string>
+}

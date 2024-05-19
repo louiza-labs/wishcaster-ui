@@ -67,27 +67,36 @@ const CategoriesFeed = ({ categories }: CategoriesFeedProps) => {
     },
     [categoriesFromParams, createQueryString, router]
   )
+  console.log("the categories", categories)
 
   return (
-    <div className="sticky top-20 flex h-fit flex-col gap-y-6 lg:col-span-3">
-      <h3 className="gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
-        Generated Topics
-      </h3>
-      <div className="sticky flex h-fit flex-wrap gap-2 lg:col-span-3">
+    <div className="flex h-fit flex-col gap-y-6 lg:col-span-3">
+      <p className="gap-x-2 text-lg font-bold leading-tight tracking-tighter md:text-lg">
+        Topics
+      </p>
+      <div className=" flex h-fit flex-wrap gap-2 lg:col-span-3">
         {categories && categories.length > 0
-          ? categories.map((category) => (
-              <div className="cols-span-3" key={category.request}>
-                <Badge
-                  onClick={() => handleToggleCategoryClick(category.category)}
-                  variant={
-                    badgeIsToggled(category.category) ? "default" : "outline"
-                  }
-                  className="h-10 w-fit cursor-pointer whitespace-nowrap"
-                >
-                  {category.category}
-                </Badge>
-              </div>
-            ))
+          ? categories.map((category) => {
+              if (category.category) {
+                return (
+                  <div className="cols-span-3" key={category.request}>
+                    <Badge
+                      onClick={() =>
+                        handleToggleCategoryClick(category.category)
+                      }
+                      variant={
+                        badgeIsToggled(category.category)
+                          ? "default"
+                          : "outline"
+                      }
+                      className="h-10 w-fit cursor-pointer whitespace-nowrap"
+                    >
+                      {category.category}
+                    </Badge>
+                  </div>
+                )
+              }
+            })
           : null}
       </div>
     </div>

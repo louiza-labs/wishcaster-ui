@@ -33,10 +33,13 @@ export const fetchFarcasterCast = async (hash: string) => {
   }
 }
 
-export const fetchChannelCasts = async (channelId: string, cursor = "") => {
+export const fetchChannelCasts = async (
+  channelId: string,
+  cursor = "",
+  filters = {}
+) => {
   try {
     const buildItChannelUrl = "https://warpcast.com/~/channel/someone-build"
-
     const feed = await neynarClient.fetchFeed(FeedType.Filter, {
       filterType: FilterType.ParentUrl,
       channelId,

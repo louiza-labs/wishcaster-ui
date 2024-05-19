@@ -1,6 +1,6 @@
 import "@/styles/globals.css"
+import { Suspense } from "react/"
 import { Metadata, type Viewport } from "next"
-import { ToastContainer } from "react-toastify"
 
 import { siteConfig } from "@/config/site"
 import { fontSans } from "@/lib/fonts"
@@ -10,9 +10,6 @@ import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
-
-import "react-toastify/dist/ReactToastify.css"
-import { Suspense } from "react/"
 
 export const metadata: Metadata = {
   title: {
@@ -56,7 +53,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 <SiteHeader />
                 <div className="flex-1">{children}</div>
                 <SiteFooter />
-                <ToastContainer />
               </div>
               <TailwindIndicator />
             </Suspense>

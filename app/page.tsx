@@ -2,16 +2,17 @@ import { Cast as CastType, Category } from "@/types"
 
 import {
   addCategoryFieldsToCasts,
+  categorizeArrayOfCasts,
   filterDuplicateCategories,
   generateWhimsicalErrorMessages,
   searchCastsForCategories,
   searchCastsForTerm,
 } from "@/lib/helpers"
 import Casts from "@/components/feed/casts"
-import Categories from "@/components/feed/categories"
-import Rankings from "@/components/rankings"
+import Filters from "@/components/filters"
+import Rankings from "@/components/rankings/"
 import RedirectButton from "@/components/redirect/Button"
-import { categorizeCastsAsRequests, fetchChannelCasts } from "@/app/actions"
+import { fetchChannelCasts } from "@/app/actions"
 
 export default async function IndexPage({
   params,
@@ -30,6 +31,14 @@ export default async function IndexPage({
     : searchParams.categories
     ? searchParams.categories
     : ""
+  const filtersParams = Array.isArray(searchParams.filters)
+    ? searchParams.filters.join(",")
+    : searchParams.filters
+    ? searchParams.filters
+    : ""
+
+  const priorityBadgeFilter =
+    filtersParams && filtersParams.includes("priority-badge")
 
   const castsResponse = await fetchChannelCasts("someone-build")
   const castsCursor =
@@ -39,15 +48,18 @@ export default async function IndexPage({
       ? castsResponse.casts
       : ([] as CastType[])
   let filteredCasts = fetchedCasts as CastType[]
+  if (priorityBadgeFilter) {
+    filteredCasts = filteredCasts.filter(
+      (cast: CastType) => cast.author.power_badge
+    )
+  }
 
   // Filter by search term if it exists
   if (searchTerm && searchTerm.length) {
     filteredCasts = searchCastsForTerm(filteredCasts, searchTerm)
   }
 
-  const categories = (await categorizeCastsAsRequests(
-    filteredCasts
-  )) as Category[]
+  const categories = categorizeArrayOfCasts(filteredCasts) as Category[]
   const filteredCategories = filterDuplicateCategories(categories)
 
   filteredCasts = addCategoryFieldsToCasts(
@@ -57,7 +69,6 @@ export default async function IndexPage({
   if (categoryParam && categoryParam.length) {
     filteredCasts = searchCastsForCategories(filteredCasts, categoryParam)
   }
-  console.log("the filtered categories", filteredCategories)
   return (
     <section className="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
       <div className="flex flex-col items-center gap-2 pb-10 md:items-start">
@@ -69,16 +80,16 @@ export default async function IndexPage({
           <span className="font-bold">someone-build channel</span>
         </p>
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-12 sm:gap-x-10">
+      <div className="relative grid grid-cols-1 gap-4 sm:grid-cols-12 sm:gap-x-10">
         {filteredCasts && filteredCasts.length ? (
           <>
-            <div className="hidden sm:col-span-3 sm:block"></div>
+            <div className="hidden sm:col-span-3 sm:block">
+              <Filters filteredCategories={filteredCategories} />
+            </div>
             <div className="sm:col-span-6">
               <Casts casts={filteredCasts} nextCursor={castsCursor} />
             </div>
-            <div className="hidden sm:col-span-3 sm:block">
-              <Categories categories={filteredCategories} />
-
+            <div className="hidden gap-y-6 sm:col-span-3  sm:flex sm:flex-col md:sticky md:top-20">
               <Rankings casts={filteredCasts} />
             </div>
           </>

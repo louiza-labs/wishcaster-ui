@@ -3,6 +3,12 @@
 import { Suspense, useMemo } from "react"
 
 import { buildRankings } from "@/lib/helpers"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+} from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 type RankedValueType = {
@@ -11,19 +17,19 @@ type RankedValueType = {
 }
 
 const Rankings = ({ casts }: any) => {
-  const rankedTopicsByCount = buildRankings(casts, "category", "count", 3)
-  const rankedTopicsByLikes = buildRankings(casts, "category", "likes_count", 3)
+  const rankedTopicsByCount = buildRankings(casts, "category", "count", 5)
+  const rankedTopicsByLikes = buildRankings(casts, "category", "likes_count", 5)
   const rankedTopicsByReplies = buildRankings(
     casts,
     "category",
     "replies_count",
-    3
+    5
   )
   const rankedTopicsByRecasts = buildRankings(
     casts,
     "category",
     "recasts_count",
-    3
+    5
   )
   const hasResults = useMemo(() => {
     return (
@@ -39,37 +45,40 @@ const Rankings = ({ casts }: any) => {
     rankedTopicsByReplies,
   ])
 
+  const RankedCard = ({ value, index }) => {
+    return (
+      <Card className="my-2">
+        <CardHeader>
+          <CardDescription>{value.name}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p>{value.value}</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
   const RankedValues = ({ values }: { values: RankedValueType[] }) => {
     return (
-      <ol className="mt-4 gap-y-2">
+      <ol className="mt-4 gap-y-4">
         {values && Array.isArray(values)
           ? values.map((value: RankedValueType, index: number) => (
-              <li className="flex flex-row items-center gap-x-2 text-lg font-semibold">
-                <span>
-                  {" "}
-                  {index === 0
-                    ? "🥇"
-                    : index === 1
-                    ? "🥈"
-                    : index === 2
-                    ? "🥉"
-                    : index + 1}
-                </span>
-                <span> {value.name}</span>
-                <span> ({value.value})</span>
-              </li>
+              <RankedCard value={value} index={index + 1} key={index} />
             ))
           : null}
       </ol>
     )
   }
 
+  const valueFormatter = (number: number) =>
+    `$ ${Intl.NumberFormat("us").format(number).toString()}`
+
   return (
     <Suspense>
       {hasResults ? (
-        <div className="sticky top-20 flex h-fit flex-col gap-y-6 lg:col-span-3">
+        <div className=" flex h-fit flex-col gap-y-6 lg:col-span-3">
           <h3 className="gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
-            Trending
+            Trending Topics
           </h3>
           <Tabs defaultValue="count" className="w-fit gap-y-2">
             <TabsList className="">

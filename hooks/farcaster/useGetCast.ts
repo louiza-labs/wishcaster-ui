@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react"
 import { Cast } from "@/types"
 
-import { categorizeCastsAsRequests, fetchFarcasterCast } from "@/app/actions"
+import { categorizeArrayOfCasts } from "@/lib/helpers"
+import { fetchFarcasterCast } from "@/app/actions"
 
 interface ExtendedCast extends Cast {
   category?: string
@@ -16,9 +17,7 @@ const useGetCast = (castHash: string | undefined) => {
     if (castHash && castHash.length) {
       const response = await fetchFarcasterCast(castHash)
       if (response) {
-        const categorizedResponse = await categorizeCastsAsRequests([
-          response as Cast,
-        ])
+        const categorizedResponse = categorizeArrayOfCasts([response as Cast])
         if (
           categorizedResponse &&
           Array.isArray(categorizedResponse) &&
