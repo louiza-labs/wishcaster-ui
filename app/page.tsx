@@ -8,7 +8,7 @@ import {
   searchCastsForCategories,
   searchCastsForTerm,
 } from "@/lib/helpers"
-import Casts from "@/components/feed/casts"
+import CastsFeed from "@/components/feed/casts"
 import Filters from "@/components/filters"
 import Rankings from "@/components/rankings/"
 import RedirectButton from "@/components/redirect/Button"
@@ -87,7 +87,7 @@ export default async function IndexPage({
               <Filters filteredCategories={filteredCategories} />
             </div>
             <div className="sm:col-span-6">
-              <Casts casts={filteredCasts} nextCursor={castsCursor} />
+              <CastsFeed casts={filteredCasts} nextCursor={castsCursor} />
             </div>
             <div className="hidden gap-y-6 sm:col-span-3  sm:flex sm:flex-col md:sticky md:top-20">
               <Rankings casts={filteredCasts} />
