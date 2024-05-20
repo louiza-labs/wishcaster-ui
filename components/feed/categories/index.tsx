@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useMemo } from "react"
+import { Suspense, useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
 import { Badge } from "@/components/ui/badge"
@@ -70,39 +70,41 @@ const CategoriesFeed = ({ categories }: CategoriesFeedProps) => {
   console.log("the categories", categories)
 
   return (
-    <div className="flex h-fit flex-col gap-y-6 lg:col-span-3">
-      <p className="gap-x-2 text-lg font-bold leading-tight tracking-tighter md:text-lg">
-        Topics
-      </p>
-      <div className=" grid size-fit grid-cols-2 md:flex md:size-full md:flex-wrap md:gap-2 lg:col-span-3">
-        {categories && categories.length > 0
-          ? categories.map((category) => {
-              if (category.category) {
-                return (
-                  <div
-                    className="md:cols-span-3 col-span-1"
-                    key={category.request}
-                  >
-                    <Badge
-                      onClick={() =>
-                        handleToggleCategoryClick(category.category)
-                      }
-                      variant={
-                        badgeIsToggled(category.category)
-                          ? "default"
-                          : "outline"
-                      }
-                      className="h-10 w-fit cursor-pointer whitespace-nowrap"
+    <Suspense>
+      <div className="flex h-fit flex-col gap-y-6 lg:col-span-3">
+        <p className="gap-x-2 text-lg font-bold leading-tight tracking-tighter md:text-lg">
+          Topics
+        </p>
+        <div className=" grid size-fit grid-cols-2 md:flex md:size-full md:flex-wrap md:gap-2 lg:col-span-3">
+          {categories && categories.length > 0
+            ? categories.map((category) => {
+                if (category.category) {
+                  return (
+                    <div
+                      className="md:cols-span-3 col-span-1"
+                      key={category.request}
                     >
-                      {category.category}
-                    </Badge>
-                  </div>
-                )
-              }
-            })
-          : null}
+                      <Badge
+                        onClick={() =>
+                          handleToggleCategoryClick(category.category)
+                        }
+                        variant={
+                          badgeIsToggled(category.category)
+                            ? "default"
+                            : "outline"
+                        }
+                        className="h-10 w-fit cursor-pointer whitespace-nowrap"
+                      >
+                        {category.category}
+                      </Badge>
+                    </div>
+                  )
+                }
+              })
+            : null}
+        </div>
       </div>
-    </div>
+    </Suspense>
   )
 }
 

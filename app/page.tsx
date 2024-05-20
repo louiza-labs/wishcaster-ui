@@ -11,7 +11,7 @@ import {
 import CastsFeed from "@/components/feed/casts"
 import Filters from "@/components/filters"
 import MobileSortingAndFiltering from "@/components/mobile/SortingAndFiltering"
-import { MobileRankings } from "@/components/mobile/rankings"
+import MobileRankings from "@/components/mobile/rankings"
 import Rankings from "@/components/rankings"
 import RedirectButton from "@/components/redirect/Button"
 import SortCasts from "@/components/sort/SortCasts"

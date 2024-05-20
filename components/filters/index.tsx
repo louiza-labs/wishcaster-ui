@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useMemo } from "react"
+import { Suspense, useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
 import { useDynamicContext } from "@/lib/dynamic"
@@ -102,85 +102,87 @@ const Filters = ({ initialCasts }: CategoriesFeedProps) => {
   }
 
   return (
-    <div className=" flex h-fit flex-col gap-y-6 lg:col-span-12">
-      <p className="gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
-        Filters
-      </p>
-      <div className="grid grid-cols-1 gap-y-6">
-        <div className=" flex flex-col">
-          <Categories categories={filteredCategories} />
-        </div>
-        <Separator />
-
-        <div className=" flex flex-col items-start">
-          <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
-            User
-          </p>
-          <div className="md:gap-x-auto grid grid-cols-2 gap-x-10">
-            <InteractionsCheckbox
-              handleChange={handlePriorityBadgeFilterChange}
-              value={filterIsSelected("priority-badge")}
-              text={"Priority Badge"}
-              id={"priority"}
-            />
-            <InteractionsCheckbox
-              handleChange={handleFollowingFilterChange}
-              value={filterIsSelected("following")}
-              text={"Following"}
-              id={"following"}
-            />
+    <Suspense>
+      <div className=" flex h-fit flex-col gap-y-6 lg:col-span-12">
+        <p className="gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
+          Filters
+        </p>
+        <div className="grid grid-cols-1 gap-y-6">
+          <div className=" flex flex-col">
+            <Categories categories={filteredCategories} />
           </div>
-        </div>
-        <Separator />
-        <div className=" flex flex-col items-start">
-          {!isAuthenticated ? (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <p
-                    className={cn(
-                      !isAuthenticated ? "opacity-80" : "",
-                      "pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left  md:text-xl"
-                    )}
-                  >
-                    For You
-                  </p>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Sign into FC above to use these</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : (
-            <p
-              className={cn(
-                !isAuthenticated ? "opacity-80" : "",
-                "pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left  md:text-xl"
-              )}
-            >
-              For You
-            </p>
-          )}
+          <Separator />
 
-          <div className="grid grid-cols-2 gap-y-6">
-            <InteractionsCheckbox
-              handleChange={handleLikesFilterChange}
-              value={filterIsSelected("liked")}
-              text={"Liked"}
-              id={"liked"}
-              isDisabled={!isAuthenticated}
-            />
-            <InteractionsCheckbox
-              handleChange={handleRecastedFilterChange}
-              value={filterIsSelected("recasted")}
-              text={"Recasted"}
-              id={"recasted"}
-              isDisabled={!isAuthenticated}
-            />
+          <div className=" flex flex-col items-start">
+            <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
+              User
+            </p>
+            <div className="md:gap-x-auto grid grid-cols-2 gap-x-10">
+              <InteractionsCheckbox
+                handleChange={handlePriorityBadgeFilterChange}
+                value={filterIsSelected("priority-badge")}
+                text={"Priority Badge"}
+                id={"priority"}
+              />
+              <InteractionsCheckbox
+                handleChange={handleFollowingFilterChange}
+                value={filterIsSelected("following")}
+                text={"Following"}
+                id={"following"}
+              />
+            </div>
+          </div>
+          <Separator />
+          <div className=" flex flex-col items-start">
+            {!isAuthenticated ? (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <p
+                      className={cn(
+                        !isAuthenticated ? "opacity-80" : "",
+                        "pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left  md:text-xl"
+                      )}
+                    >
+                      For You
+                    </p>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Sign into FC above to use these</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              <p
+                className={cn(
+                  !isAuthenticated ? "opacity-80" : "",
+                  "pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left  md:text-xl"
+                )}
+              >
+                For You
+              </p>
+            )}
+
+            <div className="grid grid-cols-2 gap-y-6">
+              <InteractionsCheckbox
+                handleChange={handleLikesFilterChange}
+                value={filterIsSelected("liked")}
+                text={"Liked"}
+                id={"liked"}
+                isDisabled={!isAuthenticated}
+              />
+              <InteractionsCheckbox
+                handleChange={handleRecastedFilterChange}
+                value={filterIsSelected("recasted")}
+                text={"Recasted"}
+                id={"recasted"}
+                isDisabled={!isAuthenticated}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Suspense>
   )
 }
 

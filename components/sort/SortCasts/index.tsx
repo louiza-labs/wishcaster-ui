@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useMemo } from "react"
+import { Suspense, useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
@@ -92,27 +92,29 @@ const SortCasts = () => {
   ]
 
   return (
-    <div className=" flex h-fit flex-col gap-y-6 lg:col-span-12">
-      <p className="gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
-        Sort
-      </p>
-      <div className="flex flex-row items-center gap-x-4">
-        <SortGroup
-          arrayOfSortByValueObjects={sortingValuesAndHandlers}
-          handleChange={handleSortByChange}
-          value={sortingValueFromParams[0]}
-        />
-        {sortingValueFromParams[0] ? (
-          <Button
-            variant={"ghost"}
-            size={"sm"}
-            onClick={() => handleSortByChange(sortingValueFromParams[0])}
-          >
-            Clear
-          </Button>
-        ) : null}
+    <Suspense>
+      <div className=" flex h-fit flex-col gap-y-6 lg:col-span-12">
+        <p className="gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
+          Sort
+        </p>
+        <div className="flex flex-row items-center gap-x-4">
+          <SortGroup
+            arrayOfSortByValueObjects={sortingValuesAndHandlers}
+            handleChange={handleSortByChange}
+            value={sortingValueFromParams[0]}
+          />
+          {sortingValueFromParams[0] ? (
+            <Button
+              variant={"ghost"}
+              size={"sm"}
+              onClick={() => handleSortByChange(sortingValueFromParams[0])}
+            >
+              Clear
+            </Button>
+          ) : null}
+        </div>
       </div>
-    </div>
+    </Suspense>
   )
 }
 

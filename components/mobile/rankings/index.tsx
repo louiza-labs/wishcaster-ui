@@ -8,7 +8,7 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel"
 
-export function MobileRankings({ casts }: any) {
+function MobileRankings({ casts }: any) {
   const { filteredCasts } = useFilterFeed(casts)
 
   const rankedTopicsByLikes = buildRankings(
@@ -47,3 +47,5 @@ export function MobileRankings({ casts }: any) {
     </Carousel>
   )
 }
+
+export default MobileRankings
