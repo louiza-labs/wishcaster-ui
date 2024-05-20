@@ -74,12 +74,15 @@ const CategoriesFeed = ({ categories }: CategoriesFeedProps) => {
       <p className="gap-x-2 text-lg font-bold leading-tight tracking-tighter md:text-lg">
         Topics
       </p>
-      <div className=" flex h-fit flex-wrap gap-2 lg:col-span-3">
+      <div className=" grid size-fit grid-cols-2 md:flex md:size-full md:flex-wrap md:gap-2 lg:col-span-3">
         {categories && categories.length > 0
           ? categories.map((category) => {
               if (category.category) {
                 return (
-                  <div className="cols-span-3" key={category.request}>
+                  <div
+                    className="md:cols-span-3 col-span-1"
+                    key={category.request}
+                  >
                     <Badge
                       onClick={() =>
                         handleToggleCategoryClick(category.category)

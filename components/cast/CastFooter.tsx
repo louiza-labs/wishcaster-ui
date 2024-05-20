@@ -7,6 +7,7 @@ interface CastFooterProps {
   }
   reactions: {
     likes_count: number
+    recasts_count: number
   }
 }
 
@@ -17,6 +18,10 @@ const CastFooter = ({ timestamp, reactions, replies }: CastFooterProps) => {
         <div className="flex flex-row items-center gap-x-2">
           <p className="gap-x-2 font-medium">{reactions.likes_count}</p>
           <Icons.likes className="size-4" />
+        </div>
+        <div className="flex flex-row items-center gap-x-2">
+          <p className="gap-x-2 font-medium">{reactions.recasts_count}</p>
+          <Icons.recasts className="size-4" />
         </div>
         <div className="flex flex-row items-center gap-x-2">
           <p className="gap-x-2 font-medium">{replies.count}</p>

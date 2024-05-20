@@ -16,6 +16,7 @@ export interface User {
       mentioned_profiles: any[] // You can define a type for mentioned profiles if needed
     }
   }
+  viewer_context?: AuthorViewerContext
   follower_count: number
   following_count: number
   verifications: string[]
@@ -39,6 +40,15 @@ export interface Reaction {
   fid: number
   fname: string
 }
+export interface AuthorViewerContext {
+  following: boolean
+  followed_by: boolean
+}
+
+export interface CastViewerContext {
+  liked: boolean
+  recasted: boolean
+}
 
 export interface Cast {
   // object: string
@@ -55,6 +65,7 @@ export interface Cast {
   text: string
   timestamp: string
   embeds: Embed[]
+  viewer_context?: CastViewerContext
   reactions: {
     likes_count: number
     recasts_count: number

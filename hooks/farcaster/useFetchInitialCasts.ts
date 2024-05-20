@@ -1,18 +1,12 @@
 import { useCallback, useEffect, useState } from "react"
 import { Cast as CastType } from "@/types"
-import { useInView } from "react-intersection-observer"
 
 import { useDynamicContext } from "@/lib/dynamic"
-import { debounce } from "@/lib/helpers"
 import { fetchChannelCasts } from "@/app/actions"
 
-export const useLoadMoreCasts = (
-  initialCasts: CastType[],
-  initialCursor: string
-) => {
-  const [castsToShow, setCastsToShow] = useState<CastType[]>(initialCasts)
-  const [cursorToUse, setCursorToUse] = useState<string>(initialCursor)
-  const { ref, inView } = useInView()
+export const useFetchInitialCasts = () => {
+  const [castsToShow, setCastsToShow] = useState<CastType[]>([])
+  const [cursorToUse, setCursorToUse] = useState<string>("")
 
   const getFarcasterFID = (user: any) => {
     if (
@@ -24,37 +18,35 @@ export const useLoadMoreCasts = (
       const farcasterObj = user.verifiedCredentials.find(
         (credential: any) => credential.oauthProvider === "farcaster"
       )
-      return farcasterObj.oauthAccountId
+      return farcasterObj?.oauthAccountId || ""
     }
+    return ""
   }
+
   const { user, isAuthenticated } = useDynamicContext()
   const loggedInUserFID = getFarcasterFID(user)
 
-  const loadMoreCasts = useCallback(async () => {
+  const loadCasts = useCallback(async () => {
     try {
       const castsResponse = await fetchChannelCasts(
         "someone-build",
-        cursorToUse,
+        "",
         loggedInUserFID
       )
       const newCasts = castsResponse.casts
       const newCursor: any = castsResponse.nextCursor
-      setCastsToShow((prevCasts: any) => [...prevCasts, ...newCasts])
+      setCastsToShow(newCasts)
       setCursorToUse(newCursor)
     } catch (error) {
       console.error("Error fetching casts:", error)
     }
-  }, [cursorToUse, loggedInUserFID])
+  }, [])
 
   useEffect(() => {
-    if (inView) {
-      const debouncedLoadMore = debounce(loadMoreCasts, 500)
-      const timer = setTimeout(() => {
-        debouncedLoadMore()
-      }, 1000) // Adjust the delay as needed
-      return () => clearTimeout(timer)
-    }
-  }, [inView, loadMoreCasts])
+    loadCasts()
+  }, [loggedInUserFID])
 
-  return { castsToShow, ref }
+  return { castsToShow, cursorToUse }
 }
+
+export default useFetchInitialCasts

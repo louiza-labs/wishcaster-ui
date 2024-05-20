@@ -2,13 +2,9 @@
 
 import { Cast } from "@/types"
 import { openai } from "@ai-sdk/openai"
-import {
-  FeedType,
-  FilterType,
-  NeynarAPIClient,
-  isApiErrorResponse,
-} from "@neynar/nodejs-sdk"
+import { NeynarAPIClient, isApiErrorResponse } from "@neynar/nodejs-sdk"
 import { generateObject } from "ai"
+import axios from "axios"
 import { z } from "zod"
 
 // import { google } from "googleapis"
@@ -36,25 +32,39 @@ export const fetchFarcasterCast = async (hash: string) => {
 export const fetchChannelCasts = async (
   channelId: string,
   cursor = "",
-  filters = {}
+  userFID = 0
 ) => {
   try {
-    const buildItChannelUrl = "https://warpcast.com/~/channel/someone-build"
-    const feed = await neynarClient.fetchFeed(FeedType.Filter, {
-      filterType: FilterType.ParentUrl,
-      channelId,
-      parentUrl: buildItChannelUrl,
-      cursor: cursor && cursor.length ? cursor : undefined,
-      limit: 100,
-      withRecasts: false,
-    })
-    const returnObject = {
-      casts: feed.casts,
-      nextCursor: feed.next.cursor,
+    const buildUrl = () => {
+      let baseUrl =
+        "https://api.neynar.com/v2/farcaster/feed?feed_type=filter&filter_type=channel_id&channel_id=someone-build&limit=100"
+      if (cursor && cursor.length) {
+        baseUrl += `&cursor=${cursor}`
+      }
+      if (userFID) {
+        baseUrl += `&viewer_fid=${userFID}`
+      }
+      return baseUrl
     }
+    const url = buildUrl()
+    const config = {
+      headers: {
+        accept: "application/json",
+        api_key: process.env.NEYNAR_API_KEY, // You should secure your API key
+      },
+    }
+
+    const response = await axios.get(url, config)
+    const data = response.data // Axios wraps the response data in a `data` property
+    // Assuming the API returns an object with casts and cursor for the next batch
+    const returnObject = {
+      casts: data.casts,
+      nextCursor: data.next.cursor,
+    }
+
     return returnObject
   } catch (error) {
-    console.error(error)
+    console.error("Error fetching channel casts:", error)
     return { casts: [], nextCursor: "", error: error }
   }
 }
@@ -94,5 +104,16 @@ export const categorizeCastsAsRequests = async (casts: Cast[]) => {
   } catch (error) {
     console.log(error)
     return casts
+  }
+}
+
+export const fetchFarcasterProfile = async (username: string) => {
+  try {
+    const userResponse = await neynarClient.lookupUserByUsername(username)
+    const userObject = userResponse.result.user
+    return userObject
+  } catch (error) {
+    console.error(error)
+    return { casts: [], nextCursor: "", error: error }
   }
 }

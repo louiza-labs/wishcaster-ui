@@ -3,7 +3,20 @@
 import { useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
+import { useDynamicContext } from "@/lib/dynamic"
+import {
+  categorizeArrayOfCasts,
+  filterDuplicateCategories,
+} from "@/lib/helpers"
+import { cn } from "@/lib/utils"
+import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import { Separator } from "@/components/ui/separator"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import Categories from "@/components/feed/categories"
 import { InteractionsCheckbox } from "@/components/filters/Interactions"
 
@@ -13,12 +26,17 @@ interface Category {
 }
 
 interface CategoriesFeedProps {
-  filteredCategories: Category[]
+  initialCasts: any[]
 }
 
-const Filters = ({ filteredCategories }: CategoriesFeedProps) => {
+const Filters = ({ initialCasts }: CategoriesFeedProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { user, isAuthenticated, handleLogOut } = useDynamicContext()
+
+  let { filteredCasts } = useFilterFeed(initialCasts)
+  const categories = categorizeArrayOfCasts(filteredCasts) as Category[]
+  const filteredCategories = filterDuplicateCategories(categories)
 
   const filtersFromParams = useMemo(
     () => searchParams.getAll("filters"),
@@ -79,8 +97,8 @@ const Filters = ({ filteredCategories }: CategoriesFeedProps) => {
   const handleLikesFilterChange = () => {
     handleToggleFilterClick("liked")
   }
-  const handleRepliedFilterChange = () => {
-    handleToggleFilterClick("replied")
+  const handleRecastedFilterChange = () => {
+    handleToggleFilterClick("recasted")
   }
 
   return (
@@ -89,14 +107,16 @@ const Filters = ({ filteredCategories }: CategoriesFeedProps) => {
         Filters
       </p>
       <div className="grid grid-cols-1 gap-y-6">
-        <div className="container flex flex-col">
+        <div className=" flex flex-col">
           <Categories categories={filteredCategories} />
         </div>
-        <div className="container flex flex-col">
-          <p className="pb-4 text-center text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
+        <Separator />
+
+        <div className=" flex flex-col items-start">
+          <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
             User
           </p>
-          <div className="grid grid-cols-2">
+          <div className="md:gap-x-auto grid grid-cols-2 gap-x-10">
             <InteractionsCheckbox
               handleChange={handlePriorityBadgeFilterChange}
               value={filterIsSelected("priority-badge")}
@@ -112,22 +132,50 @@ const Filters = ({ filteredCategories }: CategoriesFeedProps) => {
           </div>
         </div>
         <Separator />
-        <div className="container flex flex-col">
-          <p className="pb-4 text-center text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
-            Engagement
-          </p>
+        <div className=" flex flex-col items-start">
+          {!isAuthenticated ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <p
+                    className={cn(
+                      !isAuthenticated ? "opacity-80" : "",
+                      "pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left  md:text-xl"
+                    )}
+                  >
+                    For You
+                  </p>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Sign into FC above to use these</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <p
+              className={cn(
+                !isAuthenticated ? "opacity-80" : "",
+                "pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left  md:text-xl"
+              )}
+            >
+              For You
+            </p>
+          )}
+
           <div className="grid grid-cols-2 gap-y-6">
             <InteractionsCheckbox
               handleChange={handleLikesFilterChange}
               value={filterIsSelected("liked")}
               text={"Liked"}
               id={"liked"}
+              isDisabled={!isAuthenticated}
             />
             <InteractionsCheckbox
-              handleChange={handleRepliedFilterChange}
-              value={filterIsSelected("replied")}
-              text={"Replied"}
-              id={"replied"}
+              handleChange={handleRecastedFilterChange}
+              value={filterIsSelected("recasted")}
+              text={"Recasted"}
+              id={"recasted"}
+              isDisabled={!isAuthenticated}
             />
           </div>
         </div>

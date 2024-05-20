@@ -1,4 +1,5 @@
 import {
+  Filter,
   LucideProps,
   Moon,
   SunMedium,
@@ -69,7 +70,7 @@ export const Icons = {
       />
     </svg>
   ),
-  retweets: (props: LucideProps) => (
+  recasts: (props: LucideProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
@@ -95,8 +96,8 @@ export const Icons = {
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       {...props}
       className="lucide lucide-menu"
     >
@@ -105,4 +106,5 @@ export const Icons = {
       <line x1="4" x2="20" y1="18" y2="18" />
     </svg>
   ),
+  Filter: Filter,
 }

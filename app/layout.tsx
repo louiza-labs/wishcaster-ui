@@ -3,6 +3,7 @@ import { Suspense } from "react/"
 import { Metadata, type Viewport } from "next"
 
 import { siteConfig } from "@/config/site"
+import { DynamicContextProvider } from "@/lib/dynamic"
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
 import InitialLoading from "@/components/loading/initial"
@@ -41,23 +42,31 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <>
       <html lang="en" suppressHydrationWarning>
         <head />
-        <body
-          className={cn(
-            "bg-background min-h-screen font-sans antialiased",
-            fontSans.variable
-          )}
+        <DynamicContextProvider
+          settings={{
+            environmentId: process.env.DYNAMIC_ENVIRONMENT_ID
+              ? process.env.DYNAMIC_ENVIRONMENT_ID
+              : "",
+          }}
         >
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <Suspense fallback={<InitialLoading />}>
-              <div className="relative flex min-h-screen flex-col">
-                <SiteHeader />
-                <div className="flex-1">{children}</div>
-                <SiteFooter />
-              </div>
-              <TailwindIndicator />
-            </Suspense>
-          </ThemeProvider>
-        </body>
+          <body
+            className={cn(
+              "bg-background min-h-screen font-sans antialiased",
+              fontSans.variable
+            )}
+          >
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              <Suspense fallback={<InitialLoading />}>
+                <div className="relative flex min-h-screen flex-col">
+                  <SiteHeader />
+                  <div className="flex-1">{children}</div>
+                  <SiteFooter />
+                </div>
+                <TailwindIndicator />
+              </Suspense>
+            </ThemeProvider>
+          </body>
+        </DynamicContextProvider>
       </html>
     </>
   )

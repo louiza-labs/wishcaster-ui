@@ -128,7 +128,7 @@ export const buildRankings = (
   metric: "likes_count" | "replies_count" | "recasts_count" | "count",
   limit: number
 ): { name: string; value: number }[] => {
-  if (!casts || casts.length === 0) {
+  if (!casts || casts.length === 0 || !Array.isArray(casts)) {
     return []
   }
 
@@ -329,4 +329,32 @@ export function categorizeArrayOfCasts(casts: CastType[]) {
       category,
     }
   })
+}
+
+export function sortCastsByProperty(
+  casts: any[],
+  sortField: string
+): CastType[] {
+  // Create a shallow copy of the array to sort, to avoid modifying the original array
+  const sortedCasts = [...casts]
+
+  // Sort the copied array
+  sortedCasts.sort((a, b) => {
+    // Extract the values to be compared
+    const valueA =
+      sortField === "replies" ? a["replies"].count : a["reactions"][sortField]
+    const valueB =
+      sortField === "replies" ? b["replies"].count : b["reactions"][sortField]
+
+    // Ensure values are directly comparable, adjust as necessary based on your data
+    if (valueA > valueB) {
+      return -1 // For descending order
+    } else if (valueA < valueB) {
+      return 1
+    } else {
+      return 0
+    }
+  })
+
+  return sortedCasts
 }

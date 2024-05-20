@@ -7,7 +7,7 @@ export function SiteHeader() {
       <div className="w-full md:hidden">
         <MobileNav />
       </div>
-      <div className="hidden w-full md:block">
+      <div className="sticky top-0 z-50 hidden   w-full md:block">
         <DesktopNav />
       </div>
     </>

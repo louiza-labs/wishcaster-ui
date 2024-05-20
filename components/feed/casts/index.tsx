@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { Cast as CastType } from "@/types"
 
 import { useLoadMoreCasts } from "@/hooks/farcaster/useLoadMoreCasts"
+import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import Cast from "@/components/cast"
 
 interface CastFeedProps {
@@ -16,7 +17,7 @@ const CastsFeed = ({ casts, nextCursor }: CastFeedProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { castsToShow, ref } = useLoadMoreCasts(casts, nextCursor)
-
+  const { filteredCasts } = useFilterFeed(castsToShow)
   const categoriesFromParams = searchParams.getAll("categories").join(",")
 
   const createQueryString = useCallback(
@@ -79,8 +80,8 @@ const CastsFeed = ({ casts, nextCursor }: CastFeedProps) => {
   return (
     <Suspense>
       <div className="grid grid-cols-1 gap-4 px-4 lg:col-span-6 lg:col-start-4 lg:grid-cols-1 lg:px-10">
-        {castsToShow && castsToShow.length
-          ? castsToShow.map((cast: CastType) => (
+        {filteredCasts && filteredCasts.length
+          ? filteredCasts.map((cast: CastType) => (
               <Cast
                 key={cast.hash}
                 text={cast.text}
