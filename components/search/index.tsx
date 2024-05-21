@@ -71,7 +71,7 @@ const Search = () => {
           <div className="relative">
             <Input
               className="w-full rounded-md border border-gray-300 px-4 py-2 pr-10 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-gray-500 dark:focus:ring-gray-500"
-              placeholder="Search casts or categories..."
+              placeholder="Search casts or topics..."
               type="search"
               onChange={handleSearchTermChange}
               value={searchTerm}

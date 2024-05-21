@@ -12,7 +12,6 @@ import {
 import CastsFeed from "@/components/feed/casts"
 import Filters from "@/components/filters"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
-import MobileRankings from "@/components/mobile/rankings"
 import Rankings from "@/components/rankings"
 import RedirectButton from "@/components/redirect/Button"
 import SortCasts from "@/components/sort/SortCasts"
@@ -69,15 +68,12 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
 
   return (
     <>
-      <section className="mx-auto py-6  md:container sm:px-6 lg:px-20">
+      <section className="mx-auto py-6 md:container sm:px-6 lg:px-20">
         <div className="flex flex-row items-start gap-x-4">
           <Header />
         </div>
-        <main className="relative grid grid-cols-1 gap-4  sm:grid-cols-12 sm:gap-x-10">
-          <aside className="hidden md:hidden">
-            <MobileRankings casts={filteredCasts} />
-          </aside>
-          <aside className="relative hidden flex-col  gap-y-6 sm:col-span-3 sm:flex">
+        <main className="relative grid grid-cols-1 gap-4 sm:grid-cols-12 sm:gap-x-10">
+          <aside className="sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 sm:col-span-3 sm:flex">
             <SortCasts />
             <Filters initialCasts={initialCasts} />
           </aside>
@@ -95,7 +91,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
               />
             )}
           </article>
-          <aside className="relative hidden gap-y-6 sm:sticky sm:col-span-3 sm:flex sm:flex-col">
+          <aside className="sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky sm:col-span-3 sm:flex sm:flex-col">
             <Rankings casts={filteredCasts} />
           </aside>
         </main>
