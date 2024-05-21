@@ -1,6 +1,7 @@
 "use client"
 
-import { Suspense, useMemo } from "react"
+import { Suspense, useCallback, useMemo } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 
 import { buildRankings } from "@/lib/helpers"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
@@ -13,6 +14,59 @@ type RankedValueType = {
 
 const Rankings = ({ casts }: any) => {
   const { filteredCasts } = useFilterFeed(casts)
+
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  const categoriesFromParams = useMemo(
+    () => searchParams.getAll("categories"),
+    [searchParams]
+  )
+
+  const createQueryString = useCallback(
+    (name: string, value: string, addValue: boolean) => {
+      const params = new URLSearchParams(searchParams.toString())
+
+      const existingCategories = params.getAll(name)
+
+      if (addValue) {
+        if (!existingCategories.includes(value)) {
+          params.append(name, value)
+        }
+      } else {
+        const updatedCategories = existingCategories.filter(
+          (category) => category !== value
+        )
+        params.delete(name)
+        updatedCategories.forEach((category) => {
+          params.append(name, category)
+        })
+      }
+
+      return params.toString()
+    },
+    [searchParams]
+  )
+
+  const badgeIsToggled = useCallback(
+    (categoryName: string) => {
+      return categoriesFromParams.includes(categoryName)
+    },
+    [categoriesFromParams]
+  )
+
+  const handleToggleCategoryClick = useCallback(
+    (categoryName: string) => {
+      const isToggled = categoriesFromParams.includes(categoryName)
+      const newSearchParams = createQueryString(
+        "categories",
+        categoryName,
+        !isToggled
+      )
+      router.push("?" + newSearchParams)
+    },
+    [categoriesFromParams, createQueryString, router]
+  )
 
   // const rankedTopicsByCount = buildRankings(
   //   filteredCasts,
@@ -54,14 +108,17 @@ const Rankings = ({ casts }: any) => {
 
   const RankedCard = ({ value, index }: any) => {
     return (
-      <div className="inline-flex h-10 items-center justify-center rounded-md bg-gray-100 px-4 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 dark:border dark:border-gray-200 dark:bg-transparent dark:text-gray-50 dark:hover:bg-gray-700">
+      <button
+        onClick={() => handleToggleCategoryClick(value.name)}
+        className="inline-flex h-10 items-center justify-center rounded-md bg-gray-100 px-4 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 dark:border dark:border-gray-200 dark:bg-transparent dark:text-gray-50 dark:hover:bg-gray-700"
+      >
         <div className="flex w-full items-center justify-between gap-x-2">
           <span className="">{value.name}</span>
           <span className="text-xs text-gray-500 dark:text-gray-400">
             {value.value}
           </span>
         </div>
-      </div>
+      </button>
     )
   }
 

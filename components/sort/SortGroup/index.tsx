@@ -5,16 +5,19 @@ interface SortGroupProps {
   arrayOfSortByValueObjects: any[]
   handleChange: any
   value: string
+  defaultValue: string
 }
 
 export function SortGroup({
   arrayOfSortByValueObjects,
   handleChange,
   value,
+  defaultValue,
 }: SortGroupProps) {
   return (
     <RadioGroup
       value={value}
+      defaultValue={defaultValue}
       onValueChange={handleChange}
       orientation="horizontal"
       className="flex w-full flex-row items-center justify-around md:justify-start"

@@ -59,6 +59,9 @@ const SortCasts = () => {
     },
     [sortingValueFromParams, createQueryString, router]
   )
+  const handleSortByRecentChange = () => {
+    handleToggleSortClick("recent")
+  }
 
   const handleSortByLikesChange = () => {
     handleToggleSortClick("likes_count")
@@ -74,6 +77,11 @@ const SortCasts = () => {
   }
 
   const sortingValuesAndHandlers = [
+    {
+      label: "Recent",
+      value: "recent",
+      handleChange: handleSortByRecentChange,
+    },
     {
       label: "Likes",
       value: "likes_count",
@@ -101,6 +109,7 @@ const SortCasts = () => {
           <SortGroup
             arrayOfSortByValueObjects={sortingValuesAndHandlers}
             handleChange={handleSortByChange}
+            defaultValue={"recent"}
             value={sortingValueFromParams[0]}
           />
           {sortingValueFromParams[0] ? (
