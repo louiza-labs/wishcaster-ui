@@ -9,6 +9,7 @@ import { z } from "zod"
 
 // import { google } from "googleapis"
 import { PRODUCT_CATEGORIES } from "@/lib/constants"
+import { calculateStartDate } from "@/lib/helpers"
 
 const neynarClient = new NeynarAPIClient(process.env.NEYNAR_API_KEY as string)
 
@@ -115,5 +116,33 @@ export const fetchFarcasterProfile = async (username: string) => {
   } catch (error) {
     console.error(error)
     return { casts: [], nextCursor: "", error: error }
+  }
+}
+
+export async function fetchCastsUntilCovered(
+  channelId: string,
+  range: "24-hours" | "7-days" | "30-days" | "ytd"
+) {
+  let allCasts = [] as any[]
+  let cursor = null
+  const startDate = calculateStartDate(range)
+
+  do {
+    const { casts, nextCursor } = await fetchChannelCasts(channelId, cursor)
+    allCasts = allCasts.concat(casts)
+    cursor = nextCursor
+    // Check if the last cast's timestamp is earlier than the start date
+    if (new Date(casts[casts.length - 1].timestamp) < startDate) {
+      break // Stop fetching more data as the range is covered
+    }
+  } while (cursor)
+
+  // Filter casts to ensure only those within the date range are included
+  const filteredCasts = allCasts.filter(
+    (cast) => new Date(cast.timestamp) >= startDate
+  )
+  return {
+    casts: filteredCasts,
+    nextCursor: cursor,
   }
 }

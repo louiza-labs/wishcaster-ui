@@ -18,6 +18,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import Categories from "@/components/feed/categories"
+import DateFilters from "@/components/filters/Date"
 import { InteractionsCheckbox } from "@/components/filters/Interactions"
 
 interface Category {
@@ -42,6 +43,7 @@ const Filters = ({ initialCasts }: CategoriesFeedProps) => {
     () => searchParams.getAll("filters"),
     [searchParams]
   )
+  const dateOptions = ["24-hours", "7-days", "30-days", "ytd"]
 
   const createQueryString = useCallback(
     (name: string, value: string, addValue: boolean) => {
@@ -51,6 +53,17 @@ const Filters = ({ initialCasts }: CategoriesFeedProps) => {
 
       if (addValue) {
         if (!existedFilters.includes(value)) {
+          // check if the new filter is a date value
+          if (dateOptions.includes(value)) {
+            // filter out any existing date filters
+            const updatedFilters = existedFilters.filter(
+              (filter) => !dateOptions.includes(filter)
+            )
+            params.delete(name)
+            updatedFilters.forEach((filter) => {
+              params.append(name, filter)
+            })
+          }
           params.append(name, value)
         }
       } else {
@@ -74,6 +87,9 @@ const Filters = ({ initialCasts }: CategoriesFeedProps) => {
     },
     [filtersFromParams]
   )
+
+  const selectedDateFilter =
+    filtersFromParams.find((filter) => dateOptions.includes(filter)) ?? ""
 
   const handleToggleFilterClick = useCallback(
     (categoryName: string) => {
@@ -100,14 +116,60 @@ const Filters = ({ initialCasts }: CategoriesFeedProps) => {
   const handleRecastedFilterChange = () => {
     handleToggleFilterClick("recasted")
   }
+  const handle24HoursFilterChange = () => {
+    handleToggleFilterClick("24-hours")
+  }
+  const handle7DayFilterChange = () => {
+    handleToggleFilterClick("7-days")
+  }
+  const handle30DaysFilterChange = () => {
+    handleToggleFilterClick("30-days")
+  }
+  const handleYTDFilterChange = () => {
+    handleToggleFilterClick("ytd")
+  }
+
+  const dateFiltersArray = [
+    {
+      value: "24-hours",
+      label: "Day",
+      handleChange: handle24HoursFilterChange,
+    },
+    {
+      value: "7-days",
+      label: "Week",
+      handleChange: handle7DayFilterChange,
+    },
+    {
+      value: "30-days",
+      label: "Month",
+      handleChange: handle30DaysFilterChange,
+    },
+    {
+      value: "ytd",
+      label: "YTD",
+      handleChange: handleYTDFilterChange,
+    },
+  ]
 
   return (
     <Suspense>
       <div className=" flex h-fit flex-col gap-y-6 lg:col-span-12">
-        <p className="gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
+        <p className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:block md:text-3xl">
           Filters
         </p>
         <div className="grid grid-cols-1 gap-y-6">
+          <div className=" flex flex-col items-start">
+            <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
+              Date
+            </p>
+            <DateFilters
+              value={selectedDateFilter}
+              datesArray={dateFiltersArray}
+            />
+          </div>
+          <Separator />
+
           <div className=" flex flex-col">
             <Categories categories={filteredCategories} />
           </div>

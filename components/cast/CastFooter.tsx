@@ -1,3 +1,4 @@
+import { formatDateForCastTimestamp } from "@/lib/helpers"
 import { Icons } from "@/components/icons"
 
 interface CastFooterProps {
@@ -13,24 +14,44 @@ interface CastFooterProps {
 
 const CastFooter = ({ timestamp, reactions, replies }: CastFooterProps) => {
   return (
-    <div className="flex flex-row items-center justify-between gap-x-4">
-      <div className="flex flex-row items-center gap-x-4">
+    <div className="mt-2 flex w-full flex-col items-center">
+      <div className="flex w-full flex-row items-center justify-around gap-x-4 rounded-md  p-2 text-sm  backdrop-blur-md dark:bg-gray-800/30">
+        {/* <!-- Likes Section --> */}
         <div className="flex flex-row items-center gap-x-2">
-          <p className="gap-x-2 font-medium">{reactions.likes_count}</p>
-          <Icons.likes className="size-4" />
+          <Icons.likes className="size-4 text-gray-700" />
+          <div className="flex flex-col items-start">
+            <p className="font-medium">
+              {reactions.likes_count.toLocaleString()}
+            </p>
+            <p>like{reactions.likes_count !== 1 ? "s" : ""}</p>
+          </div>
         </div>
+        {/* <!-- Recasts Section --> */}
         <div className="flex flex-row items-center gap-x-2">
-          <p className="gap-x-2 font-medium">{reactions.recasts_count}</p>
-          <Icons.recasts className="size-4" />
+          <Icons.recasts className="size-4 text-gray-700" />
+          <div className="flex flex-col items-start">
+            <p className="font-medium">
+              {reactions.recasts_count.toLocaleString()}
+            </p>
+            <p>recast{reactions.recasts_count !== 1 ? "s" : ""}</p>
+          </div>
         </div>
+        {/* <!-- Replies Section --> */}
         <div className="flex flex-row items-center gap-x-2">
-          <p className="gap-x-2 font-medium">{replies.count}</p>
-          <Icons.replies className="size-4" />
+          <Icons.replies className="size-4 text-gray-700" />
+          <div className="flex flex-col items-start">
+            <p className="font-medium">{replies.count.toLocaleString()}</p>
+            <p>{replies.count !== 1 ? "replies" : "reply"}</p>
+          </div>
         </div>
       </div>
-      <p className="gap-x-2 font-medium">
-        {new Date(timestamp).toLocaleDateString()}
-      </p>
+      {/* <!-- Timestamp Section --> */}
+      <div className="mt-2 flex w-fit flex-row items-center justify-center gap-x-2 rounded-full bg-slate-200 px-3 py-1 text-xs font-light dark:bg-slate-800">
+        <Icons.Calendar className="size-4 text-gray-700" />
+        <p className="font-light">
+          Updated {formatDateForCastTimestamp(timestamp)}
+        </p>
+      </div>
     </div>
   )
 }

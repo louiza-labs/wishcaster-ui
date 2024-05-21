@@ -1,26 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Image from "next/image"
 import { Cast as CastType } from "@/types"
 
-import {
-  isImageUrl,
-  loadImageAspectRatio,
-  renderTextWithLinks,
-} from "@/lib/helpers"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Icons } from "@/components/icons"
-import LinkPreview from "@/components/linkPreview"
+import { isImageUrl, loadImageAspectRatio } from "@/lib/helpers"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import AuthorAvatar from "@/components/cast/CastAvatar"
+import CastContent from "@/components/cast/CastContent"
+import CastFooter from "@/components/cast/CastFooter"
 
 const EmbeddedCast = ({
   timestamp,
@@ -52,82 +39,32 @@ const EmbeddedCast = ({
   return (
     <Card className="flex flex-col justify-between lg:h-fit">
       <CardHeader>
-        <div className="flex flex-row justify-between">
-          <a
-            href={`https://www.warpcast.com/${author.username}`}
-            target="_blank"
-            rel="noReferrer"
-          >
-            <div className="flex flex-row items-center gap-x-2">
-              <Avatar className="size-10">
-                <AvatarImage src={author.pfp_url} alt={author.username} />
-              </Avatar>
-              <div className="flex flex-col items-start gap-x-4">
-                <CardTitle className="text-sm">{author.display_name}</CardTitle>
-                <CardDescription className="whitespace-nowrap text-xs">
-                  {author.username}
-                </CardDescription>
-              </div>
-            </div>
-          </a>
-          {category && category.length ? (
-            <Badge
-              onClick={() => handleToggleCategoryClick(category)}
-              variant={badgeIsToggled ? "default" : "outline"}
-              className="w-30 h-10 cursor-pointer whitespace-nowrap"
-            >
-              {category}
-            </Badge>
-          ) : null}
-        </div>
+        <AuthorAvatar
+          author={author}
+          category={category}
+          handleToggleCategoryClick={handleToggleCategoryClick}
+          badgeIsToggled={badgeIsToggled}
+          timestamp={timestamp}
+        />
       </CardHeader>
       <CardContent>
-        <a
-          href={`https://www.warpcast.com/${author.username}/${hash}`}
-          target="_blank"
-          rel="noReferrer"
-          className="relative"
-        >
-          <div className="flex flex-col gap-y-10">
-            {renderTextWithLinks(text)}
-
-            {text.length > maxCharacters && !isExpanded ? null : (
-              <>
-                {hasUrl && isImageUrlToShow && potentialUrl ? (
-                  <div
-                    className="relative size-full w-full"
-                    style={{ paddingTop: aspectRatio }}
-                  >
-                    <Image
-                      src={potentialUrl as string}
-                      alt={text}
-                      layout="fill"
-                      objectFit="contain"
-                      className="object-contain"
-                    />
-                  </div>
-                ) : potentialUrl ? (
-                  <LinkPreview url={potentialUrl} />
-                ) : null}
-              </>
-            )}
-          </div>
-        </a>
+        <CastContent
+          text={text}
+          embeds={embeds}
+          hash={hash}
+          author={author}
+          handleToggleCategoryClick={handleToggleCategoryClick}
+          badgeIsToggled={badgeIsToggled}
+          maxCharacters={150}
+        />
       </CardContent>
-      <CardFooter className="flex flex-row items-center justify-between gap-x-4">
-        <div className="flex flex-row items-center gap-x-4">
-          <div className="flex flex-row items-center gap-x-2">
-            <p className="gap-x-2 font-medium">{reactions.likes_count}</p>
-            <Icons.likes className="size-4" />
-          </div>
-          <div className="flex flex-row items-center gap-x-2">
-            <p className="gap-x-2 font-medium">{replies.count}</p>
-            <Icons.replies className="size-4" />
-          </div>
-        </div>
-        <p className="gap-x-2 font-medium">
-          {new Date(timestamp).toLocaleDateString()}
-        </p>
+
+      <CardFooter>
+        <CastFooter
+          timestamp={timestamp}
+          reactions={reactions}
+          replies={replies}
+        />
       </CardFooter>
     </Card>
   )

@@ -21,13 +21,14 @@ const Cast = ({
   badgeIsToggled,
 }: CastType) => {
   return (
-    <Card className="flex flex-col justify-between lg:h-fit">
+    <Card className="md:border-auto md:shadow-auto flex w-full flex-col justify-between border-none  lg:h-fit">
       <CardHeader>
         <AuthorAvatar
           author={author}
           category={category}
           handleToggleCategoryClick={handleToggleCategoryClick}
           badgeIsToggled={badgeIsToggled}
+          timestamp={timestamp}
         />
       </CardHeader>
       <CardContent>

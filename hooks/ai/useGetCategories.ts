@@ -20,7 +20,6 @@ const useGetCategories = (casts: any) => {
             // cancelToken: source.token, // Pass the cancel token to the request
           }
         )
-        console.log("the response", response.data)
         setCategories(response.data)
       } catch (e) {
         if (axios.isCancel(e)) {

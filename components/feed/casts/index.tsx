@@ -11,13 +11,23 @@ import Cast from "@/components/cast"
 interface CastFeedProps {
   casts: CastType[]
   nextCursor: string
+  timeFilterParam: any
 }
 
-const CastsFeed = ({ casts, nextCursor }: CastFeedProps) => {
+const CastsFeed: React.FC<CastFeedProps> = ({
+  casts,
+  nextCursor,
+  timeFilterParam,
+}) => {
   const searchParams = useSearchParams()
-  const router = useRouter()
-  const { castsToShow, ref } = useLoadMoreCasts(casts, nextCursor)
+
+  const { castsToShow, ref } = useLoadMoreCasts(
+    casts,
+    nextCursor,
+    timeFilterParam
+  )
   const { filteredCasts } = useFilterFeed(castsToShow)
+  const router = useRouter()
   const categoriesFromParams = searchParams.getAll("categories").join(",")
 
   const createQueryString = useCallback(
@@ -76,10 +86,11 @@ const CastsFeed = ({ casts, nextCursor }: CastFeedProps) => {
       router.push("?" + createQueryString("categories", categoryName, true))
     }
   }
+  console.log("the filtered casts", filteredCasts)
 
   return (
     <Suspense>
-      <div className="grid grid-cols-1 gap-4 px-4 lg:col-span-6 lg:col-start-4 lg:grid-cols-1 lg:px-10">
+      <div className="grid grid-cols-1 gap-4 overflow-x-hidden  md:px-4 lg:col-span-6 lg:col-start-4 lg:grid-cols-1 lg:px-10">
         {filteredCasts && filteredCasts.length
           ? filteredCasts.map((cast: CastType) => (
               <Cast

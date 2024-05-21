@@ -1,0 +1,47 @@
+"use client"
+
+import * as React from "react"
+import { useSearchParams } from "next/navigation"
+
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Icons } from "@/components/icons"
+import SortCasts from "@/components/sort/SortCasts"
+
+function parseQueryParam(param?: string | string[]): string {
+  return Array.isArray(param) ? param.join(",") : param || ""
+}
+
+function MobileSorting({ initialCasts }: any) {
+  const [open, setOpen] = React.useState(false)
+  const searchParams = useSearchParams()
+
+  return (
+    <React.Suspense>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <Button
+            variant="ghost"
+            className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
+          >
+            <Icons.ArrowDown />
+            <span className="sr-only">Toggle Menu</span>
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="bottom" className="h-[28vh] rounded-t-xl">
+          <span className="ml-2 text-3xl font-bold"> Sort </span>
+          <ScrollArea className="mt-6  h-[calc(100vh-8rem)] pb-2 ">
+            <div className="flex flex-col space-y-3">
+              <aside className="relative  flex  flex-col gap-y-6 sm:col-span-3 sm:flex">
+                <SortCasts />
+              </aside>
+            </div>
+          </ScrollArea>
+        </SheetContent>
+      </Sheet>
+    </React.Suspense>
+  )
+}
+
+export default MobileSorting

@@ -1,3 +1,4 @@
+import { Fragment } from "react"
 import { Cast as CastType, Categories, Category } from "@/types"
 import { ErrorRes } from "@neynar/nodejs-sdk/build/neynar-api/v2"
 import axios, { AxiosError } from "axios"
@@ -248,27 +249,62 @@ export function loadImageAspectRatio(url: string, setAspectRatio: any) {
 // Render text with clickable links
 export function renderTextWithLinks(text: string) {
   if (!text || (text && text.length === 0)) return <span>{text}</span>
-  const urlRegex =
-    /(?:https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(com|co|io|org|net|edu|gov|uk|frame|xyz|us|ca|de|jp|fr|au|us|ru|ch|it|nl|se|no|es|mil)(\/[\w-]*)*/gi
-  const parts = text.split(urlRegex)
 
-  return parts.map((part: string, index: number) => {
-    if (part && part.match(urlRegex)) {
-      return (
-        <a
-          key={index}
-          href={part}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="link"
-        >
-          {part}
-        </a>
-      )
-    } else {
-      return <span key={index}>{part}</span>
-    }
-  })
+  // Correctly capturing HTTP and HTTPS URLs
+  const urlRegex = /https?:\/\/[\w-]+(\.[\w-]+)+\.\w{2,}(\/\S*)?/gi
+  // Capturing @mentions that stop at spaces or punctuation
+  const atMentionRegex = /@\w+/g
+  // Adjusting the slash command to handle edge cases and ensure correct capture
+  const slashCommandRegex = /(?<=\s|^)\/[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*/g
+
+  // Using split to handle text segments outside regex captures
+  const parts = text.split(
+    /(https?:\/\/[\w-]+(\.[\w-]+)+\.\w{2,}(\/\S*)?|@\w+|(?<=\s|^)\/[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*)/g
+  )
+
+  return (
+    <span>
+      {parts.map((part: string, index: number) => {
+        if (part && part.match(urlRegex)) {
+          return (
+            <a
+              key={index}
+              href={part.startsWith("http") ? part : `http://${part}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-semibold text-indigo-500"
+            >
+              {part}
+            </a>
+          )
+        } else if (part && part.match(atMentionRegex)) {
+          return (
+            <a
+              key={index}
+              href={`https://www.warpcast.com/${part.slice(1)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-indigo-600"
+            >
+              {part}
+            </a>
+          )
+        } else if (part && part.match(slashCommandRegex)) {
+          return (
+            <a
+              key={index}
+              href={`https://www.warpcast.com/~/${part.slice(1)}`}
+              className="font-semibold text-indigo-600"
+            >
+              {part.trim()}
+            </a>
+          )
+        } else {
+          return <Fragment key={index}>{part}</Fragment>
+        }
+      })}
+    </span>
+  )
 }
 
 export const debounce = (func: Function, delay: number) => {
@@ -357,4 +393,45 @@ export function sortCastsByProperty(
   })
 
   return sortedCasts
+}
+
+export const calculateStartDate = (
+  range: "24-hours" | "7-days" | "30-days" | "ytd"
+): Date => {
+  const now = new Date()
+  switch (range) {
+    case "24-hours":
+      now.setDate(now.getDate() - 1)
+      break
+    case "7-days":
+      now.setDate(now.getDate() - 7)
+      break
+    case "30-days":
+      now.setDate(now.getDate() - 30)
+      break
+    case "ytd":
+      now.setMonth(0, 1) // Start from January 1st of the current year
+      break
+  }
+  return now
+}
+
+export const formatDateForCastTimestamp = (timestamp: string) => {
+  const now = new Date() as any
+  const postDate = new Date(timestamp) as any
+  const diffInSeconds = Math.floor((now - postDate) / 1000)
+  const diffInMinutes = Math.floor(diffInSeconds / 60)
+  const diffInHours = Math.floor(diffInMinutes / 60)
+  const diffInDays = Math.floor(diffInHours / 24)
+  const diffInWeeks = Math.floor(diffInDays / 7)
+  const diffInMonths = Math.floor(diffInDays / 30)
+  const diffInYears = Math.floor(diffInMonths / 12)
+
+  if (diffInYears > 0) return `${diffInYears} years ago`
+  if (diffInMonths > 0) return `${diffInMonths} months ago`
+  if (diffInWeeks > 0) return `${diffInWeeks} weeks ago`
+  if (diffInDays > 0) return `${diffInDays} days ago`
+  if (diffInHours > 0) return `${diffInHours} hours ago`
+  if (diffInMinutes > 0) return `${diffInMinutes} minutes ago`
+  return "Just now"
 }

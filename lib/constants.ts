@@ -26,11 +26,18 @@ export const PRODUCT_CATEGORIES_AS_SETS: Categories = {
   "👛 Wallets": new Set(["wallet", "purse", "funds"]),
   "💸 Lending": new Set(["lend", "lending", "loan"]),
   "🔌 API's": new Set(["api", "application programming interface", "endpoint"]),
+  "🤖 Bot's": new Set(["bot", "bot's"]),
+
   "👥 Clients": new Set(["client", "customer", "user"]),
   "📜 Attestations": new Set(["attest", "attestation", "proof"]),
-  "🎰 Gambling": new Set(["gamble", "gambling", "bet"]),
+  "🎰 Gambling": new Set(["gamble", "gambling", "bet", "betting", "wager"]),
   "🚆 Transportation": new Set(["transport", "transportation", "travel"]),
-  "🌐 DeFi": new Set(["defi", "decentralized finance", "crypto"]),
+  "🌐 DeFi": new Set([
+    "defi",
+    "decentralized finance",
+    "crypto",
+    "yield-farming",
+  ]),
   "🖼️ NFTs Marketplaces": new Set(["nft", "non-fungible token", "marketplace"]),
   "🎮 Blockchain Gaming": new Set(["blockchain", "gaming", "crypto games"]),
   "🏛️ DAOs": new Set([
@@ -39,7 +46,13 @@ export const PRODUCT_CATEGORIES_AS_SETS: Categories = {
     "governance",
   ]),
   "🆔 Identity": new Set(["identity", "id", "identification"]),
-  "🕸️ Social Graphs": new Set(["social", "graph", "network"]),
+  "🕸️ Social Graphs": new Set([
+    "social",
+    "graph",
+    "network",
+    "heat map",
+    "heatmap",
+  ]),
   "🎯 Intent Graphs": new Set(["intent", "graph", "purpose"]),
   "🗄️ Decentralized Storage": new Set(["storage", "decentralized", "data"]),
   "🛒 Marketplaces": new Set(["marketplace", "market", "bazaar"]),
@@ -91,3 +104,5 @@ export const PRODUCT_CATEGORIES_AS_SETS: Categories = {
   "📡 Channels": new Set(["channel", "channels", "communication"]),
   "➕ Extensions": new Set(["extension", "extensions", "add-on"]),
 }
+
+export const dateOptions = ["24-hours", "7-days", "30-days", "ytd"]

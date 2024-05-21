@@ -94,23 +94,35 @@ const SortCasts = () => {
   return (
     <Suspense>
       <div className=" flex h-fit flex-col gap-y-6 lg:col-span-12">
-        <p className="gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
+        <p className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:block md:text-3xl">
           Sort
         </p>
-        <div className="flex flex-row items-center gap-x-4">
+        <div className="flex flex-col items-center gap-y-8 md:flex-row md:gap-x-4 md:gap-y-0">
           <SortGroup
             arrayOfSortByValueObjects={sortingValuesAndHandlers}
             handleChange={handleSortByChange}
             value={sortingValueFromParams[0]}
           />
           {sortingValueFromParams[0] ? (
-            <Button
-              variant={"ghost"}
-              size={"sm"}
-              onClick={() => handleSortByChange(sortingValueFromParams[0])}
-            >
-              Clear
-            </Button>
+            <>
+              {" "}
+              <Button
+                variant={"ghost"}
+                size={"sm"}
+                className="hidden md:block"
+                onClick={() => handleSortByChange(sortingValueFromParams[0])}
+              >
+                Clear
+              </Button>
+              <Button
+                variant={"destructive"}
+                size={"sm"}
+                className="w-full md:hidden"
+                onClick={() => handleSortByChange(sortingValueFromParams[0])}
+              >
+                Clear
+              </Button>
+            </>
           ) : null}
         </div>
       </div>

@@ -84,10 +84,13 @@ const Rankings = ({ casts }: any) => {
     <Suspense>
       {hasResults ? (
         <div className=" flex h-fit flex-col gap-y-6 lg:col-span-3">
-          <h3 className="gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
+          <h3 className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:block md:text-3xl">
             Trending Topics
           </h3>
-          <Tabs defaultValue="likes" className="w-fit gap-y-2">
+          <Tabs
+            defaultValue="likes"
+            className="flex w-full flex-col items-center gap-y-2 md:w-fit md:items-start"
+          >
             <TabsList className="">
               {/* <TabsTrigger value="count">Count</TabsTrigger> */}
               <TabsTrigger value="likes">Likes</TabsTrigger>

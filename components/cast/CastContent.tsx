@@ -60,7 +60,7 @@ const CastContent = ({
         target="_blank"
         rel="noReferrer"
       >
-        <div className="flex flex-col gap-y-4">
+        <div className="9 flex flex-col gap-y-4">
           {renderTextWithLinks(text)}
 
           <>
