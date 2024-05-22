@@ -226,6 +226,13 @@ export function isImageUrl(url: string | null | undefined) {
   return imageExtensions.some((ext) => lowerCaseUrl.endsWith(ext))
 }
 
+export function isVideoUrl(url: string | null | undefined): boolean {
+  if (!url || typeof url !== "string") return false
+  const videoExtensions = [".mp4", ".webm", ".ogg", ".avi", ".mov"]
+  const lowerCaseUrl = url.toLowerCase()
+  return videoExtensions.some((ext) => lowerCaseUrl.endsWith(ext))
+}
+
 // Load image and calculate aspect ratio
 export function loadImageAspectRatio(url: string, setAspectRatio: any) {
   if (typeof window === "undefined") return // Ensure it's executed on the client side

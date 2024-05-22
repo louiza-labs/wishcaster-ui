@@ -3,12 +3,14 @@ import Image from "next/image"
 
 import {
   isImageUrl,
+  isVideoUrl,
   loadImageAspectRatio,
   renderTextWithLinks,
 } from "@/lib/helpers"
 import useGetCast from "@/hooks/farcaster/useGetCast"
 import EmbeddedCast from "@/components/embeddedCast"
 import LinkPreview from "@/components/linkPreview"
+import HLSVideoPlayer from "@/components/video/HLSVideo"
 
 interface CastContentProps {
   text: string
@@ -45,6 +47,10 @@ const CastContent = ({
     ? `https://www.warpcast.com/${embeddedCastHash}`
     : null
   const isImageUrlToShow = isImageUrl(potentialUrl)
+  const isVideoUrlToShow = isVideoUrl(potentialUrl)
+  const isWarpcastStreamUrl = potentialUrl
+    ? potentialUrl.includes("stream.warpcast.com")
+    : null
 
   useEffect(() => {
     if (isImageUrlToShow) {
@@ -77,6 +83,13 @@ const CastContent = ({
                   className="object-contain"
                 />
               </div>
+            ) : isVideoUrlToShow && potentialUrl ? (
+              <video controls style={{ width: "100%" }}>
+                <source src={potentialUrl} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            ) : potentialUrl && isWarpcastStreamUrl ? (
+              <HLSVideoPlayer src={potentialUrl} />
             ) : potentialUrl && !embeddedCastHash ? (
               <LinkPreview url={potentialUrl} />
             ) : embeddedCastHash && embeddedCast && embeddedCast.hash ? (
