@@ -1,3 +1,5 @@
+import LoadingBarProvider from "@/providers"
+
 import "@/styles/globals.css"
 import { Suspense } from "react/"
 import { Metadata, type Viewport } from "next"
@@ -59,7 +61,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
               <Suspense fallback={<InitialLoading />}>
                 <div className="relative flex min-h-screen flex-col">
                   <SiteHeader />
-                  <div className="flex-1">{children}</div>
+                  <LoadingBarProvider>
+                    <div className="flex-1">{children}</div>
+                  </LoadingBarProvider>
                   <SiteFooter />
                 </div>
                 <TailwindIndicator />

@@ -73,11 +73,11 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
           <Header />
         </div>
         <main className="relative grid grid-cols-1 gap-4 sm:grid-cols-12 sm:gap-x-10">
-          <aside className="sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 sm:col-span-3 sm:flex">
+          <aside className="no-scrollbar sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 sm:col-span-3 sm:flex">
             <SortCasts />
             <Filters initialCasts={initialCasts} />
           </aside>
-          <article className="sm:col-span-6">
+          <article className="no-scrollbar sm:col-span-6">
             {isError ? (
               <ErrorDisplay
                 searchTerm={searchTerm}
@@ -91,7 +91,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
               />
             )}
           </article>
-          <aside className="sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky sm:col-span-3 sm:flex sm:flex-col">
+          <aside className="no-scrollbar sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky sm:col-span-3 sm:flex sm:flex-col">
             <Rankings casts={filteredCasts} />
           </aside>
         </main>
@@ -115,7 +115,7 @@ const Header: FC<HeaderProps> = () => {
         What people want! <br className="hidden sm:inline" />
       </h1>
       <p className="text-center text-sm sm:text-lg md:text-left lg:max-w-[700px]">
-        Sourced directly from Farcaster&apos;s{" "}
+        Sourced from Farcaster&apos;s{" "}
         <span className="font-bold">someone-build channel</span>
       </p>
     </div>

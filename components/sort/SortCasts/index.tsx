@@ -105,7 +105,7 @@ const SortCasts = () => {
         <p className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:block md:text-3xl">
           Sort
         </p>
-        <div className="flex flex-col items-center gap-y-8 md:flex-row md:gap-x-4 md:gap-y-0">
+        <div className="flex flex-col items-center gap-y-8  md:gap-2">
           <SortGroup
             arrayOfSortByValueObjects={sortingValuesAndHandlers}
             handleChange={handleSortByChange}
@@ -118,7 +118,7 @@ const SortCasts = () => {
               <Button
                 variant={"ghost"}
                 size={"sm"}
-                className="hidden md:block"
+                className="hidden md:hidden"
                 onClick={() => handleSortByChange(sortingValueFromParams[0])}
               >
                 Clear
@@ -126,7 +126,7 @@ const SortCasts = () => {
               <Button
                 variant={"destructive"}
                 size={"sm"}
-                className="w-full md:hidden"
+                className="w-full md:hidden "
                 onClick={() => handleSortByChange(sortingValueFromParams[0])}
               >
                 Clear
