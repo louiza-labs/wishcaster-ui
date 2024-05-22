@@ -1,6 +1,6 @@
 import { Icons } from "@/components/icons"
 
-const references = ["If you can dodge a wrench...", "Hold on to your butts!"]
+const references = ["Hold on to your butts!"]
 
 const getRandomIndex = (length: number) => {
   return Math.floor(Math.random() * length)
@@ -8,7 +8,7 @@ const getRandomIndex = (length: number) => {
 
 const InitialLoading = () => {
   const randomIndex = getRandomIndex(references.length)
-  const reference = references[randomIndex]
+  const reference = references[0]
 
   return (
     <div className="bg-background flex h-screen w-full flex-col items-center justify-center">
