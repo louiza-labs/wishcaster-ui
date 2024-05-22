@@ -169,9 +169,15 @@ const Rankings = ({ casts }: any) => {
           </Tabs>
         </div>
       ) : (
-        <h3 className="gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
-          Error getting Topics
-        </h3>
+        <div className="flex flex-col  gap-y-2">
+          <p className="gap-x-2 text-center text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
+            Unable to generate topics
+          </p>
+          <p className="gap-x-2 text-center text-xl font-light leading-tight tracking-tighter md:text-xl">
+            This error is showing because no casts are available, try clearing
+            some filters{" "}
+          </p>
+        </div>
       )}
     </Suspense>
   )

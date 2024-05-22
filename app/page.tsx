@@ -82,6 +82,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
               <ErrorDisplay
                 searchTerm={searchTerm}
                 filtersParam={filtersParam}
+                categoryParam={categoryParam}
               />
             ) : (
               <CastsFeed
@@ -125,20 +126,26 @@ const Header: FC<HeaderProps> = () => {
 interface ErrorDisplayProps {
   searchTerm: string
   filtersParam: string
+  categoryParam: string
 }
 
-const ErrorDisplay: FC<ErrorDisplayProps> = ({ searchTerm, filtersParam }) => {
+const ErrorDisplay: FC<ErrorDisplayProps> = ({
+  searchTerm,
+  filtersParam,
+  categoryParam,
+}) => {
   return (
     <>
-      <div className="col-span-12 flex flex-col items-center gap-y-4">
-        <h6 className="mt-20 text-xl font-extrabold leading-tight tracking-tighter sm:text-3xl">
-          There is an issue getting casts 😭
-        </h6>
-        <h5 className="mt-4 text-lg font-light leading-tight tracking-tighter sm:text-2xl">
+      <div className="col-span-12 flex flex-col items-center gap-y-4 px-4">
+        <h6 className="mt-20 text-center text-xl font-extrabold leading-tight tracking-tighter sm:text-3xl">
           {generateWhimsicalErrorMessages()}
-        </h5>
-        {(searchTerm.length || filtersParam.length) && (
-          <RedirectButton path={"/"} buttonText="Clear Search" />
+        </h6>
+        <p className="gap-x-2 text-center text-xl font-light leading-tight tracking-tighter md:text-xl">
+          This error is showing because no casts are available, try clearing
+          some filters
+        </p>
+        {(searchTerm.length || filtersParam.length || categoryParam.length) && (
+          <RedirectButton path={"/"} buttonText="Clear Filters" />
         )}
       </div>
     </>

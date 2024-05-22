@@ -26,6 +26,20 @@ export const metadata: Metadata = {
     shortcut: "/favicon-16x16.png",
     apple: "/apple-touch-icon.png",
   },
+  openGraph: {
+    images: [
+      "https://res.cloudinary.com/dermgckap/image/upload/v1716361984/twitterCard-Wishcaster_qygqg5.svg",
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "WishCaster",
+    description: "Find what to build next",
+    creator: "@joesephAtToledano",
+    images: [
+      "https://res.cloudinary.com/dermgckap/image/upload/v1716361984/twitterCard-Wishcaster_qygqg5.svg",
+    ], // Must be an absolute URL
+  },
 }
 
 export const viewport: Viewport = {

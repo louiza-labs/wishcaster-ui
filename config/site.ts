@@ -2,7 +2,7 @@ export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
   name: "WishCaster",
-  description: "A client to see what products users are looking for.",
+  description: "Find what to build next.",
   mainNav: [
     {
       title: "Home",

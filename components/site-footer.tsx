@@ -3,8 +3,8 @@ import { MainFooter } from "@/components/main-footer"
 
 export function SiteFooter() {
   return (
-    <footer className="bg-background absolute bottom-0 z-40 w-full border-t shadow-md">
-      <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
+    <footer className="bg-background absolute bottom-0 z-40 flex w-full flex-row justify-center border-t shadow-md">
+      <div className="container flex h-16 items-center space-x-4 sm:justify-center sm:space-x-0">
         <MainFooter items={siteConfig.mainFooter} />
 
         <div className="flex flex-1 items-center justify-end space-x-4">
