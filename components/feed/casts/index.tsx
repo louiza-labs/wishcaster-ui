@@ -7,6 +7,7 @@ import { Cast as CastType } from "@/types"
 import { useLoadMoreCasts } from "@/hooks/farcaster/useLoadMoreCasts"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import Cast from "@/components/cast"
+import CastFeedSkeleton from "@/components/loading/feed/casts"
 
 interface CastFeedProps {
   casts: CastType[]
@@ -86,10 +87,9 @@ const CastsFeed: React.FC<CastFeedProps> = ({
       router.push("?" + createQueryString("categories", categoryName, true))
     }
   }
-  console.log("the filtered casts", filteredCasts)
 
   return (
-    <Suspense>
+    <Suspense fallback={<CastFeedSkeleton count={5} />}>
       <div className="grid grid-cols-1 gap-4 overflow-x-hidden  md:px-4 lg:col-span-6 lg:col-start-4 lg:grid-cols-1 lg:px-10">
         {filteredCasts && filteredCasts.length
           ? filteredCasts.map((cast: CastType) => (
