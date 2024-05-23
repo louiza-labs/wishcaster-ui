@@ -319,8 +319,12 @@ function tokenize(text: string): Set<string> {
 }
 
 function categorizeText(text: string, categories: Categories): string | null {
-  // Normalize text
-  const normalizedText = text.toLowerCase()
+  if (!text) {
+    return null
+  }
+
+  // Normalize text and prepare for keyword matching
+  const normalizedText = text.toLowerCase().trim()
 
   // Initialize a dictionary to keep count of keyword matches for each category
   const keywordCounts: { [category: string]: number } = {}
@@ -331,23 +335,29 @@ function categorizeText(text: string, categories: Categories): string | null {
     keywordCounts[category] = 0
 
     // Check for the presence of each keyword in the text using regex
-    // @ts-ignore
     for (const keyword of keywords) {
-      const regex = new RegExp(`\\b${keyword}\\b`, "i")
-      if (regex.test(normalizedText)) {
-        keywordCounts[category]++
+      // Use word boundary and global search for accurate counting
+      const regex = new RegExp(`\\b${keyword}\\b`, "gi")
+      const matches = normalizedText.match(regex)
+      if (matches) {
+        keywordCounts[category] += matches.length
       }
     }
   }
 
   // Find the category with the highest count of matching keywords
-  let bestCategory = null
+  let bestCategory: string | null = null
   let maxCount = 0
   for (const [category, count] of Object.entries(keywordCounts)) {
     if (count > maxCount) {
       bestCategory = category
       maxCount = count
     }
+  }
+
+  // If no matches were found, return null
+  if (maxCount === 0) {
+    return null
   }
 
   return bestCategory
