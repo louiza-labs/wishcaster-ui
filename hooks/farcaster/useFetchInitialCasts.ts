@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { Cast as CastType } from "@/types"
+import { useNeynarContext } from "@neynar/react"
 
-import { useDynamicContext } from "@/lib/dynamic"
 import { fetchChannelCasts } from "@/app/actions"
 
 export const useFetchInitialCasts = () => {
@@ -23,8 +23,8 @@ export const useFetchInitialCasts = () => {
     return ""
   }
 
-  const { user, isAuthenticated } = useDynamicContext()
-  const loggedInUserFID = getFarcasterFID(user)
+  const { user, isAuthenticated } = useNeynarContext()
+  const loggedInUserFID = Number(user?.fid) ?? 0
 
   const loadCasts = useCallback(async () => {
     try {

@@ -4,10 +4,9 @@ import { CardDescription, CardTitle } from "@/components/ui/card"
 
 interface CastAvatarProps {
   author: any
-  category: string | null | undefined
-  handleToggleCategoryClick: any
-  badgeIsToggled: boolean
-  timestamp: string
+  category?: string | null | undefined
+  handleToggleCategoryClick?: any
+  badgeIsToggled?: boolean
 }
 
 const CastAvatar = ({
@@ -15,7 +14,6 @@ const CastAvatar = ({
   category,
   handleToggleCategoryClick,
   badgeIsToggled,
-  timestamp,
 }: CastAvatarProps) => {
   return (
     <div className="flex flex-row justify-between">

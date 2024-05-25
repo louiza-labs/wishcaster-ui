@@ -146,3 +146,62 @@ export async function fetchCastsUntilCovered(
     nextCursor: cursor,
   }
 }
+
+export async function fetchFarcasterUsers(listOfUsers: string, userFID = 0) {
+  try {
+    console.log("the user fid", userFID)
+    const buildUrl = () => {
+      let baseUrl = `https://api.neynar.com/v2/farcaster/user/bulk?fids=${listOfUsers}`
+
+      if (userFID) {
+        baseUrl += `&viewer_fid=${userFID}`
+      }
+      return baseUrl
+    }
+    const url = buildUrl()
+    const config = {
+      headers: {
+        accept: "application/json",
+        api_key: process.env.NEYNAR_API_KEY, // You should secure your API key
+      },
+    }
+
+    const response = await axios.get(url, config)
+    const data = response.data // Axios wraps the response data in a `data` property
+    // Assuming the API returns an object with casts and cursor for the next batch
+    const returnObject = {
+      users: data.users,
+    }
+
+    return returnObject
+  } catch (error) {
+    console.error("Error fetching users:", error)
+    return { users: [], error: error }
+  }
+}
+
+export const sendCast = async (
+  signer: string,
+  text: string,
+  parentCastHash = "",
+  embeds = [],
+  channel = "",
+  usersFID = 0
+) => {
+  try {
+    if (!(signer && signer.length && text && text.length)) return
+    const response = await neynarClient.publishCast(signer, text, {
+      channelId: channel && channel.length ? channel : undefined,
+      embeds: embeds && embeds.length ? embeds : undefined,
+      parent_author_fid: usersFID ? usersFID : undefined,
+      replyTo:
+        parentCastHash && parentCastHash.length ? parentCastHash : undefined,
+    })
+    return response.hash
+  } catch (e) {
+    console.log("error sending cast", e)
+    return {
+      error: e,
+    }
+  }
+}

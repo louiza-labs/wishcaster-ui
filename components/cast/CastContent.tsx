@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 
 import {
   isImageUrl,
@@ -61,11 +62,7 @@ const CastContent = ({
 
   return (
     <div>
-      <a
-        href={`https://www.warpcast.com/${author.username}/${hash}`}
-        target="_blank"
-        rel="noReferrer"
-      >
+      <Link href={`/cast/${hash}`}>
         <div className="9 flex flex-col gap-y-4">
           {renderTextWithLinks(text)}
 
@@ -115,7 +112,7 @@ const CastContent = ({
             ) : null}
           </>
         </div>
-      </a>
+      </Link>
     </div>
   )
 }

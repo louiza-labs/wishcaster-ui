@@ -1,6 +1,4 @@
-"use client"
-
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import Hls from "hls.js"
 
 interface HLSVideoPlayerProps {
@@ -9,26 +7,25 @@ interface HLSVideoPlayerProps {
 
 const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({ src }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const [isVisible, setIsVisible] = useState(false)
+  const [isMuted, setIsMuted] = useState(true)
 
   useEffect(() => {
     const video = videoRef.current
     let hls: Hls | undefined
 
+    const options = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.5,
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsVisible(entry.isIntersecting)
+    }, options)
+
     if (video) {
-      if (Hls.isSupported()) {
-        hls = new Hls()
-        hls.loadSource(src)
-        hls.attachMedia(video)
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          video.play()
-        })
-      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        // Native support for HLS (like Safari)
-        video.src = src
-        video.addEventListener("loadedmetadata", () => {
-          video.play()
-        })
-      }
+      observer.observe(video)
     }
 
     return () => {
@@ -38,13 +35,25 @@ const HLSVideoPlayer: React.FC<HLSVideoPlayerProps> = ({ src }) => {
       if (video) {
         video.pause()
         video.src = ""
-        video.load() // This is necessary to ensure the video stops downloading
+        video.load()
+        observer.unobserve(video)
       }
     }
   }, [src])
 
+  useEffect(() => {
+    const video = videoRef.current
+
+    if (video && isVisible) {
+      video.muted = isMuted
+      video.play()
+    } else if (video) {
+      video.pause()
+    }
+  }, [isVisible, isMuted])
+
   return (
-    <video ref={videoRef} controls style={{ width: "100%" }}>
+    <video ref={videoRef} controls style={{ width: "100%" }} muted={isMuted}>
       Your browser does not support HLS video.
     </video>
   )

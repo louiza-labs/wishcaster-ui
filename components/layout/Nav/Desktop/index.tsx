@@ -1,14 +1,13 @@
 "use client"
 
 import Link from "next/link"
+import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
 
 import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
-import { DynamicConnectButton, useDynamicContext } from "@/lib/dynamic"
 import { cn } from "@/lib/utils"
 import useGetProfile from "@/hooks/farcaster/useGetProfile"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,7 +39,7 @@ const getFarcasterUserName = (user: any) => {
 }
 
 export function DesktopNav({ items }: MainNavProps) {
-  const { user, isAuthenticated, handleLogOut } = useDynamicContext()
+  const { user, isAuthenticated, logoutUser } = useNeynarContext()
   const loggedInUserFarcasterHandle = getFarcasterUserName(user)
   const { userProfile: farcasterProfile } = useGetProfile(
     loggedInUserFarcasterHandle
@@ -80,15 +79,14 @@ export function DesktopNav({ items }: MainNavProps) {
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-1">
             <ThemeToggle />
-            {!isAuthenticated ? (
-              <DynamicConnectButton>
-                <Button
-                  variant={"secondary"}
-                  className="whitespace-nowrap font-semibold"
-                >
-                  Sign into FC
-                </Button>
-              </DynamicConnectButton>
+            {!user ? (
+              <div className="z-10 w-full lg:flex">
+                <NeynarAuthButton
+                  variant={SIWN_variant.FARCASTER}
+                  label="Connect Farcaster"
+                  className="text-inter bg-slate-200"
+                />
+              </div>
             ) : farcasterProfile && farcasterProfile.pfp ? (
               <DropdownMenu>
                 <DropdownMenuTrigger className="border-none " asChild>
@@ -102,7 +100,7 @@ export function DesktopNav({ items }: MainNavProps) {
 
                 <DropdownMenuContent className="w-56">
                   <DropdownMenuGroup>
-                    <DropdownMenuItem onClick={() => handleLogOut()}>
+                    <DropdownMenuItem onClick={() => logoutUser()}>
                       Sign out
                       <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                     </DropdownMenuItem>

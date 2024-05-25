@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react"
 import { Cast as CastType } from "@/types"
+import { useNeynarContext } from "@neynar/react"
 import { useInView } from "react-intersection-observer"
 
-import { useDynamicContext } from "@/lib/dynamic"
 import { calculateStartDate, debounce } from "@/lib/helpers"
 import { fetchChannelCasts } from "@/app/actions"
 
@@ -30,8 +30,8 @@ export const useLoadMoreCasts = (
       return farcasterObj.oauthAccountId
     }
   }
-  const { user, isAuthenticated } = useDynamicContext()
-  const loggedInUserFID = getFarcasterFID(user)
+  const { user } = useNeynarContext()
+  const loggedInUserFID = Number(user?.fid) ?? 0
   useEffect(() => {
     // Filter initial casts based on the date range when initialCasts or dateRange changes
     if (dateRange && dateRange.length) {

@@ -1,6 +1,7 @@
 "use client"
 
-import { DynamicConnectButton, useDynamicContext } from "@/lib/dynamic"
+import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
+
 import useGetProfile from "@/hooks/farcaster/useGetProfile"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -29,7 +30,7 @@ const getFarcasterUserName = (user: any) => {
 }
 
 export function MobileNav() {
-  const { user, isAuthenticated, handleLogOut } = useDynamicContext()
+  const { user, isAuthenticated, logoutUser } = useNeynarContext()
   const loggedInUserFarcasterHandle = getFarcasterUserName(user)
   const { userProfile: farcasterProfile } = useGetProfile(
     loggedInUserFarcasterHandle
@@ -40,14 +41,16 @@ export function MobileNav() {
       <nav className="container flex h-16 w-full flex-row items-center justify-between md:hidden">
         <Icons.logo />
         {!isAuthenticated ? (
-          <DynamicConnectButton>
-            <Button
-              variant={"secondary"}
-              className="whitespace-nowrap font-semibold"
-            >
-              Sign into FC
-            </Button>
-          </DynamicConnectButton>
+          <Button
+            variant={"secondary"}
+            className="whitespace-nowrap font-semibold"
+          >
+            <NeynarAuthButton
+              variant={SIWN_variant.FARCASTER}
+              label="Connect Farcaster"
+              className="text-inter bg-transparent shadow-none"
+            />{" "}
+          </Button>
         ) : farcasterProfile && farcasterProfile.pfp ? (
           <DropdownMenu>
             <DropdownMenuTrigger className="border-none " asChild>
@@ -61,7 +64,7 @@ export function MobileNav() {
 
             <DropdownMenuContent className="w-56">
               <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => handleLogOut()}>
+                <DropdownMenuItem onClick={() => logoutUser()}>
                   Sign out
                   <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                 </DropdownMenuItem>

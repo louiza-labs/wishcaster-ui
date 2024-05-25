@@ -1,18 +1,17 @@
-import LoadingBarProvider from "@/providers"
-
-import "@/styles/globals.css"
-import { Suspense } from "react/"
-import { Metadata, type Viewport } from "next"
-
 import { siteConfig } from "@/config/site"
-import { DynamicContextProvider } from "@/lib/dynamic"
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
 import InitialLoading from "@/components/loading/initial"
+import DynamicProvider from "@/components/providers/dynamic"
+import NeynarProvider from "@/components/providers/neynar"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
+
+import "@/styles/globals.css"
+import { Suspense } from "react/"
+import { Metadata, type Viewport } from "next"
 
 export const metadata: Metadata = {
   title: {
@@ -65,33 +64,31 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <>
       <html lang="en" suppressHydrationWarning>
         <head />
-        <DynamicContextProvider
-          settings={{
-            environmentId: process.env.DYNAMIC_ENVIRONMENT_ID
-              ? process.env.DYNAMIC_ENVIRONMENT_ID
-              : "",
-          }}
-        >
-          <body
-            className={cn(
-              "bg-background min-h-screen font-sans antialiased",
-              fontSans.variable
-            )}
-          >
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              <Suspense fallback={<InitialLoading />}>
-                <div className="relative flex min-h-screen flex-col">
-                  <SiteHeader />
-                  <LoadingBarProvider>
+        <DynamicProvider>
+          <NeynarProvider>
+            <body
+              className={cn(
+                "bg-background min-h-screen font-sans antialiased",
+                fontSans.variable
+              )}
+            >
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+              >
+                <Suspense fallback={<InitialLoading />}>
+                  <div className="relative flex min-h-screen flex-col">
+                    <SiteHeader />
                     <div className="flex-1">{children}</div>
-                  </LoadingBarProvider>
-                  <SiteFooter />
-                </div>
-                <TailwindIndicator />
-              </Suspense>
-            </ThemeProvider>
-          </body>
-        </DynamicContextProvider>
+                    <SiteFooter />
+                  </div>
+                  <TailwindIndicator />
+                </Suspense>
+              </ThemeProvider>
+            </body>
+          </NeynarProvider>
+        </DynamicProvider>
       </html>
     </>
   )

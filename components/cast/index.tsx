@@ -7,6 +7,13 @@ import AuthorAvatar from "@/components/cast/CastAvatar"
 import CastContent from "@/components/cast/CastContent"
 import CastFooter from "@/components/cast/CastFooter"
 
+interface CastComponentTypes extends CastType {
+  hideMetrics?: boolean
+  handleToggleCategoryClick?: any
+  badgeIsToggled?: any
+  category?: string
+}
+
 const Cast = ({
   timestamp,
   text,
@@ -19,7 +26,8 @@ const Cast = ({
   hash,
   handleToggleCategoryClick,
   badgeIsToggled,
-}: CastType) => {
+  hideMetrics,
+}: CastComponentTypes) => {
   return (
     <Card className="md:border-auto md:shadow-auto flex w-full flex-col justify-between border-none  lg:h-fit">
       <CardHeader>
@@ -28,7 +36,6 @@ const Cast = ({
           category={category}
           handleToggleCategoryClick={handleToggleCategoryClick}
           badgeIsToggled={badgeIsToggled}
-          timestamp={timestamp}
         />
       </CardHeader>
       <CardContent>
@@ -47,6 +54,7 @@ const Cast = ({
           timestamp={timestamp}
           reactions={reactions}
           replies={replies}
+          hideMetrics={hideMetrics}
         />
       </CardFooter>
     </Card>

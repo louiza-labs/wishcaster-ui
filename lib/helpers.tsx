@@ -457,3 +457,90 @@ export const formatDateForCastTimestamp = (timestamp: string) => {
   if (diffInMinutes > 0) return formatTime(diffInMinutes, "minute")
   return "Just now"
 }
+
+export const generateStatsFromProfiles = (
+  profiles: any[],
+  cast: CastType,
+  stat: string
+) => {
+  if (!profiles || !Array.isArray(profiles) || !cast) return { value: 0 }
+  const profilesAsObject = profiles.reduce((profileObj, profile) => {
+    const { fid, power_badge, active_status } = profile
+    profileObj[fid] = { power_badge, active_status }
+    return profileObj
+  }, {})
+
+  const isPriorityLike = (fid: number) => profilesAsObject[fid]?.power_badge
+  if (stat === "priority_likes") {
+    const likesFromCast = cast.reactions.likes
+    const priorityLikes = likesFromCast.reduce((count, like) => {
+      let isAPriorityLike = isPriorityLike(like.fid)
+      if (isAPriorityLike) {
+        count++
+      }
+      return count
+    }, 0)
+    return { value: priorityLikes }
+  }
+  return { value: 0 }
+}
+
+export const generateStatsObjectForCast = (
+  cast: any,
+  priorityLikes: number,
+  channelRank: number,
+  categoryRank: number
+) => {
+  if (!cast) return {}
+  const statsObject = {
+    likes: {
+      label: "Likes",
+      value: cast.reactions.likes_count,
+    },
+    replies: { label: "Replies", value: cast.replies.count },
+    recasts: { label: "Recasts", value: cast.reactions.recasts_count },
+    priorityLikes: { label: "Priority Likes", value: priorityLikes },
+    channelRanking: { label: "Channel Ranking", value: channelRank },
+    categoryRanking: { label: "Topic Ranking", value: categoryRank },
+  }
+  return statsObject
+}
+
+export function getRanking(
+  target: CastType,
+  items: CastType[],
+  metric: "likes" | "recasts" | "replies",
+  filterField?: keyof CastType
+): number | null {
+  // Apply filtering only if filterField is provided and the target has this property defined
+  const filteredItems =
+    filterField && target[filterField] !== undefined
+      ? items.filter((item) => item[filterField] === target[filterField])
+      : items
+
+  const getValueByMetric = (objectToGetValueFrom: any) => {
+    if (metric === "likes") {
+      return objectToGetValueFrom.reactions.likes_count
+    }
+    if (metric === "recasts") {
+      return objectToGetValueFrom.reactions.recasts_count
+    }
+    if (metric === "replies") {
+      return objectToGetValueFrom.replies
+    }
+    return 0
+  }
+
+  // Sort the filtered items by value in descending order
+  filteredItems.sort((a, b) => getValueByMetric(b) - getValueByMetric(a))
+
+  // Find the rank of the target item by comparing values
+  for (let rank = 0; rank < filteredItems.length; rank++) {
+    if (getValueByMetric(filteredItems[rank]) === getValueByMetric(target)) {
+      return rank + 1 // Return rank starting from 1 (more human-readable)
+    }
+  }
+
+  // If no matching value is found, return null
+  return null
+}

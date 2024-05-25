@@ -57,7 +57,6 @@ export interface Cast {
   parent_hash: string | null
   parent_url: string
   root_parent_url: string
-  category?: string | null
   parent_author: {
     fid: any // Assuming this can be null or a number
   }
@@ -76,8 +75,6 @@ export interface Cast {
     count: number
   }
   mentioned_profiles: any[] // You can define a type for mentioned profiles if needed
-  handleToggleCategoryClick: (categoryName: string) => void
-  badgeIsToggled: boolean
 }
 
 export interface Category {

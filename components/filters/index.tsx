@@ -2,8 +2,8 @@
 
 import { Suspense, useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { useNeynarContext } from "@neynar/react"
 
-import { useDynamicContext } from "@/lib/dynamic"
 import {
   categorizeArrayOfCasts,
   filterDuplicateCategories,
@@ -33,7 +33,7 @@ interface CategoriesFeedProps {
 const Filters = ({ initialCasts }: CategoriesFeedProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { user, isAuthenticated, handleLogOut } = useDynamicContext()
+  const { user, isAuthenticated } = useNeynarContext()
 
   let { filteredCasts } = useFilterFeed(initialCasts)
   const categories = categorizeArrayOfCasts(filteredCasts) as Category[]
