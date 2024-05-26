@@ -1,14 +1,14 @@
-import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
 import { useState } from "react"
+import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
 
-import { sendCast } from "@/app/actions"
-import { BountyChannelSelect } from "@/components/bounties/BountyChannel"
-import { InteractionsCheckbox } from "@/components/filters/Interactions"
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
-import { cn } from "@/lib/utils"
+import { BountyChannelSelect } from "@/components/bounties/BountyChannel"
+import { InteractionsCheckbox } from "@/components/filters/Interactions"
+import { sendCast } from "@/app/actions"
 
 interface BountyProps {
   hash: string
@@ -19,7 +19,7 @@ const Bounty = ({ hash }: BountyProps) => {
   const [sendBountyInChannel, setSendBountyInChannel] = useState(false)
   const [channelToSendBountyIn, setChannelToSendBountyIn] = useState("")
   const [sendingBounty, setSendingBounty] = useState(false)
-  const [embedsInBountyText, setEmbedsInBountyText] = useState<string | []>([])
+  const [embedsInBountyText, setEmbedsInBountyText] = useState<any | []>([])
   const [errorSendingBounty, setErrorSendingBounty] = useState(false)
   const [sentBounty, setSentBounty] = useState(false)
   const { user } = useNeynarContext()
@@ -28,7 +28,8 @@ const Bounty = ({ hash }: BountyProps) => {
   const remainingCharacters = characterLimit - bountyText.length
   const isExceeded = remainingCharacters < 0
 
-  const urlRegex = /https?:\/\/[^\s]+/g
+  const urlRegex =
+    /(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/gi
 
   const handleBountyTextChange = (e) => {
     setSentBounty(false)
@@ -43,7 +44,7 @@ const Bounty = ({ hash }: BountyProps) => {
     }
     // Extract URLs just before submission
     const extractedURLs = bountyText.match(urlRegex) || []
-    setEmbedsInBountyText(extractedURLs])
+    setEmbedsInBountyText(extractedURLs)
     if (bountyText && user && user.signer_uuid) {
       try {
         setSendingBounty(true)

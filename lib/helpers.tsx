@@ -249,7 +249,8 @@ export function renderTextWithLinks(text: string) {
   if (!text || (text && text.length === 0)) return <span>{text}</span>
 
   // Correctly capturing HTTP and HTTPS URLs
-  const urlRegex = /https?:\/\/[\w-]+(\.[\w-]+)+\.\w{2,}(\/\S*)?/gi
+  const urlRegex =
+    /(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/gi
   // Capturing @mentions that stop at spaces or punctuation
   const atMentionRegex = /@\w+/g
   // Adjusting the slash command to handle edge cases and ensure correct capture

@@ -8,6 +8,7 @@ import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 import useGetProfile from "@/hooks/farcaster/useGetProfile"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,7 +45,7 @@ export function DesktopNav({ items }: MainNavProps) {
   const { userProfile: farcasterProfile } = useGetProfile(
     loggedInUserFarcasterHandle
   )
-
+  console.log("the user", user)
   return (
     <header className="bg-background sticky top-0 z-40 w-full border-b">
       <div className="container hidden h-16 w-full items-center justify-between space-x-4 sm:space-x-0 md:flex">
@@ -81,20 +82,19 @@ export function DesktopNav({ items }: MainNavProps) {
             <ThemeToggle />
             {!user ? (
               <div className="z-10 w-full lg:flex">
-                <NeynarAuthButton
-                  variant={SIWN_variant.FARCASTER}
-                  label="Connect Farcaster"
-                  className="text-inter bg-slate-200"
-                />
+                <Button variant={"outline"}>
+                  <NeynarAuthButton
+                    variant={SIWN_variant.FARCASTER}
+                    label="Connect Farcaster"
+                    className="text-inter rounded-sm border border-slate-200 bg-transparent shadow-none"
+                  />
+                </Button>
               </div>
-            ) : farcasterProfile && farcasterProfile.pfp ? (
+            ) : user && user.pfp_url ? (
               <DropdownMenu>
                 <DropdownMenuTrigger className="border-none " asChild>
                   <Avatar className="size-8">
-                    <AvatarImage
-                      src={farcasterProfile.pfp.url}
-                      alt={farcasterProfile.username}
-                    />
+                    <AvatarImage src={user.pfp_url} alt={user.username} />
                   </Avatar>
                 </DropdownMenuTrigger>
 

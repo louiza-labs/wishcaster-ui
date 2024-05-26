@@ -51,14 +51,11 @@ export function MobileNav() {
               className="text-inter bg-transparent shadow-none"
             />{" "}
           </Button>
-        ) : farcasterProfile && farcasterProfile.pfp ? (
+        ) : user && user.pfp_url ? (
           <DropdownMenu>
             <DropdownMenuTrigger className="border-none " asChild>
               <Avatar className="size-8">
-                <AvatarImage
-                  src={farcasterProfile.pfp.url}
-                  alt={farcasterProfile.username}
-                />
+                <AvatarImage src={user.pfp_url} alt={user.username} />
               </Avatar>
             </DropdownMenuTrigger>
 

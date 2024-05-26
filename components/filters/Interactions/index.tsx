@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 interface IntereractionsCheckboxProps {
   id: string
   text: string
-  handleChange: () => void
+  handleChange: (val: boolean) => void
   value: boolean
   isDisabled?: boolean
 }
