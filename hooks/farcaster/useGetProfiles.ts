@@ -3,29 +3,14 @@ import { useNeynarContext } from "@neynar/react"
 
 import { fetchFarcasterUsers } from "@/app/actions"
 
-const getFarcasterFID = (user: any) => {
-  if (
-    user &&
-    user.sessionId &&
-    user.verifiedCredentials &&
-    user.verifiedCredentials.length
-  ) {
-    const farcasterObj = user.verifiedCredentials.find(
-      (credential: any) => credential.oauthProvider === "farcaster"
-    )
-    return farcasterObj?.oauthAccountId || ""
-  }
-  return ""
-}
-
 const useGetProfiles = (stringOfFIDs: string) => {
   const [profiles, setProfiles] = useState<any>([])
-  const [gettingProfiles, setGettingProfiles] = useState(false)
+  const [loadingProfiles, setLoadingProfiles] = useState(false)
   const { user } = useNeynarContext()
   const loggedInUsersFID = user?.fid ?? 0
   const fetchAndSetProfiles = async () => {
     if (stringOfFIDs && stringOfFIDs.length) {
-      setGettingProfiles(true)
+      setLoadingProfiles(true)
       try {
         const profilesRes = await fetchFarcasterUsers(
           stringOfFIDs,
@@ -36,7 +21,7 @@ const useGetProfiles = (stringOfFIDs: string) => {
       } catch (error) {
         console.error("Error fetching profile:", error)
       } finally {
-        setGettingProfiles(false)
+        setLoadingProfiles(false)
       }
     }
   }
@@ -47,7 +32,7 @@ const useGetProfiles = (stringOfFIDs: string) => {
 
   return {
     profiles,
-    gettingProfiles,
+    loadingProfiles,
   }
 }
 

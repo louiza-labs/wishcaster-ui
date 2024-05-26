@@ -12,7 +12,9 @@ import Cast from "@/components/cast"
 import CastStats from "@/components/cast/stats"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
+import TopReplies from "@/components/replies/TopReplies"
 import {
+  fetchCastsReactionsUntilCovered,
   fetchCastsUntilCovered,
   fetchChannelCasts,
   fetchFarcasterCast,
@@ -52,6 +54,19 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
         "someone-build",
         timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
       )
+  const { reactionsObject } =
+    cast && cast.hash
+      ? await fetchCastsReactionsUntilCovered(
+          cast?.hash,
+          cast?.reactions.likes_count,
+          cast?.reactions.recasts_count
+        )
+      : {
+          reactionsObject: {
+            likes: [],
+            recasts: [],
+          },
+        }
   let overallChannelCasts = initialCasts
   const categories = categorizeArrayOfCasts([
     ...overallChannelCasts,
@@ -89,32 +104,44 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                 categoryParam={categoryParam}
               />
             ) : (
-              <div>
-                <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
-                  Cast
-                </h1>
-                <Cast
-                  {...castWithCategory}
-                  hideMetrics={true}
-                  badgeIsToggled={false}
-                />
+              <div className="gap-y-4">
+                <div className="bg-background sticky top-20 z-40 flex flex-col gap-y-4">
+                  <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
+                    Cast
+                  </h1>
+                  <Cast
+                    {...castWithCategory}
+                    hideMetrics={true}
+                    badgeIsToggled={false}
+                  />
+                </div>
+                <TopReplies castHash={castWithCategory.hash} />
               </div>
             )}
           </article>
-          <div className=" flex flex-col gap-y-4 sm:col-span-3">
-            <h1 className="col-span-12 text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
-              Stats
-            </h1>
-            <CastStats
-              cast={castWithCategory}
-              overallChannelCasts={overallChannelCasts}
-            />
+          <div className=" relative top-0 flex flex-col gap-y-4 sm:col-span-3">
+            <div className="sticky top-20 z-40 flex flex-col gap-y-4">
+              <h1 className="col-span-12 text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
+                Stats
+              </h1>
+              <CastStats
+                cast={castWithCategory}
+                reactions={reactionsObject}
+                overallChannelCasts={overallChannelCasts}
+              />
+            </div>
           </div>
-          <div className=" flex flex-col sm:col-span-4">
-            <h1 className="col-span-12 text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
-              Let&apos;s build
-            </h1>
-            <Build cast={castWithCategory} hash={castWithCategory.hash} />
+          <div className="relative top-0 flex flex-col sm:col-span-4">
+            <div className="sticky top-20 z-40 flex flex-col">
+              <h1 className="col-span-12 text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
+                Let&apos;s build
+              </h1>
+              <Build
+                cast={castWithCategory}
+                hash={castWithCategory.hash}
+                reactions={reactionsObject}
+              />
+            </div>
           </div>
         </main>
       </section>

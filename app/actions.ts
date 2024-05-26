@@ -147,15 +147,86 @@ export async function fetchCastsUntilCovered(
   }
 }
 
+// Helper function to split the user IDs into chunks of 100
+function chunkUserIds(userIds: string[], maxChunkSize: number): string[][] {
+  const chunks: string[][] = []
+  for (let i = 0; i < userIds.length; i += maxChunkSize) {
+    chunks.push(userIds.slice(i, i + maxChunkSize))
+  }
+  return chunks
+}
+
+// Function to fetch users with support for batching requests
 export async function fetchFarcasterUsers(listOfUsers: string, userFID = 0) {
   try {
-    console.log("the user fid", userFID)
-    const buildUrl = () => {
-      let baseUrl = `https://api.neynar.com/v2/farcaster/user/bulk?fids=${listOfUsers}`
+    const userIds = listOfUsers.split(",")
+    const chunks = chunkUserIds(userIds, 100)
 
-      if (userFID) {
-        baseUrl += `&viewer_fid=${userFID}`
+    const users = []
+    for (const chunk of chunks) {
+      const url = buildUrl(chunk.join(","), userFID)
+      const config = {
+        headers: {
+          accept: "application/json",
+          api_key: process.env.NEYNAR_API_KEY, // Ensure your API key is securely configured
+        },
       }
+      const response = await axios.get(url, config)
+      users.push(...response.data.users) // Collecting users from each chunk
+    }
+
+    return { users }
+  } catch (error) {
+    console.error("Error fetching users:", error)
+    return { users: [], error }
+  }
+}
+
+// Function to build the URL with user IDs and viewer FID
+function buildUrl(userIDs: string, userFID: number): string {
+  let baseUrl = `https://api.neynar.com/v2/farcaster/user/bulk?fids=${userIDs}`
+  if (userFID) {
+    baseUrl += `&viewer_fid=${userFID}`
+  }
+  return baseUrl
+}
+
+export const fetchCastReactions = async (castHash: string, cursor = "") => {
+  try {
+    const response = await neynarClient.fetchReactionsForCast(castHash, "all", {
+      limit: 100,
+      cursor: cursor && cursor.length ? cursor : undefined,
+    })
+    const reactions = response.reactions // Axios wraps the response data in a `data` property
+    const nextCursor = response.cursor
+    // Assuming the API returns an object with casts and cursor for the next batch
+    const returnObject = {
+      reactions: reactions,
+      cursor: nextCursor,
+    }
+
+    return returnObject
+  } catch (error) {
+    console.error("Error fetching reactions:", error)
+    return { reactions: [], cursor: cursor, error: error }
+  }
+}
+
+export async function fetchCastsReactionsUntilCovered(
+  castHash: string,
+  castLikesCount: number,
+  castReactionsCount: number
+) {
+  let allReactions = [] as any[]
+  let cursor: null | string = null
+  const totalReactions = castLikesCount + castReactionsCount
+
+  do {
+    const buildUrl = () => {
+      let baseUrl = `https://api.neynar.com/v2/farcaster/reactions/cast?hash=${castHash}&types=all&limit=100`
+
+      baseUrl += `&cursor=${cursor}`
+
       return baseUrl
     }
     const url = buildUrl()
@@ -167,16 +238,26 @@ export async function fetchFarcasterUsers(listOfUsers: string, userFID = 0) {
     }
 
     const response = await axios.get(url, config)
-    const data = response.data // Axios wraps the response data in a `data` property
-    // Assuming the API returns an object with casts and cursor for the next batch
-    const returnObject = {
-      users: data.users,
-    }
+    const { reactions, cursor: nextCursor } = response.data
 
-    return returnObject
-  } catch (error) {
-    console.error("Error fetching users:", error)
-    return { users: [], error: error }
+    allReactions = allReactions.concat(reactions)
+    cursor = nextCursor
+    // Check if the last cast's timestamp is earlier than the start date
+    if (allReactions.length === totalReactions) {
+      break // Stop fetching more data as the range is covered
+    }
+  } while (cursor)
+
+  // Filter casts to ensure only those within the date range are included
+  const reactionsObject = {
+    likes: allReactions.filter((reaction) => reaction.reaction_type === "like"),
+    recasts: allReactions.filter(
+      (reaction) => reaction.reaction_type === "recast"
+    ),
+  }
+  return {
+    reactionsObject: reactionsObject,
+    nextCursor: cursor,
   }
 }
 
@@ -197,11 +278,112 @@ export const sendCast = async (
       replyTo:
         parentCastHash && parentCastHash.length ? parentCastHash : undefined,
     })
-    return response.hash
+    return { hash: response.hash }
   } catch (e) {
     console.log("error sending cast", e)
     return {
       error: e,
+      hash: "",
     }
+  }
+}
+
+export const fetchCastConversation = async (castHash: string, userFID = 0) => {
+  try {
+    const buildUrl = () => {
+      let baseUrl = `https://api.neynar.com/v2/farcaster/cast/conversation?identifier=${castHash}&type=hash&reply_depth=2`
+
+      if (userFID) {
+        baseUrl += `&viewer_fid=${userFID}`
+      }
+      return baseUrl
+    }
+    const url = buildUrl()
+    const config = {
+      headers: {
+        accept: "application/json",
+        api_key: process.env.NEYNAR_API_KEY, // You should secure your API key
+      },
+    }
+
+    const response = await axios.get(url, config)
+    const data = response.data // Axios wraps the response data in a `data` property
+    const returnObject = {
+      conversation: data.conversation.cast.direct_replies,
+    }
+    return returnObject
+  } catch (error) {
+    console.error("Error fetching channel casts:", error)
+    return { conversation: [], error: error }
+  }
+}
+
+export const fetchChannelWithSearch = async (channelSearchTerm: string) => {
+  try {
+    const buildUrl = () => {
+      let baseUrl = `https://api.neynar.com/v2/farcaster/channel/search?q=${channelSearchTerm}`
+
+      return baseUrl
+    }
+    const url = buildUrl()
+    const config = {
+      headers: {
+        accept: "application/json",
+        api_key: process.env.NEYNAR_API_KEY, // You should secure your API key
+      },
+    }
+
+    const response = await axios.get(url, config)
+    const { channels } = response.data
+    console.log("the channels", channels)
+
+    // Filter casts to ensure only those within the date range are included
+
+    return {
+      channels: channels,
+    }
+  } catch (error) {
+    console.error("Error fetching channel:", error)
+    return { channels: [], error: error }
+  }
+}
+
+export const fetchAllChannels = async () => {
+  try {
+    let allChannels = [] as any[]
+    let cursor: null | string = null
+
+    do {
+      const buildUrl = () => {
+        let baseUrl = `https://api.neynar.com/v2/farcaster/channel/list?limit=50`
+
+        baseUrl += `&cursor=${cursor}`
+
+        return baseUrl
+      }
+      const url = buildUrl()
+      const config = {
+        headers: {
+          accept: "application/json",
+          api_key: process.env.NEYNAR_API_KEY, // You should secure your API key
+        },
+      }
+
+      const response = await axios.get(url, config)
+      const { reactions, cursor: nextCursor } = response.data
+
+      allChannels = allChannels.concat(reactions)
+      cursor = nextCursor
+    } while (cursor)
+
+    // Filter casts to ensure only those within the date range are included
+
+    return {
+      channels: allChannels,
+      nextCursor: cursor,
+    }
+  } catch (error) {
+    console.error("Error fetching channels:", error)
+    return { channels: [], error: error }
   }
 }

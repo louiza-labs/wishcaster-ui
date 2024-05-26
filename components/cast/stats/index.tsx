@@ -20,10 +20,15 @@ interface CardStatProp {
 }
 const CardStat = ({ title, value }: CardStatProp) => {
   return (
-    <Card className="size-fit">
-      <CardHeader>
-        <CardTitle className="text-sm">{title}</CardTitle>
-        <CardDescription className="text-xs">{value}</CardDescription>
+    <Card className="w-32">
+      <CardHeader className="flex flex-col items-center justify-center p-6">
+        <CardDescription className="text-4xl font-bold text-black dark:text-white">
+          {value}
+        </CardDescription>
+
+        <CardTitle className="text-center text-xs text-gray-500 dark:text-gray-400">
+          {title}
+        </CardTitle>
       </CardHeader>
     </Card>
   )
@@ -32,41 +37,37 @@ const CardStat = ({ title, value }: CardStatProp) => {
 interface CastStatProps {
   cast: any
   overallChannelCasts: any
+  reactions: any
 }
 
-const CastStats = ({ cast, overallChannelCasts }: CastStatProps) => {
+const CastStats = ({ cast, overallChannelCasts, reactions }: CastStatProps) => {
   const { filteredCasts: updatedCast } = useFilterFeed([cast])
+  const { likes, recasts } = reactions
   let castWithCategories = updatedCast[0] ?? cast
   const stringOfLikesFIDs =
-    castWithCategories && castWithCategories.reactions
-      ? castWithCategories.reactions.likes.reduce(
-          (stringOfFIDs, reaction, index) => {
-            if (index !== cast.reactions.likes.length - 1) {
-              stringOfFIDs += `${reaction.fid},`
-            } else {
-              stringOfFIDs += `${reaction.fid}`
-            }
-            return stringOfFIDs
-          },
-          ""
-        )
+    likes && likes.length
+      ? likes.reduce((stringOfFIDs: string, reaction: any, index: number) => {
+          if (index !== likes.length - 1) {
+            stringOfFIDs += `${reaction.user.fid},`
+          } else {
+            stringOfFIDs += `${reaction.user.fid}`
+          }
+          return stringOfFIDs
+        }, "")
       : ""
   const stringOfRecastsFIDs =
-    castWithCategories && castWithCategories.reactions
-      ? castWithCategories.reactions.recasts.reduce(
-          (stringOfFIDs, reaction, index) => {
-            if (index !== castWithCategories.reactions.recasts.length - 1) {
-              stringOfFIDs += `${reaction.fid},`
-            } else {
-              stringOfFIDs += `${reaction.fid}`
-            }
-            return stringOfFIDs
-          },
-          ""
-        )
+    recasts && recasts.length
+      ? recasts.reduce((stringOfFIDs: string, reaction: any, index: number) => {
+          if (index !== recasts.length - 1) {
+            stringOfFIDs += `${reaction.user.fid},`
+          } else {
+            stringOfFIDs += `${reaction.user.fid}`
+          }
+          return stringOfFIDs
+        }, "")
       : ""
-  const { profiles: likedUsers } = useGetProfiles(stringOfLikesFIDs)
 
+  const { profiles: likedUsers } = useGetProfiles(stringOfLikesFIDs)
   const { profiles: recastedUsers } = useGetProfiles(stringOfRecastsFIDs)
   const priorityLikes = generateStatsFromProfiles(
     likedUsers,
@@ -89,7 +90,7 @@ const CastStats = ({ cast, overallChannelCasts }: CastStatProps) => {
   )
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="grid grid-cols-2 gap-4">
       {stats && Object.keys(stats).length
         ? Object.keys(stats).map((stat: string) => (
             <CardStat

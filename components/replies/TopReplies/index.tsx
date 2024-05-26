@@ -1,0 +1,41 @@
+"use client"
+
+import { sortCastsByProperty } from "@/lib/helpers"
+import useFetchCastConversation from "@/hooks/farcaster/useFetchCastConversation"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+import Cast from "@/components/cast"
+
+interface TopRepliesProps {
+  castHash: string
+}
+const TopReplies = ({ castHash }: TopRepliesProps) => {
+  const { conversation } = useFetchCastConversation(castHash)
+  const sortedRepliesByLikes = sortCastsByProperty(conversation, "likes_count")
+  const topFiveRepliesByLikes = sortedRepliesByLikes.slice(0, 5)
+
+  return (
+    <div className="mt-2 flex flex-col gap-y-4">
+      <Accordion type="single" defaultChecked={true} collapsible className="">
+        <AccordionItem value="replies">
+          <AccordionTrigger className="mt-2 text-xl font-bold  md:flex md:text-2xl">
+            <p>Top Replies</p>
+          </AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-y-2">
+            {topFiveRepliesByLikes && topFiveRepliesByLikes.length
+              ? topFiveRepliesByLikes.map((reply: any) => (
+                  <Cast {...reply} key={reply.hash} />
+                ))
+              : null}
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
+  )
+}
+
+export default TopReplies

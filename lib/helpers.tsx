@@ -470,11 +470,9 @@ export const generateStatsFromProfiles = (
     return profileObj
   }, {})
 
-  const isPriorityLike = (fid: number) => profilesAsObject[fid]?.power_badge
   if (stat === "priority_likes") {
-    const likesFromCast = cast.reactions.likes
-    const priorityLikes = likesFromCast.reduce((count, like) => {
-      let isAPriorityLike = isPriorityLike(like.fid)
+    const priorityLikes = profiles.reduce((count, profile) => {
+      let isAPriorityLike = profile.power_badge
       if (isAPriorityLike) {
         count++
       }
@@ -493,15 +491,16 @@ export const generateStatsObjectForCast = (
 ) => {
   if (!cast) return {}
   const statsObject = {
+    channelRanking: { label: "Channel Rank", value: channelRank },
+    categoryRanking: { label: "Topic Rank", value: categoryRank },
     likes: {
       label: "Likes",
       value: cast.reactions.likes_count,
     },
+    priorityLikes: { label: "Power Badge Likes", value: priorityLikes },
+
     replies: { label: "Replies", value: cast.replies.count },
     recasts: { label: "Recasts", value: cast.reactions.recasts_count },
-    priorityLikes: { label: "Priority Likes", value: priorityLikes },
-    channelRanking: { label: "Channel Ranking", value: channelRank },
-    categoryRanking: { label: "Topic Ranking", value: categoryRank },
   }
   return statsObject
 }

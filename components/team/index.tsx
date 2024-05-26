@@ -6,17 +6,25 @@ import { useNeynarContext } from "@neynar/react"
 
 import useGetProfiles from "@/hooks/farcaster/useGetProfiles"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import CastAvatar from "@/components/cast/CastAvatar"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+import { Skeleton } from "@/components/ui/skeleton"
+import UserFeed from "@/components/feed/team"
+import { Icons } from "@/components/icons"
+import TeamFilters from "@/components/team/filters"
 
 interface TeamProps {
   cast: any
+  reactions: any
 }
-const Team = ({ cast }: TeamProps) => {
+const Team = ({ cast, reactions }: TeamProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { likes, recasts } = reactions
 
   const filtersFromParams = useMemo(
     () => searchParams.getAll("filters"),
@@ -69,95 +77,129 @@ const Team = ({ cast }: TeamProps) => {
   const handleFollowingSwitchChange = () => {
     handleToggleFilterClick("following")
   }
+  const handleFollowerSwitchChange = () => {
+    handleToggleFilterClick("follower")
+  }
+
+  const handlePriorityBadgeSwitchChange = () => {
+    handleToggleFilterClick("priority-badge")
+  }
 
   let castWithCategories = updatedCast[0] ?? cast
   const stringOfLikesFIDs =
-    castWithCategories && castWithCategories.reactions
-      ? castWithCategories.reactions.likes.reduce(
-          (stringOfFIDs, reaction, index) => {
-            if (index !== cast.reactions.likes.length - 1) {
-              stringOfFIDs += `${reaction.fid},`
-            } else {
-              stringOfFIDs += `${reaction.fid}`
-            }
-            return stringOfFIDs
-          },
-          ""
-        )
+    likes && likes.length
+      ? likes.reduce((stringOfFIDs: string, reaction, index: number) => {
+          if (index !== likes.length - 1) {
+            stringOfFIDs += `${reaction.user.fid},`
+          } else {
+            stringOfFIDs += `${reaction.user.fid}`
+          }
+          return stringOfFIDs
+        }, "")
       : ""
   const stringOfRecastsFIDs =
-    castWithCategories && castWithCategories.reactions
-      ? castWithCategories.reactions.recasts.reduce(
-          (stringOfFIDs, reaction, index) => {
-            if (index !== castWithCategories.reactions.recasts.length - 1) {
-              stringOfFIDs += `${reaction.fid},`
-            } else {
-              stringOfFIDs += `${reaction.fid}`
-            }
-            return stringOfFIDs
-          },
-          ""
-        )
+    recasts && recasts.length
+      ? recasts.reduce((stringOfFIDs: string, reaction, index: number) => {
+          if (index !== recasts.length - 1) {
+            stringOfFIDs += `${reaction.user.fid},`
+          } else {
+            stringOfFIDs += `${reaction.user.fid}`
+          }
+          return stringOfFIDs
+        }, "")
       : ""
   const { user, isAuthenticated } = useNeynarContext()
-  const { profiles: likedUsers } = useGetProfiles(stringOfLikesFIDs)
+  const { profiles: likedUsers, loadingProfiles: loadingLikedUsers } =
+    useGetProfiles(stringOfLikesFIDs)
 
-  const { profiles: recastedUsers } = useGetProfiles(stringOfRecastsFIDs)
+  const { profiles: recastedUsers, loadingProfiles: loadingRecastedUsers } =
+    useGetProfiles(stringOfRecastsFIDs)
   const mentionedProfiles = cast.mentioned_profiles
 
   let likeOrRecastedUsers = [...likedUsers, ...recastedUsers]
+
   if (filterIsSelected("following") && user?.fid) {
     likeOrRecastedUsers = likeOrRecastedUsers.filter(
       (user) => user.viewer_context && user.viewer_context.following
     )
   }
+  if (filterIsSelected("follower") && user?.fid) {
+    likeOrRecastedUsers = likeOrRecastedUsers.filter(
+      (user) => user.viewer_context && user.viewer_context.followed_by
+    )
+  }
+  if (filterIsSelected("priority-badge")) {
+    likeOrRecastedUsers = likeOrRecastedUsers.filter((user) => user.power_badge)
+  }
 
-  const handleVisitProfile = (username: string) => {
-    if (typeof window !== "undefined") {
-      window.open(`https://www.warpcast.com/${username}`, "_blank")
-    }
+  const followingFilterValues = {
+    disabled: !(user && user.fid),
+    checked: filterIsSelected("following"),
+    onChange: handleFollowingSwitchChange,
+  }
+  const followerFilterValues = {
+    disabled: !(user && user.fid),
+    checked: filterIsSelected("follower"),
+    onChange: handleFollowerSwitchChange,
+  }
+  const priorityBadgeFilterValues = {
+    disabled: false,
+    checked: filterIsSelected("priority-badge"),
+    onChange: handlePriorityBadgeSwitchChange,
+  }
+
+  const LoadingItem = () => {
+    return (
+      <div className="flex w-full flex-row items-start justify-between gap-x-2 border p-2">
+        <div className="flex flex-row gap-x-2">
+          <Skeleton className="size-10 rounded-full" />
+          <div className="flex flex-col gap-y-1">
+            <Skeleton className="h-4 w-24 rounded-sm" />
+            <Skeleton className="h-4 w-24 rounded-sm " />
+          </div>
+        </div>
+        <Skeleton className="size-10  rounded-xl " />
+      </div>
+    )
   }
 
   return (
     <Suspense>
       <div className="flex w-full flex-col items-start">
-        <div className="flex flex-row items-center justify-between gap-x-2">
-          <p className="w-4/8 pb-4 text-base font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
-            Liked or recasted by
-          </p>
-          <div className="flex items-center space-x-2">
-            <Switch
-              disabled={!(user && user.fid)}
-              checked={filterIsSelected("following")}
-              onCheckedChange={handleFollowingSwitchChange}
-              id="following-filter"
-            />
-            <Label className="font-bold" htmlFor="following-filter">
-              Following
-            </Label>
-          </div>
-        </div>
-        <div className="flex w-full flex-col gap-y-2">
-          {likeOrRecastedUsers && likeOrRecastedUsers.length ? (
-            likeOrRecastedUsers.map((user) => (
-              <div className="flex w-full flex-row items-center justify-between rounded border p-2">
-                <CastAvatar author={user} key={user.fid} />
-                <Button
-                  onClick={() => handleVisitProfile(user?.username)}
-                  variant={"ghost"}
+        {likeOrRecastedUsers && likeOrRecastedUsers.length ? (
+          <>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="filter">
+                <AccordionTrigger
+                  className="w-4/8 underline-never pb-4 text-base font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl"
+                  customIcon={Icons.Filter}
                 >
-                  Visit
-                </Button>
-              </div>
-            ))
-          ) : likeOrRecastedUsers &&
-            user?.fid &&
-            filterIsSelected("following") ? (
-            <p className="mt-4 text-center font-semibold">
-              No followed users found
-            </p>
-          ) : null}
-        </div>
+                  {" "}
+                  Liked or recasted by
+                </AccordionTrigger>
+                <AccordionContent>
+                  <TeamFilters
+                    followingFilterProps={followingFilterValues}
+                    followerFilterProps={followerFilterValues}
+                    priorityBadgeFilterProps={priorityBadgeFilterValues}
+                  />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+            <div className="flex w-full flex-col gap-y-2">
+              <UserFeed
+                likeOrRecastedUsers={likeOrRecastedUsers}
+                loadingUsers={loadingLikedUsers || loadingRecastedUsers}
+              />
+            </div>{" "}
+          </>
+        ) : loadingLikedUsers || loadingRecastedUsers ? (
+          <div className="flex w-full flex-col gap-y-2">
+            <LoadingItem />
+            <LoadingItem />
+            <LoadingItem />
+          </div>
+        ) : null}
       </div>
     </Suspense>
   )
