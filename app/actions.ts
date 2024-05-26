@@ -193,10 +193,14 @@ function buildUrl(userIDs: string, userFID: number): string {
 
 export const fetchCastReactions = async (castHash: string, cursor = "") => {
   try {
-    const response = await neynarClient.fetchReactionsForCast(castHash, "all", {
-      limit: 100,
-      cursor: cursor && cursor.length ? cursor : undefined,
-    })
+    const response: any = await neynarClient.fetchReactionsForCast(
+      castHash,
+      "all",
+      {
+        limit: 100,
+        cursor: cursor && cursor.length ? cursor : undefined,
+      }
+    )
     const reactions = response.reactions // Axios wraps the response data in a `data` property
     const nextCursor = response.cursor
     // Assuming the API returns an object with casts and cursor for the next batch
@@ -335,7 +339,6 @@ export const fetchChannelWithSearch = async (channelSearchTerm: string) => {
 
     const response = await axios.get(url, config)
     const { channels } = response.data
-    console.log("the channels", channels)
 
     // Filter casts to ensure only those within the date range are included
 

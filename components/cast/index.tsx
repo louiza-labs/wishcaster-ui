@@ -27,6 +27,7 @@ const Cast = ({
   handleToggleCategoryClick,
   badgeIsToggled,
   hideMetrics,
+  routeToWarpcast,
 }: CastComponentTypes | any) => {
   return (
     <Card className="md:border-auto md:shadow-auto flex w-full flex-col justify-between border-none  lg:h-fit">
@@ -47,6 +48,7 @@ const Cast = ({
           handleToggleCategoryClick={handleToggleCategoryClick}
           badgeIsToggled={badgeIsToggled}
           maxCharacters={150}
+          routeToWarpcast={routeToWarpcast}
         />
       </CardContent>
       <CardFooter>

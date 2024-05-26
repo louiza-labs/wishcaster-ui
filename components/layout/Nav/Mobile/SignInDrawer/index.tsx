@@ -2,21 +2,20 @@
 
 import * as React from "react"
 import { useSearchParams } from "next/navigation"
+import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
 
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import Filters from "@/components/filters"
-import { Icons } from "@/components/icons"
 
 function parseQueryParam(param?: string | string[]): string {
   return Array.isArray(param) ? param.join(",") : param || ""
 }
 
-function MobileFiltering({ initialCasts }: any) {
+function SignInDrawer() {
   const [open, setOpen] = React.useState(false)
   const searchParams = useSearchParams()
-
+  const { logoutUser, user } = useNeynarContext()
   return (
     <React.Suspense>
       <Sheet open={open} onOpenChange={setOpen}>
@@ -25,20 +24,24 @@ function MobileFiltering({ initialCasts }: any) {
             variant="ghost"
             className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
           >
-            <Icons.Filter />
+            Sign In to FC
             <span className="sr-only">Toggle Menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent
-          side="bottom"
-          className="h-[80vh] overflow-y-scroll  rounded-t-xl"
-        >
-          <span className="ml-2 text-3xl font-bold"> Filter </span>
-          <ScrollArea className="mt-6 h-[120%] w-full ">
-            <div className="flex w-full flex-col items-center space-y-3">
-              <aside className="relative flex w-full flex-col items-center  gap-y-6 pb-2 sm:col-span-3 sm:flex">
-                <Filters initialCasts={initialCasts} />
-              </aside>
+        <SheetContent side="bottom" className="h-[25vh] rounded-t-xl">
+          <span className="ml-2 text-3xl font-bold"> Sign In </span>
+          <ScrollArea className="mt-6 flex h-[calc(100vh-8rem)] flex-col items-center justify-center pb-2 ">
+            <div className="flex flex-col items-center justify-center">
+              <Button
+                variant={"secondary"}
+                className=" whitespace-nowrap font-semibold"
+              >
+                <NeynarAuthButton
+                  variant={SIWN_variant.FARCASTER}
+                  label="Connect Farcaster"
+                  className="text-inter bg-transparent shadow-none"
+                />{" "}
+              </Button>
             </div>
           </ScrollArea>
         </SheetContent>
@@ -47,4 +50,4 @@ function MobileFiltering({ initialCasts }: any) {
   )
 }
 
-export default MobileFiltering
+export default SignInDrawer

@@ -24,10 +24,6 @@ const TeamFilters = ({
 }: TeamFiltersProps) => {
   const [displayFilters, setDisplayFilters] = useState(false)
 
-  const handleFilterClick = (e) => {
-    e.preventDefault()
-    setDisplayFilters(!displayFilters)
-  }
   return (
     <div className="flex flex-col items-start">
       <div className="flex  flex-wrap gap-2">

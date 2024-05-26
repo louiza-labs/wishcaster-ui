@@ -82,7 +82,7 @@ const CastStats = ({ cast, overallChannelCasts, reactions }: CastStatProps) => {
     "category"
   )
 
-  const stats = generateStatsObjectForCast(
+  const stats: any = generateStatsObjectForCast(
     castWithCategories,
     priorityLikes?.value ?? 0,
     channelRankByLikes ?? 0,
@@ -90,7 +90,7 @@ const CastStats = ({ cast, overallChannelCasts, reactions }: CastStatProps) => {
   )
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-4 pl-8 md:pl-0">
       {stats && Object.keys(stats).length
         ? Object.keys(stats).map((stat: string) => (
             <CardStat

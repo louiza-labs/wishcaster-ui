@@ -9,6 +9,12 @@ import AuthorAvatar from "@/components/cast/CastAvatar"
 import CastContent from "@/components/cast/CastContent"
 import CastFooter from "@/components/cast/CastFooter"
 
+interface CastComponentTypes extends CastType {
+  hideMetrics?: boolean
+  handleToggleCategoryClick?: any
+  badgeIsToggled?: any
+  category?: string
+}
 const EmbeddedCast = ({
   timestamp,
   text,
@@ -21,9 +27,8 @@ const EmbeddedCast = ({
   hash,
   handleToggleCategoryClick,
   badgeIsToggled,
-}: CastType) => {
+}: CastComponentTypes) => {
   const [isExpanded, setIsExpanded] = useState(false)
-  const maxCharacters = 150 // Maximum characters to display initially
   const [aspectRatio, setAspectRatio] = useState("56.25%") // Default to 16:9
 
   const hasUrl = embeds.find((embed: any) => embed.url) !== undefined
@@ -44,14 +49,13 @@ const EmbeddedCast = ({
           category={category}
           handleToggleCategoryClick={handleToggleCategoryClick}
           badgeIsToggled={badgeIsToggled}
-          timestamp={timestamp}
         />
       </CardHeader>
       <CardContent>
         <CastContent
           text={text}
           embeds={embeds}
-          hash={hash}
+          hash={hash ?? ""}
           author={author}
           handleToggleCategoryClick={handleToggleCategoryClick}
           badgeIsToggled={badgeIsToggled}

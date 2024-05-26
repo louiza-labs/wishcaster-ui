@@ -29,7 +29,7 @@ const UserFeed = ({ likeOrRecastedUsers, loadingUsers }: any) => {
 
     // Cleanup listener when component unmounts
     return () => window.removeEventListener("resize", updateSize)
-  }, [])
+  }, [listHeight])
 
   if (!likeOrRecastedUsers || likeOrRecastedUsers.length === 0) {
     return <div>No users to display.</div>
@@ -76,7 +76,7 @@ const UserFeed = ({ likeOrRecastedUsers, loadingUsers }: any) => {
 
   return (
     <>
-      {likeOrRecastedUsers && !loadingUsers ? (
+      {likeOrRecastedUsers && likeOrRecastedUsers.length && !loadingUsers ? (
         <List
           height={listHeight} // Adjust based on the viewport or container size
           width={"100%"} // Use 100% if it should fill the container
@@ -91,13 +91,13 @@ const UserFeed = ({ likeOrRecastedUsers, loadingUsers }: any) => {
         >
           {Row}
         </List>
-      ) : (
+      ) : loadingUsers ? (
         <div className="flex flex-col gap-y-2">
           <LoadingItem />
           <LoadingItem />
           <LoadingItem />
         </div>
-      )}
+      ) : null}
     </>
   )
 }

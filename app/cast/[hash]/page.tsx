@@ -45,10 +45,7 @@ interface User {
   fname: string
 }
 
-export default async function CastPage({
-  searchParams,
-  params,
-}: CastPageProps) {
+const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   const cast = await fetchFarcasterCast(params.hash)
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
@@ -91,6 +88,8 @@ export default async function CastPage({
   const searchTerm = parseQueryParam(searchParams.search)
   const categoryParam = parseQueryParam(searchParams.categories)
   const filtersParam = parseQueryParam(searchParams.filters)
+  const sortParam = parseQueryParam(searchParams.sort)
+  const mobileViewParam = parseQueryParam(searchParams.view)
 
   let filteredCasts = [cast]
   const isError = !filteredCasts.length
@@ -99,10 +98,16 @@ export default async function CastPage({
     <>
       <section className="mx-auto py-6 md:container sm:px-6 lg:px-20">
         <div className="flex flex-row items-start gap-x-4">
-          {/* <Header /> */}
+          {/* Placeholder for Header if needed */}
         </div>
-        <main className="relative grid grid-cols-1 gap-4 sm:grid-cols-12 sm:gap-x-10">
-          <article className="no-scrollbar sm:col-span-5">
+        <main className="relative grid min-h-screen grid-cols-1 gap-4 sm:grid-cols-12 sm:gap-x-10">
+          <article
+            className={`${
+              mobileViewParam.length && mobileViewParam !== "cast"
+                ? "hidden sm:flex"
+                : ""
+            }  overflow-y-auto sm:col-span-5`}
+          >
             {isError ? (
               <ErrorDisplay
                 searchTerm={searchTerm}
@@ -113,15 +118,15 @@ export default async function CastPage({
               <div className="gap-y-4">
                 {castWithCategory ? (
                   <>
-                    <div className="bg-background sticky top-20 z-40 flex flex-col gap-y-4">
-                      <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
+                    <div className="bg-background flex flex-col gap-y-4">
+                      <h1 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
                         Cast
                       </h1>
-
                       <Cast
                         {...castWithCategory}
                         hideMetrics={true}
                         badgeIsToggled={false}
+                        routeToWarpcast={true}
                       />
                     </div>
                     <TopReplies castHash={castWithCategory.hash ?? ""} />
@@ -130,9 +135,13 @@ export default async function CastPage({
               </div>
             )}
           </article>
-          <div className=" relative top-0 flex flex-col gap-y-4 sm:col-span-3">
-            <div className="sticky top-20 z-40 flex flex-col gap-y-4">
-              <h1 className="col-span-12 text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
+          <div
+            className={`${
+              mobileViewParam !== "stats" ? "hidden sm:block" : ""
+            } overflow-y-auto sm:col-span-3`}
+          >
+            <div className="flex flex-col gap-y-10">
+              <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
                 Stats
               </h1>
               <CastStats
@@ -142,26 +151,30 @@ export default async function CastPage({
               />
             </div>
           </div>
-          <div className="relative top-0 flex flex-col sm:col-span-4">
-            {castWithCategory ? (
-              <>
-                <div className="sticky top-20 z-40 flex flex-col">
-                  <h1 className="col-span-12 text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
-                    Let&apos;s build
-                  </h1>
-                  <Build
-                    cast={castWithCategory}
-                    hash={castWithCategory.hash ?? ""}
-                    reactions={reactionsObject}
-                  />
-                </div>
-              </>
-            ) : null}
+          <div
+            className={`${
+              mobileViewParam !== "build" ? "hidden sm:block" : ""
+            } overflow-y-auto sm:col-span-4`}
+          >
+            <div className="flex flex-col gap-y-8">
+              <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
+                Let&apos;s build
+              </h1>
+              <Build
+                cast={castWithCategory}
+                hash={castWithCategory ? castWithCategory.hash ?? "" : ""}
+                reactions={reactionsObject}
+              />
+            </div>
           </div>
         </main>
       </section>
       <div className="flex flex-col items-start md:hidden">
-        <BottomMobileNav filteredCasts={[]} initialCasts={[]} />
+        <BottomMobileNav
+          filteredCasts={[castWithCategory]}
+          initialCasts={[castWithCategory]}
+          page="cast"
+        />
       </div>
     </>
   )
@@ -197,3 +210,5 @@ const ErrorDisplay: FC<ErrorDisplayProps> = ({
     </>
   )
 }
+
+export default CastPage

@@ -13,6 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import UserFeed from "@/components/feed/team"
 import { Icons } from "@/components/icons"
@@ -26,6 +27,10 @@ const Team = ({ cast, reactions }: TeamProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { likes, recasts } = reactions
+
+  const handleRouteBackHome = () => {
+    router.push("/")
+  }
 
   const filtersFromParams = useMemo(
     () => searchParams.getAll("filters"),
@@ -123,7 +128,7 @@ const Team = ({ cast, reactions }: TeamProps) => {
           return stringOfFIDs
         }, "")
       : ""
-  const { user, isAuthenticated } = useNeynarContext()
+  const { user } = useNeynarContext()
 
   const { profiles: repliedUsers, loadingProfiles: loadingRepliedUsers } =
     useGetProfiles(stringOfReplyFIDs)
@@ -134,13 +139,7 @@ const Team = ({ cast, reactions }: TeamProps) => {
   const { profiles: recastedUsers, loadingProfiles: loadingRecastedUsers } =
     useGetProfiles(stringOfRecastsFIDs)
 
-  let likeOrRecastedUsers = [
-    ...likedUsers,
-    ...recastedUsers,
-    ...repliedUsers,
-  ].filter(
-    (user, index, self) => index === self.findIndex((t) => t.fid === user.fid)
-  )
+  let likeOrRecastedUsers = [...likedUsers, ...recastedUsers, ...repliedUsers]
 
   if (filterIsSelected("following") && user?.fid) {
     likeOrRecastedUsers = likeOrRecastedUsers.filter(
@@ -189,8 +188,14 @@ const Team = ({ cast, reactions }: TeamProps) => {
 
   return (
     <Suspense>
-      <div className="flex w-full flex-col items-start">
-        {likeOrRecastedUsers && likeOrRecastedUsers.length ? (
+      {loadingLikedUsers || loadingRecastedUsers ? (
+        <div className="flex w-full flex-col gap-y-2">
+          <LoadingItem />
+          <LoadingItem />
+          <LoadingItem />
+        </div>
+      ) : likeOrRecastedUsers && likeOrRecastedUsers.length ? (
+        <div className="flex w-full flex-col items-start">
           <>
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="filter">
@@ -210,7 +215,7 @@ const Team = ({ cast, reactions }: TeamProps) => {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-            <div className="flex size-full flex-col gap-y-2">
+            <div className="flex h-[55vh] w-full flex-col  gap-y-2 overflow-y-scroll  md:size-full md:h-full">
               <UserFeed
                 likeOrRecastedUsers={likeOrRecastedUsers}
                 loadingUsers={
@@ -221,14 +226,15 @@ const Team = ({ cast, reactions }: TeamProps) => {
               />
             </div>{" "}
           </>
-        ) : loadingLikedUsers || loadingRecastedUsers ? (
-          <div className="flex w-full flex-col gap-y-2">
-            <LoadingItem />
-            <LoadingItem />
-            <LoadingItem />
-          </div>
-        ) : null}
-      </div>
+        </div>
+      ) : (
+        <div className="mt-10 flex flex-col items-center  justify-center gap-y-4">
+          <p className="text-center text-base font-bold md:text-lg">
+            No users have engaged with this cast
+          </p>
+          <Button onClick={handleRouteBackHome}>Back Home</Button>
+        </div>
+      )}
     </Suspense>
   )
 }

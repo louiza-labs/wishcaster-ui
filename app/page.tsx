@@ -69,9 +69,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   return (
     <>
       <section className="mx-auto py-6 md:container sm:px-6 lg:px-20">
-        <div className="flex flex-row items-start gap-x-4">
-          <Header />
-        </div>
+        <Header />
         <main className="relative grid grid-cols-1 gap-4 sm:grid-cols-12 sm:gap-x-10">
           <aside className="no-scrollbar sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 sm:col-span-3 sm:flex">
             <SortCasts />
@@ -111,11 +109,11 @@ interface HeaderProps {}
 
 const Header: FC<HeaderProps> = () => {
   return (
-    <div className="flex flex-col items-center gap-2 pb-10 md:items-start">
+    <div className="flex flex-col items-center gap-2 md:items-start md:pb-10">
       <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
         What people want! <br className="hidden sm:inline" />
       </h1>
-      <p className="text-center text-sm sm:text-lg md:text-left lg:max-w-[700px]">
+      <p className="text-center text-xs sm:text-lg md:text-left lg:max-w-[700px]">
         Sourced from Farcaster&apos;s{" "}
         <span className="font-bold">someone-build channel</span>
       </p>

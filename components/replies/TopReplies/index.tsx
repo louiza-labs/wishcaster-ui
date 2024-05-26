@@ -19,7 +19,7 @@ const TopReplies = ({ castHash }: TopRepliesProps) => {
   const topFiveRepliesByLikes = sortedRepliesByLikes.slice(0, 5)
 
   return (
-    <div className="mt-2 flex flex-col gap-y-4">
+    <div className="z-30 mt-2 flex h-full flex-col gap-y-4 px-4 md:px-0">
       {topFiveRepliesByLikes && topFiveRepliesByLikes.length ? (
         <Accordion type="single" defaultChecked={true} collapsible className="">
           <AccordionItem value="replies">

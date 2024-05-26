@@ -41,7 +41,7 @@ const Bounty = ({ hash }: BountyProps) => {
 
   const handleSubmitBounty = async () => {
     if (isExceeded) {
-      console.error("Character limit exceeded")
+      alert("Character limit exceeded")
       return // Early exit if character limit is exceeded
     }
     // Extract URLs just before submission
@@ -52,25 +52,27 @@ const Bounty = ({ hash }: BountyProps) => {
       }))
     )
     if (bountyText && user && user.signer_uuid) {
+      if (!bountyText.includes("@bountybot")) {
+        alert("Please make sure you include @bountybot")
+        return
+      }
       try {
         setSendingBounty(true)
         setErrorSendingBounty(false)
 
-        if (bountyText.includes("@bountybot")) {
-          const signer = user.signer_uuid
-          const response = await sendCast(
-            signer,
-            bountyText,
-            sendBountyAsReply ? hash : "",
-            embedsInBountyText,
-            channelToSendBountyIn ? channelToSendBountyIn : "",
-            user.fid
-          )
-          // Add your submit logic here
-          setSendingBounty(false)
-          if (response?.hash && response.hash.length) {
-            setSentBounty(true)
-          }
+        const signer = user.signer_uuid
+        const response = await sendCast(
+          signer,
+          bountyText,
+          sendBountyAsReply ? hash : "",
+          embedsInBountyText,
+          channelToSendBountyIn ? channelToSendBountyIn : "",
+          user.fid
+        )
+        // Add your submit logic here
+        setSendingBounty(false)
+        if (response?.hash && response.hash.length) {
+          setSentBounty(true)
         }
       } catch (e) {
         setErrorSendingBounty(true)

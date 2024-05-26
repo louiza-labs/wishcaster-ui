@@ -3,10 +3,13 @@ import {
   Filter,
   LucideProps,
   Moon,
+  Rocket,
+  Scroll,
   Search,
   SunMedium,
   TrendingUp,
   Twitter,
+  Users,
   type Icon as LucideIcon,
 } from "lucide-react"
 
@@ -133,4 +136,7 @@ export const Icons = {
   TrendingUp,
   Search,
   Calendar,
+  Users,
+  Rocket,
+  Scroll,
 }

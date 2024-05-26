@@ -21,6 +21,7 @@ interface CastContentProps {
   handleToggleCategoryClick: any
   badgeIsToggled: boolean
   maxCharacters?: number
+  routeToWarpcast?: boolean
 }
 
 const CastContent = ({
@@ -30,6 +31,7 @@ const CastContent = ({
   author,
   handleToggleCategoryClick,
   badgeIsToggled,
+  routeToWarpcast,
   maxCharacters = 150,
 }: CastContentProps) => {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -62,7 +64,13 @@ const CastContent = ({
 
   return (
     <div>
-      <Link href={`/cast/${hash}`}>
+      <Link
+        href={
+          routeToWarpcast ? `https://www.warpcast.com/${hash}` : `/cast/${hash}`
+        }
+        target={routeToWarpcast ? "_blank" : undefined}
+        rel={routeToWarpcast ? "noReferrer" : undefined}
+      >
         <div className="9 flex flex-col gap-y-4">
           {renderTextWithLinks(text)}
 
