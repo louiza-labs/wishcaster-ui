@@ -73,7 +73,7 @@ export const addCategoryFieldsToCasts = (
     (Array.isArray(categories) && !categories.length) ||
     !Array.isArray(categories)
   ) {
-    return {}
+    return []
   }
   return casts.map((cast) => {
     const categoryMatch = categories.find(

@@ -8,8 +8,8 @@ export interface User {
   fid: number
   custody_address: string
   username: string
-  display_name: string
-  pfp_url: string
+  display_name?: string
+  pfp_url?: string
   profile: {
     bio: {
       text: string
@@ -38,7 +38,7 @@ export interface Embed {
 
 export interface Reaction {
   fid: number
-  fname: string
+  fname?: string
 }
 export interface AuthorViewerContext {
   following: boolean
@@ -52,11 +52,12 @@ export interface CastViewerContext {
 
 export interface Cast {
   // object: string
-  hash: string
-  thread_hash: string
+  hash?: string
+  thread_hash: string | null
   parent_hash: string | null
-  parent_url: string
-  root_parent_url: string
+  parent_url: string | null
+  root_parent_url: string | null
+  category?: string
   parent_author: {
     fid: any // Assuming this can be null or a number
   }

@@ -6,7 +6,6 @@ import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
 import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
-import useGetProfile from "@/hooks/farcaster/useGetProfile"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -41,11 +40,7 @@ const getFarcasterUserName = (user: any) => {
 
 export function DesktopNav({ items }: MainNavProps) {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
-  const loggedInUserFarcasterHandle = getFarcasterUserName(user)
-  const { userProfile: farcasterProfile } = useGetProfile(
-    loggedInUserFarcasterHandle
-  )
-  console.log("the user", user)
+
   return (
     <header className="bg-background sticky top-0 z-40 w-full border-b">
       <div className="container hidden h-16 w-full items-center justify-between space-x-4 sm:space-x-0 md:flex">

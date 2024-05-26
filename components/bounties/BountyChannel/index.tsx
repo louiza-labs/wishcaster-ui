@@ -84,7 +84,7 @@ export function BountyChannelSelect({
 
             <CommandGroup>
               <CommandList className="w-full">
-                {channels.map((channel) => (
+                {channels.map((channel: { id: string; name: string }) => (
                   <CommandItem
                     key={channel.id}
                     className="w-full"

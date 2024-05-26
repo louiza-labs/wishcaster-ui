@@ -22,7 +22,9 @@ import {
 
 interface CastPageProps {
   searchParams: { [key: string]: string | string[] | undefined }
-  hash: string
+  params: {
+    hash: string
+  }
 }
 
 function parseQueryParam(param?: string | string[]): string {
@@ -43,7 +45,10 @@ interface User {
   fname: string
 }
 
-const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
+export default async function CastPage({
+  searchParams,
+  params,
+}: CastPageProps) {
   const cast = await fetchFarcasterCast(params.hash)
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
@@ -72,9 +77,11 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
     ...overallChannelCasts,
     cast,
   ]) as Category[]
-  const castWithCategory = cast
-    ? addCategoryFieldsToCasts([cast], categories)[0]
-    : cast
+
+  let singleArrayCast = cast
+    ? addCategoryFieldsToCasts([cast], categories)
+    : [cast]
+  const castWithCategory = singleArrayCast[0]
 
   overallChannelCasts = addCategoryFieldsToCasts(
     overallChannelCasts,
@@ -84,7 +91,6 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   const searchTerm = parseQueryParam(searchParams.search)
   const categoryParam = parseQueryParam(searchParams.categories)
   const filtersParam = parseQueryParam(searchParams.filters)
-  const sortParam = parseQueryParam(searchParams.sort)
 
   let filteredCasts = [cast]
   const isError = !filteredCasts.length
@@ -105,17 +111,22 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
               />
             ) : (
               <div className="gap-y-4">
-                <div className="bg-background sticky top-20 z-40 flex flex-col gap-y-4">
-                  <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
-                    Cast
-                  </h1>
-                  <Cast
-                    {...castWithCategory}
-                    hideMetrics={true}
-                    badgeIsToggled={false}
-                  />
-                </div>
-                <TopReplies castHash={castWithCategory.hash} />
+                {castWithCategory ? (
+                  <>
+                    <div className="bg-background sticky top-20 z-40 flex flex-col gap-y-4">
+                      <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
+                        Cast
+                      </h1>
+
+                      <Cast
+                        {...castWithCategory}
+                        hideMetrics={true}
+                        badgeIsToggled={false}
+                      />
+                    </div>
+                    <TopReplies castHash={castWithCategory.hash ?? ""} />
+                  </>
+                ) : null}
               </div>
             )}
           </article>
@@ -132,16 +143,20 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
             </div>
           </div>
           <div className="relative top-0 flex flex-col sm:col-span-4">
-            <div className="sticky top-20 z-40 flex flex-col">
-              <h1 className="col-span-12 text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
-                Let&apos;s build
-              </h1>
-              <Build
-                cast={castWithCategory}
-                hash={castWithCategory.hash}
-                reactions={reactionsObject}
-              />
-            </div>
+            {castWithCategory ? (
+              <>
+                <div className="sticky top-20 z-40 flex flex-col">
+                  <h1 className="col-span-12 text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
+                    Let&apos;s build
+                  </h1>
+                  <Build
+                    cast={castWithCategory}
+                    hash={castWithCategory.hash ?? ""}
+                    reactions={reactionsObject}
+                  />
+                </div>
+              </>
+            ) : null}
           </div>
         </main>
       </section>
@@ -153,20 +168,6 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
 }
 
 interface HeaderProps {}
-
-const Header: FC<HeaderProps> = ({ cast }) => {
-  return (
-    <div className="flex flex-col items-center gap-2 pb-10 md:items-start">
-      <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
-        {cast.text}{" "}
-      </h1>
-      <p className="text-center text-sm sm:text-lg md:text-left lg:max-w-[700px]">
-        Sourced from Farcaster&apos;s{" "}
-        <span className="font-bold">someone-build channel</span>
-      </p>
-    </div>
-  )
-}
 
 interface ErrorDisplayProps {
   searchTerm: string
@@ -196,5 +197,3 @@ const ErrorDisplay: FC<ErrorDisplayProps> = ({
     </>
   )
 }
-
-export default CastPage

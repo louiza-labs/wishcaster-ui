@@ -4,6 +4,7 @@ import { Suspense, useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useNeynarContext } from "@neynar/react"
 
+import useFetchCastConversation from "@/hooks/farcaster/useFetchCastConversation"
 import useGetProfiles from "@/hooks/farcaster/useGetProfiles"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import {
@@ -30,6 +31,7 @@ const Team = ({ cast, reactions }: TeamProps) => {
     () => searchParams.getAll("filters"),
     [searchParams]
   )
+  const { conversation } = useFetchCastConversation(cast.hash)
   const { filteredCasts: updatedCast } = useFilterFeed([cast])
 
   const createQueryString = useCallback(
@@ -85,10 +87,23 @@ const Team = ({ cast, reactions }: TeamProps) => {
     handleToggleFilterClick("priority-badge")
   }
 
-  let castWithCategories = updatedCast[0] ?? cast
+  const stringOfReplyFIDs =
+    conversation && conversation.length
+      ? conversation.reduce(
+          (stringOfFIDs: string, conversation: any, index: number) => {
+            if (index !== likes.length - 1) {
+              stringOfFIDs += `${conversation.author.fid},`
+            } else {
+              stringOfFIDs += `${conversation.author.fid}`
+            }
+            return stringOfFIDs
+          },
+          ""
+        )
+      : ""
   const stringOfLikesFIDs =
     likes && likes.length
-      ? likes.reduce((stringOfFIDs: string, reaction, index: number) => {
+      ? likes.reduce((stringOfFIDs: string, reaction: any, index: number) => {
           if (index !== likes.length - 1) {
             stringOfFIDs += `${reaction.user.fid},`
           } else {
@@ -99,7 +114,7 @@ const Team = ({ cast, reactions }: TeamProps) => {
       : ""
   const stringOfRecastsFIDs =
     recasts && recasts.length
-      ? recasts.reduce((stringOfFIDs: string, reaction, index: number) => {
+      ? recasts.reduce((stringOfFIDs: string, reaction: any, index: number) => {
           if (index !== recasts.length - 1) {
             stringOfFIDs += `${reaction.user.fid},`
           } else {
@@ -109,14 +124,23 @@ const Team = ({ cast, reactions }: TeamProps) => {
         }, "")
       : ""
   const { user, isAuthenticated } = useNeynarContext()
+
+  const { profiles: repliedUsers, loadingProfiles: loadingRepliedUsers } =
+    useGetProfiles(stringOfReplyFIDs)
+
   const { profiles: likedUsers, loadingProfiles: loadingLikedUsers } =
     useGetProfiles(stringOfLikesFIDs)
 
   const { profiles: recastedUsers, loadingProfiles: loadingRecastedUsers } =
     useGetProfiles(stringOfRecastsFIDs)
-  const mentionedProfiles = cast.mentioned_profiles
 
-  let likeOrRecastedUsers = [...likedUsers, ...recastedUsers]
+  let likeOrRecastedUsers = [
+    ...likedUsers,
+    ...recastedUsers,
+    ...repliedUsers,
+  ].filter(
+    (user, index, self) => index === self.findIndex((t) => t.fid === user.fid)
+  )
 
   if (filterIsSelected("following") && user?.fid) {
     likeOrRecastedUsers = likeOrRecastedUsers.filter(
@@ -175,7 +199,7 @@ const Team = ({ cast, reactions }: TeamProps) => {
                   customIcon={Icons.Filter}
                 >
                   {" "}
-                  Liked or recasted by
+                  Liked, recasted, or replied to by
                 </AccordionTrigger>
                 <AccordionContent>
                   <TeamFilters
@@ -186,10 +210,14 @@ const Team = ({ cast, reactions }: TeamProps) => {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-            <div className="flex w-full flex-col gap-y-2">
+            <div className="flex size-full flex-col gap-y-2">
               <UserFeed
                 likeOrRecastedUsers={likeOrRecastedUsers}
-                loadingUsers={loadingLikedUsers || loadingRecastedUsers}
+                loadingUsers={
+                  loadingLikedUsers ||
+                  loadingRecastedUsers ||
+                  loadingRepliedUsers
+                }
               />
             </div>{" "}
           </>

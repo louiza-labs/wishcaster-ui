@@ -34,8 +34,12 @@ const UserFeed = ({ likeOrRecastedUsers, loadingUsers }: any) => {
   if (!likeOrRecastedUsers || likeOrRecastedUsers.length === 0) {
     return <div>No users to display.</div>
   }
-
-  const Row = ({ index, style, data }) => {
+  interface RowProps {
+    data: any
+    style: any
+    index: number
+  }
+  const Row = ({ index, style, data }: RowProps) => {
     const adjustedStyle = {
       ...style,
       top: style.top + (index - visibleStartIndex) * gutter,

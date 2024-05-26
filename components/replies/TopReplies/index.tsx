@@ -20,20 +20,22 @@ const TopReplies = ({ castHash }: TopRepliesProps) => {
 
   return (
     <div className="mt-2 flex flex-col gap-y-4">
-      <Accordion type="single" defaultChecked={true} collapsible className="">
-        <AccordionItem value="replies">
-          <AccordionTrigger className="mt-2 text-xl font-bold  md:flex md:text-2xl">
-            <p>Top Replies</p>
-          </AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-y-2">
-            {topFiveRepliesByLikes && topFiveRepliesByLikes.length
-              ? topFiveRepliesByLikes.map((reply: any) => (
-                  <Cast {...reply} key={reply.hash} />
-                ))
-              : null}
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+      {topFiveRepliesByLikes && topFiveRepliesByLikes.length ? (
+        <Accordion type="single" defaultChecked={true} collapsible className="">
+          <AccordionItem value="replies">
+            <AccordionTrigger className="mt-2 text-xl font-bold  md:flex md:text-2xl">
+              <p>Top Replies</p>
+            </AccordionTrigger>
+            <AccordionContent className="flex flex-col gap-y-2">
+              {topFiveRepliesByLikes && topFiveRepliesByLikes.length
+                ? topFiveRepliesByLikes.map((reply: any) => (
+                    <Cast {...reply} key={reply.hash} />
+                  ))
+                : null}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      ) : null}
     </div>
   )
 }

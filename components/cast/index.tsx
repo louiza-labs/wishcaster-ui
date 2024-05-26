@@ -27,7 +27,7 @@ const Cast = ({
   handleToggleCategoryClick,
   badgeIsToggled,
   hideMetrics,
-}: CastComponentTypes) => {
+}: CastComponentTypes | any) => {
   return (
     <Card className="md:border-auto md:shadow-auto flex w-full flex-col justify-between border-none  lg:h-fit">
       <CardHeader>
@@ -42,7 +42,7 @@ const Cast = ({
         <CastContent
           text={text}
           embeds={embeds}
-          hash={hash}
+          hash={hash ?? ""}
           author={author}
           handleToggleCategoryClick={handleToggleCategoryClick}
           badgeIsToggled={badgeIsToggled}

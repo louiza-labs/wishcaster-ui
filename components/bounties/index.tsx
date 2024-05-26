@@ -31,7 +31,9 @@ const Bounty = ({ hash }: BountyProps) => {
   const urlRegex =
     /(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/gi
 
-  const handleBountyTextChange = (e) => {
+  const handleBountyTextChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setSentBounty(false)
 
     setBountyText(e.target.value)
@@ -44,7 +46,11 @@ const Bounty = ({ hash }: BountyProps) => {
     }
     // Extract URLs just before submission
     const extractedURLs = bountyText.match(urlRegex) || []
-    setEmbedsInBountyText(extractedURLs)
+    setEmbedsInBountyText(
+      extractedURLs.map((embed) => ({
+        url: embed,
+      }))
+    )
     if (bountyText && user && user.signer_uuid) {
       try {
         setSendingBounty(true)
@@ -124,6 +130,7 @@ const Bounty = ({ hash }: BountyProps) => {
               value={bountyText}
               onChange={handleBountyTextChange}
             />
+
             {isExceeded && (
               <p className="text-red-500">
                 Characters exceeded by {Math.abs(remainingCharacters)}
