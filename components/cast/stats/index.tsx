@@ -90,7 +90,7 @@ const CastStats = ({ cast, overallChannelCasts, reactions }: CastStatProps) => {
   )
 
   return (
-    <div className="grid grid-cols-2 gap-4 pl-8 sm:flex sm:flex-wrap xl:flex-nowrap	 md:pl-0 xl:grid xl:grid-cols-2">
+    <div className="grid grid-cols-2 gap-4 pl-8 sm:flex sm:flex-wrap md:pl-0	 xl:grid xl:grid-cols-2 xl:flex-nowrap">
       {stats && Object.keys(stats).length
         ? Object.keys(stats).map((stat: string) => (
             <CardStat

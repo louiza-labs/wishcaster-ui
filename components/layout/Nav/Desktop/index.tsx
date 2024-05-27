@@ -73,15 +73,15 @@ export function DesktopNav({ items }: MainNavProps) {
           <Search />
         </div>
         <div className="flex flex-1 items-center justify-end space-x-4">
-          <nav className="flex items-center space-x-1">
+          <nav className="flex w-fit items-center space-x-1">
             <ThemeToggle />
             {!user ? (
-              <div className="z-10 w-full lg:flex">
+              <div className="z-10 w-fit lg:flex">
                 <Button variant={"outline"}>
                   <NeynarAuthButton
                     variant={SIWN_variant.FARCASTER}
                     label="Connect Farcaster"
-                    className="text-inter rounded-sm border border-slate-200 bg-transparent shadow-none"
+                    className="text-inter whitespace-nowrap rounded-sm border border-slate-200 bg-transparent shadow-none dark:text-white"
                   />
                 </Button>
               </div>

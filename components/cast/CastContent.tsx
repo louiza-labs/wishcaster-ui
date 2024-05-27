@@ -40,9 +40,6 @@ const CastContent = ({
   const [isExpanded, setIsExpanded] = useState(false)
   const [aspectRatio, setAspectRatio] = useState("56.25%")
 
-  console.log("the embeds", embeds)
-  console.log("the text", text)
-
   const hasUrl = embeds.find((embed: any) => embed.url) !== undefined
   const hasCast = embeds.find((embed: any) => embed.cast_id) !== undefined
   const embeddedCastHash = hasCast
@@ -72,7 +69,9 @@ const CastContent = ({
     <div>
       <Link
         href={
-          routeToWarpcast ? `https://www.warpcast.com/${hash}` : `/cast/${hash}`
+          routeToWarpcast
+            ? `https://www.warpcast.com/${author.username}/${hash}`
+            : `/cast/${hash}`
         }
         target={routeToWarpcast ? "_blank" : undefined}
         rel={routeToWarpcast ? "noReferrer" : undefined}

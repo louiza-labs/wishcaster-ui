@@ -270,7 +270,6 @@ export const renderTextWithLinks = (
   mentionedProfiles: any[],
   embeds: any[]
 ) => {
-  console.log("the embed in render text", embeds)
   if (!text) return <span>{text}</span>
 
   // Maps for quick access

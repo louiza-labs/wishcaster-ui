@@ -53,6 +53,10 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: light)", color: "white" },
     { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
+  maximumScale: 1,
+  initialScale: 1,
+  viewportFit: "cover",
+  width: "device-width",
 }
 
 interface RootLayoutProps {

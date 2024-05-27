@@ -29,9 +29,12 @@ function MobileSearch({}: any) {
             <span className="sr-only">Toggle Menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="bottom" className="h-[30vh] w-full rounded-t-xl">
+        <SheetContent
+          side="bottom"
+          className="h-[70vh] w-full rounded-t-xl pb-10"
+        >
           <span className="ml-2 text-3xl font-bold"> Search </span>
-          <ScrollArea className="mt-6 h-[calc(100vh-8rem)] w-full pb-10 pl-6">
+          <ScrollArea className="mt-6 h-[calc(100vh-8rem)] w-full overflow-y-auto pb-10 ">
             <div className="flex w-full flex-col space-y-3">
               <aside className="relative flex w-full  flex-col gap-y-6 sm:col-span-3 sm:flex">
                 <Search />

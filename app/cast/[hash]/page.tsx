@@ -96,7 +96,7 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
 
   return (
     <>
-      <section className="mx-auto py-6 md:container sm:px-6 lg:px-20">
+      <section className="mx-auto h-fit py-6 md:container sm:px-6 lg:h-auto lg:px-20">
         <div className="flex flex-row items-start gap-x-4">
           {/* Placeholder for Header if needed */}
         </div>
@@ -115,7 +115,7 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                 categoryParam={categoryParam}
               />
             ) : (
-              <div className="gap-y-4">
+              <div className="gap-y-4 overflow-y-auto pb-14 lg:pb-0">
                 {castWithCategory ? (
                   <>
                     <div className="bg-background flex flex-col gap-y-4">
