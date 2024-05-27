@@ -22,6 +22,7 @@ interface CastContentProps {
   badgeIsToggled: boolean
   maxCharacters?: number
   routeToWarpcast?: boolean
+  mentionedProfiles: any[]
 }
 
 const CastContent = ({
@@ -32,10 +33,15 @@ const CastContent = ({
   handleToggleCategoryClick,
   badgeIsToggled,
   routeToWarpcast,
+  mentionedProfiles,
+
   maxCharacters = 150,
 }: CastContentProps) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const [aspectRatio, setAspectRatio] = useState("56.25%")
+
+  console.log("the embeds", embeds)
+  console.log("the text", text)
 
   const hasUrl = embeds.find((embed: any) => embed.url) !== undefined
   const hasCast = embeds.find((embed: any) => embed.cast_id) !== undefined
@@ -72,7 +78,7 @@ const CastContent = ({
         rel={routeToWarpcast ? "noReferrer" : undefined}
       >
         <div className="9 flex flex-col gap-y-4">
-          {renderTextWithLinks(text)}
+          {renderTextWithLinks(text, mentionedProfiles, embeds)}
 
           <>
             {hasUrl && isImageUrlToShow && potentialUrl ? (
@@ -116,6 +122,7 @@ const CastContent = ({
                 category={embeddedCast.category}
                 handleToggleCategoryClick={handleToggleCategoryClick}
                 badgeIsToggled={badgeIsToggled}
+                mentionedProfiles={embeddedCast.mentioned_profiles}
               />
             ) : null}
           </>

@@ -24,6 +24,7 @@ const Cast = ({
   category,
   embeds,
   hash,
+  mentionedProfiles,
   handleToggleCategoryClick,
   badgeIsToggled,
   hideMetrics,
@@ -49,6 +50,7 @@ const Cast = ({
           badgeIsToggled={badgeIsToggled}
           maxCharacters={150}
           routeToWarpcast={routeToWarpcast}
+          mentionedProfiles={mentionedProfiles}
         />
       </CardContent>
       <CardFooter>

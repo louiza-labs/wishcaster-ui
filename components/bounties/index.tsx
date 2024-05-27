@@ -28,9 +28,6 @@ const Bounty = ({ hash }: BountyProps) => {
   const remainingCharacters = characterLimit - bountyText.length
   const isExceeded = remainingCharacters < 0
 
-  const urlRegex =
-    /(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/gi
-
   const handleBountyTextChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
@@ -45,6 +42,9 @@ const Bounty = ({ hash }: BountyProps) => {
       return // Early exit if character limit is exceeded
     }
     // Extract URLs just before submission
+    const urlRegex =
+      /(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/gi
+
     const extractedURLs = bountyText.match(urlRegex) || []
     setEmbedsInBountyText(
       extractedURLs.map((embed) => ({
@@ -69,7 +69,6 @@ const Bounty = ({ hash }: BountyProps) => {
           channelToSendBountyIn ? channelToSendBountyIn : "",
           user.fid
         )
-        // Add your submit logic here
         setSendingBounty(false)
         if (response?.hash && response.hash.length) {
           setSentBounty(true)

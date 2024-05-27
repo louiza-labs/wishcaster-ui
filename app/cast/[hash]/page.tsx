@@ -127,6 +127,7 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                         hideMetrics={true}
                         badgeIsToggled={false}
                         routeToWarpcast={true}
+                        mentionedProfiles={castWithCategory.mentioned_profiles}
                       />
                     </div>
                     <TopReplies castHash={castWithCategory.hash ?? ""} />

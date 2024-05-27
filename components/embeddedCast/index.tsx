@@ -14,6 +14,7 @@ interface CastComponentTypes extends CastType {
   handleToggleCategoryClick?: any
   badgeIsToggled?: any
   category?: string
+  mentionedProfiles: any[]
 }
 const EmbeddedCast = ({
   timestamp,
@@ -23,6 +24,7 @@ const EmbeddedCast = ({
   reactions,
   replies,
   category,
+  mentionedProfiles,
   embeds,
   hash,
   handleToggleCategoryClick,
@@ -60,6 +62,7 @@ const EmbeddedCast = ({
           handleToggleCategoryClick={handleToggleCategoryClick}
           badgeIsToggled={badgeIsToggled}
           maxCharacters={150}
+          mentionedProfiles={mentionedProfiles}
         />
       </CardContent>
 

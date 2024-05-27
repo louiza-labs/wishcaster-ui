@@ -104,6 +104,7 @@ const CastsFeed: React.FC<CastFeedProps> = ({
                 author={cast.author}
                 hash={cast.hash}
                 thread_hash={cast.thread_hash}
+                mentionedProfiles={cast.mentioned_profiles}
                 parent_hash={cast.parent_hash}
                 parent_author={cast.parent_author}
                 mentioned_profiles={cast.mentioned_profiles}

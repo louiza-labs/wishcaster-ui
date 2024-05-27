@@ -245,69 +245,105 @@ export function loadImageAspectRatio(url: string, setAspectRatio: any) {
 }
 
 // Render text with clickable links
-export function renderTextWithLinks(text: string) {
-  if (!text || (text && text.length === 0)) return <span>{text}</span>
-  try {
-    // Correctly capturing HTTP and HTTPS URLs
-    const urlRegex =
-      /(https?:\/\/www\.|http?:\/\/www\.|https?:\/\/|http?:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https?:\/\/www\.|http?:\/\/www\.|https?:\/\/|http?:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https?:\/\/www\.|http?:\/\/www\.|https?:\/\/|http?:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/gi
-    const atMentionRegex = /@\w+/g
-    // Adjusting the slash command to handle edge cases and ensure correct capture
-    const slashCommandRegex = /(?<=\s|^)\/[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*/g
-
-    // Using split to handle text segments outside regex captures
-    const parts = text.split(
-      /(https?:\/\/[\w-]+(\.[\w-]+)+\.\w{2,}(\/\S*)?|@\w+|(?<=\s|^)\/[a-zA-Z0-9]+([-_.][a-zA-Z0-9]+)*)/g
-    )
-
-    return (
-      <span>
-        {parts.map((part: string, index: number) => {
-          if (part && part.match(urlRegex)) {
-            return (
-              <a
-                key={index}
-                href={part.startsWith("http") ? part : `http://${part}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-semibold text-indigo-500"
-              >
-                {part}
-              </a>
-            )
-          } else if (part && part.match(atMentionRegex)) {
-            return (
-              <a
-                key={index}
-                href={`https://www.warpcast.com/${part.slice(1)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-indigo-600"
-              >
-                {part}
-              </a>
-            )
-          } else if (part && part.match(slashCommandRegex)) {
-            return (
-              <a
-                key={index}
-                href={`https://www.warpcast.com/~/${part.slice(1)}`}
-                className="font-semibold text-indigo-600"
-              >
-                {part.trim()}
-              </a>
-            )
-          } else {
-            return <Fragment key={index}>{part}</Fragment>
-          }
-        })}
-      </span>
-    )
-  } catch (e) {
-    return <span>{text}</span>
-  }
+// Define interfaces for the profiles and embeds
+interface UserProfile {
+  username: string
+  display_name: string
+  profile_url: string // Adjusted to include a profile URL if needed
 }
 
+interface Embed {
+  url: string
+  description?: string
+  pfp_url?: string // Profile picture URL or similar
+}
+
+interface RenderTextWithLinksProps {
+  text: string
+  mentionedProfiles: UserProfile[]
+  embeds: Embed[]
+}
+
+// Function to render text with links, mentions, and embeds
+export const renderTextWithLinks = (
+  text: string,
+  mentionedProfiles: any[],
+  embeds: any[]
+) => {
+  console.log("the embed in render text", embeds)
+  if (!text) return <span>{text}</span>
+
+  // Maps for quick access
+  const profileMap = new Map<string, UserProfile>()
+  mentionedProfiles.forEach((profile) => {
+    profileMap.set(`@${profile.username}`, profile)
+  })
+
+  const embedMap = new Map<string, Embed>()
+  embeds.forEach((embed) => {
+    embedMap.set(embed.url, embed)
+  })
+
+  // URL and user mention patterns
+  const urlRegex = /https?:\/\/[^\s]+/g
+  const atMentionRegex = /@\w+/g
+
+  // Splitting the text to handle different parts
+  const parts = text.split(/(https?:\/\/[^\s]+|@\w+)/g)
+
+  return (
+    <span>
+      {parts.map((part, index) => {
+        if (urlRegex.test(part)) {
+          if (embedMap.has(part)) {
+            const embed = embedMap.get(part)
+            // Special rendering for embeds
+            return (
+              <div key={index} className="">
+                <a
+                  href={part}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-slate-500"
+                >
+                  {part}
+                </a>
+              </div>
+            )
+          }
+          return (
+            <a
+              key={index}
+              href={part}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-blue-500"
+            >
+              {part}
+            </a>
+          )
+        } else if (atMentionRegex.test(part)) {
+          if (profileMap.has(part)) {
+            const profile = profileMap.get(part)
+            if (!profile) return
+            return (
+              <a
+                key={index}
+                href={profile.profile_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-blue-600"
+              >
+                {profile.display_name || profile.username}
+              </a>
+            )
+          }
+        }
+        return <Fragment key={index}>{part}</Fragment>
+      })}
+    </span>
+  )
+}
 export const debounce = (func: Function, delay: number) => {
   let timer: NodeJS.Timeout
   return function (...args: any[]) {
