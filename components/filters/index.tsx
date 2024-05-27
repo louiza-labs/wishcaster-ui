@@ -155,7 +155,7 @@ const Filters = ({ initialCasts }: CategoriesFeedProps) => {
   return (
     <Suspense>
       <div className=" flex h-fit flex-col gap-y-6 lg:col-span-12">
-        <p className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:block md:text-3xl">
+        <p className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl lg:block">
           Filters
         </p>
         <div className="grid grid-cols-1 gap-y-6">
@@ -179,7 +179,7 @@ const Filters = ({ initialCasts }: CategoriesFeedProps) => {
             <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
               User
             </p>
-            <div className="md:gap-x-auto grid grid-cols-2 gap-x-10">
+            <div className="md:gap-x-auto grid grid-cols-2 gap-x-10 md:flex md:flex-wrap md:gap-4 xl:grid xl:gap-x-10 xl:gap-y-0">
               <InteractionsCheckbox
                 handleChange={handlePriorityBadgeFilterChange}
                 value={filterIsSelected("priority-badge")}
@@ -225,7 +225,7 @@ const Filters = ({ initialCasts }: CategoriesFeedProps) => {
               </p>
             )}
 
-            <div className="grid grid-cols-2 gap-y-6">
+            <div className="md:gap-x-auto grid grid-cols-2 gap-x-10 md:flex md:flex-wrap md:gap-4 xl:grid xl:gap-x-10 xl:gap-y-0">
               <InteractionsCheckbox
                 handleChange={handleLikesFilterChange}
                 value={filterIsSelected("liked")}

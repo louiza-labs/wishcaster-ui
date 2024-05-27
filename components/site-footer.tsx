@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 export function SiteFooter() {
   const items = siteConfig.mainFooter
   return (
-    <footer className="bg-background absolute bottom-0 z-40 flex w-full flex-col items-center justify-between gap-y-2 border-t px-4 shadow-md md:flex-row md:gap-y-0">
+    <footer className="bg-background fixed bottom-0 z-40 flex w-full flex-col items-center justify-between gap-y-2 border-t px-4 shadow-md sm:flex-row md:gap-y-0 lg:absolute">
       <div className="flex flex-row justify-start gap-6 md:gap-10">
         {items?.map((item, index) => (
           <p

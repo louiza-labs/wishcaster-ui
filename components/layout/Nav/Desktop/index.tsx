@@ -69,7 +69,7 @@ export function DesktopNav({ items }: MainNavProps) {
             </nav>
           ) : null}
         </div>
-        <div className="mx-10 w-full md:block">
+        <div className="mx-10 hidden w-full lg:block">
           <Search />
         </div>
         <div className="flex flex-1 items-center justify-end space-x-4">

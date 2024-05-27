@@ -100,13 +100,13 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
         <div className="flex flex-row items-start gap-x-4">
           {/* Placeholder for Header if needed */}
         </div>
-        <main className="relative grid min-h-screen grid-cols-1 gap-4 sm:grid-cols-12 sm:gap-x-10">
+        <main className="relative grid min-h-screen grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-x-10">
           <article
             className={`${
               mobileViewParam.length && mobileViewParam !== "cast"
-                ? "hidden sm:flex"
+                ? "hidden lg:flex"
                 : ""
-            }  overflow-y-auto sm:col-span-5`}
+            }  overflow-y-auto lg:col-span-5`}
           >
             {isError ? (
               <ErrorDisplay
@@ -138,7 +138,7 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
           </article>
           <div
             className={`${
-              mobileViewParam !== "stats" ? "hidden sm:block" : ""
+              mobileViewParam !== "stats" ? "hidden lg:block" : ""
             } overflow-y-auto sm:col-span-3`}
           >
             <div className="flex flex-col gap-y-10">
@@ -154,7 +154,7 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
           </div>
           <div
             className={`${
-              mobileViewParam !== "build" ? "hidden sm:block" : ""
+              mobileViewParam !== "build" ? "hidden lg:block" : ""
             } overflow-y-auto sm:col-span-4`}
           >
             <div className="flex flex-col gap-y-8">
@@ -170,7 +170,7 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
           </div>
         </main>
       </section>
-      <div className="flex flex-col items-start md:hidden">
+      <div className="flex flex-col items-start lg:hidden">
         <BottomMobileNav
           filteredCasts={[castWithCategory]}
           initialCasts={[castWithCategory]}

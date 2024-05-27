@@ -8,7 +8,7 @@ interface DateFilterProps {
 
 const DateFilter = ({ value, datesArray }: DateFilterProps) => {
   return (
-    <div className="flex flex-row items-center md:gap-x-1">
+    <div className="flex flex-row items-center md:flex-wrap md:gap-x-1">
       {datesArray.map((dateVal, index: number) => (
         <>
           <Button

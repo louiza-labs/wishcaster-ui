@@ -23,7 +23,7 @@ function MobileFiltering({ initialCasts }: any) {
         <SheetTrigger asChild>
           <Button
             variant="ghost"
-            className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
+            className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 lg:hidden"
           >
             <Icons.Filter />
             <span className="sr-only">Toggle Menu</span>
@@ -34,7 +34,7 @@ function MobileFiltering({ initialCasts }: any) {
           className="h-[80vh] overflow-y-scroll  rounded-t-xl"
         >
           <span className="ml-2 text-3xl font-bold"> Filter </span>
-          <ScrollArea className="mt-6 h-[120%] w-full ">
+          <ScrollArea className="mt-6 h-[120%] w-full sm:h-full ">
             <div className="flex w-full flex-col items-center space-y-3">
               <aside className="relative flex w-full flex-col items-center  gap-y-6 pb-2 sm:col-span-3 sm:flex">
                 <Filters initialCasts={initialCasts} />

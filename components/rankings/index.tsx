@@ -145,12 +145,15 @@ const Rankings = ({ casts }: any) => {
             Trending Topics
           </h3>
           <Tabs
+            orientation="vertical"
             defaultValue="likes"
             className="flex w-full flex-col items-center gap-y-2 md:w-fit md:items-start"
           >
-            <TabsList className="">
+            <TabsList className="flex size-auto items-start md:h-full md:w-fit md:flex-col lg:flex-row">
               {/* <TabsTrigger value="count">Count</TabsTrigger> */}
-              <TabsTrigger value="likes">Likes</TabsTrigger>
+              <TabsTrigger className="" value="likes">
+                Likes
+              </TabsTrigger>
               <TabsTrigger value="replies">Replies</TabsTrigger>
               <TabsTrigger value="recasts">Recasts</TabsTrigger>
             </TabsList>

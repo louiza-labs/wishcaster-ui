@@ -20,7 +20,7 @@ export function SortGroup({
       defaultValue={defaultValue}
       onValueChange={handleChange}
       orientation="horizontal"
-      className="flex w-full flex-row items-center justify-around md:justify-start"
+      className="flex w-full flex-row items-center justify-around sm:flex-wrap sm:justify-start xl:flex-nowrap"
     >
       {arrayOfSortByValueObjects && arrayOfSortByValueObjects.length
         ? arrayOfSortByValueObjects.map((sortByObject) => (

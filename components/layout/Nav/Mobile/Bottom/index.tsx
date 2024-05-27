@@ -23,7 +23,7 @@ const BottomMobileNav = ({
   page,
 }: BottomMobileNavProps) => {
   return (
-    <div className="bg-background fixed bottom-0 z-40 flex h-20 w-full flex-row items-center justify-around gap-x-10 overflow-hidden border-t px-0">
+    <div className="bg-background fixed bottom-10 z-40 flex h-20 w-full flex-row items-center justify-around gap-x-10 overflow-hidden border-t px-0">
       {page === "cast" ? (
         <>
           <CastPageNavItem section="stats" />

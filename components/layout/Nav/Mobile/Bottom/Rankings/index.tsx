@@ -23,13 +23,16 @@ function MobileRankings({ initialCasts }: any) {
         <SheetTrigger asChild>
           <Button
             variant="ghost"
-            className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
+            className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 lg:hidden"
           >
             <Icons.TrendingUp />
             <span className="sr-only">Toggle Menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="bottom" className="h-[70vh] w-full rounded-t-xl">
+        <SheetContent
+          side="bottom"
+          className="h-[70vh] w-full rounded-t-xl sm:h-[60vh]"
+        >
           <span className="ml-2 text-3xl font-bold"> Trending Topics </span>
           <ScrollArea className="mt-6 h-[calc(100vh-8rem)] w-full pb-0 ">
             <div className="flex flex-col space-y-3">
