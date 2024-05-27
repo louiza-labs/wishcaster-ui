@@ -7,7 +7,7 @@ import {
   categorizeArrayOfCasts,
   generateWhimsicalErrorMessages,
 } from "@/lib/helpers"
-import Build from "@/components/build"
+import Build from "@/components/buildComponent"
 import Cast from "@/components/cast"
 import CastStats from "@/components/cast/stats"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
