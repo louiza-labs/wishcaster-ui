@@ -94,7 +94,7 @@ const CastFooter = ({
           </Button>
           {isOnCastPage ? null : (
             <Button onClick={handleRouteToCastPage} variant={"default"}>
-              Explore
+              Build
             </Button>
           )}
         </div>
