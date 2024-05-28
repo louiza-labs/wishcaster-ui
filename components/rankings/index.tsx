@@ -140,7 +140,7 @@ const Rankings = ({ casts }: any) => {
   return (
     <Suspense>
       {hasResults ? (
-        <div className=" flex h-fit flex-col gap-y-6 lg:col-span-3">
+        <div className="  flex h-fit flex-col gap-y-6">
           <h3 className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:block md:text-3xl">
             Trending Topics
           </h3>
@@ -149,13 +149,26 @@ const Rankings = ({ casts }: any) => {
             defaultValue="likes"
             className="flex w-full flex-col items-center gap-y-2 md:w-fit md:items-start"
           >
-            <TabsList className="flex size-auto items-start md:h-full md:w-fit md:flex-col lg:flex-row">
+            <TabsList className="flex size-auto items-start md:h-full md:w-fit md:flex-col lg:flex-col xl:flex-row">
               {/* <TabsTrigger value="count">Count</TabsTrigger> */}
-              <TabsTrigger className="" value="likes">
+              <TabsTrigger
+                className="lg:w-fit p-2 lg:text-sm 2xl:text-base"
+                value="likes"
+              >
                 Likes
               </TabsTrigger>
-              <TabsTrigger value="replies">Replies</TabsTrigger>
-              <TabsTrigger value="recasts">Recasts</TabsTrigger>
+              <TabsTrigger
+                className="lg:w-fit p-2 lg:text-sm 2xl:text-base"
+                value="replies"
+              >
+                Replies
+              </TabsTrigger>
+              <TabsTrigger
+                className="lg:w-fit p-2 lg:text-sm 2xl:text-base"
+                value="recasts"
+              >
+                Recasts
+              </TabsTrigger>
             </TabsList>
             {/* <TabsContent value="count">
               <RankedValues values={rankedTopicsByCount} />

@@ -333,7 +333,7 @@ export const renderTextWithLinks = (
                 rel="noopener noreferrer"
                 className="font-semibold text-blue-600"
               >
-                {profile.display_name || profile.username}
+                @{profile.username}
               </a>
             )
           }

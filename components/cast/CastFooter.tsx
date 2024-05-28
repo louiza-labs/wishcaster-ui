@@ -1,4 +1,9 @@
+"use client"
+
+import { useParams, useRouter } from "next/navigation"
+
 import { formatDateForCastTimestamp } from "@/lib/helpers"
+import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
 
 interface CastFooterProps {
@@ -7,6 +12,8 @@ interface CastFooterProps {
   replies: {
     count: number
   }
+  hash: string
+  author: string
   reactions: {
     likes_count: number
     recasts_count: number
@@ -18,7 +25,28 @@ const CastFooter = ({
   reactions,
   replies,
   hideMetrics,
+  hash,
+  author,
 }: CastFooterProps) => {
+  const router = useRouter()
+  const params = useParams()
+  const isOnCastPage = params && params.hash ? params.hash === hash : false
+  console.log("the params", params)
+  const handleRouteToWC = () => {
+    if (typeof window !== "undefined") {
+      window.open(
+        `https://www.warpcast.com/${author.username}/${hash}`,
+        "_blank"
+      )
+    }
+  }
+
+  const handleRouteToCastPage = () => {
+    if (hash) {
+      router.push(`/cast/${hash}`)
+    }
+  }
+
   return (
     <div className="mt-2 flex w-full flex-col items-center">
       {!hideMetrics ? (
@@ -53,13 +81,26 @@ const CastFooter = ({
           </div>
         </div>
       ) : null}
-      {/* <!-- Timestamp Section --> */}
-      <div className="mt-2 flex w-fit flex-row items-center justify-center gap-x-2 rounded-full bg-slate-200 px-3 py-1 text-xs font-light dark:bg-slate-800">
-        <Icons.Calendar className="size-4 text-gray-700" />
-        <p className="font-light">
-          Updated {formatDateForCastTimestamp(timestamp)}
-        </p>
+      <div className="mt-2 flex w-full flex-row items-center justify-between">
+        <div className=" flex w-fit flex-row items-start justify-start gap-x-2 rounded-full bg-slate-200 px-3 py-1 text-xs font-light dark:bg-slate-800">
+          <Icons.Calendar className="size-4 text-gray-700" />
+          <p className="font-light">
+            Updated {formatDateForCastTimestamp(timestamp)}
+          </p>
+        </div>
+        <div className="flex flex-row items-center gap-x-2">
+          <Button onClick={handleRouteToWC} variant={"link"}>
+            View on WC
+          </Button>
+          {isOnCastPage ? null : (
+            <Button onClick={handleRouteToCastPage} variant={"default"}>
+              Explore
+            </Button>
+          )}
+        </div>
       </div>
+
+      {/* <!-- Timestamp Section --> */}
     </div>
   )
 }

@@ -68,14 +68,14 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
 
   return (
     <>
-      <section className="mx-auto py-6 md:container sm:px-6 lg:px-20">
+      <section className="mx-auto py-6 md:container sm:px-6 lg:px-6">
         <Header />
-        <main className="relative grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-x-10">
-          <aside className="no-scrollbar sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-3 lg:flex">
+        <main className="relative grid grid-cols-1 gap-4 lg:grid-cols-12 ">
+          <aside className="no-scrollbar sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:flex">
             <SortCasts />
             <Filters initialCasts={initialCasts} />
           </aside>
-          <article className="no-scrollbar lg:col-span-6">
+          <article className="no-scrollbar lg:col-span-8 lg:px-2  ">
             {isError ? (
               <ErrorDisplay
                 searchTerm={searchTerm}
@@ -90,7 +90,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
               />
             )}
           </article>
-          <aside className="no-scrollbar sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky lg:col-span-3 lg:flex lg:flex-col">
+          <aside className="no-scrollbar sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky lg:col-span-2 lg:flex lg:flex-col">
             <Rankings casts={filteredCasts} />
           </aside>
         </main>

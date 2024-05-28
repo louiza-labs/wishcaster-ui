@@ -59,6 +59,8 @@ const Cast = ({
           reactions={reactions}
           replies={replies}
           hideMetrics={hideMetrics}
+          hash={hash}
+          author={author}
         />
       </CardFooter>
     </Card>

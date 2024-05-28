@@ -139,7 +139,7 @@ const Search = () => {
           <p className=" gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl lg:block">
             Results <span className="ml-2">({searchedCasts.length})</span>
           </p>
-          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
             {searchedCasts.slice(0, itemsToShow).map((searchedCast) => (
               <Cast
                 {...searchedCast}
