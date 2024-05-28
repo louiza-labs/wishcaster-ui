@@ -39,7 +39,7 @@ function SignInDrawer() {
                 <NeynarAuthButton
                   variant={SIWN_variant.FARCASTER}
                   label="Connect Farcaster"
-                  className="text-inter bg-transparent shadow-none"
+                  className="text-inter bg-transparent dark:text-white shadow-none"
                 />{" "}
               </Button>
             </div>

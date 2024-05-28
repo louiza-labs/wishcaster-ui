@@ -188,7 +188,7 @@ const Bounty = ({ hash }: BountyProps) => {
             <NeynarAuthButton
               variant={SIWN_variant.FARCASTER}
               label="Connect Farcaster"
-              className="text-inter rounded-sm border border-slate-200 bg-transparent shadow-none"
+              className="text-inter dark:text-white rounded-sm border border-slate-200 bg-transparent shadow-none"
             />
           </Button>
           <div className="flex w-full flex-row items-center justify-center gap-x-1">
