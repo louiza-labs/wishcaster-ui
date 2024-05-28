@@ -71,6 +71,8 @@ const EmbeddedCast = ({
           timestamp={timestamp}
           reactions={reactions}
           replies={replies}
+          hash={hash ?? ""}
+          author={author}
         />
       </CardFooter>
     </Card>
