@@ -29,7 +29,7 @@ const CastsFeed: React.FC<CastFeedProps> = ({
   )
   const { filteredCasts } = useFilterFeed(castsToShow)
   const router = useRouter()
-  const categoriesFromParams = searchParams.getAll("categories").join(",")
+  const categoriesFromParams = searchParams.getAll("topics").join(",")
 
   const createQueryString = useCallback(
     (name: string, value: string, addValue: boolean) => {
@@ -76,7 +76,7 @@ const CastsFeed: React.FC<CastFeedProps> = ({
 
       // Toggle the category based on its current state
       const newSearchParams = createQueryString(
-        "categories",
+        "topics",
         categoryName,
         !isToggled
       )
@@ -84,7 +84,7 @@ const CastsFeed: React.FC<CastFeedProps> = ({
       router.push("?" + newSearchParams)
     } else {
       // If no categories are selected, simply toggle the clicked category
-      router.push("?" + createQueryString("categories", categoryName, true))
+      router.push("?" + createQueryString("topics", categoryName, true))
     }
   }
 

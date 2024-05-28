@@ -19,7 +19,7 @@ const CategoriesFeed = ({ categories }: CategoriesFeedProps) => {
   const router = useRouter()
 
   const categoriesFromParams = useMemo(
-    () => searchParams.getAll("categories"),
+    () => searchParams.getAll("topics"),
     [searchParams]
   )
 
@@ -59,7 +59,7 @@ const CategoriesFeed = ({ categories }: CategoriesFeedProps) => {
     (categoryName: string) => {
       const isToggled = categoriesFromParams.includes(categoryName)
       const newSearchParams = createQueryString(
-        "categories",
+        "topics",
         categoryName,
         !isToggled
       )

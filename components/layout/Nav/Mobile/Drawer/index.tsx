@@ -20,7 +20,7 @@ function MobileNav() {
   const [open, setOpen] = React.useState(false)
   const searchParams = useSearchParams()
   const categoriesFromParams = useMemo(
-    () => parseQueryParam(searchParams.getAll("categories")),
+    () => parseQueryParam(searchParams.getAll("topics")),
     [searchParams]
   )
   const sortParams = useMemo(

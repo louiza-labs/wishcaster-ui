@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import { Suspense, useCallback, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
@@ -14,18 +14,39 @@ function parseQueryParam(param?: string | string[]): string {
 }
 
 function MobileSearch({}: any) {
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = useState(false)
   const searchParams = useSearchParams()
+  const filtersFromParams = useMemo(
+    () => searchParams.getAll("search"),
+    [searchParams]
+  )
+  const filterIsSelected = useCallback(
+    (categoryName: string) => {
+      return filtersFromParams.includes(categoryName)
+    },
+    [filtersFromParams]
+  )
 
   return (
-    <React.Suspense>
+    <Suspense>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <Button
             variant="ghost"
             className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 lg:hidden"
           >
-            <Icons.Search />
+            <div className="flex flex-col items-center">
+              <Icons.Search />
+              <p
+                className={
+                  filterIsSelected("stats")
+                    ? "text-xs font-bold"
+                    : "text-xs font-medium"
+                }
+              >
+                Search
+              </p>
+            </div>
             <span className="sr-only">Toggle Menu</span>
           </Button>
         </SheetTrigger>
@@ -43,7 +64,7 @@ function MobileSearch({}: any) {
           </ScrollArea>
         </SheetContent>
       </Sheet>
-    </React.Suspense>
+    </Suspense>
   )
 }
 

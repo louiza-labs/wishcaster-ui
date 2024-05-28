@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Icons } from "@/components/icons"
 import SignInDrawer from "@/components/layout/Nav/Mobile/SignInDrawer"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export function MobileNav() {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
@@ -35,26 +36,29 @@ export function MobileNav() {
           <Icons.logo />
         </Button>
 
-        {!isAuthenticated ? (
-          <SignInDrawer />
-        ) : user && user.pfp_url ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger className="border-none " asChild>
-              <Avatar className="size-8">
-                <AvatarImage src={user.pfp_url} alt={user.username} />
-              </Avatar>
-            </DropdownMenuTrigger>
+        <div className="flex flex-row items-center gap-x-2">
+          <ThemeToggle />
+          {!isAuthenticated ? (
+            <SignInDrawer />
+          ) : user && user.pfp_url ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="border-none " asChild>
+                <Avatar className="size-8">
+                  <AvatarImage src={user.pfp_url} alt={user.username} />
+                </Avatar>
+              </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="w-56">
-              <DropdownMenuGroup>
-                <DropdownMenuItem onClick={() => logoutUser()}>
-                  Sign out
-                  <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : null}
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => logoutUser()}>
+                    Sign out
+                    <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : null}
+        </div>
       </nav>
     </header>
   )

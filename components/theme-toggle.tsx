@@ -11,7 +11,7 @@ export function ThemeToggle() {
   return (
     <Button
       variant="ghost"
-      className="hidden flex-col   items-center justify-center md:flex"
+      className=" flex-col   items-center justify-center md:flex"
       size="icon"
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
     >

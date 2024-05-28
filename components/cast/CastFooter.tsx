@@ -48,7 +48,7 @@ const CastFooter = ({
   }
 
   return (
-    <div className="mt-2 flex w-full flex-col items-center">
+    <div className="mt-2 flex  w-full flex-col items-center">
       {!hideMetrics ? (
         <div className="flex w-full flex-row items-center justify-around gap-x-4 rounded-md  p-2 text-sm  backdrop-blur-md ">
           {/* <!-- Likes Section --> */}
@@ -84,13 +84,24 @@ const CastFooter = ({
       <div className="mt-2 flex w-full flex-row items-center justify-between">
         <div className=" flex w-fit flex-row items-start justify-start gap-x-2 rounded-full bg-slate-200 px-3 py-1 text-xs font-light dark:bg-slate-800">
           <Icons.Calendar className="size-4 text-gray-700" />
-          <p className="font-light">
+          <p className="font-light ">
             Updated {formatDateForCastTimestamp(timestamp)}
           </p>
         </div>
-        <div className="flex flex-row items-center gap-x-2">
-          <Button onClick={handleRouteToWC} variant={"link"}>
+        <div className="flex flex-row items-center gap-x-2 text-xs lg:text-base">
+          <Button
+            className="hidden lg:block"
+            onClick={handleRouteToWC}
+            variant={"link"}
+          >
             View on WC
+          </Button>
+          <Button
+            className="block lg:hidden"
+            onClick={handleRouteToWC}
+            variant={"link"}
+          >
+            Visit
           </Button>
           {isOnCastPage ? null : (
             <Button onClick={handleRouteToCastPage} variant={"default"}>

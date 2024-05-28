@@ -17,7 +17,7 @@ const useFilterFeed = (casts: CastType[]) => {
 
   // Extract search parameters
   const searchTermFromParams = searchParams.getAll("search").join(",")
-  const categoriesFromParams = searchParams.getAll("categories").join(",")
+  const categoriesFromParams = searchParams.getAll("topics").join(",")
   const filtersFromParams = searchParams.getAll("filters").join(",")
   const sortFieldFromParams = searchParams.getAll("sort").join(",")
   // Determine filter flags
