@@ -31,7 +31,6 @@ const CastFooter = ({
   const router = useRouter()
   const params = useParams()
   const isOnCastPage = params && params.hash ? params.hash === hash : false
-  console.log("the params", params)
   const handleRouteToWC = () => {
     if (typeof window !== "undefined") {
       window.open(
