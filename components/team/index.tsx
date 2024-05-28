@@ -4,7 +4,6 @@ import { Suspense, useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useNeynarContext } from "@neynar/react"
 
-import useFetchCastConversation from "@/hooks/farcaster/useFetchCastConversation"
 import useGetProfiles from "@/hooks/farcaster/useGetProfiles"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import {
@@ -22,8 +21,9 @@ import TeamFilters from "@/components/team/filters"
 interface TeamProps {
   cast: any
   reactions: any
+  conversation: any[]
 }
-const Team = ({ cast, reactions }: TeamProps) => {
+const Team = ({ cast, reactions, conversation }: TeamProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { likes, recasts } = reactions
@@ -36,7 +36,6 @@ const Team = ({ cast, reactions }: TeamProps) => {
     () => searchParams.getAll("filters"),
     [searchParams]
   )
-  const { conversation } = useFetchCastConversation(cast.hash)
   const { filteredCasts: updatedCast } = useFilterFeed([cast])
 
   const createQueryString = useCallback(
