@@ -50,7 +50,7 @@ const CastFooter = ({
   return (
     <div className="mt-2 flex  w-full flex-col items-center">
       {!hideMetrics ? (
-        <div className="flex w-full flex-row items-center justify-around gap-x-4 rounded-md  p-2 text-sm  backdrop-blur-md ">
+        <div className="flex w-full flex-row xl:px-10 items-center justify-center gap-x-20 rounded-md  p-2 text-sm  backdrop-blur-md ">
           {/* <!-- Likes Section --> */}
           <div className="flex flex-row items-center gap-x-2">
             <Icons.likes className="size-4 text-gray-700" />
