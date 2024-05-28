@@ -13,7 +13,7 @@ interface CastFooterProps {
     count: number
   }
   hash: string
-  author: string
+  author: any
   reactions: {
     likes_count: number
     recasts_count: number
