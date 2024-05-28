@@ -1,22 +1,30 @@
-# next-template
+# WishCaster
 
-A Next.js 13 template for building apps with Radix UI and Tailwind CSS.
+A channel-focused Farcaster client for someone-build to help builders find what to work on
+
+## Features
+- Filtering, sorting and searching of casts
+- Generated topics for casts
+- Deeper stats for a given cast
+- Ability to post a bounty for a given post
+
+## Requirements
+This relies on Neynar for all Farcaster read/write activities, so the following env variables are needed to get started:
+- NEYNAR_API_KEY
+- NEXT_PUBLIC_NEYNAR_CLIENT_ID
+
+This also has Posthog tracking, so to enable that, an account is needed for the following environment:
+ - NEXT_PUBLIC_POSTHOG_KEY
+ - NEXT_PUBLIC_POSTHOG_HOST
+
 
 ## Usage
 
 ```bash
-npx create-next-app -e https://github.com/shadcn/next-template
+pnpm run dev
 ```
 
-## Features
 
-- Next.js 13 App Directory
-- Radix UI Primitives
-- Tailwind CSS
-- Icons from [Lucide](https://lucide.dev)
-- Dark mode with `next-themes`
-- Tailwind CSS class sorting, merging and linting.
 
-## License
 
-Licensed under the [MIT license](https://github.com/shadcn/ui/blob/main/LICENSE.md).
+
