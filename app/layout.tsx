@@ -2,8 +2,8 @@ import { siteConfig } from "@/config/site"
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
 import InitialLoading from "@/components/loading/initial"
-import DynamicProvider from "@/components/providers/dynamic"
 import NeynarProvider from "@/components/providers/neynar"
+import { CSPostHogProvider } from "@/components/providers/posthog"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
@@ -68,7 +68,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <>
       <html lang="en" suppressHydrationWarning>
         <head />
-        <DynamicProvider>
+        <CSPostHogProvider>
           <NeynarProvider>
             <body
               className={cn(
@@ -92,7 +92,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               </ThemeProvider>
             </body>
           </NeynarProvider>
-        </DynamicProvider>
+        </CSPostHogProvider>
       </html>
     </>
   )
