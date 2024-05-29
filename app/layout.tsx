@@ -30,20 +30,22 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,
+    url: "https://wishcaster.xyz",
 
     images: [
-      "https://res.cloudinary.com/dermgckap/image/upload/v1716361984/twitterCard-Wishcaster_qygqg5.svg",
+      "https://res.cloudinary.com/dermgckap/image/upload/v1716953497/wishcaster-twitter-png_tbkrcv.png",
     ],
     locale: "en_US",
     type: "website",
   },
+
   twitter: {
     card: "summary_large_image",
     title: "WishCaster",
     description: "Find what to build next",
-    creator: "@joesephAtToledano",
+    creator: "@joesephAToledano",
     images: [
-      "https://res.cloudinary.com/dermgckap/image/upload/v1716361984/twitterCard-Wishcaster_qygqg5.svg",
+      "https://res.cloudinary.com/dermgckap/image/upload/v1716953497/wishcaster-twitter-png_tbkrcv.png",
     ], // Must be an absolute URL
   },
 }
