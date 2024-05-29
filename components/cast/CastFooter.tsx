@@ -47,70 +47,58 @@ const CastFooter = ({
   }
 
   return (
-    <div className="mt-2 flex  w-full flex-col items-center">
-      {!hideMetrics ? (
-        <div className="flex w-full flex-row items-center justify-around gap-x-4 rounded-md  p-2 text-sm  backdrop-blur-md ">
-          {/* <!-- Likes Section --> */}
-          <div className="flex flex-row items-center gap-x-2">
-            <Icons.likes className="size-4 text-gray-700" />
-            <div className="flex flex-col items-start">
-              <p className="font-medium">
-                {reactions.likes_count.toLocaleString()}
-              </p>
-              <p>like{reactions.likes_count !== 1 ? "s" : ""}</p>
+    <div className="mt-2 flex w-full flex-col items-center">
+      {!hideMetrics && (
+        <div className="flex w-full cursor-read justify-center gap-x-12 px-4 py-2 text-sm rounded-md backdrop-blur-md">
+          {/* <!-- Interaction Stats (Likes, Recasts, Replies) --> */}
+          {[
+            { icon: Icons.likes, count: reactions.likes_count, noun: "like" },
+            {
+              icon: Icons.recasts,
+              count: reactions.recasts_count,
+              noun: "recast",
+            },
+            { icon: Icons.replies, count: replies.count, noun: "reply" },
+          ].map(({ icon: Icon, count, noun }) => (
+            <div key={noun} className="flex items-center gap-x-2">
+              <Icon className="h-4 w-4 text-gray-700" />
+              <div className="flex flex-col items-start">
+                <p className="font-medium">{count.toLocaleString()}</p>
+                <p>{count !== 1 ? `${noun}s` : noun}</p>
+              </div>
             </div>
-          </div>
-          {/* <!-- Recasts Section --> */}
-          <div className="flex flex-row items-center gap-x-2">
-            <Icons.recasts className="size-4 text-gray-700" />
-            <div className="flex flex-col items-start">
-              <p className="font-medium">
-                {reactions.recasts_count.toLocaleString()}
-              </p>
-              <p>recast{reactions.recasts_count !== 1 ? "s" : ""}</p>
-            </div>
-          </div>
-          {/* <!-- Replies Section --> */}
-          <div className="flex flex-row items-center gap-x-2">
-            <Icons.replies className="size-4 text-gray-700" />
-            <div className="flex flex-col items-start">
-              <p className="font-medium">{replies.count.toLocaleString()}</p>
-              <p>{replies.count !== 1 ? "replies" : "reply"}</p>
-            </div>
-          </div>
+          ))}
         </div>
-      ) : null}
-      <div className="mt-2 flex w-full flex-row items-center justify-between">
-        <div className=" flex w-fit flex-row items-start justify-start gap-x-2 rounded-full bg-slate-200 px-3 py-1 text-xs font-light dark:bg-slate-800">
-          <Icons.Calendar className="size-4 text-gray-700" />
-          <p className="font-light ">
-            Updated {formatDateForCastTimestamp(timestamp)}
-          </p>
+      )}
+      <div className="mt-2 flex w-full items-center justify-between">
+        {/* <!-- Date Section --> */}
+        <div className="flex items-center gap-x-2 rounded-full bg-slate-200 px-3 py-1 text-xs font-light dark:bg-slate-800">
+          <Icons.Calendar className="h-4 w-4 text-gray-700" />
+          <p>Updated {formatDateForCastTimestamp(timestamp)}</p>
         </div>
-        <div className="flex flex-row items-center gap-x-2 text-xs lg:text-base">
+        {/* <!-- Action Buttons --> */}
+        <div className="flex items-center gap-x-2 text-xs sm:text-sm">
           <Button
-            className="hidden lg:block"
+            className="hidden sm:block"
             onClick={handleRouteToWC}
-            variant={"link"}
+            variant="link"
           >
             View on WC
           </Button>
           <Button
-            className="block lg:hidden"
+            className="block sm:hidden"
             onClick={handleRouteToWC}
-            variant={"link"}
+            variant="link"
           >
             Visit
           </Button>
-          {isOnCastPage ? null : (
-            <Button onClick={handleRouteToCastPage} variant={"default"}>
+          {!isOnCastPage && (
+            <Button onClick={handleRouteToCastPage} variant="default">
               Build
             </Button>
           )}
         </div>
       </div>
-
-      {/* <!-- Timestamp Section --> */}
     </div>
   )
 }
