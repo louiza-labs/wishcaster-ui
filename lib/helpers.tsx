@@ -581,3 +581,57 @@ export function getRanking(
   // If no matching value is found, return null
   return null
 }
+
+interface CategorySummary {
+  id: string
+  topic: string
+  likes: number
+  priorityLikes: number
+  recasts: number
+  replies: number
+  count: number
+  averageFollowerCount: number
+  // powerBadgeCount: number
+}
+
+export function summarizeByCategory(
+  casts: Cast[],
+  sortField?: keyof CategorySummary
+): CategorySummary[] {
+  const summaries = new Map<string, CategorySummary>()
+
+  casts.forEach((cast) => {
+    const { category, reactions, replies, author } = cast
+    if (!category) return
+
+    if (!summaries.has(category)) {
+      summaries.set(category, {
+        id: category.replace(/\s+/g, "-").toLowerCase(),
+        topic: category,
+        likes: 0,
+        priorityLikes: 0,
+        recasts: 0,
+        replies: 0,
+        count: 0,
+        averageFollowerCount: 0,
+        // powerBadgeCount: 0
+      })
+    }
+
+    const summary = summaries.get(category)!
+    summary.likes += reactions.likes_count
+    summary.recasts += reactions.recasts_count
+    summary.replies += replies.count
+    summary.count += 1
+    summary.averageFollowerCount += author.follower_count
+    // if (author.power_badge) summary.powerBadgeCount += 1;
+  })
+
+  // Convert summaries to array and optionally sort
+  let result = Array.from(summaries.values())
+  if (sortField) {
+    result.sort((a, b) => b[sortField] - a[sortField])
+  }
+
+  return result
+}
