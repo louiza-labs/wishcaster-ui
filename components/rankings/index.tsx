@@ -3,6 +3,7 @@
 import { Suspense, useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
+import { PRODUCT_CATEGORIES_AS_MAP } from "@/lib/constants"
 import { buildRankings } from "@/lib/helpers"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -107,13 +108,14 @@ const Rankings = ({ casts }: any) => {
   ])
 
   const RankedCard = ({ value, index }: any) => {
+    const topicLabel = PRODUCT_CATEGORIES_AS_MAP[value.name].label
     return (
       <button
-        onClick={() => handleToggleCategoryClick(value.name)}
+        onClick={() => handleToggleCategoryClick(value)}
         className="inline-flex h-10 items-center justify-center rounded-md bg-gray-100 px-4 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 dark:border dark:border-gray-200 dark:bg-transparent dark:text-gray-50 dark:hover:bg-gray-700"
       >
         <div className="flex w-full items-center justify-between gap-x-2">
-          <span className="">{value.name}</span>
+          <span className="">{topicLabel}</span>
           <span className="text-xs text-gray-500 dark:text-gray-400">
             {value.value}
           </span>
@@ -152,19 +154,19 @@ const Rankings = ({ casts }: any) => {
             <TabsList className="flex size-auto items-start md:h-full md:w-fit md:flex-col lg:flex-col xl:flex-row">
               {/* <TabsTrigger value="count">Count</TabsTrigger> */}
               <TabsTrigger
-                className="lg:w-fit p-2 lg:text-sm 2xl:text-base"
+                className="p-2 lg:w-fit lg:text-sm 2xl:text-base"
                 value="likes"
               >
                 Likes
               </TabsTrigger>
               <TabsTrigger
-                className="lg:w-fit p-2 lg:text-sm 2xl:text-base"
+                className="p-2 lg:w-fit lg:text-sm 2xl:text-base"
                 value="replies"
               >
                 Replies
               </TabsTrigger>
               <TabsTrigger
-                className="lg:w-fit p-2 lg:text-sm 2xl:text-base"
+                className="p-2 lg:w-fit lg:text-sm 2xl:text-base"
                 value="recasts"
               >
                 Recasts

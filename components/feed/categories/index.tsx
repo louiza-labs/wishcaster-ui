@@ -18,6 +18,8 @@ const CategoriesFeed = ({ categories }: CategoriesFeedProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
 
+  console.log("the categories feed", categories)
+
   const categoriesFromParams = useMemo(
     () => searchParams.getAll("topics"),
     [searchParams]
@@ -85,16 +87,16 @@ const CategoriesFeed = ({ categories }: CategoriesFeedProps) => {
                     >
                       <Badge
                         onClick={() =>
-                          handleToggleCategoryClick(category.category)
+                          handleToggleCategoryClick(category.category.id)
                         }
                         variant={
-                          badgeIsToggled(category.category)
+                          badgeIsToggled(category.category.id)
                             ? "default"
                             : "outline"
                         }
                         className="h-10 w-fit cursor-pointer whitespace-nowrap"
                       >
-                        {category.category}
+                        {category.category.label}
                       </Badge>
                     </div>
                   )

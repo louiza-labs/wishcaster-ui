@@ -66,17 +66,16 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
 
   return (
     <>
-      <section className="mx-auto py-6 md:container sm:px-6 lg:px-6">
-        <div className="flex w-full flex-row justify-between">
+      <section className="relative mx-auto py-6 md:container sm:px-6 lg:px-6">
+        <div className="sticky flex w-full flex-row justify-between">
           <Header />
 
           <TopicFilters initialCasts={initialCasts} />
         </div>
-        <main className="relative grid grid-cols-1 gap-4 lg:grid-cols-12 ">
+        <main className="relative grid grid-cols-1 gap-4 py-10 lg:grid-cols-12 ">
           <article className="no-scrollbar lg:col-span-12 lg:px-2  ">
             <Topics casts={filteredCasts} />
           </article>
-          <aside className="no-scrollbar sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky lg:col-span-2 lg:flex lg:flex-col"></aside>
         </main>
       </section>
       <div className="flex flex-col items-start lg:hidden">

@@ -29,11 +29,13 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  handleRowClick?: (value: string) => void
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  handleRowClick,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
@@ -89,21 +91,35 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                const topic =
+                  row.getValue("topic") &&
+                  row.getValue("topic").split(" ") &&
+                  row.getValue("topic").split(" ")[1]
+                    ? row.getValue("topic").split(" ")[1].toLowerCase()
+                    : 0
+                console.log("the topic", topic)
+
+                return (
+                  <TableRow
+                    key={row.id}
+                    className={handleRowClick ? "cursor-pointer" : ""}
+                    onClick={
+                      handleRowClick ? () => handleRowClick(topic) : undefined
+                    }
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                )
+              })
             ) : (
               <TableRow>
                 <TableCell

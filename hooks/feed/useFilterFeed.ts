@@ -6,7 +6,6 @@ import { Cast as CastType, Category } from "@/types"
 import {
   addCategoryFieldsToCasts,
   categorizeArrayOfCasts,
-  filterDuplicateCategories,
   searchCastsForCategories,
   searchCastsForTerm,
   sortCastsByProperty,
@@ -63,7 +62,7 @@ const useFilterFeed = (casts: CastType[]) => {
 
   // Categorize and filter duplicate categories
   const categories = categorizeArrayOfCasts(filteredCasts) as Category[]
-  const filteredCategories = filterDuplicateCategories(categories)
+  const filteredCategories = categories
 
   // Add category fields to casts
   filteredCasts = addCategoryFieldsToCasts(

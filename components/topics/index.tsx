@@ -1,7 +1,7 @@
 "use client"
 
 import { Suspense, useCallback, useMemo } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 
 import { buildRankings, summarizeByCategory } from "@/lib/helpers"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
@@ -15,58 +15,16 @@ type RankedValueType = {
 
 const Topics = ({ casts }: any) => {
   const { filteredCasts } = useFilterFeed(casts)
-
-  const searchParams = useSearchParams()
+  const sortedTopics = summarizeByCategory(filteredCasts, "likes")
+  console.log("the filtered casts", filteredCasts)
+  console.log("the sorted topics", sortedTopics)
   const router = useRouter()
 
-  const categoriesFromParams = useMemo(
-    () => searchParams.getAll("topics"),
-    [searchParams]
-  )
-
-  const createQueryString = useCallback(
-    (name: string, value: string, addValue: boolean) => {
-      const params = new URLSearchParams(searchParams.toString())
-
-      const existingCategories = params.getAll(name)
-
-      if (addValue) {
-        if (!existingCategories.includes(value)) {
-          params.append(name, value)
-        }
-      } else {
-        const updatedCategories = existingCategories.filter(
-          (category) => category !== value
-        )
-        params.delete(name)
-        updatedCategories.forEach((category) => {
-          params.append(name, category)
-        })
-      }
-
-      return params.toString()
-    },
-    [searchParams]
-  )
-
-  const badgeIsToggled = useCallback(
-    (categoryName: string) => {
-      return categoriesFromParams.includes(categoryName)
-    },
-    [categoriesFromParams]
-  )
-
   const handleToggleCategoryClick = useCallback(
-    (categoryName: string) => {
-      const isToggled = categoriesFromParams.includes(categoryName)
-      const newSearchParams = createQueryString(
-        "topics",
-        categoryName,
-        !isToggled
-      )
-      router.push("?" + newSearchParams)
+    (topic: string) => {
+      router.push(`/topics/${topic}`)
     },
-    [categoriesFromParams, createQueryString, router]
+    [, router]
   )
 
   // const rankedTopicsByCount = buildRankings(
@@ -106,62 +64,75 @@ const Topics = ({ casts }: any) => {
     rankedTopicsByRecasts,
     rankedTopicsByReplies,
   ])
-
-  const sortedTopics = summarizeByCategory(filteredCasts, "likes")
-
-  const RankedCard = ({ value, index }: any) => {
-    return (
-      <button
-        onClick={() => handleToggleCategoryClick(value.name)}
-        className="inline-flex h-10 items-center justify-center rounded-md bg-gray-100 px-4 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 dark:border dark:border-gray-200 dark:bg-transparent dark:text-gray-50 dark:hover:bg-gray-700"
-      >
-        <div className="flex w-full items-center justify-between gap-x-2">
-          <span className="">{value.name}</span>
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-            {value.value}
-          </span>
-        </div>
-      </button>
-    )
-  }
-
-  const RankedValues = ({ values }: { values: RankedValueType[] }) => {
-    return (
-      <ol className="mt-4 flex w-full flex-wrap gap-4 ">
-        {values && Array.isArray(values)
-          ? values.map((value: RankedValueType, index: number) => (
-              <RankedCard value={value} index={index + 1} key={index} />
-            ))
-          : null}
-      </ol>
-    )
-  }
+  console.log("the filteredCasts", filteredCasts)
 
   return (
     <Suspense>
       {hasResults ? (
-        <div className="  flex h-full flex-col gap-y-6">
+        <div className="  flex  flex-col gap-y-6">
           <h3 className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:block md:text-3xl">
-            Top Topics
+            Most popular
           </h3>
-          <div className="flex flex-row items-center justify-around gap-x-2">
-            {sortedTopics.slice(0, 5).map((topic, index) => (
-              <PopularTopicCard
-                name={topic.topic}
-                description={topic.topic}
-                likes={topic.likes}
-                recasts={topic.recasts}
-                replies={topic.replies}
-                avgFollowers={topic.averageFollowerCount}
-                count={topic.count}
-                powerBadges={topic.priorityLikes}
-                key={topic.topic}
-                rank={index + 1}
-              />
-            ))}
-            {/*  */}
-          </div>
-          <TopicsTable topicsData={filteredCasts} />
+          <>
+            <div className="flex-col items-center justify-around gap-x-2 md:hidden xl:flex xl:flex-row">
+              {sortedTopics.slice(0, 5).map((topic, index) => (
+                <PopularTopicCard
+                  name={topic.topic}
+                  description={topic.topic}
+                  likes={topic.likes}
+                  recasts={topic.recasts}
+                  replies={topic.replies}
+                  avgFollowers={topic.averageFollowerCount}
+                  count={topic.count}
+                  powerBadges={topic.priorityLikes}
+                  handleClick={handleToggleCategoryClick}
+                  key={topic.topic}
+                  rank={index + 1}
+                />
+              ))}
+              {/*  */}
+            </div>
+            <div className="hidden flex-row items-center justify-around gap-x-2 lg:flex xl:hidden">
+              {sortedTopics.slice(0, 4).map((topic, index) => (
+                <PopularTopicCard
+                  name={topic.topic}
+                  description={topic.topic}
+                  likes={topic.likes}
+                  recasts={topic.recasts}
+                  replies={topic.replies}
+                  avgFollowers={topic.averageFollowerCount}
+                  count={topic.count}
+                  powerBadges={topic.priorityLikes}
+                  handleClick={handleToggleCategoryClick}
+                  key={topic.topic}
+                  rank={index + 1}
+                />
+              ))}
+              {/*  */}
+            </div>
+            <div className="hidden flex-row items-center justify-around gap-x-2 md:flex lg:hidden">
+              {sortedTopics.slice(0, 3).map((topic, index) => (
+                <PopularTopicCard
+                  name={topic.topic}
+                  description={topic.topic}
+                  likes={topic.likes}
+                  recasts={topic.recasts}
+                  replies={topic.replies}
+                  avgFollowers={topic.averageFollowerCount}
+                  count={topic.count}
+                  powerBadges={topic.priorityLikes}
+                  handleClick={handleToggleCategoryClick}
+                  key={topic.topic}
+                  rank={index + 1}
+                />
+              ))}
+              {/*  */}
+            </div>
+          </>
+          <TopicsTable
+            topicsData={filteredCasts}
+            handleRowClick={handleToggleCategoryClick}
+          />
         </div>
       ) : (
         <div className="flex flex-col  gap-y-2">

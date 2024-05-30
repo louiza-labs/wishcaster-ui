@@ -2,6 +2,7 @@
 
 import { Cast as CastType } from "@/types"
 
+import { PRODUCT_CATEGORIES_AS_MAP } from "@/lib/constants"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import AuthorAvatar from "@/components/cast/CastAvatar"
 import CastContent from "@/components/cast/CastContent"
@@ -30,12 +31,16 @@ const Cast = ({
   hideMetrics,
   routeToWarpcast,
 }: CastComponentTypes | any) => {
+  const categoryLabel =
+    category && category.id
+      ? PRODUCT_CATEGORIES_AS_MAP[category.id].label
+      : null
   return (
     <Card className="md:border-auto md:shadow-auto flex w-full flex-col justify-between border-none  lg:h-fit">
       <CardHeader>
         <AuthorAvatar
           author={author}
-          category={category}
+          category={categoryLabel}
           handleToggleCategoryClick={handleToggleCategoryClick}
           badgeIsToggled={badgeIsToggled}
         />

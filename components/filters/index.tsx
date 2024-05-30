@@ -22,7 +22,10 @@ import DateFilters from "@/components/filters/Date"
 import { InteractionsCheckbox } from "@/components/filters/Interactions"
 
 interface Category {
-  category: string
+  category: {
+    label: string
+    id: string
+  }
   request: string
 }
 
@@ -37,6 +40,8 @@ const Filters = ({ initialCasts }: CategoriesFeedProps) => {
 
   let { filteredCasts } = useFilterFeed(initialCasts)
   const categories = categorizeArrayOfCasts(filteredCasts) as Category[]
+  console.log("the categorized categories", categories)
+
   const filteredCategories = filterDuplicateCategories(categories)
 
   const filtersFromParams = useMemo(

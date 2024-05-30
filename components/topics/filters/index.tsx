@@ -2,6 +2,7 @@
 
 import { Suspense, useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { Category } from "@/types"
 import { useNeynarContext } from "@neynar/react"
 
 import {
@@ -139,7 +140,10 @@ const TopicFilters = ({ initialCasts }: CategoriesFeedProps) => {
 
   return (
     <Suspense>
-      <div className=" flex h-fit flex-row gap-x-10 rounded-xl border px-10 py-4 ">
+      <div className="relative  flex h-fit flex-row gap-x-10 rounded-xl border px-10 py-4 ">
+        <p className="bg-background absolute -top-3 left-1/2 -translate-x-1/2 px-4 font-semibold">
+          Filters
+        </p>
         <div className="flex flex-row gap-x-10 gap-y-6">
           <div className=" flex flex-col items-start">
             <DateFilters
@@ -149,7 +153,7 @@ const TopicFilters = ({ initialCasts }: CategoriesFeedProps) => {
           </div>
 
           <div className=" flex flex-col items-start">
-            <div className="md:gap-x-auto flex flex-row flex-col gap-y-10 md:flex md:flex-wrap md:gap-4 xl:flex xl:gap-x-10 xl:gap-y-2">
+            <div className="md:gap-x-auto flex flex-col gap-y-10 md:flex md:flex-wrap md:gap-4 xl:flex xl:gap-x-10 xl:gap-y-2">
               <InteractionsCheckbox
                 handleChange={handlePriorityBadgeFilterChange}
                 value={filterIsSelected("priority-badge")}

@@ -1,9 +1,9 @@
 import { Fragment } from "react"
-import { Cast as CastType, Categories, Category } from "@/types"
+import { Cast as CastType, Category } from "@/types"
 import { ErrorRes } from "@neynar/nodejs-sdk/build/neynar-api/v2"
 import axios, { AxiosError } from "axios"
 
-import { PRODUCT_CATEGORIES_AS_SETS } from "@/lib/constants"
+import { PRODUCT_CATEGORIES_AS_MAP } from "@/lib/constants"
 
 export const welcomeMessages = [
   "Wowow Farcaster",
@@ -75,12 +75,22 @@ export const addCategoryFieldsToCasts = (
   ) {
     return []
   }
+  console.log("the categories in ", categories)
   return casts.map((cast) => {
     const categoryMatch = categories.find(
       (category) => category.request === cast.text
     )
     return { ...cast, category: categoryMatch ? categoryMatch.category : null }
   })
+}
+export const filterDuplicateCategory = (categories: Category[]) => {
+  if (
+    !categories ||
+    (Array.isArray(categories) && !categories.length) ||
+    !Array.isArray(categories)
+  ) {
+    return []
+  }
 }
 export const filterDuplicateCategories = (categories: Category[]) => {
   if (
@@ -92,9 +102,9 @@ export const filterDuplicateCategories = (categories: Category[]) => {
   }
   const uniqueCategories = categories.filter(
     (category, index, self) =>
-      index === self.findIndex((c) => c.category === category.category)
+      index === self.findIndex((c) => c.category.id === category.category.id)
   )
-  return uniqueCategories
+  return uniqueCategories.filter((category: Category) => category.category.id)
 }
 export const searchCastsForTerm = (
   casts: CastType[],
@@ -119,7 +129,7 @@ export const searchCastsForCategories = (
     (cast) =>
       cast.category &&
       searchTerms.some(
-        (term) => cast.category && cast.category.toLowerCase() === term
+        (term) => cast.category && cast.category.id.toLowerCase() === term
       )
   )
 }
@@ -138,7 +148,12 @@ export const buildRankings = (
   const metricsMap = new Map<string, number>()
 
   casts.forEach((cast) => {
-    const focusValue = cast[focus] as string // Ensuring the value is treated as a string
+    const focusValue =
+      focus === "category" && cast[focus]
+        ? cast[focus].id
+        : focus === "category" && !cast[focus]
+        ? ""
+        : (cast[focus] as string) // Ensuring the value is treated as a string
     if (metric === "count") {
       // Count occurrences of each focus value
       metricsMap.set(focusValue, (metricsMap.get(focusValue) || 0) + 1)
@@ -355,8 +370,15 @@ export const debounce = (func: Function, delay: number) => {
 function tokenize(text: string): Set<string> {
   return new Set(text.toLowerCase().split(/\W+/))
 }
+interface CategoryDetails {
+  label: string
+  keywords: Set<string>
+}
 
-function categorizeText(text: string, categories: Categories): string | null {
+export function categorizeText(
+  text: string,
+  categories: { [key: string]: CategoryDetails }
+): { label: string; id: string } | null {
   if (!text) {
     return null
   }
@@ -368,17 +390,17 @@ function categorizeText(text: string, categories: Categories): string | null {
   const keywordCounts: { [category: string]: number } = {}
 
   // Iterate through each category and its keywords
-  for (const [category, keywords] of Object.entries(categories)) {
+  for (const [categoryId, categoryDetails] of Object.entries(categories)) {
     // Initialize count for the category
-    keywordCounts[category] = 0
+    keywordCounts[categoryId] = 0
 
     // Check for the presence of each keyword in the text using regex
-    for (const keyword of keywords) {
+    for (const keyword of categoryDetails.keywords) {
       // Use word boundary and global search for accurate counting
       const regex = new RegExp(`\\b${keyword}\\b`, "gi")
       const matches = normalizedText.match(regex)
       if (matches) {
-        keywordCounts[category] += matches.length
+        keywordCounts[categoryId] += matches.length
       }
     }
   }
@@ -386,31 +408,35 @@ function categorizeText(text: string, categories: Categories): string | null {
   // Find the category with the highest count of matching keywords
   let bestCategory: string | null = null
   let maxCount = 0
-  for (const [category, count] of Object.entries(keywordCounts)) {
+  for (const [categoryId, count] of Object.entries(keywordCounts)) {
     if (count > maxCount) {
-      bestCategory = category
+      bestCategory = categoryId
       maxCount = count
     }
   }
 
   // If no matches were found, return null
-  if (maxCount === 0) {
+  if (maxCount === 0 || bestCategory === null) {
     return null
   }
 
-  return bestCategory
+  // Return the label of the category with the highest count
+  return { label: categories[bestCategory].label, id: bestCategory }
 }
 
 export function categorizeArrayOfCasts(casts: CastType[]) {
   if (!casts || !Array.isArray(casts)) return []
-  return casts.map((cast: CastType) => {
+  let categorizedArray = casts.map((cast: CastType) => {
     const castText = cast.text
-    const category = categorizeText(castText, PRODUCT_CATEGORIES_AS_SETS)
+    const category = categorizeText(castText, PRODUCT_CATEGORIES_AS_MAP)
     return {
       request: castText,
-      category,
+      category: category
+        ? { label: category.label, id: category.id }
+        : { label: null, id: null },
     }
   })
+  return categorizedArray
 }
 
 export function sortCastsByProperty(
@@ -552,7 +578,14 @@ export function getRanking(
   // Apply filtering only if filterField is provided and the target has this property defined
   const filteredItems =
     filterField && target[filterField] !== undefined
-      ? items.filter((item) => item[filterField] === target[filterField])
+      ? filterField === "category"
+        ? items.filter(
+            (item) =>
+              item["category"] &&
+              target["category"] &&
+              item["category"].id === target["category"].id
+          )
+        : items.filter((item) => item[filterField] === target[filterField])
       : items
 
   const getValueByMetric = (objectToGetValueFrom: any) => {
@@ -590,40 +623,44 @@ interface CategorySummary {
   recasts: number
   replies: number
   count: number
+  totalFollowers: number
   averageFollowerCount: number
   // powerBadgeCount: number
 }
 
 export function summarizeByCategory(
-  casts: Cast[],
+  casts: CastType[],
   sortField?: keyof CategorySummary
 ): CategorySummary[] {
   const summaries = new Map<string, CategorySummary>()
-
   casts.forEach((cast) => {
     const { category, reactions, replies, author } = cast
-    if (!category) return
+    if (!category || !(category && category.id)) return
 
-    if (!summaries.has(category)) {
-      summaries.set(category, {
-        id: category.replace(/\s+/g, "-").toLowerCase(),
-        topic: category,
+    if (!summaries.has(category.id)) {
+      summaries.set(category.id, {
+        id: category.id.replace(/\s+/g, "-").toLowerCase(),
+        topic: category.label,
         likes: 0,
         priorityLikes: 0,
         recasts: 0,
         replies: 0,
         count: 0,
         averageFollowerCount: 0,
+        totalFollowers: 0,
         // powerBadgeCount: 0
       })
     }
 
-    const summary = summaries.get(category)!
+    const summary = summaries.get(category.id)!
     summary.likes += reactions.likes_count
     summary.recasts += reactions.recasts_count
     summary.replies += replies.count
     summary.count += 1
-    summary.averageFollowerCount += author.follower_count
+    summary.totalFollowers += author.follower_count
+    summary.averageFollowerCount = Math.floor(
+      summary.totalFollowers / summary.count
+    )
     // if (author.power_badge) summary.powerBadgeCount += 1;
   })
 
