@@ -135,11 +135,15 @@ export const searchCastsForCategories = (
     .toLowerCase()
     .split(",")
     .map((term) => term.trim())
+
   return casts.filter(
     (cast) =>
       cast.category &&
       searchTerms.some(
-        (term) => cast.category && cast.category.id.toLowerCase() === term
+        (term) =>
+          cast.category &&
+          cast.category.id &&
+          cast.category.id.toLowerCase() === term
       )
   )
 }
@@ -579,21 +583,36 @@ export const generateStatsObjectForCast = (
   return statsObject
 }
 
-export const generateStatsObjectForTopic = (
-  topicStats: any,
-  topicRank: any
-) => {
-  if (!topicStats) return {}
+export const generateStatsObjectForTopic = (topicStatsAndRankings: any) => {
+  if (!topicStatsAndRankings) return {}
+  const {
+    count: countRank,
+    likes_count: likesRank,
+    recasts_count: recastsRank,
+    replies_count: repliesRank,
+  } = topicStatsAndRankings.rankings
   const statsObject = {
-    categoryRanking: { label: "Topic Rank", value: topicRank },
-    casts: { label: "Casts", value: topicStats.count },
+    casts: {
+      label: "Casts",
+      value: topicStatsAndRankings.count,
+      rank: countRank,
+    },
     likes: {
       label: "Likes",
-      value: topicStats.likes,
+      value: topicStatsAndRankings.likes,
+      rank: likesRank,
     },
 
-    replies: { label: "Replies", value: topicStats.replies },
-    recasts: { label: "Recasts", value: topicStats.recasts },
+    replies: {
+      label: "Replies",
+      value: topicStatsAndRankings.replies,
+      rank: repliesRank,
+    },
+    recasts: {
+      label: "Recasts",
+      value: topicStatsAndRankings.recasts,
+      rank: recastsRank,
+    },
   }
   return statsObject
 }
@@ -768,4 +787,90 @@ export function aggregateCastMetricsByUser(
   }
 
   return results
+}
+type MetricType = "likes_count" | "recasts_count" | "replies_count"
+
+export function rankTopics(
+  casts: CastType[],
+  topic = ""
+):
+  | {
+      category: string
+      rankings: {
+        likes_count: number
+        recasts_count: number
+        replies_count: number
+        count: number
+      }
+    }[]
+  | {
+      category: string
+      rankings: {
+        likes_count: number
+        recasts_count: number
+        replies_count: number
+        count: number
+      }
+    } {
+  // Initialize storage for metrics per category
+  const metrics: {
+    [key: string]: {
+      likes_count: number
+      recasts_count: number
+      replies_count: number
+      count: number
+    }
+  } = {}
+
+  // Aggregate metrics for each category
+  casts.forEach((cast) => {
+    if (!(cast.category && cast.category.id)) return
+    const category = cast.category.id
+    if (!metrics[category]) {
+      metrics[category] = {
+        likes_count: 0,
+        recasts_count: 0,
+        replies_count: 0,
+        count: 0,
+      }
+    }
+    metrics[category].likes_count += cast.reactions.likes_count
+    metrics[category].recasts_count += cast.reactions.recasts_count
+    metrics[category].replies_count += cast.replies.count
+    metrics[category].count += 1
+  })
+
+  // Convert the metrics object to an array
+  const categories = Object.entries(metrics).map(([category, data]) => ({
+    category,
+    rankings: { ...data },
+  }))
+
+  // Calculate rankings for each metric, including count
+  const sortableMetrics = [
+    "likes_count",
+    "recasts_count",
+    "replies_count",
+    "count",
+  ]
+  sortableMetrics.forEach((metric) => {
+    const sorted = [...categories].sort(
+      (a, b) => b.rankings[metric] - a.rankings[metric]
+    )
+    sorted.forEach((cat, index) => {
+      const categoryToUpdate = categories.find(
+        (c) => c.category === cat.category
+      )
+      categoryToUpdate.rankings[metric] = index + 1
+    })
+  })
+
+  if (topic && topic.length) {
+    const selectedTopic = categories.find(
+      (category) => category.category === topic
+    )
+    return selectedTopic || null // Return null if no topic matches
+  }
+
+  return categories
 }

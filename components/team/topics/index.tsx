@@ -6,6 +6,8 @@ import { Cast as CastType } from "@/types"
 import { useNeynarContext } from "@neynar/react"
 
 import { aggregateCastMetricsByUser } from "@/lib/helpers"
+import { useLoadMoreCasts } from "@/hooks/farcaster/useLoadMoreCasts"
+import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import {
   Accordion,
   AccordionContent,
@@ -20,11 +22,20 @@ import TeamFilters from "@/components/team/filters"
 
 interface TeamProps {
   casts: CastType[]
+  cursor: string
+  topic: string
 }
-const TeamForTopics = ({ casts }: TeamProps) => {
+const TeamForTopics = ({ casts, cursor, topic }: TeamProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
-  let sortedUsersByCasts = aggregateCastMetricsByUser(casts, "likes_count")
+  const { castsToShow: castsWithUserInfo } = useLoadMoreCasts(casts, cursor)
+  const { filteredCasts } = useFilterFeed(castsWithUserInfo, topic)
+  let sortedUsersByCasts = aggregateCastMetricsByUser(
+    filteredCasts,
+    "likes_count"
+  )
+
+  console.log("the sortedUsersByCasts", sortedUsersByCasts)
 
   const handleRouteBackHome = () => {
     router.push("/")
@@ -149,7 +160,7 @@ const TeamForTopics = ({ casts }: TeamProps) => {
                   customIcon={Icons.Filter}
                 >
                   {" "}
-                  Top Users
+                  Top Casters
                 </AccordionTrigger>
                 <AccordionContent>
                   <TeamFilters

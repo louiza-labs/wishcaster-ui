@@ -14,6 +14,7 @@ interface CastFeedProps {
   nextCursor: string
   timeFilterParam: any
   columns?: number
+  topic?: string
 }
 
 const CastsFeed: React.FC<CastFeedProps> = ({
@@ -21,6 +22,7 @@ const CastsFeed: React.FC<CastFeedProps> = ({
   nextCursor,
   timeFilterParam,
   columns,
+  topic,
 }) => {
   const searchParams = useSearchParams()
 
@@ -29,7 +31,7 @@ const CastsFeed: React.FC<CastFeedProps> = ({
     nextCursor,
     timeFilterParam
   )
-  const { filteredCasts } = useFilterFeed(castsToShow)
+  const { filteredCasts } = useFilterFeed(castsToShow, topic)
   const router = useRouter()
   const categoriesFromParams = searchParams.getAll("topics").join(",")
 

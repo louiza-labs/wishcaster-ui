@@ -1,6 +1,6 @@
 "use client"
 
-import { useSearchParams } from "next/navigation"
+import { useParams, usePathname, useSearchParams } from "next/navigation"
 import { Cast as CastType, Category } from "@/types"
 
 import {
@@ -11,7 +11,7 @@ import {
   sortCastsByProperty,
 } from "@/lib/helpers"
 
-const useFilterFeed = (casts: CastType[]) => {
+const useFilterFeed = (casts: CastType[], topic = "") => {
   const searchParams = useSearchParams()
 
   // Extract search parameters
@@ -24,6 +24,9 @@ const useFilterFeed = (casts: CastType[]) => {
   const likedFilter = filtersFromParams.includes("liked")
   const followingFilter = filtersFromParams.includes("following")
   const recastedFilter = filtersFromParams.includes("recasted")
+
+  const params = useParams()
+  const path = usePathname()
 
   // Start with the initial set of casts
   let filteredCasts = [...casts]
@@ -76,6 +79,10 @@ const useFilterFeed = (casts: CastType[]) => {
       filteredCasts,
       categoriesFromParams
     )
+  }
+  // Filter by topic page if on one
+  if (topic && topic.length) {
+    filteredCasts = searchCastsForCategories(filteredCasts, topic)
   }
 
   // Sort by appropriate field if specified

@@ -62,7 +62,6 @@ const Topics = ({ casts }: any) => {
     rankedTopicsByRecasts,
     rankedTopicsByReplies,
   ])
-  console.log("the filteredCasts", filteredCasts)
 
   return (
     <Suspense>

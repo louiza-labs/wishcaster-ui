@@ -17,19 +17,6 @@ export const useLoadMoreCasts = (
 
   const { ref, inView } = useInView()
 
-  const getFarcasterFID = (user: any) => {
-    if (
-      user &&
-      user.sessionId &&
-      user.verifiedCredentials &&
-      user.verifiedCredentials.length
-    ) {
-      const farcasterObj = user.verifiedCredentials.find(
-        (credential: any) => credential.oauthProvider === "farcaster"
-      )
-      return farcasterObj.oauthAccountId
-    }
-  }
   const { user } = useNeynarContext()
   const loggedInUserFID = Number(user?.fid) ?? 0
   useEffect(() => {

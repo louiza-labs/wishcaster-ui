@@ -9,6 +9,7 @@ import {
   searchCastsForCategories,
   sortCastsByProperty,
 } from "@/lib/helpers"
+import { Breadcrumbs } from "@/components/breadcrumbs"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
 import Topics from "@/components/topics"
@@ -63,11 +64,14 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
   }
 
   const isError = !filteredCasts.length
+  const breadCrumbPages = [{ name: "Topics", link: "/topics" }]
 
   return (
     <>
-      <section className="relative mx-auto py-6 md:container sm:px-6 lg:px-6">
-        <div className="sticky flex w-full flex-row justify-between">
+      <section className="relative mx-auto py-6 md:container sm:px-6 lg:px-20">
+        <Breadcrumbs pages={breadCrumbPages} />
+
+        <div className="sticky mt-4 flex w-full flex-row justify-between">
           <Header />
 
           <TopicFilters initialCasts={initialCasts} />

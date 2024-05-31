@@ -8,12 +8,15 @@ import {
   filterCastsForCategory,
   generateWhimsicalErrorMessages,
   sortCastsByProperty,
-  summarizeByCategory,
 } from "@/lib/helpers"
+import { Badge } from "@/components/ui/badge"
+import { Breadcrumbs } from "@/components/breadcrumbs"
 import CastFeed from "@/components/feed/casts"
 import TopCasts from "@/components/feed/casts/TopCasts"
+import Filters from "@/components/filters"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
+import SortCasts from "@/components/sort/SortCasts"
 import TeamForTopics from "@/components/team/topics"
 import TopicStats from "@/components/topics/stats"
 import { fetchCastsUntilCovered, fetchChannelCasts } from "@/app/actions"
@@ -67,12 +70,17 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   ) as Array<CastType>
 
   filteredCasts = filterCastsForCategory(filteredCasts, params.topic)
-  const topicStats = summarizeByCategory(filteredCasts, "likes")[0]
   const sortedCasts = sortCastsByProperty(filteredCasts, "liked_count")
   const topCast = sortedCasts[0]
 
   const isError = !filteredCasts.length || !selectedTopic
-
+  const breadCrumbPages = [
+    { name: "Topics", link: "/topics" },
+    {
+      name: selectedTopic ? selectedTopic.label : params.topic,
+      link: `/topics/${params.topic}`,
+    },
+  ]
   return (
     <>
       {isError ? (
@@ -84,14 +92,43 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
       ) : (
         <>
           <section className="mx-auto h-fit py-6 md:container sm:px-6 lg:h-auto lg:px-20">
+            <Breadcrumbs pages={breadCrumbPages} />
+
             <div className="mb-4 flex flex-row items-center justify-between gap-x-4">
               {/* Placeholder for Header if needed */}
-              <h1 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
-                {selectedTopic.label}
-              </h1>
-              <TopicStats statsObject={topicStats} />
+              <div className="flex w-full flex-col gap-y-2">
+                <h1 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
+                  {selectedTopic.label}
+                </h1>
+                <div className="flex flex-row items-center gap-x-2">
+                  <p className="text-sm font-semibold">
+                    Based on casts that mention:
+                  </p>
+                  <div className="flex flex-wrap gap-x-1">
+                    {Array.from(selectedTopic.keywords).map(
+                      (keyword, index) => (
+                        <Badge
+                          variant={"outline"}
+                          className="text-sm font-light"
+                        >
+                          {keyword}
+                        </Badge>
+                      )
+                    )}
+                  </div>
+                </div>
+              </div>
+              <TopicStats
+                casts={sortedCasts}
+                cursor={cursorToUse}
+                topic={params.topic}
+              />
             </div>
             <main className="relative mt-10 grid min-h-screen grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-x-10">
+              <aside className="no-scrollbar sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:hidden">
+                <SortCasts />
+                <Filters initialCasts={sortedCasts} />
+              </aside>
               <article
                 className={`${
                   mobileViewParam.length && mobileViewParam !== "cast"
@@ -107,7 +144,11 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                           Top Casts
                         </h2>
                         <div className="flex size-fit flex-row items-start">
-                          <TopCasts sortedCasts={sortedCasts.slice(0, 10)} />
+                          <TopCasts
+                            casts={initialCasts}
+                            cursor={cursorToUse}
+                            topic={params.topic}
+                          />
                         </div>
                       </div>
                     </>
@@ -124,26 +165,31 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                   <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
                     Let&apos;s build
                   </h1>
-                  <TeamForTopics casts={sortedCasts} />
+                  <TeamForTopics
+                    casts={initialCasts}
+                    cursor={cursorToUse}
+                    topic={params.topic}
+                  />
                 </div>
               </div>
-              <div className="col-span-12 flex flex-col items-center">
+              <div className="flex flex-col items-center lg:col-span-12 ">
                 <h3 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
                   Casts Feed
                 </h3>
                 <CastFeed
-                  casts={sortedCasts}
+                  casts={initialCasts}
                   timeFilterParam={timeFilterParam}
                   nextCursor={cursorToUse}
                   columns={3}
+                  topic={params.topic}
                 />
               </div>
             </main>
           </section>
           <div className="flex flex-col items-start lg:hidden">
             <BottomMobileNav
-              filteredCasts={[topCast]}
-              initialCasts={[topCast]}
+              filteredCasts={sortedCasts}
+              initialCasts={sortedCasts}
               page="cast"
             />
           </div>

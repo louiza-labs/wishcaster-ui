@@ -2,6 +2,9 @@
 
 import { Cast as CastType } from "@/types"
 
+import { sortCastsByProperty } from "@/lib/helpers"
+import { useLoadMoreCasts } from "@/hooks/farcaster/useLoadMoreCasts"
+import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import {
   Carousel,
   CarouselContent,
@@ -12,11 +15,16 @@ import {
 import Cast from "@/components/cast"
 
 interface TopCastsProps {
-  sortedCasts: CastType[]
+  casts: CastType[]
+  cursor: string
+  topic: string
 }
 
-const TopCasts = ({ sortedCasts }: TopCastsProps) => {
-  console.log("the sortedCasts", sortedCasts)
+const TopCasts = ({ casts, cursor, topic }: TopCastsProps) => {
+  const { castsToShow: castsWithUserInfo } = useLoadMoreCasts(casts, cursor)
+  let { filteredCasts } = useFilterFeed(castsWithUserInfo, topic)
+  const sortedCasts = sortCastsByProperty(filteredCasts, "liked_count")
+
   return (
     <div className="size-fit   overflow-auto overflow-y-scroll ">
       <Carousel
