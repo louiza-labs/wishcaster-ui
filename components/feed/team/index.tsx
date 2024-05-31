@@ -15,7 +15,7 @@ const handleVisitProfile = (username: string) => {
   }
 }
 
-const UserFeed = ({ likeOrRecastedUsers, loadingUsers }: any) => {
+const UserFeed = ({ relevantUsers, loadingUsers }: any) => {
   const [listHeight, setListHeight] = useState(window.innerHeight)
   const [visibleStartIndex, setVisibleStartIndex] = useState(0)
 
@@ -31,7 +31,7 @@ const UserFeed = ({ likeOrRecastedUsers, loadingUsers }: any) => {
     return () => window.removeEventListener("resize", updateSize)
   }, [listHeight])
 
-  if (!likeOrRecastedUsers || likeOrRecastedUsers.length === 0) {
+  if (!relevantUsers || relevantUsers.length === 0) {
     return <div>No users to display.</div>
   }
   interface RowProps {
@@ -76,13 +76,13 @@ const UserFeed = ({ likeOrRecastedUsers, loadingUsers }: any) => {
 
   return (
     <>
-      {likeOrRecastedUsers && likeOrRecastedUsers.length && !loadingUsers ? (
+      {relevantUsers && relevantUsers.length && !loadingUsers ? (
         <List
           height={listHeight} // Adjust based on the viewport or container size
           width={"100%"} // Use 100% if it should fill the container
           itemSize={60} // Adjust based on the height of a single row
-          itemCount={likeOrRecastedUsers.length}
-          itemData={likeOrRecastedUsers}
+          itemCount={relevantUsers.length}
+          itemData={relevantUsers}
           useIsScrolling
           onItemsRendered={({ visibleStartIndex }: any) =>
             setVisibleStartIndex(visibleStartIndex)

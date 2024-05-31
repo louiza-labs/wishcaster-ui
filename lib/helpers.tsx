@@ -586,6 +586,7 @@ export const generateStatsObjectForTopic = (
   if (!topicStats) return {}
   const statsObject = {
     categoryRanking: { label: "Topic Rank", value: topicRank },
+    casts: { label: "Casts", value: topicStats.count },
     likes: {
       label: "Likes",
       value: topicStats.likes,
@@ -699,4 +700,72 @@ export function summarizeByCategory(
   }
 
   return result
+}
+
+interface ReactionMetrics {
+  likes_count: number
+  recasts_count: number
+  replies_count: number
+}
+interface User {
+  fid: number
+  custody_address: string
+  username: string
+  display_name: string
+  pfp_url: string
+  viewer_context?: {
+    following: boolean
+    followed_by: boolean
+  }
+  power_badge?: boolean
+}
+// Updated interfaces
+interface AuthorReactions {
+  author: User
+  reactions: ReactionMetrics
+  postCount: number
+  // Count of posts by the author
+}
+
+// Function to aggregate and sort reactions per authoer
+export function aggregateCastMetricsByUser(
+  posts: CastType[],
+  sortBy?: keyof ReactionMetrics
+): AuthorReactions[] {
+  console.log("the posts", posts)
+  const reactionMap = new Map<number, AuthorReactions>()
+
+  posts.forEach((post) => {
+    const authorId = post.author.fid
+    if (!reactionMap.has(authorId)) {
+      // Initialize the reactions object if it doesn't exist
+      reactionMap.set(authorId, {
+        ...post.author,
+        reactions: {
+          likes_count: 0,
+          recasts_count: 0,
+          replies_count: 0,
+        },
+        postCount: 0,
+      })
+    }
+
+    // Retrieve the existing or newly created authorReactions
+    const authorReactions = reactionMap.get(authorId)
+
+    // Update reactions and post count
+    authorReactions.reactions.likes_count += post.reactions.likes_count
+    authorReactions.reactions.recasts_count += post.reactions.recasts_count
+    authorReactions.reactions.replies_count += post.replies.count
+    authorReactions.postCount += 1
+  })
+
+  let results = Array.from(reactionMap.values())
+
+  // Sort the results if a sort key is provided
+  if (sortBy) {
+    results.sort((a, b) => b.reactions[sortBy] - a.reactions[sortBy])
+  }
+
+  return results
 }

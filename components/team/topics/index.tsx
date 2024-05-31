@@ -2,10 +2,10 @@
 
 import { Suspense, useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { Cast as CastType } from "@/types"
 import { useNeynarContext } from "@neynar/react"
 
-import useGetProfiles from "@/hooks/farcaster/useGetProfiles"
-import useFilterFeed from "@/hooks/feed/useFilterFeed"
+import { aggregateCastMetricsByUser } from "@/lib/helpers"
 import {
   Accordion,
   AccordionContent,
@@ -19,14 +19,12 @@ import { Icons } from "@/components/icons"
 import TeamFilters from "@/components/team/filters"
 
 interface TeamProps {
-  cast: any
-  reactions: any
-  conversation: any[]
+  casts: CastType[]
 }
-const Team = ({ cast, reactions, conversation }: TeamProps) => {
+const TeamForTopics = ({ casts }: TeamProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { likes, recasts } = reactions
+  let sortedUsersByCasts = aggregateCastMetricsByUser(casts, "likes_count")
 
   const handleRouteBackHome = () => {
     router.push("/")
@@ -36,7 +34,6 @@ const Team = ({ cast, reactions, conversation }: TeamProps) => {
     () => searchParams.getAll("filters"),
     [searchParams]
   )
-  const { filteredCasts: updatedCast } = useFilterFeed([cast])
 
   const createQueryString = useCallback(
     (name: string, value: string, addValue: boolean) => {
@@ -91,67 +88,22 @@ const Team = ({ cast, reactions, conversation }: TeamProps) => {
     handleToggleFilterClick("priority-badge")
   }
 
-  const stringOfReplyFIDs =
-    conversation && conversation.length
-      ? conversation.reduce(
-          (stringOfFIDs: string, conversation: any, index: number) => {
-            if (index !== likes.length - 1) {
-              stringOfFIDs += `${conversation.author.fid},`
-            } else {
-              stringOfFIDs += `${conversation.author.fid}`
-            }
-            return stringOfFIDs
-          },
-          ""
-        )
-      : ""
-  const stringOfLikesFIDs =
-    likes && likes.length
-      ? likes.reduce((stringOfFIDs: string, reaction: any, index: number) => {
-          if (index !== likes.length - 1) {
-            stringOfFIDs += `${reaction.user.fid},`
-          } else {
-            stringOfFIDs += `${reaction.user.fid}`
-          }
-          return stringOfFIDs
-        }, "")
-      : ""
-  const stringOfRecastsFIDs =
-    recasts && recasts.length
-      ? recasts.reduce((stringOfFIDs: string, reaction: any, index: number) => {
-          if (index !== recasts.length - 1) {
-            stringOfFIDs += `${reaction.user.fid},`
-          } else {
-            stringOfFIDs += `${reaction.user.fid}`
-          }
-          return stringOfFIDs
-        }, "")
-      : ""
   const { user } = useNeynarContext()
 
-  const { profiles: repliedUsers, loadingProfiles: loadingRepliedUsers } =
-    useGetProfiles(stringOfReplyFIDs)
-
-  const { profiles: likedUsers, loadingProfiles: loadingLikedUsers } =
-    useGetProfiles(stringOfLikesFIDs)
-
-  const { profiles: recastedUsers, loadingProfiles: loadingRecastedUsers } =
-    useGetProfiles(stringOfRecastsFIDs)
-
-  let likeOrRecastedUsers = [...likedUsers, ...recastedUsers, ...repliedUsers]
-
   if (filterIsSelected("following") && user?.fid) {
-    likeOrRecastedUsers = likeOrRecastedUsers.filter(
-      (user) => user.viewer_context && user.viewer_context.following
+    sortedUsersByCasts = sortedUsersByCasts.filter(
+      (user) =>
+        user.author.viewer_context && user.author.viewer_context.following
     )
   }
   if (filterIsSelected("follower") && user?.fid) {
-    likeOrRecastedUsers = likeOrRecastedUsers.filter(
-      (user) => user.viewer_context && user.viewer_context.followed_by
+    sortedUsersByCasts = sortedUsersByCasts.filter(
+      (user) =>
+        user.author.viewer_context && user.author.viewer_context.followed_by
     )
   }
   if (filterIsSelected("priority-badge")) {
-    likeOrRecastedUsers = likeOrRecastedUsers.filter((user) => user.power_badge)
+    sortedUsersByCasts = sortedUsersByCasts.filter((user) => user.power_badge)
   }
 
   const followingFilterValues = {
@@ -187,13 +139,7 @@ const Team = ({ cast, reactions, conversation }: TeamProps) => {
 
   return (
     <Suspense>
-      {loadingLikedUsers || loadingRecastedUsers ? (
-        <div className="flex w-full flex-col gap-y-2">
-          <LoadingItem />
-          <LoadingItem />
-          <LoadingItem />
-        </div>
-      ) : likeOrRecastedUsers && likeOrRecastedUsers.length ? (
+      {sortedUsersByCasts && sortedUsersByCasts.length ? (
         <div className="flex w-full flex-col items-start">
           <>
             <Accordion type="single" collapsible className="w-full">
@@ -203,7 +149,7 @@ const Team = ({ cast, reactions, conversation }: TeamProps) => {
                   customIcon={Icons.Filter}
                 >
                   {" "}
-                  Liked, recasted, or replied to by
+                  Top Users
                 </AccordionTrigger>
                 <AccordionContent>
                   <TeamFilters
@@ -216,12 +162,8 @@ const Team = ({ cast, reactions, conversation }: TeamProps) => {
             </Accordion>
             <div className="flex h-[55vh] w-full flex-col  gap-y-2 overflow-y-scroll  md:size-full md:h-full">
               <UserFeed
-                relevantUsers={likeOrRecastedUsers}
-                loadingUsers={
-                  loadingLikedUsers ||
-                  loadingRecastedUsers ||
-                  loadingRepliedUsers
-                }
+                relevantUsers={sortedUsersByCasts}
+                loadingUsers={false}
               />
             </div>{" "}
           </>
@@ -238,4 +180,4 @@ const Team = ({ cast, reactions, conversation }: TeamProps) => {
   )
 }
 
-export default Team
+export default TeamForTopics

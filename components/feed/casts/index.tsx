@@ -13,12 +13,14 @@ interface CastFeedProps {
   casts: CastType[]
   nextCursor: string
   timeFilterParam: any
+  columns?: number
 }
 
 const CastsFeed: React.FC<CastFeedProps> = ({
   casts,
   nextCursor,
   timeFilterParam,
+  columns,
 }) => {
   const searchParams = useSearchParams()
 
@@ -90,7 +92,11 @@ const CastsFeed: React.FC<CastFeedProps> = ({
 
   return (
     <Suspense fallback={<CastFeedSkeleton count={5} />}>
-      <div className="grid grid-cols-1 gap-4 overflow-x-hidden  md:px-4 lg:col-span-6 lg:col-start-4 lg:grid-cols-1 lg:px-10">
+      <div
+        className={` grid grid-cols-1 gap-4  overflow-x-hidden md:px-4 lg:col-span-6 lg:col-start-4 ${
+          columns ? `lg:grid-cols-2` : "lg:grid-cols-1"
+        } lg:px-10`}
+      >
         {filteredCasts && filteredCasts.length
           ? filteredCasts.map((cast: CastType) => (
               <Cast

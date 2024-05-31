@@ -10,10 +10,11 @@ import {
   sortCastsByProperty,
   summarizeByCategory,
 } from "@/lib/helpers"
-import Cast from "@/components/cast"
 import CastFeed from "@/components/feed/casts"
+import TopCasts from "@/components/feed/casts/TopCasts"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
+import TeamForTopics from "@/components/team/topics"
 import TopicStats from "@/components/topics/stats"
 import { fetchCastsUntilCovered, fetchChannelCasts } from "@/app/actions"
 
@@ -106,13 +107,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                           Top Casts
                         </h2>
                         <div className="flex size-fit flex-row items-start">
-                          <Cast
-                            {...topCast}
-                            hideMetrics={true}
-                            badgeIsToggled={false}
-                            routeToWarpcast={true}
-                            mentionedProfiles={topCast.mentioned_profiles}
-                          />
+                          <TopCasts sortedCasts={sortedCasts.slice(0, 10)} />
                         </div>
                       </div>
                     </>
@@ -129,11 +124,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                   <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
                     Let&apos;s build
                   </h1>
-                  {/* <Build
-                cast={castWithCategory}
-                hash={castWithCategory ? castWithCategory.hash ?? "" : ""}
-                reactions={reactionsObject}
-              /> */}
+                  <TeamForTopics casts={sortedCasts} />
                 </div>
               </div>
               <div className="col-span-12 flex flex-col items-center">
@@ -141,9 +132,10 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                   Casts Feed
                 </h3>
                 <CastFeed
-                  casts={filteredCasts}
+                  casts={sortedCasts}
                   timeFilterParam={timeFilterParam}
                   nextCursor={cursorToUse}
+                  columns={3}
                 />
               </div>
             </main>
