@@ -64,6 +64,16 @@ export const makeEmail = (to: string, subject: string, message: string) => {
     .replace(/=+$/, "")
 }
 
+export const filterCastsForCategory = (
+  castsArray: CastType[],
+  category: string
+) => {
+  if (!castsArray || !Array.isArray(castsArray) || !category) {
+    return []
+  }
+  return castsArray.filter((cast: CastType) => cast.category?.id === category)
+}
+
 export const addCategoryFieldsToCasts = (
   casts: CastType[],
   categories: Category[]
@@ -569,6 +579,24 @@ export const generateStatsObjectForCast = (
   return statsObject
 }
 
+export const generateStatsObjectForTopic = (
+  topicStats: any,
+  topicRank: any
+) => {
+  if (!topicStats) return {}
+  const statsObject = {
+    categoryRanking: { label: "Topic Rank", value: topicRank },
+    likes: {
+      label: "Likes",
+      value: topicStats.likes,
+    },
+
+    replies: { label: "Replies", value: topicStats.replies },
+    recasts: { label: "Recasts", value: topicStats.recasts },
+  }
+  return statsObject
+}
+
 export function getRanking(
   target: CastType,
   items: CastType[],
@@ -667,7 +695,7 @@ export function summarizeByCategory(
   // Convert summaries to array and optionally sort
   let result = Array.from(summaries.values())
   if (sortField) {
-    result.sort((a, b) => b[sortField] - a[sortField])
+    result.sort((a: any, b: any) => b[sortField] - a[sortField])
   }
 
   return result

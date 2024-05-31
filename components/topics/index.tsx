@@ -16,8 +16,6 @@ type RankedValueType = {
 const Topics = ({ casts }: any) => {
   const { filteredCasts } = useFilterFeed(casts)
   const sortedTopics = summarizeByCategory(filteredCasts, "likes")
-  console.log("the filtered casts", filteredCasts)
-  console.log("the sorted topics", sortedTopics)
   const router = useRouter()
 
   const handleToggleCategoryClick = useCallback(
@@ -80,6 +78,7 @@ const Topics = ({ casts }: any) => {
                   name={topic.topic}
                   description={topic.topic}
                   likes={topic.likes}
+                  id={topic.id}
                   recasts={topic.recasts}
                   replies={topic.replies}
                   avgFollowers={topic.averageFollowerCount}
@@ -105,6 +104,7 @@ const Topics = ({ casts }: any) => {
                   powerBadges={topic.priorityLikes}
                   handleClick={handleToggleCategoryClick}
                   key={topic.topic}
+                  id={topic.id}
                   rank={index + 1}
                 />
               ))}
@@ -123,6 +123,7 @@ const Topics = ({ casts }: any) => {
                   powerBadges={topic.priorityLikes}
                   handleClick={handleToggleCategoryClick}
                   key={topic.topic}
+                  id={topic.id}
                   rank={index + 1}
                 />
               ))}

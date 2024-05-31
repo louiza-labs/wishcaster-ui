@@ -17,6 +17,7 @@ interface PopularTopicCardProps {
   rank: number
   avgFollowers: number
   count: number
+  id: string
   powerBadges: number
   handleClick: (topic: string) => void
 }
@@ -31,13 +32,11 @@ const PopularTopicCard = ({
   avgFollowers,
   count,
   handleClick,
+  id,
   powerBadges,
 }: PopularTopicCardProps) => {
   return (
-    <Card
-      onClick={() => handleClick(name)}
-      className="hover:brightness-80 bg-background/50 flex h-2/5 w-3/5 cursor-pointer flex-col items-start justify-between rounded-lg p-2 backdrop-blur-lg  md:h-80 md:w-60"
-    >
+    <Card className="hover:brightness-80 bg-background/50 flex h-2/5 w-3/5 cursor-pointer flex-col items-start justify-between rounded-lg p-2 backdrop-blur-lg  md:h-80 md:w-60">
       <CardHeader className="flex flex-row items-center gap-x-4">
         <CardTitle className="text-2xl font-bold">{rank}</CardTitle>
         {/* <CardDescription>{description}</CardDescription> */}
@@ -85,7 +84,7 @@ const PopularTopicCard = ({
         <Button
           className="items-end"
           variant={"ghost"}
-          onClick={() => handleClick(name)}
+          onClick={() => handleClick(id)}
         >
           Explore {"-->"}
         </Button>

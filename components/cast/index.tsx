@@ -12,7 +12,10 @@ interface CastComponentTypes extends CastType {
   hideMetrics?: boolean
   handleToggleCategoryClick?: any
   badgeIsToggled?: any
-  category?: string
+  category?: {
+    label: string
+    id: string
+  }
 }
 
 const Cast = ({

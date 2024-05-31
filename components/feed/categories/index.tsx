@@ -6,7 +6,10 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 
 interface Category {
-  category: string
+  category: {
+    label: string
+    id: string
+  }
   request: string
 }
 
@@ -17,8 +20,6 @@ interface CategoriesFeedProps {
 const CategoriesFeed = ({ categories }: CategoriesFeedProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
-
-  console.log("the categories feed", categories)
 
   const categoriesFromParams = useMemo(
     () => searchParams.getAll("topics"),

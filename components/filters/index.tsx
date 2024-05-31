@@ -40,7 +40,6 @@ const Filters = ({ initialCasts }: CategoriesFeedProps) => {
 
   let { filteredCasts } = useFilterFeed(initialCasts)
   const categories = categorizeArrayOfCasts(filteredCasts) as Category[]
-  console.log("the categorized categories", categories)
 
   const filteredCategories = filterDuplicateCategories(categories)
 
