@@ -47,9 +47,10 @@ interface CastStatProps {
   casts: any
   cursor: string
   topic: string
+  mobileView: string
 }
 
-const TopicStats = ({ casts, cursor, topic }: CastStatProps) => {
+const TopicStats = ({ casts, cursor, topic, mobileView }: CastStatProps) => {
   const { castsToShow: castsWithUserInfo } = useFetchCastsUntilCovered(casts)
   const categories = categorizeArrayOfCasts(castsWithUserInfo) as Category[]
 
@@ -67,7 +68,11 @@ const TopicStats = ({ casts, cursor, topic }: CastStatProps) => {
   )
 
   return (
-    <div className="flex flex-row gap-4 pl-8 sm:flex sm:flex-wrap md:pl-0	 xl:flex xl:flex-row xl:flex-nowrap">
+    <div
+      className={`${
+        mobileView !== "stats" ? "hidden" : "flex"
+      } flex-wrap gap-4 pl-8 sm:flex sm:flex-wrap md:flex-row md:pl-0	 xl:flex xl:flex-row xl:flex-nowrap`}
+    >
       {generatedStats && Object.keys(generatedStats).length
         ? Object.keys(generatedStats).map((stat: string) => (
             <CardStat

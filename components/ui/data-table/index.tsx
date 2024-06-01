@@ -91,14 +91,13 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => {
+              table.getRowModel().rows.map((row: any) => {
                 const topic =
                   row.getValue("topic") &&
                   row.getValue("topic").split(" ") &&
                   row.getValue("topic").split(" ")[1]
                     ? row.getValue("topic").split(" ")[1].toLowerCase()
                     : 0
-                console.log("the topic", topic)
 
                 return (
                   <TableRow
@@ -109,7 +108,7 @@ export function DataTable<TData, TValue>({
                     }
                     data-state={row.getIsSelected() && "selected"}
                   >
-                    {row.getVisibleCells().map((cell) => (
+                    {row.getVisibleCells().map((cell: any) => (
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,

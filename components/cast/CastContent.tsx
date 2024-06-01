@@ -23,6 +23,7 @@ interface CastContentProps {
   maxCharacters?: number
   routeToWarpcast?: boolean
   mentionedProfiles: any[]
+  renderEmbeds?: boolean
 }
 
 const CastContent = ({
@@ -34,10 +35,10 @@ const CastContent = ({
   badgeIsToggled,
   routeToWarpcast,
   mentionedProfiles,
+  renderEmbeds,
 
   maxCharacters = 150,
 }: CastContentProps) => {
-  const [isExpanded, setIsExpanded] = useState(false)
   const [aspectRatio, setAspectRatio] = useState("56.25%")
 
   const hasUrl = embeds.find((embed: any) => embed.url) !== undefined
@@ -80,7 +81,10 @@ const CastContent = ({
           {renderTextWithLinks(text, mentionedProfiles, embeds)}
 
           <>
-            {hasUrl && isImageUrlToShow && potentialUrl ? (
+            {hasUrl &&
+            isImageUrlToShow &&
+            potentialUrl &&
+            renderEmbeds !== false ? (
               <div
                 className="relative size-full w-full"
                 style={{ paddingTop: aspectRatio }}
@@ -93,14 +97,16 @@ const CastContent = ({
                   className="object-contain"
                 />
               </div>
-            ) : isVideoUrlToShow && potentialUrl ? (
+            ) : isVideoUrlToShow && potentialUrl && renderEmbeds !== false ? (
               <video controls style={{ width: "100%" }}>
                 <source src={potentialUrl} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
-            ) : potentialUrl && isWarpcastStreamUrl ? (
+            ) : potentialUrl &&
+              isWarpcastStreamUrl &&
+              renderEmbeds !== false ? (
               <HLSVideoPlayer src={potentialUrl} />
-            ) : potentialUrl && !embeddedCastHash ? (
+            ) : potentialUrl && !embeddedCastHash && renderEmbeds !== false ? (
               <LinkPreview url={potentialUrl} />
             ) : embeddedCastHash && embeddedCast && embeddedCast.hash ? (
               <EmbeddedCast
@@ -113,6 +119,7 @@ const CastContent = ({
                 embeds={embeddedCast.embeds}
                 author={embeddedCast.author}
                 hash={embeddedCast.hash}
+                renderEmbeds={false}
                 thread_hash={embeddedCast.thread_hash}
                 parent_hash={embeddedCast.parent_hash}
                 parent_author={embeddedCast.parent_author}

@@ -120,7 +120,7 @@ const CastsFeed: React.FC<CastFeedProps> = ({
                 category={cast.category}
                 handleToggleCategoryClick={handleToggleCategoryClick}
                 badgeIsToggled={badgeIsToggled(
-                  cast.category ? cast.category : ""
+                  cast.category ? cast.category.id : ""
                 )}
               />
             ))

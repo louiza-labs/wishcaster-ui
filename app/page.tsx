@@ -11,6 +11,7 @@ import {
 } from "@/lib/helpers"
 import CastsFeed from "@/components/feed/casts"
 import Filters from "@/components/filters"
+import FilterBar from "@/components/filters/FilterBar"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import Rankings from "@/components/rankings"
 import RedirectButton from "@/components/redirect/Button"
@@ -68,6 +69,9 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
 
   return (
     <>
+      <div className="top-66 sticky z-10 lg:hidden">
+        <FilterBar initialCasts={initialCasts} />
+      </div>{" "}
       <section className="mx-auto py-6 md:container sm:px-6 lg:px-6">
         <Header />
         <main className="relative grid grid-cols-1 gap-4 lg:grid-cols-12 ">

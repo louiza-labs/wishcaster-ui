@@ -9,6 +9,9 @@ import MobileFiltering from "@/components/layout/Nav/Mobile/Bottom/Filters"
 import MobileRankings from "@/components/layout/Nav/Mobile/Bottom/Rankings"
 import MobileSearch from "@/components/layout/Nav/Mobile/Bottom/Search"
 import MobileSorting from "@/components/layout/Nav/Mobile/Bottom/Sort"
+import TopicPageNavItem from "@/components/layout/Nav/Mobile/Bottom/Topic/TopicPage"
+import TopicsNavButton from "@/components/layout/Nav/Mobile/Bottom/Topics"
+import TopicsPageNavItem from "@/components/layout/Nav/Mobile/Bottom/Topics/TopicsPage"
 
 // Adjust the path as necessary
 
@@ -18,7 +21,7 @@ interface BottomMobileNavProps {
   reactionsObject?: any
   overallChannelCast?: any
   filteredCasts: CastType[] | any
-  page?: "cast" | "home"
+  page?: "cast" | "home" | "topics" | "topic"
 }
 const BottomMobileNav = ({
   initialCasts,
@@ -36,7 +39,7 @@ const BottomMobileNav = ({
     <div
       className={cn(
         isFooterVisible ? "hidden" : "flex",
-        "bg-background fixed bottom-0 z-40  h-20 w-full flex-row items-center justify-around gap-x-10 overflow-hidden border-t px-0"
+        "bg-background fixed bottom-0 z-40  h-20 w-full flex-row items-center justify-around gap-x-4 overflow-hidden border-t  px-2"
       )}
     >
       {page === "cast" ? (
@@ -46,13 +49,30 @@ const BottomMobileNav = ({
 
           <CastPageNavItem section="build" />
         </>
+      ) : page === "topics" ? (
+        <>
+          <TopicsPageNavItem section="popular" />
+          <TopicsPageNavItem section="table" />
+          <MobileSearch />
+          <MobileFiltering initialCasts={initialCasts} />
+        </>
+      ) : page === "topic" ? (
+        <>
+          <TopicPageNavItem section="popular" />
+          <TopicPageNavItem section="feed" />
+
+          <MobileSearch />
+          <TopicPageNavItem section="stats" />
+
+          <TopicPageNavItem section="build" />
+        </>
       ) : (
         <>
+          <MobileFiltering initialCasts={filteredCasts} />
+
+          <TopicsNavButton />
           <MobileSearch />
-          <MobileFiltering
-            initialCasts={initialCasts}
-            filteredCasts={filteredCasts}
-          />
+
           <MobileRankings initialCasts={initialCasts} />
           <MobileSorting />
         </>

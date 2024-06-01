@@ -6,7 +6,7 @@ import { Cast as CastType } from "@/types"
 import { useNeynarContext } from "@neynar/react"
 
 import { aggregateCastMetricsByUser } from "@/lib/helpers"
-import { useLoadMoreCasts } from "@/hooks/farcaster/useLoadMoreCasts"
+import useFetchCastsUntilCovered from "@/hooks/farcaster/useFetchCastsUntilCovered"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import {
   Accordion,
@@ -28,14 +28,14 @@ interface TeamProps {
 const TeamForTopics = ({ casts, cursor, topic }: TeamProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { castsToShow: castsWithUserInfo } = useLoadMoreCasts(casts, cursor)
+  const { castsToShow: castsWithUserInfo } = useFetchCastsUntilCovered(casts)
+
   const { filteredCasts } = useFilterFeed(castsWithUserInfo, topic)
+
   let sortedUsersByCasts = aggregateCastMetricsByUser(
     filteredCasts,
     "likes_count"
   )
-
-  console.log("the sortedUsersByCasts", sortedUsersByCasts)
 
   const handleRouteBackHome = () => {
     router.push("/")
@@ -100,21 +100,22 @@ const TeamForTopics = ({ casts, cursor, topic }: TeamProps) => {
   }
 
   const { user } = useNeynarContext()
-
   if (filterIsSelected("following") && user?.fid) {
     sortedUsersByCasts = sortedUsersByCasts.filter(
-      (user) =>
-        user.author.viewer_context && user.author.viewer_context.following
+      (user: any) =>
+        user && user.viewer_context && user.viewer_context.following
     )
   }
   if (filterIsSelected("follower") && user?.fid) {
     sortedUsersByCasts = sortedUsersByCasts.filter(
-      (user) =>
-        user.author.viewer_context && user.author.viewer_context.followed_by
+      (user: any) =>
+        user && user.viewer_context && user.viewer_context.followed_by
     )
   }
   if (filterIsSelected("priority-badge")) {
-    sortedUsersByCasts = sortedUsersByCasts.filter((user) => user.power_badge)
+    sortedUsersByCasts = sortedUsersByCasts.filter(
+      (user: any) => user.power_badge
+    )
   }
 
   const followingFilterValues = {
@@ -151,7 +152,7 @@ const TeamForTopics = ({ casts, cursor, topic }: TeamProps) => {
   return (
     <Suspense>
       {sortedUsersByCasts && sortedUsersByCasts.length ? (
-        <div className="flex w-full flex-col items-start">
+        <div className="flex h-[60vh] w-full flex-col  items-start border-indigo-500">
           <>
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="filter">
@@ -171,9 +172,14 @@ const TeamForTopics = ({ casts, cursor, topic }: TeamProps) => {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-            <div className="flex h-[55vh] w-full flex-col  gap-y-2 overflow-y-scroll  md:size-full md:h-full">
+            <div className="flex h-fit w-full flex-col  gap-y-2 overflow-y-scroll  md:size-full md:h-full">
               <UserFeed
-                relevantUsers={sortedUsersByCasts}
+                relevantUsers={
+                  sortedUsersByCasts
+                    ? sortedUsersByCasts.slice(0, 5)
+                    : sortedUsersByCasts
+                }
+                showMetrics={true}
                 loadingUsers={false}
               />
             </div>{" "}

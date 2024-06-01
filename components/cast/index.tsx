@@ -12,6 +12,7 @@ interface CastComponentTypes extends CastType {
   hideMetrics?: boolean
   handleToggleCategoryClick?: any
   badgeIsToggled?: any
+  renderEmbeds?: boolean
   category?: {
     label: string
     id: string
@@ -32,6 +33,7 @@ const Cast = ({
   handleToggleCategoryClick,
   badgeIsToggled,
   hideMetrics,
+  renderEmbeds,
   routeToWarpcast,
 }: CastComponentTypes | any) => {
   const categoryLabel =
@@ -58,6 +60,7 @@ const Cast = ({
           badgeIsToggled={badgeIsToggled}
           maxCharacters={150}
           routeToWarpcast={routeToWarpcast}
+          renderEmbeds={renderEmbeds}
           mentionedProfiles={mentionedProfiles}
         />
       </CardContent>

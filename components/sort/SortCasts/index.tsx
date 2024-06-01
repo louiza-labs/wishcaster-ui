@@ -4,9 +4,19 @@ import { Suspense, useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { SortGroup } from "@/components/sort/SortGroup"
 
-const SortCasts = () => {
+interface SortCastsProps {
+  asFilterBar?: boolean
+}
+const SortCasts = ({ asFilterBar }: SortCastsProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -102,17 +112,34 @@ const SortCasts = () => {
   return (
     <Suspense>
       <div className=" flex h-fit flex-col gap-y-6 lg:col-span-12">
-        <p className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:block md:text-3xl">
-          Sort
-        </p>
+        {asFilterBar ? null : (
+          <p className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:block md:text-3xl">
+            Sort
+          </p>
+        )}
         <div className="flex flex-col items-center gap-y-8  md:gap-2">
-          <SortGroup
-            arrayOfSortByValueObjects={sortingValuesAndHandlers}
-            handleChange={handleSortByChange}
-            defaultValue={"recent"}
-            value={sortingValueFromParams[0]}
-          />
-          {sortingValueFromParams[0] ? (
+          {asFilterBar ? (
+            <Select onValueChange={handleSortByChange}>
+              <SelectTrigger className="gap-x-2 rounded-full px-2 text-sm font-medium">
+                <SelectValue className="mx-4" placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                {sortingValuesAndHandlers.map((sortVal) => (
+                  <SelectItem value={sortVal.value} key={sortVal.value}>
+                    {sortVal.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <SortGroup
+              arrayOfSortByValueObjects={sortingValuesAndHandlers}
+              handleChange={handleSortByChange}
+              defaultValue={"recent"}
+              value={sortingValueFromParams[0]}
+            />
+          )}
+          {sortingValueFromParams[0] && !asFilterBar ? (
             <>
               {" "}
               <Button

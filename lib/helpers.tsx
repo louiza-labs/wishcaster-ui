@@ -85,7 +85,6 @@ export const addCategoryFieldsToCasts = (
   ) {
     return []
   }
-  console.log("the categories in ", categories)
   return casts.map((cast) => {
     const categoryMatch = categories.find(
       (category) => category.request === cast.text
@@ -161,7 +160,7 @@ export const buildRankings = (
   // Create an object to accumulate metrics
   const metricsMap = new Map<string, number>()
 
-  casts.forEach((cast) => {
+  casts.forEach((cast: any) => {
     const focusValue =
       focus === "category" && cast[focus]
         ? cast[focus].id
@@ -751,7 +750,6 @@ export function aggregateCastMetricsByUser(
   posts: CastType[],
   sortBy?: keyof ReactionMetrics
 ): AuthorReactions[] {
-  console.log("the posts", posts)
   const reactionMap = new Map<number, AuthorReactions>()
 
   posts.forEach((post) => {
@@ -766,11 +764,11 @@ export function aggregateCastMetricsByUser(
           replies_count: 0,
         },
         postCount: 0,
-      })
+      } as any)
     }
 
     // Retrieve the existing or newly created authorReactions
-    const authorReactions = reactionMap.get(authorId)
+    const authorReactions: any = reactionMap.get(authorId)
 
     // Update reactions and post count
     authorReactions.reactions.likes_count += post.reactions.likes_count
@@ -788,30 +786,19 @@ export function aggregateCastMetricsByUser(
 
   return results
 }
-type MetricType = "likes_count" | "recasts_count" | "replies_count"
-
+type TopicRanking = {
+  category: string
+  rankings: {
+    likes_count: number
+    recasts_count: number
+    replies_count: number
+    count: number
+  }
+}
 export function rankTopics(
   casts: CastType[],
   topic = ""
-):
-  | {
-      category: string
-      rankings: {
-        likes_count: number
-        recasts_count: number
-        replies_count: number
-        count: number
-      }
-    }[]
-  | {
-      category: string
-      rankings: {
-        likes_count: number
-        recasts_count: number
-        replies_count: number
-        count: number
-      }
-    } {
+): TopicRanking[] | TopicRanking | null {
   // Initialize storage for metrics per category
   const metrics: {
     [key: string]: {
@@ -855,10 +842,10 @@ export function rankTopics(
   ]
   sortableMetrics.forEach((metric) => {
     const sorted = [...categories].sort(
-      (a, b) => b.rankings[metric] - a.rankings[metric]
+      (a: any, b: any) => b.rankings[metric] - a.rankings[metric]
     )
     sorted.forEach((cat, index) => {
-      const categoryToUpdate = categories.find(
+      const categoryToUpdate: any = categories.find(
         (c) => c.category === cat.category
       )
       categoryToUpdate.rankings[metric] = index + 1

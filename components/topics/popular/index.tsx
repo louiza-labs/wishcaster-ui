@@ -36,8 +36,8 @@ const PopularTopicCard = ({
   powerBadges,
 }: PopularTopicCardProps) => {
   return (
-    <Card className="hover:brightness-80 bg-background/50 flex h-2/5 w-3/5 cursor-pointer flex-col items-start justify-between rounded-lg p-2 backdrop-blur-lg  md:h-80 md:w-60">
-      <CardHeader className="flex flex-row items-center gap-x-4">
+    <Card className="hover:brightness-80 bg-background/50 mb-4 flex h-fit cursor-pointer  flex-col items-start justify-between rounded-lg p-2 backdrop-blur-lg md:mb-0  md:h-80 md:w-60">
+      <CardHeader className="flex flex-row items-center gap-x-4 ">
         <CardTitle className="text-2xl font-bold">{rank}</CardTitle>
         {/* <CardDescription>{description}</CardDescription> */}
       </CardHeader>
@@ -45,8 +45,8 @@ const PopularTopicCard = ({
         {" "}
         <p className="text-2xl font-bold">{name}</p>
       </CardContent>
-      <div className="flex w-full flex-col items-end">
-        <CardFooter className="grid size-full grid-cols-2 items-start gap-4 gap-y-2">
+      <div className="flex w-full flex-col items-start md:items-end">
+        <CardFooter className="grid h-fit w-full grid-cols-2 items-start gap-4 gap-y-2 xl:size-full">
           {[
             { icon: Icons.likes, count: likes, noun: "like" },
             {

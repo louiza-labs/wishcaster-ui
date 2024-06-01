@@ -10,10 +10,10 @@ import {
   sortCastsByProperty,
 } from "@/lib/helpers"
 import { Breadcrumbs } from "@/components/breadcrumbs"
+import FilterBar from "@/components/filters/FilterBar"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
 import Topics from "@/components/topics"
-import TopicFilters from "@/components/topics/filters"
 import { fetchCastsUntilCovered, fetchChannelCasts } from "@/app/actions"
 
 interface IndexPageProps {
@@ -39,6 +39,7 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const categoryParam = parseQueryParam(searchParams.categories)
   const filtersParam = parseQueryParam(searchParams.filters)
   const sortParam = parseQueryParam(searchParams.sort)
+  const mobileViewParam = parseQueryParam(searchParams.view)
 
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
@@ -68,17 +69,16 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
 
   return (
     <>
-      <section className="relative mx-auto py-6 md:container sm:px-6 lg:px-20">
+      <div className="top-66 sticky z-10">
+        <FilterBar initialCasts={initialCasts} />
+      </div>
+
+      <section className="relative mx-auto p-6 md:container sm:px-6 lg:px-20">
         <Breadcrumbs pages={breadCrumbPages} />
 
-        <div className="sticky mt-4 flex w-full flex-row justify-between">
-          <Header />
-
-          <TopicFilters initialCasts={initialCasts} />
-        </div>
         <main className="relative grid grid-cols-1 gap-4 py-10 lg:grid-cols-12 ">
           <article className="no-scrollbar lg:col-span-12 lg:px-2  ">
-            <Topics casts={filteredCasts} />
+            <Topics casts={filteredCasts} mobileView={mobileViewParam} />
           </article>
         </main>
       </section>
@@ -86,6 +86,7 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
         <BottomMobileNav
           filteredCasts={filteredCasts}
           initialCasts={initialCasts}
+          page={"topics"}
         />
       </div>
     </>
@@ -96,14 +97,14 @@ interface HeaderProps {}
 
 const Header: FC<HeaderProps> = () => {
   return (
-    <div className="flex flex-col items-center gap-2 md:items-start md:pb-10">
+    <div className="flex flex-col items-center gap-2 md:items-start">
       <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
         Trending Product Topics
       </h1>
-      <p className="text-center text-xs sm:text-lg md:text-left lg:max-w-[700px]">
+      {/* <p className="text-center text-xs sm:text-lg md:text-left lg:max-w-[700px]">
         Sourced from Farcaster&apos;s{" "}
         <span className="font-bold">someone-build channel</span>
-      </p>
+      </p> */}
     </div>
   )
 }

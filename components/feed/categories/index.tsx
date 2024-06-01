@@ -1,9 +1,21 @@
 "use client"
 
 import { Suspense, useCallback, useMemo } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation"
 
 import { Badge } from "@/components/ui/badge"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface Category {
   category: {
@@ -15,11 +27,22 @@ interface Category {
 
 interface CategoriesFeedProps {
   categories: Category[]
+  asFilterBar?: boolean
 }
 
-const CategoriesFeed = ({ categories }: CategoriesFeedProps) => {
+const CategoriesFeed = ({ categories, asFilterBar }: CategoriesFeedProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const path = usePathname()
+  const params = useParams()
+  const isOnTopicOrTopicsPage = path.includes("topic")
+  const topicFromTopicPage = isOnTopicOrTopicsPage
+    ? params.topic
+      ? Array.isArray(params.topic)
+        ? params.topic.join(",")
+        : params.topic
+      : null
+    : null
 
   const categoriesFromParams = useMemo(
     () => searchParams.getAll("topics"),
@@ -60,13 +83,17 @@ const CategoriesFeed = ({ categories }: CategoriesFeedProps) => {
 
   const handleToggleCategoryClick = useCallback(
     (categoryName: string) => {
-      const isToggled = categoriesFromParams.includes(categoryName)
-      const newSearchParams = createQueryString(
-        "topics",
-        categoryName,
-        !isToggled
-      )
-      router.push("?" + newSearchParams)
+      if (isOnTopicOrTopicsPage) {
+        router.push(`/topics/${categoryName}`)
+      } else {
+        const isToggled = categoriesFromParams.includes(categoryName)
+        const newSearchParams = createQueryString(
+          "topics",
+          categoryName,
+          !isToggled
+        )
+        router.push("?" + newSearchParams)
+      }
     },
     [categoriesFromParams, createQueryString, router]
   )
@@ -74,37 +101,64 @@ const CategoriesFeed = ({ categories }: CategoriesFeedProps) => {
   return (
     <Suspense>
       <div className="flex h-fit flex-col gap-y-6 lg:col-span-3">
-        <p className="gap-x-2 text-lg font-bold leading-tight tracking-tighter md:text-lg">
-          Topics
-        </p>
-        <div className=" grid size-fit grid-cols-2 gap-y-1 md:flex md:size-full md:flex-wrap md:gap-2 lg:col-span-3">
-          {categories && categories.length > 0
-            ? categories.map((category) => {
+        {asFilterBar ? null : (
+          <p className="gap-x-2 text-lg font-bold leading-tight tracking-tighter md:text-lg">
+            Topics
+          </p>
+        )}
+        {asFilterBar && categories && categories.length ? (
+          <Select
+            defaultValue={topicFromTopicPage ? topicFromTopicPage : undefined}
+            onValueChange={(value) => handleToggleCategoryClick(value)}
+          >
+            <SelectTrigger className="gap-x-2 rounded-full px-2 text-sm font-medium">
+              <SelectValue placeholder="Select a Topic" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => {
                 if (category.category) {
                   return (
-                    <div
-                      className="md:cols-span-3 col-span-1"
+                    <SelectItem
+                      value={category.category.id}
                       key={category.request}
                     >
-                      <Badge
-                        onClick={() =>
-                          handleToggleCategoryClick(category.category.id)
-                        }
-                        variant={
-                          badgeIsToggled(category.category.id)
-                            ? "default"
-                            : "outline"
-                        }
-                        className="h-10 w-fit cursor-pointer whitespace-nowrap"
-                      >
-                        {category.category.label}
-                      </Badge>
-                    </div>
+                      {category.category.label}
+                    </SelectItem>
                   )
                 }
-              })
-            : null}
-        </div>
+              })}
+            </SelectContent>
+          </Select>
+        ) : (
+          <div className=" grid size-fit grid-cols-2 gap-y-1 md:flex md:size-full md:flex-wrap md:gap-2 lg:col-span-3">
+            {categories && categories.length > 0
+              ? categories.map((category) => {
+                  if (category.category) {
+                    return (
+                      <div
+                        className="md:cols-span-3 col-span-1"
+                        key={category.request}
+                      >
+                        <Badge
+                          onClick={() =>
+                            handleToggleCategoryClick(category.category.id)
+                          }
+                          variant={
+                            badgeIsToggled(category.category.id)
+                              ? "default"
+                              : "outline"
+                          }
+                          className="h-10 w-fit cursor-pointer whitespace-nowrap"
+                        >
+                          {category.category.label}
+                        </Badge>
+                      </div>
+                    )
+                  }
+                })
+              : null}
+          </div>
+        )}
       </div>
     </Suspense>
   )

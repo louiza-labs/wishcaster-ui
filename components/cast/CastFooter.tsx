@@ -49,7 +49,7 @@ const CastFooter = ({
   return (
     <div className="mt-2 flex w-full flex-col items-center">
       {!hideMetrics && (
-        <div className="flex w-full cursor-read justify-center gap-x-12 px-4 py-2 text-sm rounded-md backdrop-blur-md">
+        <div className="cursor-read flex w-full flex-wrap justify-center gap-x-12 rounded-md px-4 py-2 text-sm backdrop-blur-md">
           {/* <!-- Interaction Stats (Likes, Recasts, Replies) --> */}
           {[
             { icon: Icons.likes, count: reactions.likes_count, noun: "like" },
@@ -58,10 +58,15 @@ const CastFooter = ({
               count: reactions.recasts_count,
               noun: "recast",
             },
-            { icon: Icons.replies, count: replies.count, noun: "reply" },
+            {
+              icon: Icons.replies,
+              count: replies.count,
+              noun:
+                replies.count > 1 || replies.count === 0 ? "replie" : "reply",
+            },
           ].map(({ icon: Icon, count, noun }) => (
             <div key={noun} className="flex items-center gap-x-2">
-              <Icon className="h-4 w-4 text-gray-700" />
+              <Icon className="size-4 text-gray-700" />
               <div className="flex flex-col items-start">
                 <p className="font-medium">{count.toLocaleString()}</p>
                 <p>{count !== 1 ? `${noun}s` : noun}</p>
@@ -73,7 +78,7 @@ const CastFooter = ({
       <div className="mt-2 flex w-full items-center justify-between">
         {/* <!-- Date Section --> */}
         <div className="flex items-center gap-x-2 rounded-full bg-slate-200 px-3 py-1 text-xs font-light dark:bg-slate-800">
-          <Icons.Calendar className="h-4 w-4 text-gray-700" />
+          <Icons.Calendar className="size-4 text-gray-700" />
           <p>Updated {formatDateForCastTimestamp(timestamp)}</p>
         </div>
         {/* <!-- Action Buttons --> */}

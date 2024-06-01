@@ -1,9 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { Cast as CastType } from "@/types"
 
-import { isImageUrl, loadImageAspectRatio } from "@/lib/helpers"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import AuthorAvatar from "@/components/cast/CastAvatar"
 import CastContent from "@/components/cast/CastContent"
@@ -13,8 +11,9 @@ interface CastComponentTypes extends CastType {
   hideMetrics?: boolean
   handleToggleCategoryClick?: any
   badgeIsToggled?: any
-  category?: string
+  category?: any
   mentionedProfiles: any[]
+  renderEmbeds?: boolean
 }
 const EmbeddedCast = ({
   timestamp,
@@ -29,20 +28,8 @@ const EmbeddedCast = ({
   hash,
   handleToggleCategoryClick,
   badgeIsToggled,
+  renderEmbeds,
 }: CastComponentTypes) => {
-  const [isExpanded, setIsExpanded] = useState(false)
-  const [aspectRatio, setAspectRatio] = useState("56.25%") // Default to 16:9
-
-  const hasUrl = embeds.find((embed: any) => embed.url) !== undefined
-  const potentialUrl = hasUrl ? embeds[0].url : null
-  const isImageUrlToShow = isImageUrl(potentialUrl)
-
-  useEffect(() => {
-    if (isImageUrlToShow) {
-      loadImageAspectRatio(potentialUrl as string, setAspectRatio)
-    }
-  }, [potentialUrl, isImageUrlToShow])
-
   return (
     <Card className="flex flex-col justify-between lg:h-fit">
       <CardHeader>
@@ -62,6 +49,7 @@ const EmbeddedCast = ({
           handleToggleCategoryClick={handleToggleCategoryClick}
           badgeIsToggled={badgeIsToggled}
           maxCharacters={150}
+          renderEmbeds={renderEmbeds}
           mentionedProfiles={mentionedProfiles}
         />
       </CardContent>

@@ -7,7 +7,10 @@ import { categorizeArrayOfCasts } from "@/lib/helpers"
 import { fetchFarcasterCast } from "@/app/actions"
 
 interface ExtendedCast extends Cast {
-  category?: string
+  category?: {
+    label: string
+    id: string
+  }
 }
 
 const useGetCast = (castHash: string | undefined) => {

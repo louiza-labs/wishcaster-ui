@@ -14,8 +14,13 @@ const handleVisitProfile = (username: string) => {
     window.open(`https://www.warpcast.com/${username}`, "_blank")
   }
 }
+interface UserFeedProps {
+  relevantUsers: any[]
+  loadingUsers: boolean
+  showMetrics?: boolean
+}
 
-const UserFeed = ({ relevantUsers, loadingUsers }: any) => {
+const UserFeed = ({ relevantUsers, loadingUsers, showMetrics }: any) => {
   const [listHeight, setListHeight] = useState(window.innerHeight)
   const [visibleStartIndex, setVisibleStartIndex] = useState(0)
 
@@ -50,12 +55,36 @@ const UserFeed = ({ relevantUsers, loadingUsers }: any) => {
         className=" flex w-full flex-row items-center justify-between rounded border p-2"
       >
         <CastAvatar author={data[index]} key={data[index].fid} />
-        <Button
-          onClick={() => handleVisitProfile(data[index]?.username)}
-          variant="ghost"
-        >
-          Visit
-        </Button>
+        <div className="flex flex-row gap-x-2">
+          {showMetrics && data[index].reactions ? (
+            <div className="flex flex-row justify-start gap-x-2">
+              <div className="flex flex-col items-center gap-y-1">
+                <p className="text-xs font-light">Likes</p>
+                <p className="text-xs font-medium">
+                  {data[index].reactions.likes_count}
+                </p>
+              </div>
+              <div className="hidden flex-col items-center gap-y-1 xl:flex">
+                <p className="text-xs font-light">Replies</p>
+                <p className="text-xs font-medium">
+                  {data[index].reactions.replies_count}
+                </p>
+              </div>
+              <div className="hidden flex-col items-center  gap-y-1 xl:flex">
+                <p className="text-xs font-light">Recasts</p>
+                <p className="text-xs font-medium">
+                  {data[index].reactions.recasts_count}
+                </p>
+              </div>
+            </div>
+          ) : null}
+          <Button
+            onClick={() => handleVisitProfile(data[index]?.username)}
+            variant="ghost"
+          >
+            Visit
+          </Button>
+        </div>
       </div>
     )
   }

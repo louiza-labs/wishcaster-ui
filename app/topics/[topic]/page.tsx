@@ -13,10 +13,9 @@ import { Badge } from "@/components/ui/badge"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import CastFeed from "@/components/feed/casts"
 import TopCasts from "@/components/feed/casts/TopCasts"
-import Filters from "@/components/filters"
+import FilterBar from "@/components/filters/FilterBar"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
-import SortCasts from "@/components/sort/SortCasts"
 import TeamForTopics from "@/components/team/topics"
 import TopicStats from "@/components/topics/stats"
 import { fetchCastsUntilCovered, fetchChannelCasts } from "@/app/actions"
@@ -47,6 +46,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   const categoryParam = parseQueryParam(searchParams.categories)
   const filtersParam = parseQueryParam(searchParams.filters)
   const sortParam = parseQueryParam(searchParams.sort)
+
   const selectedTopic = params.topic
     ? PRODUCT_CATEGORIES_AS_MAP[params.topic]
     : null
@@ -91,17 +91,22 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
         />
       ) : (
         <>
+          <div className="top-66 sticky z-10">
+            <FilterBar initialCasts={initialCasts} />
+          </div>{" "}
           <section className="mx-auto h-fit py-6 md:container sm:px-6 lg:h-auto lg:px-20">
-            <Breadcrumbs pages={breadCrumbPages} />
+            <div className="px-6 md:px-0">
+              <Breadcrumbs pages={breadCrumbPages} />
+            </div>
 
-            <div className="mb-4 flex flex-row items-center justify-between gap-x-4">
+            <div className="my-4 flex flex-col items-center justify-between gap-x-4  md:mt-0 md:flex-row">
               {/* Placeholder for Header if needed */}
-              <div className="flex w-full flex-col gap-y-2">
-                <h1 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
+              <div className="mb-4 flex w-full flex-row gap-x-2 px-6 md:mb-0 md:flex-col md:gap-x-0 md:gap-y-2 md:px-0">
+                <h1 className=" text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
                   {selectedTopic.label}
                 </h1>
-                <div className="flex flex-row items-center gap-x-2">
-                  <p className="text-sm font-semibold">
+                <div className="hidden flex-row items-center gap-x-2 md:flex">
+                  <p className=" text-sm font-semibold md:block">
                     Based on casts that mention:
                   </p>
                   <div className="flex flex-wrap gap-x-1">
@@ -109,6 +114,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                       (keyword, index) => (
                         <Badge
                           variant={"outline"}
+                          key={keyword}
                           className="text-sm font-light"
                         >
                           {keyword}
@@ -118,29 +124,31 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                   </div>
                 </div>
               </div>
+
               <TopicStats
                 casts={sortedCasts}
                 cursor={cursorToUse}
                 topic={params.topic}
+                mobileView={mobileViewParam}
               />
             </div>
             <main className="relative mt-10 grid min-h-screen grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-x-10">
-              <aside className="no-scrollbar sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:hidden">
+              {/* <aside className="no-scrollbar sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:hidden">
                 <SortCasts />
                 <Filters initialCasts={sortedCasts} />
-              </aside>
+              </aside> */}
               <article
                 className={`${
-                  mobileViewParam.length && mobileViewParam !== "cast"
+                  mobileViewParam.length && mobileViewParam !== "popular"
                     ? "hidden lg:flex"
-                    : ""
+                    : "flex"
                 }  overflow-y-auto lg:col-span-8`}
               >
-                <div className="gap-y-4 overflow-y-auto pb-14 lg:pb-0">
+                <div className="gap-y-4 overflow-y-auto pb-0 lg:pb-0">
                   {topCast ? (
                     <>
-                      <div className="bg-background flex flex-col flex-wrap gap-y-4">
-                        <h2 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
+                      <div className="bg-background flex flex-col flex-wrap gap-y-4 overflow-auto">
+                        <h2 className=" text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
                           Top Casts
                         </h2>
                         <div className="flex size-fit flex-row items-start">
@@ -158,8 +166,8 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
 
               <div
                 className={`${
-                  mobileViewParam !== "build" ? "hidden lg:block" : ""
-                } overflow-y-auto sm:col-span-4`}
+                  mobileViewParam !== "build" ? "hidden lg:block" : "flex"
+                } overflow-y-auto  sm:col-span-4`}
               >
                 <div className="flex flex-col gap-y-8">
                   <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
@@ -172,8 +180,12 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                   />
                 </div>
               </div>
-              <div className="flex flex-col items-center lg:col-span-12 ">
-                <h3 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
+              <div
+                className={`${
+                  mobileViewParam !== "feed" ? "hidden lg:flex" : "flex"
+                } flex-col items-center lg:col-span-12 `}
+              >
+                <h3 className=" text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
                   Casts Feed
                 </h3>
                 <CastFeed
@@ -190,7 +202,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
             <BottomMobileNav
               filteredCasts={sortedCasts}
               initialCasts={sortedCasts}
-              page="cast"
+              page="topic"
             />
           </div>
         </>

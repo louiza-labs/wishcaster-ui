@@ -35,7 +35,7 @@ function MobileSearch({}: any) {
             variant="ghost"
             className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 lg:hidden"
           >
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center gap-y-1">
               <Icons.Search />
               <p
                 className={
