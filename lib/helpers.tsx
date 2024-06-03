@@ -313,10 +313,10 @@ export const renderTextWithLinks = (
 
   // URL and user mention patterns
   const urlRegex = /https?:\/\/[^\s]+/g
-  const atMentionRegex = /@\w+/g
+  const atMentionRegex = /@\w+|\(@\w+\)/g
 
   // Splitting the text to handle different parts
-  const parts = text.split(/(https?:\/\/[^\s]+|@\w+)/g)
+  const parts = text.split(/(https?:\/\/[^\s]+|@\w+|\(@\w+\))/g)
 
   return (
     <span className="flex-wrap break-all">
