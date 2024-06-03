@@ -146,11 +146,12 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                       <h2 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
                         Top Casts
                       </h2>
-                      <div className="flex size-fit flex-row items-start">
+                      <div className="flex size-fit flex-row items-start lg:h-[70vh] xl:h-fit">
                         <TopCasts
                           casts={initialCasts}
                           cursor={cursorToUse}
                           topic={params.topic}
+                          sortParam={sortParam}
                         />
                       </div>
                     </div>

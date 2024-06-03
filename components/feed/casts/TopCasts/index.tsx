@@ -17,22 +17,27 @@ import { CastSkeleton } from "@/components/loading/cast"
 interface TopCastsProps {
   casts: CastType[]
   cursor: string
+  sortParam: string
   topic: string
 }
 
-const TopCasts = ({ casts, cursor, topic }: TopCastsProps) => {
+const TopCasts = ({ casts, cursor, topic, sortParam }: TopCastsProps) => {
   const { castsToShow: castsWithUserInfo, fetchingCasts } =
     useFetchCastsUntilCovered(casts)
   let { filteredCasts } = useFilterFeed(castsWithUserInfo, topic)
-  const sortedCasts = sortCastsByProperty(filteredCasts, "liked_count")
+
+  const sortedCasts = sortCastsByProperty(
+    filteredCasts,
+    sortParam && sortParam.length ? sortParam : "liked_count"
+  )
 
   return (
     <>
-      <div className="flex flex-col lg:hidden">
-        {sortedCasts.map((castItem: CastType) => (
+      <div className="flex flex-col overflow-y-auto xl:hidden">
+        {sortedCasts.slice(0, 10).map((castItem: CastType, index: number) => (
           <div
-            key={castItem.hash}
-            className="grid size-fit  grid-cols-1 md:basis-1/2 lg:max-h-screen lg:overflow-y-scroll xl:h-[70vh]"
+            key={castItem.hash + castItem.timestamp}
+            className="size-full max-h-fit "
           >
             <Cast
               {...castItem}
@@ -44,7 +49,7 @@ const TopCasts = ({ casts, cursor, topic }: TopCastsProps) => {
           </div>
         ))}
       </div>
-      <div className="hidden size-fit lg:block ">
+      <div className="hidden size-fit xl:block ">
         {sortedCasts && sortedCasts.length && !fetchingCasts ? (
           <Carousel
             opts={{

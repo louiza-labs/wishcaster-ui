@@ -109,8 +109,19 @@ const CastsFeed: React.FC<CastFeedProps> = ({
         } lg:px-10`}
       >
         {fetchingCasts && !(filteredCasts && filteredCasts.length) ? (
-          <div className="w-full">
-            {columns ? <CastFeedSkeleton count={2} /> : null}
+          <div
+            className={
+              columns
+                ? "col-span-2 mt-10 flex w-full gap-x-10  lg:flex-row lg:justify-center"
+                : "flex flex-col "
+            }
+          >
+            {columns ? (
+              <div className="hidden lg:block">
+                {" "}
+                <CastFeedSkeleton count={4} />{" "}
+              </div>
+            ) : null}
             <CastFeedSkeleton count={4} />
           </div>
         ) : filteredCasts && filteredCasts.length ? (

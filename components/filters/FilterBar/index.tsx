@@ -18,7 +18,7 @@ const FilterBar = ({ initialCasts }: FilterBarProps) => {
   const barText = isOnTopicpage ? "Filter" : "Sort & Filter"
   return (
     <div className="bg-background oveflow-x-scroll xl:h-18 sticky   top-0 flex w-full flex-row items-center justify-center gap-x-4 overflow-auto border-b p-2 lg:h-fit xl:justify-start xl:px-20">
-      {isOnTopicpage ? null : <SortCasts asFilterBar={true} />}
+      {<SortCasts asFilterBar={true} />}
       <Filters initialCasts={initialCasts} asFilterBar={true} />
     </div>
   )

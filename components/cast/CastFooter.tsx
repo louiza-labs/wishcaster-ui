@@ -49,7 +49,7 @@ const CastFooter = ({
   return (
     <div className="mt-2 flex w-full flex-col items-center">
       {!hideMetrics && (
-        <div className="cursor-read flex w-full flex-wrap justify-center gap-x-12 rounded-md px-4 py-2 text-sm backdrop-blur-md">
+        <div className="cursor-read flex w-full justify-center gap-x-12 rounded-md px-4 py-2 text-sm backdrop-blur-md lg:flex-wrap">
           {/* <!-- Interaction Stats (Likes, Recasts, Replies) --> */}
           {[
             { icon: Icons.likes, count: reactions.likes_count, noun: "like" },
@@ -84,7 +84,7 @@ const CastFooter = ({
         {/* <!-- Action Buttons --> */}
         <div className="flex items-center gap-x-2 text-xs sm:text-sm">
           <Button
-            className="hidden sm:block"
+            className="hidden whitespace-nowrap sm:block"
             onClick={handleRouteToWC}
             variant="link"
           >
