@@ -25,11 +25,7 @@ const TopCasts = ({ casts, cursor, topic, sortParam }: TopCastsProps) => {
   const { castsToShow: castsWithUserInfo, fetchingCasts } =
     useFetchCastsUntilCovered(casts)
   let { filteredCasts } = useFilterFeed(castsWithUserInfo, topic)
-
-  const sortedCasts = sortCastsByProperty(
-    filteredCasts,
-    sortParam && sortParam.length ? sortParam : "liked_count"
-  )
+  const sortedCasts = sortCastsByProperty(filteredCasts, "liked_count")
 
   return (
     <>

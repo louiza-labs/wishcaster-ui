@@ -49,7 +49,7 @@ const CastFooter = ({
   return (
     <div className="mt-2 flex w-full flex-col items-center">
       {!hideMetrics && (
-        <div className="cursor-read flex w-full justify-center gap-x-12 rounded-md px-4 py-2 text-sm backdrop-blur-md lg:flex-wrap">
+        <div className="cursor-read flex w-full justify-center gap-x-12 rounded-md px-4 py-2 text-sm backdrop-blur-md lg:flex-wrap xl:flex-nowrap">
           {/* <!-- Interaction Stats (Likes, Recasts, Replies) --> */}
           {[
             { icon: Icons.likes, count: reactions.likes_count, noun: "like" },
@@ -68,8 +68,12 @@ const CastFooter = ({
             <div key={noun} className="flex items-center gap-x-2">
               <Icon className="size-4 text-gray-700" />
               <div className="flex flex-col items-start">
-                <p className="font-medium">{count.toLocaleString()}</p>
-                <p>{count !== 1 ? `${noun}s` : noun}</p>
+                <p className="whitespace-nowrap font-medium">
+                  {count.toLocaleString()}
+                </p>
+                <p className="whitespace-nowrap">
+                  {count !== 1 ? `${noun}s` : noun}
+                </p>
               </div>
             </div>
           ))}
@@ -98,7 +102,11 @@ const CastFooter = ({
             Visit
           </Button>
           {!isOnCastPage && (
-            <Button onClick={handleRouteToCastPage} variant="default">
+            <Button
+              className="whitespace-nowrap"
+              onClick={handleRouteToCastPage}
+              variant="default"
+            >
               Build
             </Button>
           )}
