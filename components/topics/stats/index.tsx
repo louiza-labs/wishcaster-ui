@@ -10,7 +10,7 @@ import {
   rankTopics,
   summarizeByCategory,
 } from "@/lib/helpers"
-import { useFetchCastsUntilCovered } from "@/hooks/farcaster/useFetchCastsUntilCovered"
+import { useFetchCastsUntilCovered } from "@/hooks/farcaster/casts/useFetchCastsUntilCovered"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,

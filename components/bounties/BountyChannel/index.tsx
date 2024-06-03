@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Check, ChevronsUpDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import useFetchChannels from "@/hooks/farcaster/useFetchChannels"
+import useFetchChannels from "@/hooks/farcaster/channels/useFetchChannels"
 import { Button } from "@/components/ui/button"
 import {
   Command,

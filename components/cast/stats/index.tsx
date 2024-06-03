@@ -5,7 +5,7 @@ import {
   generateStatsObjectForCast,
   getRanking,
 } from "@/lib/helpers"
-import useGetProfiles from "@/hooks/farcaster/useGetProfiles"
+import useGetProfiles from "@/hooks/farcaster/profiles/useGetProfiles"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import {
   Card,

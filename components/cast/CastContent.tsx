@@ -8,7 +8,7 @@ import {
   loadImageAspectRatio,
   renderTextWithLinks,
 } from "@/lib/helpers"
-import useGetCast from "@/hooks/farcaster/useGetCast"
+import useGetCast from "@/hooks/farcaster/casts/useGetCast"
 import EmbeddedCast from "@/components/embeddedCast"
 import LinkPreview from "@/components/linkPreview"
 import HLSVideoPlayer from "@/components/video/HLSVideo"

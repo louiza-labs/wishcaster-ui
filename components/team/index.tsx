@@ -4,7 +4,7 @@ import { Suspense, useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useNeynarContext } from "@neynar/react"
 
-import useGetProfiles from "@/hooks/farcaster/useGetProfiles"
+import useGetProfiles from "@/hooks/farcaster/profiles/useGetProfiles"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import {
   Accordion,
