@@ -77,7 +77,7 @@ const CastContent = ({
         target={routeToWarpcast ? "_blank" : undefined}
         rel={routeToWarpcast ? "noReferrer" : undefined}
       >
-        <div className=" flex flex-col flex-wrap gap-y-4 break-all">
+        <div className=" flex flex-col gap-y-4  break-words [overflow-wrap:anywhere]">
           {renderTextWithLinks(text, mentionedProfiles, embeds)}
 
           <>

@@ -27,7 +27,9 @@ export const useFetchCastsUntilCovered = (initialCasts: CastType[]) => {
       setFetchingCasts(true)
       const castsResponse = await fetchCastsUntilCovered(
         "someone-build",
-        selectedDateFilter ? selectedDateFilter : "ytd",
+        selectedDateFilter && selectedDateFilter.length
+          ? selectedDateFilter
+          : "ytd",
         loggedInUserFID
       )
       const newCasts = castsResponse.casts
