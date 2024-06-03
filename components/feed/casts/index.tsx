@@ -4,7 +4,7 @@ import { Suspense, useCallback } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Cast as CastType } from "@/types"
 
-import { useLoadMoreCasts } from "@/hooks/farcaster/useLoadMoreCasts"
+import { useLoadMoreCasts } from "@/hooks/farcaster/casts/useLoadMoreCasts"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import Cast from "@/components/cast"
 import CastFeedSkeleton from "@/components/loading/feed/casts"

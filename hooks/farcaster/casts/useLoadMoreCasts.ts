@@ -3,7 +3,7 @@ import { Cast as CastType } from "@/types"
 import { useNeynarContext } from "@neynar/react"
 import { useInView } from "react-intersection-observer"
 
-import { calculateStartDate, debounce } from "@/lib/helpers"
+import { calculateStartDate, debounce } from "@/lib/utils"
 import { fetchChannelCasts } from "@/app/actions"
 
 type dateRanges = "24-hours" | "7-days" | "30-days" | "ytd"

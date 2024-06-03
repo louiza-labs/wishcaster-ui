@@ -1,7 +1,7 @@
 "use client"
 
 import { sortCastsByProperty } from "@/lib/helpers"
-import useFetchCastConversation from "@/hooks/farcaster/useFetchCastConversation"
+import useFetchCastConversation from "@/hooks/farcaster/conversations/useFetchCastConversation"
 import {
   Accordion,
   AccordionContent,

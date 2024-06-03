@@ -2,7 +2,7 @@
 
 import { Suspense } from "react"
 
-import useFetchCastConversation from "@/hooks/farcaster/useFetchCastConversation"
+import useFetchCastConversation from "@/hooks/farcaster/conversations/useFetchCastConversation"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Bounty from "@/components/bounties"

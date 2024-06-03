@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation"
 
-import { formatDateForCastTimestamp } from "@/lib/helpers"
+import { formatDateForCastTimestamp } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/icons"
 

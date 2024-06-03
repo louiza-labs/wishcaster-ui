@@ -6,7 +6,7 @@ import { Cast as CastType } from "@/types"
 import { useNeynarContext } from "@neynar/react"
 
 import { aggregateCastMetricsByUser } from "@/lib/helpers"
-import useFetchCastsUntilCovered from "@/hooks/farcaster/useFetchCastsUntilCovered"
+import useFetchCastsUntilCovered from "@/hooks/farcaster/casts/useFetchCastsUntilCovered"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import {
   Accordion,
