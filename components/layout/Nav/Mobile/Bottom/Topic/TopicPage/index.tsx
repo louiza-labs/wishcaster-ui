@@ -91,7 +91,6 @@ const TopicPageNavItem = ({ section }: { section: string }) => {
         <div className="flex flex-col items-center">
           <Button
             variant={"ghost"}
-            className=""
             onClick={handlePopularViewClick}
             className=" px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 lg:hidden"
           >
@@ -181,12 +180,12 @@ const TopicPageNavItem = ({ section }: { section: string }) => {
             className=" px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 lg:hidden"
           >
             <div className="flex flex-col items-center gap-y-1">
-              <Icons.likes
+              <Icons.feed
                 className={filterIsSelected("feed") ? " font-bold" : ""}
               />
               <p
                 className={
-                  filterIsSelected("build")
+                  filterIsSelected("feed")
                     ? "text-xs font-bold"
                     : "text-xs font-medium"
                 }

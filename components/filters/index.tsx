@@ -1,12 +1,7 @@
 "use client"
 
 import { Suspense, useCallback, useMemo } from "react"
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useNeynarContext } from "@neynar/react"
 
 import {
@@ -14,7 +9,6 @@ import {
   filterDuplicateCategories,
 } from "@/lib/helpers"
 import { cn } from "@/lib/utils"
-import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -50,10 +44,9 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
   const router = useRouter()
   const { user, isAuthenticated } = useNeynarContext()
   const path = usePathname()
-  const params = useParams()
   const isOnTopicsPage = path === "topics"
-  let { filteredCasts } = useFilterFeed(initialCasts)
-  const categories = categorizeArrayOfCasts(filteredCasts) as Category[]
+
+  const categories = categorizeArrayOfCasts(initialCasts) as Category[]
 
   const filteredCategories = filterDuplicateCategories(categories)
 
@@ -107,7 +100,8 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
   )
 
   const selectedDateFilter =
-    filtersFromParams.find((filter) => dateOptions.includes(filter)) ?? ""
+    filtersFromParams.find((filter) => dateOptions.includes(filter)) ??
+    "24-hours"
 
   const handleToggleFilterClick = useCallback(
     (categoryName: string) => {
@@ -188,7 +182,10 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
     if (filterIsSelected("recasted")) {
       selectedFilterValues += ` Recasted`
     }
-    selectedFilterValues = selectedFilterValues.trim().replace(/\s+/g, ",")
+    selectedFilterValues = selectedFilterValues
+      .trim()
+      .replace(/\s+/g, ", ")
+      .replace(/,+/g, ",")
     return selectedFilterValues
   }
 
@@ -196,7 +193,7 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
     <Suspense>
       <div
         className={` flex h-fit ${
-          asFilterBar ? "flex-row" : "flex-col"
+          asFilterBar ? "flex-row overflow-auto overflow-x-scroll" : "flex-col"
         } gap-y-6 lg:col-span-12`}
       >
         {asFilterBar ? null : (
@@ -252,10 +249,13 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
                   {asFilterBar ? (
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button variant="outline" className="rounded-full">
+                        <Button
+                          variant="outline"
+                          className="w-fit whitespace-nowrap rounded-full font-semibold"
+                        >
                           {getSelectedFilterValues()
-                            ? `Filtered on: ${getSelectedFilterValues()}`
-                            : "Personalize Feed"}
+                            ? `${getSelectedFilterValues()}`
+                            : "👥 User Filters"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="flex w-fit flex-col gap-y-4 p-4">

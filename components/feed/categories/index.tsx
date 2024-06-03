@@ -111,7 +111,7 @@ const CategoriesFeed = ({ categories, asFilterBar }: CategoriesFeedProps) => {
             defaultValue={topicFromTopicPage ? topicFromTopicPage : undefined}
             onValueChange={(value) => handleToggleCategoryClick(value)}
           >
-            <SelectTrigger className="gap-x-2 rounded-full px-2 text-sm font-medium">
+            <SelectTrigger className="size-fit gap-x-2 whitespace-nowrap rounded-full px-2 text-sm font-semibold focus:ring-0 focus:ring-transparent focus:ring-offset-0">
               <SelectValue placeholder="Select a Topic" />
             </SelectTrigger>
             <SelectContent>

@@ -5,10 +5,7 @@ import { Cast as CastType } from "@/types"
 
 import { cn } from "@/lib/utils"
 import CastPageNavItem from "@/components/layout/Nav/Mobile/Bottom/CastPage"
-import MobileFiltering from "@/components/layout/Nav/Mobile/Bottom/Filters"
 import MobileRankings from "@/components/layout/Nav/Mobile/Bottom/Rankings"
-import MobileSearch from "@/components/layout/Nav/Mobile/Bottom/Search"
-import MobileSorting from "@/components/layout/Nav/Mobile/Bottom/Sort"
 import TopicPageNavItem from "@/components/layout/Nav/Mobile/Bottom/Topic/TopicPage"
 import TopicsNavButton from "@/components/layout/Nav/Mobile/Bottom/Topics"
 import TopicsPageNavItem from "@/components/layout/Nav/Mobile/Bottom/Topics/TopicsPage"
@@ -52,29 +49,25 @@ const BottomMobileNav = ({
       ) : page === "topics" ? (
         <>
           <TopicsPageNavItem section="popular" />
+
           <TopicsPageNavItem section="table" />
-          <MobileSearch />
-          <MobileFiltering initialCasts={initialCasts} />
+          {/* <MobileFiltering initialCasts={initialCasts} /> */}
         </>
       ) : page === "topic" ? (
         <>
           <TopicPageNavItem section="popular" />
-          <TopicPageNavItem section="feed" />
-
-          <MobileSearch />
-          <TopicPageNavItem section="stats" />
+          {/* <TopicPageNavItem section="feed" /> */}
 
           <TopicPageNavItem section="build" />
         </>
       ) : (
         <>
-          <MobileFiltering initialCasts={filteredCasts} />
+          {/* <MobileFiltering initialCasts={filteredCasts} /> */}
 
           <TopicsNavButton />
-          <MobileSearch />
 
           <MobileRankings initialCasts={initialCasts} />
-          <MobileSorting />
+          {/* <MobileSorting /> */}
         </>
       )}
     </div>

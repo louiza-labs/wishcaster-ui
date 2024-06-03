@@ -25,8 +25,11 @@ const DateFilter = ({
     <>
       {asFilterBar ? (
         <Select onValueChange={handleChangeForSelect}>
-          <SelectTrigger className="gap-x-2 rounded-full px-2 text-sm font-medium">
-            <SelectValue placeholder="Timeframe" />
+          <SelectTrigger
+            defaultValue={"24-hours"}
+            className="ring-none w-fit gap-x-2 whitespace-nowrap rounded-full px-2 text-sm font-semibold focus:ring-0 focus:ring-transparent focus:ring-offset-0 xl:min-w-24"
+          >
+            <SelectValue placeholder="📆 Date" />
           </SelectTrigger>
           <SelectContent>
             {datesArray.map((dateVal) => {

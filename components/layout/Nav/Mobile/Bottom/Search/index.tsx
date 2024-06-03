@@ -43,9 +43,7 @@ function MobileSearch({}: any) {
                     ? "text-xs font-bold"
                     : "text-xs font-medium"
                 }
-              >
-                Search
-              </p>
+              ></p>
             </div>
             <span className="sr-only">Toggle Menu</span>
           </Button>

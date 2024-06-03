@@ -11,8 +11,10 @@ const CastReactionSkeleton = () => {
     </div>
   )
 }
-
-export function CastSkeleton() {
+interface CastSkeletonProps {
+  size?: "small" | "medium" | "large" | "jumbo"
+}
+export function CastSkeleton({ size }: CastSkeletonProps) {
   return (
     <div className="flex flex-col items-center">
       <div className="flex w-full flex-row items-start justify-between gap-x-2">
@@ -25,9 +27,13 @@ export function CastSkeleton() {
         </div>
         <Skeleton className="size-6 h-10 w-28 rounded-xl " />
       </div>
-      <Skeleton className="my-4 size-6 h-24 w-full rounded-xl " />
+      <Skeleton
+        className={`my-4 ${
+          size && size === "large" ? "size-60" : "size-6 h-24"
+        }  w-full rounded-xl `}
+      />
 
-      <div className="space-y flex w-full flex-row justify-around">
+      <div className="space-y flex w-full flex-row justify-around gap-x-4">
         <CastReactionSkeleton />
         <CastReactionSkeleton />
         <CastReactionSkeleton />

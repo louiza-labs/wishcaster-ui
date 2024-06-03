@@ -42,7 +42,6 @@ const useFilterFeed = (casts: CastType[], topic = "") => {
       (cast) => cast.viewer_context && cast.viewer_context.liked
     )
   }
-  console.log("the filtered", filteredCasts)
 
   // Apply following filter
   if (followingFilter) {

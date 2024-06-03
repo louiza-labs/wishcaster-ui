@@ -120,7 +120,7 @@ const SortCasts = ({ asFilterBar }: SortCastsProps) => {
         <div className="flex flex-col items-center gap-y-8  md:gap-2">
           {asFilterBar ? (
             <Select onValueChange={handleSortByChange}>
-              <SelectTrigger className="gap-x-2 rounded-full px-2 text-sm font-medium">
+              <SelectTrigger className="ring-none w-fit gap-x-2 whitespace-nowrap rounded-full px-2 text-sm font-medium">
                 <SelectValue className="mx-4" placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>

@@ -152,7 +152,7 @@ const TeamForTopics = ({ casts, cursor, topic }: TeamProps) => {
   return (
     <Suspense>
       {sortedUsersByCasts && sortedUsersByCasts.length ? (
-        <div className="flex h-[60vh] w-full flex-col  items-start border-indigo-500">
+        <div className="flex h-fit w-full flex-col items-start border-indigo-500 px-4  lg:h-[60vh] lg:px-0">
           <>
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="filter">
@@ -172,11 +172,11 @@ const TeamForTopics = ({ casts, cursor, topic }: TeamProps) => {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-            <div className="flex h-fit w-full flex-col  gap-y-2 overflow-y-scroll  md:size-full md:h-full">
+            <div className="flex h-fit w-full flex-col  gap-y-2 md:size-full  md:h-full lg:overflow-y-scroll">
               <UserFeed
                 relevantUsers={
                   sortedUsersByCasts
-                    ? sortedUsersByCasts.slice(0, 5)
+                    ? sortedUsersByCasts.slice(0, 10)
                     : sortedUsersByCasts
                 }
                 showMetrics={true}

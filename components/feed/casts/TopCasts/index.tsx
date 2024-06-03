@@ -12,6 +12,7 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel"
 import Cast from "@/components/cast"
+import { CastSkeleton } from "@/components/loading/cast"
 
 interface TopCastsProps {
   casts: CastType[]
@@ -20,46 +21,78 @@ interface TopCastsProps {
 }
 
 const TopCasts = ({ casts, cursor, topic }: TopCastsProps) => {
-  const { castsToShow: castsWithUserInfo } = useFetchCastsUntilCovered(casts)
+  const { castsToShow: castsWithUserInfo, fetchingCasts } =
+    useFetchCastsUntilCovered(casts)
   let { filteredCasts } = useFilterFeed(castsWithUserInfo, topic)
   const sortedCasts = sortCastsByProperty(filteredCasts, "liked_count")
 
   return (
-    <div className="size-fit   ">
-      <Carousel
-        opts={{
-          align: "start",
-          loop: true,
-          dragFree: true,
-          slidesToScroll: 2,
-        }}
-        plugins={[
-          Autoplay({
-            delay: 10000,
-          }),
-        ]}
-        className="col-span-4 size-fit"
-      >
-        <CarouselContent className="-ml-1 size-fit">
-          {sortedCasts.map((castItem: CastType) => (
-            <CarouselItem
-              className=" w-fit pl-1  md:basis-1/2"
-              key={castItem.hash}
-            >
-              <div className="grid max-h-screen w-fit grid-cols-1 overflow-y-scroll md:basis-1/2 xl:h-[70vh]">
-                <Cast
-                  {...castItem}
-                  hideMetrics={false}
-                  badgeIsToggled={false}
-                  routeToWarpcast={true}
-                  mentionedProfiles={castItem.mentioned_profiles}
-                />
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
-    </div>
+    <>
+      <div className="flex flex-col lg:hidden">
+        {sortedCasts.map((castItem: CastType) => (
+          <div
+            key={castItem.hash}
+            className="grid size-fit  grid-cols-1 md:basis-1/2 lg:max-h-screen lg:overflow-y-scroll xl:h-[70vh]"
+          >
+            <Cast
+              {...castItem}
+              hideMetrics={false}
+              badgeIsToggled={false}
+              routeToWarpcast={true}
+              mentionedProfiles={castItem.mentioned_profiles}
+            />
+          </div>
+        ))}
+      </div>
+      <div className="hidden size-fit lg:block ">
+        {sortedCasts && sortedCasts.length && !fetchingCasts ? (
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+              dragFree: true,
+              slidesToScroll: 2,
+            }}
+            plugins={[
+              Autoplay({
+                delay: 10000,
+              }),
+            ]}
+            className="col-span-4 size-fit"
+          >
+            <CarouselContent className="-ml-1 size-fit">
+              {sortedCasts.map((castItem: CastType) => (
+                <CarouselItem
+                  className=" basis:1 w-fit pl-1  md:basis-1/2"
+                  key={castItem.hash}
+                >
+                  <div className="grid size-fit max-w-[90vw] grid-cols-1 md:basis-1/2 lg:max-h-screen lg:overflow-y-scroll xl:h-[70vh]">
+                    <Cast
+                      {...castItem}
+                      hideMetrics={false}
+                      badgeIsToggled={false}
+                      routeToWarpcast={true}
+                      mentionedProfiles={castItem.mentioned_profiles}
+                    />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+        ) : fetchingCasts ? (
+          <div className="mt-4 flex size-full flex-row items-center justify-between gap-x-6">
+            <CastSkeleton size={"large"} />
+            <CastSkeleton size={"large"} />
+
+            <CastSkeleton size={"large"} />
+          </div>
+        ) : (
+          <div>
+            <p className="text-xl font-light">No casts found</p>
+          </div>
+        )}
+      </div>
+    </>
   )
 }
 

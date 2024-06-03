@@ -319,7 +319,7 @@ export const renderTextWithLinks = (
   const parts = text.split(/(https?:\/\/[^\s]+|@\w+)/g)
 
   return (
-    <span>
+    <span className="flex-wrap break-all">
       {parts.map((part, index) => {
         if (urlRegex.test(part)) {
           if (embedMap.has(part)) {
@@ -582,37 +582,74 @@ export const generateStatsObjectForCast = (
   return statsObject
 }
 
-export const generateStatsObjectForTopic = (topicStatsAndRankings: any) => {
+type Rankings = {
+  count: number
+  likes_count: number
+  recasts_count: number
+  replies_count: number
+}
+
+type TopicStatsAndRankings = {
+  count: number
+  likes: number
+  recasts: number
+  replies: number
+  rankings: Rankings
+}
+
+type StatsObject = {
+  [key: string]: {
+    label: string
+    value: string | number
+    rank: number
+  }
+}
+
+const formatNumber = (num: number): string => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + "M"
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + "K"
+  } else {
+    return num.toString()
+  }
+}
+
+export const generateStatsObjectForTopic = (
+  topicStatsAndRankings: any | null
+): StatsObject => {
   if (!topicStatsAndRankings) return {}
+
   const {
-    count: countRank,
-    likes_count: likesRank,
-    recasts_count: recastsRank,
-    replies_count: repliesRank,
-  } = topicStatsAndRankings.rankings
-  const statsObject = {
+    count: countRank = 0,
+    likes_count: likesRank = 0,
+    recasts_count: recastsRank = 0,
+    replies_count: repliesRank = 0,
+  } = topicStatsAndRankings.rankings || {}
+
+  const statsObject: StatsObject = {
     casts: {
       label: "Casts",
-      value: topicStatsAndRankings.count,
+      value: formatNumber(topicStatsAndRankings.count || 0),
       rank: countRank,
     },
     likes: {
       label: "Likes",
-      value: topicStatsAndRankings.likes,
+      value: formatNumber(topicStatsAndRankings.likes || 0),
       rank: likesRank,
     },
-
     replies: {
       label: "Replies",
-      value: topicStatsAndRankings.replies,
+      value: formatNumber(topicStatsAndRankings.replies || 0),
       rank: repliesRank,
     },
     recasts: {
       label: "Recasts",
-      value: topicStatsAndRankings.recasts,
+      value: formatNumber(topicStatsAndRankings.recasts || 0),
       rank: recastsRank,
     },
   }
+
   return statsObject
 }
 
