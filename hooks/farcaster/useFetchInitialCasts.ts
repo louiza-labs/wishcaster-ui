@@ -8,21 +8,6 @@ export const useFetchInitialCasts = () => {
   const [castsToShow, setCastsToShow] = useState<CastType[]>([])
   const [cursorToUse, setCursorToUse] = useState<string>("")
 
-  const getFarcasterFID = (user: any) => {
-    if (
-      user &&
-      user.sessionId &&
-      user.verifiedCredentials &&
-      user.verifiedCredentials.length
-    ) {
-      const farcasterObj = user.verifiedCredentials.find(
-        (credential: any) => credential.oauthProvider === "farcaster"
-      )
-      return farcasterObj?.oauthAccountId || ""
-    }
-    return ""
-  }
-
   const { user, isAuthenticated } = useNeynarContext()
   const loggedInUserFID = Number(user?.fid) ?? 0
 

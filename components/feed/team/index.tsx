@@ -1,12 +1,10 @@
 "use client"
 
-// Adjust the path as needed
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { FixedSizeList as List } from "react-window"
 
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-// Adjust the path as needed
 import CastAvatar from "@/components/cast/CastAvatar"
 
 const handleVisitProfile = (username: string) => {
@@ -15,7 +13,17 @@ const handleVisitProfile = (username: string) => {
   }
 }
 
-const UserFeed = ({ likeOrRecastedUsers, loadingUsers }: any) => {
+interface UserFeedProps {
+  relevantUsers: any[]
+  loadingUsers: boolean
+  showMetrics?: boolean
+}
+
+const UserFeed = ({
+  relevantUsers,
+  loadingUsers,
+  showMetrics,
+}: UserFeedProps) => {
   const [listHeight, setListHeight] = useState(window.innerHeight)
   const [visibleStartIndex, setVisibleStartIndex] = useState(0)
 
@@ -27,38 +35,57 @@ const UserFeed = ({ likeOrRecastedUsers, loadingUsers }: any) => {
     }
     window.addEventListener("resize", updateSize)
 
-    // Cleanup listener when component unmounts
     return () => window.removeEventListener("resize", updateSize)
-  }, [listHeight])
+  }, [])
 
-  if (!likeOrRecastedUsers || likeOrRecastedUsers.length === 0) {
-    return <div>No users to display.</div>
-  }
-  interface RowProps {
-    data: any
-    style: any
-    index: number
-  }
-  const Row = ({ index, style, data }: RowProps) => {
-    const adjustedStyle = {
-      ...style,
-      top: style.top + (index - visibleStartIndex) * gutter,
-    }
-    return (
-      <div
-        style={adjustedStyle}
-        className=" flex w-full flex-row items-center justify-between rounded border p-2"
-      >
-        <CastAvatar author={data[index]} key={data[index].fid} />
-        <Button
-          onClick={() => handleVisitProfile(data[index]?.username)}
-          variant="ghost"
+  const Row = useCallback(
+    ({ index, style, data }: { index: number; style: any; data: any }) => {
+      const adjustedStyle = {
+        ...style,
+        top: style.top + (index - visibleStartIndex) * gutter,
+      }
+      return (
+        <div
+          style={adjustedStyle}
+          className="flex w-full flex-row items-center justify-between rounded border p-2"
         >
-          Visit
-        </Button>
-      </div>
-    )
-  }
+          <CastAvatar author={data[index]} key={data[index].fid} />
+          <div className="flex flex-row gap-x-2">
+            {showMetrics && data[index].reactions ? (
+              <div className="flex flex-row justify-start gap-x-2">
+                <div className="flex flex-col items-center gap-y-1">
+                  <p className="text-xs font-light">Likes</p>
+                  <p className="text-xs font-medium">
+                    {data[index].reactions.likes_count}
+                  </p>
+                </div>
+                <div className="hidden flex-col items-center gap-y-1 xl:flex">
+                  <p className="text-xs font-light">Replies</p>
+                  <p className="text-xs font-medium">
+                    {data[index].reactions.replies_count}
+                  </p>
+                </div>
+                <div className="hidden flex-col items-center gap-y-1 xl:flex">
+                  <p className="text-xs font-light">Recasts</p>
+                  <p className="text-xs font-medium">
+                    {data[index].reactions.recasts_count}
+                  </p>
+                </div>
+              </div>
+            ) : null}
+            <Button
+              onClick={() => handleVisitProfile(data[index]?.username)}
+              variant="ghost"
+            >
+              Visit
+            </Button>
+          </div>
+        </div>
+      )
+    },
+    [visibleStartIndex, showMetrics]
+  )
+
   const LoadingItem = () => {
     return (
       <div className="flex w-full flex-row items-start justify-between gap-x-2">
@@ -76,18 +103,18 @@ const UserFeed = ({ likeOrRecastedUsers, loadingUsers }: any) => {
 
   return (
     <>
-      {likeOrRecastedUsers && likeOrRecastedUsers.length && !loadingUsers ? (
+      {relevantUsers && relevantUsers.length && !loadingUsers ? (
         <List
-          height={listHeight} // Adjust based on the viewport or container size
-          width={"100%"} // Use 100% if it should fill the container
-          itemSize={60} // Adjust based on the height of a single row
-          itemCount={likeOrRecastedUsers.length}
-          itemData={likeOrRecastedUsers}
+          height={listHeight}
+          width={"100%"}
+          itemSize={70}
+          itemCount={relevantUsers.length}
+          itemData={relevantUsers}
           useIsScrolling
           onItemsRendered={({ visibleStartIndex }: any) =>
             setVisibleStartIndex(visibleStartIndex)
           }
-          className=" gap-y-2" // Optional for additional styling
+          className="gap-y-2"
         >
           {Row}
         </List>
@@ -97,7 +124,9 @@ const UserFeed = ({ likeOrRecastedUsers, loadingUsers }: any) => {
           <LoadingItem />
           <LoadingItem />
         </div>
-      ) : null}
+      ) : (
+        <div>No users to display.</div>
+      )}
     </>
   )
 }

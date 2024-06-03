@@ -121,14 +121,19 @@ export const fetchFarcasterProfile = async (username: string) => {
 
 export async function fetchCastsUntilCovered(
   channelId: string,
-  range: "24-hours" | "7-days" | "30-days" | "ytd"
+  range: "24-hours" | "7-days" | "30-days" | "ytd",
+  userFID = 0
 ) {
   let allCasts = [] as any[]
   let cursor = null
   const startDate = calculateStartDate(range)
 
   do {
-    const { casts, nextCursor } = await fetchChannelCasts(channelId, cursor)
+    const { casts, nextCursor } = await fetchChannelCasts(
+      channelId,
+      cursor,
+      userFID
+    )
     allCasts = allCasts.concat(casts)
     cursor = nextCursor
     // Check if the last cast's timestamp is earlier than the start date

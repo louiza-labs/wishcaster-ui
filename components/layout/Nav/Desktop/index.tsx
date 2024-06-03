@@ -24,20 +24,6 @@ interface MainNavProps {
   items?: NavItem[]
 }
 
-const getFarcasterUserName = (user: any) => {
-  if (
-    user &&
-    user.sessionId &&
-    user.verifiedCredentials &&
-    user.verifiedCredentials.length
-  ) {
-    const farcasterObj = user.verifiedCredentials.find(
-      (credential: any) => credential.oauthProvider === "farcaster"
-    )
-    return farcasterObj.publicIdentifier.slice(1)
-  }
-}
-
 export function DesktopNav({ items }: MainNavProps) {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
 
@@ -49,6 +35,10 @@ export function DesktopNav({ items }: MainNavProps) {
             <Icons.logo className="size-6" />
             <span className="inline-block font-bold">{siteConfig.name}</span>
           </Link>
+          <Link href="/topics" className="flex items-center space-x-2">
+            <span className="inline-block font-normal">Topics</span>
+          </Link>
+
           {items?.length ? (
             <nav className="flex gap-6">
               {items?.map(

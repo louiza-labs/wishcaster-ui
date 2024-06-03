@@ -11,11 +11,12 @@ import {
 } from "@/lib/helpers"
 import CastsFeed from "@/components/feed/casts"
 import Filters from "@/components/filters"
+import FilterBar from "@/components/filters/FilterBar"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import Rankings from "@/components/rankings"
 import RedirectButton from "@/components/redirect/Button"
 import SortCasts from "@/components/sort/SortCasts"
-import { fetchCastsUntilCovered, fetchChannelCasts } from "@/app/actions"
+import { fetchCastsUntilCovered } from "@/app/actions"
 
 interface IndexPageProps {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -45,7 +46,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
   const { casts: initialCasts, nextCursor: cursorToUse } = !timeFilterParam
-    ? await fetchChannelCasts("someone-build")
+    ? await fetchCastsUntilCovered("someone-build", "24-hours")
     : await fetchCastsUntilCovered(
         "someone-build",
         timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
@@ -68,6 +69,9 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
 
   return (
     <>
+      <div className="top-66 sticky z-10 lg:hidden">
+        <FilterBar initialCasts={initialCasts} />
+      </div>{" "}
       <section className="mx-auto py-6 md:container sm:px-6 lg:px-6">
         <Header />
         <main className="relative grid grid-cols-1 gap-4 lg:grid-cols-12 ">
@@ -91,7 +95,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
             )}
           </article>
           <aside className="no-scrollbar sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky lg:col-span-2 lg:flex lg:flex-col">
-            <Rankings casts={filteredCasts} />
+            <Rankings casts={initialCasts} />
           </aside>
         </main>
       </section>

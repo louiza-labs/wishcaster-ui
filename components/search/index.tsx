@@ -89,7 +89,8 @@ const Search = () => {
         (cast) =>
           cast.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
           (cast.category &&
-            cast.category.toLowerCase().includes(searchTerm.toLowerCase()))
+            cast.category.id &&
+            cast.category.id.toLowerCase().includes(searchTerm.toLowerCase()))
       )
       setRenderingSearchResults(false)
       setSearchedCasts(castsWithSearchTerm)

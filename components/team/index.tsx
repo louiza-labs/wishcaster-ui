@@ -216,7 +216,7 @@ const Team = ({ cast, reactions, conversation }: TeamProps) => {
             </Accordion>
             <div className="flex h-[55vh] w-full flex-col  gap-y-2 overflow-y-scroll  md:size-full md:h-full">
               <UserFeed
-                likeOrRecastedUsers={likeOrRecastedUsers}
+                relevantUsers={likeOrRecastedUsers}
                 loadingUsers={
                   loadingLikedUsers ||
                   loadingRecastedUsers ||

@@ -49,6 +49,10 @@ export interface CastViewerContext {
   liked: boolean
   recasted: boolean
 }
+interface CategoryDetails {
+  label: string
+  id: string
+}
 
 export interface Cast {
   // object: string
@@ -57,7 +61,7 @@ export interface Cast {
   parent_hash: string | null
   parent_url: string | null
   root_parent_url: string | null
-  category?: string
+  category?: CategoryDetails
   parent_author: {
     fid: any // Assuming this can be null or a number
   }
@@ -80,7 +84,10 @@ export interface Cast {
 
 export interface Category {
   request: string
-  category: string
+  category: {
+    id: string
+    label: string
+  }
 }
 
 export type Categories = {

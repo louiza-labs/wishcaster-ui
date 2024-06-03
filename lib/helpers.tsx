@@ -1,9 +1,9 @@
 import { Fragment } from "react"
-import { Cast as CastType, Categories, Category } from "@/types"
+import { Cast as CastType, Category } from "@/types"
 import { ErrorRes } from "@neynar/nodejs-sdk/build/neynar-api/v2"
 import axios, { AxiosError } from "axios"
 
-import { PRODUCT_CATEGORIES_AS_SETS } from "@/lib/constants"
+import { PRODUCT_CATEGORIES_AS_MAP } from "@/lib/constants"
 
 export const welcomeMessages = [
   "Wowow Farcaster",
@@ -64,6 +64,16 @@ export const makeEmail = (to: string, subject: string, message: string) => {
     .replace(/=+$/, "")
 }
 
+export const filterCastsForCategory = (
+  castsArray: CastType[],
+  category: string
+) => {
+  if (!castsArray || !Array.isArray(castsArray) || !category) {
+    return []
+  }
+  return castsArray.filter((cast: CastType) => cast.category?.id === category)
+}
+
 export const addCategoryFieldsToCasts = (
   casts: CastType[],
   categories: Category[]
@@ -82,6 +92,15 @@ export const addCategoryFieldsToCasts = (
     return { ...cast, category: categoryMatch ? categoryMatch.category : null }
   })
 }
+export const filterDuplicateCategory = (categories: Category[]) => {
+  if (
+    !categories ||
+    (Array.isArray(categories) && !categories.length) ||
+    !Array.isArray(categories)
+  ) {
+    return []
+  }
+}
 export const filterDuplicateCategories = (categories: Category[]) => {
   if (
     !categories ||
@@ -92,9 +111,9 @@ export const filterDuplicateCategories = (categories: Category[]) => {
   }
   const uniqueCategories = categories.filter(
     (category, index, self) =>
-      index === self.findIndex((c) => c.category === category.category)
+      index === self.findIndex((c) => c.category.id === category.category.id)
   )
-  return uniqueCategories
+  return uniqueCategories.filter((category: Category) => category.category.id)
 }
 export const searchCastsForTerm = (
   casts: CastType[],
@@ -115,11 +134,15 @@ export const searchCastsForCategories = (
     .toLowerCase()
     .split(",")
     .map((term) => term.trim())
+
   return casts.filter(
     (cast) =>
       cast.category &&
       searchTerms.some(
-        (term) => cast.category && cast.category.toLowerCase() === term
+        (term) =>
+          cast.category &&
+          cast.category.id &&
+          cast.category.id.toLowerCase() === term
       )
   )
 }
@@ -137,8 +160,13 @@ export const buildRankings = (
   // Create an object to accumulate metrics
   const metricsMap = new Map<string, number>()
 
-  casts.forEach((cast) => {
-    const focusValue = cast[focus] as string // Ensuring the value is treated as a string
+  casts.forEach((cast: any) => {
+    const focusValue =
+      focus === "category" && cast[focus]
+        ? cast[focus].id
+        : focus === "category" && !cast[focus]
+        ? ""
+        : (cast[focus] as string) // Ensuring the value is treated as a string
     if (metric === "count") {
       // Count occurrences of each focus value
       metricsMap.set(focusValue, (metricsMap.get(focusValue) || 0) + 1)
@@ -291,7 +319,7 @@ export const renderTextWithLinks = (
   const parts = text.split(/(https?:\/\/[^\s]+|@\w+)/g)
 
   return (
-    <span>
+    <span className="flex-wrap break-all">
       {parts.map((part, index) => {
         if (urlRegex.test(part)) {
           if (embedMap.has(part)) {
@@ -355,8 +383,15 @@ export const debounce = (func: Function, delay: number) => {
 function tokenize(text: string): Set<string> {
   return new Set(text.toLowerCase().split(/\W+/))
 }
+interface CategoryDetails {
+  label: string
+  keywords: Set<string>
+}
 
-function categorizeText(text: string, categories: Categories): string | null {
+export function categorizeText(
+  text: string,
+  categories: { [key: string]: CategoryDetails }
+): { label: string; id: string } | null {
   if (!text) {
     return null
   }
@@ -368,17 +403,17 @@ function categorizeText(text: string, categories: Categories): string | null {
   const keywordCounts: { [category: string]: number } = {}
 
   // Iterate through each category and its keywords
-  for (const [category, keywords] of Object.entries(categories)) {
+  for (const [categoryId, categoryDetails] of Object.entries(categories)) {
     // Initialize count for the category
-    keywordCounts[category] = 0
+    keywordCounts[categoryId] = 0
 
     // Check for the presence of each keyword in the text using regex
-    for (const keyword of keywords) {
+    for (const keyword of categoryDetails.keywords) {
       // Use word boundary and global search for accurate counting
       const regex = new RegExp(`\\b${keyword}\\b`, "gi")
       const matches = normalizedText.match(regex)
       if (matches) {
-        keywordCounts[category] += matches.length
+        keywordCounts[categoryId] += matches.length
       }
     }
   }
@@ -386,31 +421,35 @@ function categorizeText(text: string, categories: Categories): string | null {
   // Find the category with the highest count of matching keywords
   let bestCategory: string | null = null
   let maxCount = 0
-  for (const [category, count] of Object.entries(keywordCounts)) {
+  for (const [categoryId, count] of Object.entries(keywordCounts)) {
     if (count > maxCount) {
-      bestCategory = category
+      bestCategory = categoryId
       maxCount = count
     }
   }
 
   // If no matches were found, return null
-  if (maxCount === 0) {
+  if (maxCount === 0 || bestCategory === null) {
     return null
   }
 
-  return bestCategory
+  // Return the label of the category with the highest count
+  return { label: categories[bestCategory].label, id: bestCategory }
 }
 
 export function categorizeArrayOfCasts(casts: CastType[]) {
   if (!casts || !Array.isArray(casts)) return []
-  return casts.map((cast: CastType) => {
+  let categorizedArray = casts.map((cast: CastType) => {
     const castText = cast.text
-    const category = categorizeText(castText, PRODUCT_CATEGORIES_AS_SETS)
+    const category = categorizeText(castText, PRODUCT_CATEGORIES_AS_MAP)
     return {
       request: castText,
-      category,
+      category: category
+        ? { label: category.label, id: category.id }
+        : { label: null, id: null },
     }
   })
+  return categorizedArray
 }
 
 export function sortCastsByProperty(
@@ -543,6 +582,77 @@ export const generateStatsObjectForCast = (
   return statsObject
 }
 
+type Rankings = {
+  count: number
+  likes_count: number
+  recasts_count: number
+  replies_count: number
+}
+
+type TopicStatsAndRankings = {
+  count: number
+  likes: number
+  recasts: number
+  replies: number
+  rankings: Rankings
+}
+
+type StatsObject = {
+  [key: string]: {
+    label: string
+    value: string | number
+    rank: number
+  }
+}
+
+const formatNumber = (num: number): string => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + "M"
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + "K"
+  } else {
+    return num.toString()
+  }
+}
+
+export const generateStatsObjectForTopic = (
+  topicStatsAndRankings: any | null
+): StatsObject => {
+  if (!topicStatsAndRankings) return {}
+
+  const {
+    count: countRank = 0,
+    likes_count: likesRank = 0,
+    recasts_count: recastsRank = 0,
+    replies_count: repliesRank = 0,
+  } = topicStatsAndRankings.rankings || {}
+
+  const statsObject: StatsObject = {
+    casts: {
+      label: "Casts",
+      value: formatNumber(topicStatsAndRankings.count || 0),
+      rank: countRank,
+    },
+    likes: {
+      label: "Likes",
+      value: formatNumber(topicStatsAndRankings.likes || 0),
+      rank: likesRank,
+    },
+    replies: {
+      label: "Replies",
+      value: formatNumber(topicStatsAndRankings.replies || 0),
+      rank: repliesRank,
+    },
+    recasts: {
+      label: "Recasts",
+      value: formatNumber(topicStatsAndRankings.recasts || 0),
+      rank: recastsRank,
+    },
+  }
+
+  return statsObject
+}
+
 export function getRanking(
   target: CastType,
   items: CastType[],
@@ -552,7 +662,14 @@ export function getRanking(
   // Apply filtering only if filterField is provided and the target has this property defined
   const filteredItems =
     filterField && target[filterField] !== undefined
-      ? items.filter((item) => item[filterField] === target[filterField])
+      ? filterField === "category"
+        ? items.filter(
+            (item) =>
+              item["category"] &&
+              target["category"] &&
+              item["category"].id === target["category"].id
+          )
+        : items.filter((item) => item[filterField] === target[filterField])
       : items
 
   const getValueByMetric = (objectToGetValueFrom: any) => {
@@ -580,4 +697,204 @@ export function getRanking(
 
   // If no matching value is found, return null
   return null
+}
+
+interface CategorySummary {
+  id: string
+  topic: string
+  likes: number
+  priorityLikes: number
+  recasts: number
+  replies: number
+  count: number
+  totalFollowers: number
+  averageFollowerCount: number
+  // powerBadgeCount: number
+}
+
+export function summarizeByCategory(
+  casts: CastType[],
+  sortField?: keyof CategorySummary
+): CategorySummary[] {
+  const summaries = new Map<string, CategorySummary>()
+  casts.forEach((cast) => {
+    const { category, reactions, replies, author } = cast
+    if (!category || !(category && category.id)) return
+
+    if (!summaries.has(category.id)) {
+      summaries.set(category.id, {
+        id: category.id.replace(/\s+/g, "-").toLowerCase(),
+        topic: category.label,
+        likes: 0,
+        priorityLikes: 0,
+        recasts: 0,
+        replies: 0,
+        count: 0,
+        averageFollowerCount: 0,
+        totalFollowers: 0,
+        // powerBadgeCount: 0
+      })
+    }
+
+    const summary = summaries.get(category.id)!
+    summary.likes += reactions.likes_count
+    summary.recasts += reactions.recasts_count
+    summary.replies += replies.count
+    summary.count += 1
+    summary.totalFollowers += author.follower_count
+    summary.averageFollowerCount = Math.floor(
+      summary.totalFollowers / summary.count
+    )
+    // if (author.power_badge) summary.powerBadgeCount += 1;
+  })
+
+  // Convert summaries to array and optionally sort
+  let result = Array.from(summaries.values())
+  if (sortField) {
+    result.sort((a: any, b: any) => b[sortField] - a[sortField])
+  }
+
+  return result
+}
+
+interface ReactionMetrics {
+  likes_count: number
+  recasts_count: number
+  replies_count: number
+}
+interface User {
+  fid: number
+  custody_address: string
+  username: string
+  display_name: string
+  pfp_url: string
+  viewer_context?: {
+    following: boolean
+    followed_by: boolean
+  }
+  power_badge?: boolean
+}
+// Updated interfaces
+interface AuthorReactions {
+  author: User
+  reactions: ReactionMetrics
+  postCount: number
+  // Count of posts by the author
+}
+
+// Function to aggregate and sort reactions per authoer
+export function aggregateCastMetricsByUser(
+  posts: CastType[],
+  sortBy?: keyof ReactionMetrics
+): AuthorReactions[] {
+  const reactionMap = new Map<number, AuthorReactions>()
+
+  posts.forEach((post) => {
+    const authorId = post.author.fid
+    if (!reactionMap.has(authorId)) {
+      // Initialize the reactions object if it doesn't exist
+      reactionMap.set(authorId, {
+        ...post.author,
+        reactions: {
+          likes_count: 0,
+          recasts_count: 0,
+          replies_count: 0,
+        },
+        postCount: 0,
+      } as any)
+    }
+
+    // Retrieve the existing or newly created authorReactions
+    const authorReactions: any = reactionMap.get(authorId)
+
+    // Update reactions and post count
+    authorReactions.reactions.likes_count += post.reactions.likes_count
+    authorReactions.reactions.recasts_count += post.reactions.recasts_count
+    authorReactions.reactions.replies_count += post.replies.count
+    authorReactions.postCount += 1
+  })
+
+  let results = Array.from(reactionMap.values())
+
+  // Sort the results if a sort key is provided
+  if (sortBy) {
+    results.sort((a, b) => b.reactions[sortBy] - a.reactions[sortBy])
+  }
+
+  return results
+}
+type TopicRanking = {
+  category: string
+  rankings: {
+    likes_count: number
+    recasts_count: number
+    replies_count: number
+    count: number
+  }
+}
+export function rankTopics(
+  casts: CastType[],
+  topic = ""
+): TopicRanking[] | TopicRanking | null {
+  // Initialize storage for metrics per category
+  const metrics: {
+    [key: string]: {
+      likes_count: number
+      recasts_count: number
+      replies_count: number
+      count: number
+    }
+  } = {}
+
+  // Aggregate metrics for each category
+  casts.forEach((cast) => {
+    if (!(cast.category && cast.category.id)) return
+    const category = cast.category.id
+    if (!metrics[category]) {
+      metrics[category] = {
+        likes_count: 0,
+        recasts_count: 0,
+        replies_count: 0,
+        count: 0,
+      }
+    }
+    metrics[category].likes_count += cast.reactions.likes_count
+    metrics[category].recasts_count += cast.reactions.recasts_count
+    metrics[category].replies_count += cast.replies.count
+    metrics[category].count += 1
+  })
+
+  // Convert the metrics object to an array
+  const categories = Object.entries(metrics).map(([category, data]) => ({
+    category,
+    rankings: { ...data },
+  }))
+
+  // Calculate rankings for each metric, including count
+  const sortableMetrics = [
+    "likes_count",
+    "recasts_count",
+    "replies_count",
+    "count",
+  ]
+  sortableMetrics.forEach((metric) => {
+    const sorted = [...categories].sort(
+      (a: any, b: any) => b.rankings[metric] - a.rankings[metric]
+    )
+    sorted.forEach((cat, index) => {
+      const categoryToUpdate: any = categories.find(
+        (c) => c.category === cat.category
+      )
+      categoryToUpdate.rankings[metric] = index + 1
+    })
+  })
+
+  if (topic && topic.length) {
+    const selectedTopic = categories.find(
+      (category) => category.category === topic
+    )
+    return selectedTopic || null // Return null if no topic matches
+  }
+
+  return categories
 }

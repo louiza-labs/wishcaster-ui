@@ -6,47 +6,59 @@ import { useInView } from "react-intersection-observer"
 import { calculateStartDate, debounce } from "@/lib/helpers"
 import { fetchChannelCasts } from "@/app/actions"
 
+type dateRanges = "24-hours" | "7-days" | "30-days" | "ytd"
+
 export const useLoadMoreCasts = (
   initialCasts: CastType[],
   initialCursor: string,
-  dateRange = "" as any
+  dateRange = ""
 ) => {
   const [castsToShow, setCastsToShow] = useState<CastType[]>(initialCasts)
   const [cursorToUse, setCursorToUse] = useState<string>(initialCursor)
+  const [fetchingCasts, setFetchingCasts] = useState(false)
   const [isRangeCovered, setIsRangeCovered] = useState<boolean>(false)
 
   const { ref, inView } = useInView()
-
-  const getFarcasterFID = (user: any) => {
-    if (
-      user &&
-      user.sessionId &&
-      user.verifiedCredentials &&
-      user.verifiedCredentials.length
-    ) {
-      const farcasterObj = user.verifiedCredentials.find(
-        (credential: any) => credential.oauthProvider === "farcaster"
-      )
-      return farcasterObj.oauthAccountId
-    }
-  }
   const { user } = useNeynarContext()
   const loggedInUserFID = Number(user?.fid) ?? 0
+
   useEffect(() => {
-    // Filter initial casts based on the date range when initialCasts or dateRange changes
-    if (dateRange && dateRange.length) {
-      const startDate = calculateStartDate(dateRange)
+    if (dateRange && dateRange.length && initialCasts.length) {
+      const startDate = calculateStartDate(dateRange as dateRanges)
       const filteredCasts = initialCasts.filter(
         (cast) => new Date(cast.timestamp) >= startDate
       )
-
       setCastsToShow(filteredCasts)
-      setIsRangeCovered(false) // Reset the range covered status when initial data changes
+      setIsRangeCovered(false)
     }
   }, [initialCasts, dateRange])
 
+  const loadInitialCasts = useCallback(async () => {
+    setFetchingCasts(true)
+    try {
+      const castsResponse = await fetchChannelCasts(
+        "someone-build",
+        "",
+        loggedInUserFID
+      )
+      const newCasts = castsResponse.casts
+      setCastsToShow((prevCasts) => [...prevCasts, ...newCasts])
+    } catch (error) {
+      console.error("Error fetching casts:", error)
+    } finally {
+      setFetchingCasts(false)
+    }
+  }, [loggedInUserFID])
+
+  useEffect(() => {
+    if (castsToShow.length === 0) {
+      loadInitialCasts()
+    }
+  }, [loggedInUserFID, castsToShow.length, loadInitialCasts])
+
   const loadMoreCasts = useCallback(async () => {
     if (!isRangeCovered && cursorToUse) {
+      setFetchingCasts(true)
       try {
         const castsResponse = await fetchChannelCasts(
           "someone-build",
@@ -54,33 +66,35 @@ export const useLoadMoreCasts = (
           loggedInUserFID
         )
         const newCasts = castsResponse.casts
-        const newCursor: any = castsResponse.nextCursor
-        const startDate = calculateStartDate(dateRange)
-        // Check if the last cast's timestamp is earlier than the start date
+        const newCursor = castsResponse.nextCursor
+        const startDate = calculateStartDate(dateRange as dateRanges)
+
         if (
           newCasts.length &&
           new Date(newCasts[newCasts.length - 1].timestamp) < startDate
         ) {
-          setIsRangeCovered(true) // No more relevant data to load
+          setIsRangeCovered(true)
         } else {
-          setCastsToShow((prevCasts: any) => [...prevCasts, ...newCasts])
+          setCastsToShow((prevCasts) => [...prevCasts, ...newCasts])
           setCursorToUse(newCursor)
         }
       } catch (error) {
         console.error("Error fetching casts:", error)
+      } finally {
+        setFetchingCasts(false)
       }
     }
-  }, [cursorToUse, loggedInUserFID])
+  }, [cursorToUse, isRangeCovered, loggedInUserFID, dateRange])
 
   useEffect(() => {
-    if (inView && !isRangeCovered) {
+    if (inView && !isRangeCovered && castsToShow.length > 0) {
       const debouncedLoadMore = debounce(loadMoreCasts, 500)
-      const timer = setTimeout(() => {
-        debouncedLoadMore()
-      }, 1000) // Adjust the delay as needed
+      const timer = setTimeout(debouncedLoadMore, 1000)
       return () => clearTimeout(timer)
     }
-  }, [inView, loadMoreCasts])
+  }, [inView, loadMoreCasts, isRangeCovered, castsToShow.length])
 
-  return { castsToShow, ref, isRangeCovered }
+  return { castsToShow, ref, isRangeCovered, fetchingCasts }
 }
+
+export default useLoadMoreCasts

@@ -3,8 +3,11 @@
 import { Suspense, useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
+import { PRODUCT_CATEGORIES_AS_MAP } from "@/lib/constants"
 import { buildRankings } from "@/lib/helpers"
-import useFilterFeed from "@/hooks/feed/useFilterFeed"
+import useAddCategoriesToCasts from "@/hooks/feed/useAddCategoriesToCasts"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardDescription, CardHeader } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 type RankedValueType = {
@@ -12,8 +15,52 @@ type RankedValueType = {
   value: number
 }
 
+interface CardStatProp {
+  title: string
+  value: string | number
+  rank: number
+  topic: string
+  handleClick: any
+  isToggled: boolean
+}
+
+const CardStat: React.FC<CardStatProp> = ({
+  title,
+  value,
+  rank,
+  topic,
+  handleClick,
+  isToggled,
+}) => {
+  return (
+    <Card
+      onClick={handleClick}
+      className={`flex w-40 snap-start flex-col items-center md:w-fit md:min-w-24 ${
+        isToggled
+          ? "brightness-120 border-2 border-indigo-500 dark:border-indigo-300"
+          : ""
+      }`}
+    >
+      <span className="mt-2 text-xs">{topic}</span>
+
+      <CardHeader className="flex w-full flex-col items-center justify-center p-2">
+        <CardDescription className="text-xl font-bold text-black dark:text-white">
+          {value}
+        </CardDescription>
+        <Badge
+          variant={"secondary"}
+          className="m-1 mb-0 flex flex-row items-center justify-center gap-x-1"
+        >
+          <span className="text-xs">Rank:</span>
+          <span className="text-xs font-bold">{rank}</span>
+        </Badge>
+      </CardHeader>
+    </Card>
+  )
+}
+
 const Rankings = ({ casts }: any) => {
-  const { filteredCasts } = useFilterFeed(casts)
+  const { castsWithCategories } = useAddCategoriesToCasts(casts)
 
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -68,63 +115,51 @@ const Rankings = ({ casts }: any) => {
     [categoriesFromParams, createQueryString, router]
   )
 
-  // const rankedTopicsByCount = buildRankings(
-  //   filteredCasts,
-  //   "category",
-  //   "count",
-  //   5
-  // )
   const rankedTopicsByLikes = buildRankings(
-    filteredCasts,
+    castsWithCategories,
     "category",
     "likes_count",
     10
   )
   const rankedTopicsByReplies = buildRankings(
-    filteredCasts,
+    castsWithCategories,
     "category",
     "replies_count",
     10
   )
   const rankedTopicsByRecasts = buildRankings(
-    filteredCasts,
+    castsWithCategories,
     "category",
     "recasts_count",
     10
   )
+
   const hasResults = useMemo(() => {
     return (
-      // (rankedTopicsByCount && rankedTopicsByCount.length) ||
       (rankedTopicsByLikes && rankedTopicsByLikes.length) ||
       (rankedTopicsByReplies && rankedTopicsByReplies.length) ||
       (rankedTopicsByRecasts && rankedTopicsByRecasts.length)
     )
-  }, [
-    // rankedTopicsByCount,
-    rankedTopicsByLikes,
-    rankedTopicsByRecasts,
-    rankedTopicsByReplies,
-  ])
+  }, [rankedTopicsByLikes, rankedTopicsByRecasts, rankedTopicsByReplies])
 
   const RankedCard = ({ value, index }: any) => {
+    const topicLabel =
+      PRODUCT_CATEGORIES_AS_MAP[value.name]?.label || value.name
     return (
-      <button
-        onClick={() => handleToggleCategoryClick(value.name)}
-        className="inline-flex h-10 items-center justify-center rounded-md bg-gray-100 px-4 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 dark:border dark:border-gray-200 dark:bg-transparent dark:text-gray-50 dark:hover:bg-gray-700"
-      >
-        <div className="flex w-full items-center justify-between gap-x-2">
-          <span className="">{value.name}</span>
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-            {value.value}
-          </span>
-        </div>
-      </button>
+      <CardStat
+        title={`#${index}`}
+        value={value.value}
+        rank={index}
+        topic={topicLabel}
+        isToggled={badgeIsToggled(value.name)}
+        handleClick={() => handleToggleCategoryClick(value.name)}
+      />
     )
   }
 
   const RankedValues = ({ values }: { values: RankedValueType[] }) => {
     return (
-      <ol className="mt-4 flex w-full flex-wrap gap-4 ">
+      <ol className="mt-4 flex w-full flex-wrap gap-2">
         {values && Array.isArray(values)
           ? values.map((value: RankedValueType, index: number) => (
               <RankedCard value={value} index={index + 1} key={index} />
@@ -133,9 +168,6 @@ const Rankings = ({ casts }: any) => {
       </ol>
     )
   }
-
-  const valueFormatter = (number: number) =>
-    `$ ${Intl.NumberFormat("us").format(number).toString()}`
 
   return (
     <Suspense>
@@ -150,29 +182,25 @@ const Rankings = ({ casts }: any) => {
             className="flex w-full flex-col items-center gap-y-2 md:w-fit md:items-start"
           >
             <TabsList className="flex size-auto items-start md:h-full md:w-fit md:flex-col lg:flex-col xl:flex-row">
-              {/* <TabsTrigger value="count">Count</TabsTrigger> */}
               <TabsTrigger
-                className="lg:w-fit p-2 lg:text-sm 2xl:text-base"
+                className="p-2 lg:w-fit lg:text-sm 2xl:text-base"
                 value="likes"
               >
                 Likes
               </TabsTrigger>
               <TabsTrigger
-                className="lg:w-fit p-2 lg:text-sm 2xl:text-base"
+                className="p-2 lg:w-fit lg:text-sm 2xl:text-base"
                 value="replies"
               >
                 Replies
               </TabsTrigger>
               <TabsTrigger
-                className="lg:w-fit p-2 lg:text-sm 2xl:text-base"
+                className="p-2 lg:w-fit lg:text-sm 2xl:text-base"
                 value="recasts"
               >
                 Recasts
               </TabsTrigger>
             </TabsList>
-            {/* <TabsContent value="count">
-              <RankedValues values={rankedTopicsByCount} />
-            </TabsContent> */}
             <TabsContent value="likes">
               <RankedValues values={rankedTopicsByLikes} />
             </TabsContent>

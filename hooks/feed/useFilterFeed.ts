@@ -1,18 +1,17 @@
 "use client"
 
-import { useSearchParams } from "next/navigation"
+import { useParams, usePathname, useSearchParams } from "next/navigation"
 import { Cast as CastType, Category } from "@/types"
 
 import {
   addCategoryFieldsToCasts,
   categorizeArrayOfCasts,
-  filterDuplicateCategories,
   searchCastsForCategories,
   searchCastsForTerm,
   sortCastsByProperty,
 } from "@/lib/helpers"
 
-const useFilterFeed = (casts: CastType[]) => {
+const useFilterFeed = (casts: CastType[], topic = "") => {
   const searchParams = useSearchParams()
 
   // Extract search parameters
@@ -25,6 +24,9 @@ const useFilterFeed = (casts: CastType[]) => {
   const likedFilter = filtersFromParams.includes("liked")
   const followingFilter = filtersFromParams.includes("following")
   const recastedFilter = filtersFromParams.includes("recasted")
+
+  const params = useParams()
+  const path = usePathname()
 
   // Start with the initial set of casts
   let filteredCasts = [...casts]
@@ -45,7 +47,9 @@ const useFilterFeed = (casts: CastType[]) => {
   if (followingFilter) {
     filteredCasts = filteredCasts.filter(
       (cast) =>
-        cast.author.viewer_context && cast.author.viewer_context.following
+        cast.author &&
+        cast.author.viewer_context &&
+        cast.author.viewer_context.following
     )
   }
 
@@ -63,7 +67,7 @@ const useFilterFeed = (casts: CastType[]) => {
 
   // Categorize and filter duplicate categories
   const categories = categorizeArrayOfCasts(filteredCasts) as Category[]
-  const filteredCategories = filterDuplicateCategories(categories)
+  const filteredCategories = categories
 
   // Add category fields to casts
   filteredCasts = addCategoryFieldsToCasts(
@@ -77,6 +81,10 @@ const useFilterFeed = (casts: CastType[]) => {
       filteredCasts,
       categoriesFromParams
     )
+  }
+  // Filter by topic page if on one
+  if (topic && topic.length) {
+    filteredCasts = searchCastsForCategories(filteredCasts, topic)
   }
 
   // Sort by appropriate field if specified

@@ -1,7 +1,7 @@
 "use client"
 
 import { Suspense, useCallback, useMemo } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useNeynarContext } from "@neynar/react"
 
 import {
@@ -9,7 +9,12 @@ import {
   filterDuplicateCategories,
 } from "@/lib/helpers"
 import { cn } from "@/lib/utils"
-import useFilterFeed from "@/hooks/feed/useFilterFeed"
+import { Button } from "@/components/ui/button"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
 import {
   Tooltip,
@@ -22,21 +27,27 @@ import DateFilters from "@/components/filters/Date"
 import { InteractionsCheckbox } from "@/components/filters/Interactions"
 
 interface Category {
-  category: string
+  category: {
+    label: string
+    id: string
+  }
   request: string
 }
 
-interface CategoriesFeedProps {
+interface FiltersProps {
   initialCasts: any[]
+  asFilterBar?: boolean
 }
 
-const Filters = ({ initialCasts }: CategoriesFeedProps) => {
+const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { user, isAuthenticated } = useNeynarContext()
+  const path = usePathname()
+  const isOnTopicsPage = path === "topics"
 
-  let { filteredCasts } = useFilterFeed(initialCasts)
-  const categories = categorizeArrayOfCasts(filteredCasts) as Category[]
+  const categories = categorizeArrayOfCasts(initialCasts) as Category[]
+
   const filteredCategories = filterDuplicateCategories(categories)
 
   const filtersFromParams = useMemo(
@@ -89,7 +100,8 @@ const Filters = ({ initialCasts }: CategoriesFeedProps) => {
   )
 
   const selectedDateFilter =
-    filtersFromParams.find((filter) => dateOptions.includes(filter)) ?? ""
+    filtersFromParams.find((filter) => dateOptions.includes(filter)) ??
+    "24-hours"
 
   const handleToggleFilterClick = useCallback(
     (categoryName: string) => {
@@ -129,6 +141,10 @@ const Filters = ({ initialCasts }: CategoriesFeedProps) => {
     handleToggleFilterClick("ytd")
   }
 
+  const handleSelectDateValueChange = (value: string) => {
+    handleToggleFilterClick(value)
+  }
+
   const dateFiltersArray = [
     {
       value: "24-hours",
@@ -152,96 +168,201 @@ const Filters = ({ initialCasts }: CategoriesFeedProps) => {
     },
   ]
 
+  const getSelectedFilterValues = () => {
+    let selectedFilterValues = ""
+    if (filterIsSelected("priority-badge")) {
+      selectedFilterValues += "Power-Badge's"
+    }
+    if (filterIsSelected("following")) {
+      selectedFilterValues += ` Following`
+    }
+    if (filterIsSelected("liked")) {
+      selectedFilterValues += ` Liked`
+    }
+    if (filterIsSelected("recasted")) {
+      selectedFilterValues += ` Recasted`
+    }
+    selectedFilterValues = selectedFilterValues
+      .trim()
+      .replace(/\s+/g, ", ")
+      .replace(/,+/g, ",")
+    return selectedFilterValues
+  }
+
   return (
     <Suspense>
-      <div className=" flex h-fit flex-col gap-y-6 lg:col-span-12">
-        <p className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl lg:block">
-          Filters
-        </p>
-        <div className="grid grid-cols-1 gap-y-6">
+      <div
+        className={` flex h-fit ${
+          asFilterBar ? "flex-row overflow-auto overflow-x-scroll" : "flex-col"
+        } gap-y-6 lg:col-span-12`}
+      >
+        {asFilterBar ? null : (
+          <p className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl lg:block">
+            Filters
+          </p>
+        )}
+        <div
+          className={`${
+            asFilterBar
+              ? "flex flex-row items-center gap-x-4"
+              : "grid grid-cols-1 gap-y-6"
+          }`}
+        >
           <div className=" flex flex-col items-start">
-            <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
-              Date
-            </p>
-            <DateFilters
-              value={selectedDateFilter}
-              datesArray={dateFiltersArray}
-            />
-          </div>
-          <Separator />
-
-          <div className=" flex flex-col">
-            <Categories categories={filteredCategories} />
-          </div>
-          <Separator />
-
-          <div className=" flex flex-col items-start">
-            <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
-              User
-            </p>
-            <div className="md:gap-x-auto grid grid-cols-2 gap-x-10 md:flex md:flex-wrap md:gap-4 xl:grid xl:gap-x-10 xl:gap-y-0">
-              <InteractionsCheckbox
-                handleChange={handlePriorityBadgeFilterChange}
-                value={filterIsSelected("priority-badge")}
-                text={"Priority Badge"}
-                id={"priority"}
-              />
-              <InteractionsCheckbox
-                handleChange={handleFollowingFilterChange}
-                value={filterIsSelected("following")}
-                text={"Following"}
-                id={"following"}
-              />
-            </div>
-          </div>
-          <Separator />
-          <div className=" flex flex-col items-start">
-            {!isAuthenticated ? (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <p
-                      className={cn(
-                        !isAuthenticated ? "opacity-80" : "",
-                        "pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left  md:text-xl"
-                      )}
-                    >
-                      For You
-                    </p>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Sign into FC above to use these</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            ) : (
-              <p
-                className={cn(
-                  !isAuthenticated ? "opacity-80" : "",
-                  "pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left  md:text-xl"
-                )}
-              >
-                For You
+            {asFilterBar ? null : (
+              <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
+                Date
               </p>
             )}
-
-            <div className="md:gap-x-auto grid grid-cols-2 gap-x-10 md:flex md:flex-wrap md:gap-4 xl:grid xl:gap-x-10 xl:gap-y-0">
-              <InteractionsCheckbox
-                handleChange={handleLikesFilterChange}
-                value={filterIsSelected("liked")}
-                text={"Liked"}
-                id={"liked"}
-                isDisabled={!isAuthenticated}
+            <>
+              <DateFilters
+                value={selectedDateFilter}
+                datesArray={dateFiltersArray}
+                asFilterBar={asFilterBar}
+                handleChangeForSelect={handleSelectDateValueChange}
               />
-              <InteractionsCheckbox
-                handleChange={handleRecastedFilterChange}
-                value={filterIsSelected("recasted")}
-                text={"Recasted"}
-                id={"recasted"}
-                isDisabled={!isAuthenticated}
-              />
-            </div>
+            </>
           </div>
+          {asFilterBar ? null : <Separator />}
+          {isOnTopicsPage ? null : (
+            <>
+              <div className={"flex  flex-col"}>
+                <Categories
+                  categories={filteredCategories}
+                  asFilterBar={asFilterBar}
+                />
+              </div>
+              {asFilterBar ? null : <Separator />}
+              <div className=" flex flex-col items-start">
+                {asFilterBar ? null : (
+                  <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
+                    User
+                  </p>
+                )}
+                <div
+                  className={`${
+                    asFilterBar
+                      ? "flex flex-row items-center gap-x-2"
+                      : "md:gap-x-auto grid grid-cols-2 gap-x-10 md:flex md:flex-wrap md:gap-4 xl:grid xl:gap-x-10 xl:gap-y-0"
+                  }`}
+                >
+                  {asFilterBar ? (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-fit whitespace-nowrap rounded-full font-semibold"
+                        >
+                          {getSelectedFilterValues()
+                            ? `${getSelectedFilterValues()}`
+                            : "👥 User Filters"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="flex w-fit flex-col gap-y-4 p-4">
+                        <InteractionsCheckbox
+                          handleChange={handlePriorityBadgeFilterChange}
+                          value={filterIsSelected("priority-badge")}
+                          text={"Power Badge"}
+                          id={"priority"}
+                        />
+                        <InteractionsCheckbox
+                          handleChange={handleFollowingFilterChange}
+                          value={filterIsSelected("following")}
+                          text={"Following"}
+                          id={"following"}
+                        />
+                        <InteractionsCheckbox
+                          handleChange={handleLikesFilterChange}
+                          value={filterIsSelected("liked")}
+                          text={"Liked"}
+                          id={"liked"}
+                          isDisabled={!isAuthenticated}
+                        />
+                        <InteractionsCheckbox
+                          handleChange={handleRecastedFilterChange}
+                          value={filterIsSelected("recasted")}
+                          text={"Recasted"}
+                          id={"recasted"}
+                          isDisabled={!isAuthenticated}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  ) : (
+                    <>
+                      <InteractionsCheckbox
+                        handleChange={handlePriorityBadgeFilterChange}
+                        value={filterIsSelected("priority-badge")}
+                        text={"Power Badge"}
+                        id={"priority"}
+                      />
+                      <InteractionsCheckbox
+                        handleChange={handleFollowingFilterChange}
+                        value={filterIsSelected("following")}
+                        text={"Following"}
+                        id={"following"}
+                      />
+                    </>
+                  )}
+                </div>
+              </div>
+              {asFilterBar ? null : <Separator />}
+            </>
+          )}
+          {asFilterBar ? null : (
+            <div className=" flex flex-col items-start">
+              {!isAuthenticated && !asFilterBar ? (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <p
+                        className={cn(
+                          !isAuthenticated ? "opacity-80" : "",
+                          "pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left  md:text-xl"
+                        )}
+                      >
+                        For You
+                      </p>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Sign into FC above to use these</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : !asFilterBar ? (
+                <p
+                  className={cn(
+                    !isAuthenticated ? "opacity-80" : "",
+                    "pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left  md:text-xl"
+                  )}
+                >
+                  For You
+                </p>
+              ) : null}
+
+              <div
+                className={`${
+                  asFilterBar
+                    ? "flex flex-row items-center gap-x-2"
+                    : "md:gap-x-auto grid grid-cols-2 gap-x-10 md:flex md:flex-wrap md:gap-4 xl:grid xl:gap-x-10 xl:gap-y-0"
+                }`}
+              >
+                <InteractionsCheckbox
+                  handleChange={handleLikesFilterChange}
+                  value={filterIsSelected("liked")}
+                  text={"Liked"}
+                  id={"liked"}
+                  isDisabled={!isAuthenticated}
+                />
+                <InteractionsCheckbox
+                  handleChange={handleRecastedFilterChange}
+                  value={filterIsSelected("recasted")}
+                  text={"Recasted"}
+                  id={"recasted"}
+                  isDisabled={!isAuthenticated}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </Suspense>

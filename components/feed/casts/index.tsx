@@ -13,21 +13,26 @@ interface CastFeedProps {
   casts: CastType[]
   nextCursor: string
   timeFilterParam: any
+  columns?: number
+  topic?: string
 }
 
 const CastsFeed: React.FC<CastFeedProps> = ({
   casts,
   nextCursor,
   timeFilterParam,
+  columns,
+  topic,
 }) => {
   const searchParams = useSearchParams()
-
-  const { castsToShow, ref } = useLoadMoreCasts(
+  const { castsToShow, ref, fetchingCasts } = useLoadMoreCasts(
     casts,
     nextCursor,
     timeFilterParam
   )
-  const { filteredCasts } = useFilterFeed(castsToShow)
+
+  const { filteredCasts } = useFilterFeed(castsToShow, topic)
+
   const router = useRouter()
   const categoriesFromParams = searchParams.getAll("topics").join(",")
 
@@ -88,35 +93,64 @@ const CastsFeed: React.FC<CastFeedProps> = ({
     }
   }
 
+  const EmptyStateFallBack = () => (
+    <div className="flex flex-col items-center justify-center py-2">
+      <p className="text-2xl font-light">
+        No casts found, try adjusting the filters
+      </p>
+    </div>
+  )
+
   return (
     <Suspense fallback={<CastFeedSkeleton count={5} />}>
-      <div className="grid grid-cols-1 gap-4 overflow-x-hidden  md:px-4 lg:col-span-6 lg:col-start-4 lg:grid-cols-1 lg:px-10">
-        {filteredCasts && filteredCasts.length
-          ? filteredCasts.map((cast: CastType) => (
-              <Cast
-                key={cast.hash}
-                text={cast.text}
-                timestamp={cast.timestamp}
-                parent_url={cast.parent_url}
-                reactions={cast.reactions}
-                replies={cast.replies}
-                embeds={cast.embeds}
-                author={cast.author}
-                hash={cast.hash}
-                thread_hash={cast.thread_hash}
-                mentionedProfiles={cast.mentioned_profiles}
-                parent_hash={cast.parent_hash}
-                parent_author={cast.parent_author}
-                mentioned_profiles={cast.mentioned_profiles}
-                root_parent_url={cast.root_parent_url}
-                category={cast.category}
-                handleToggleCategoryClick={handleToggleCategoryClick}
-                badgeIsToggled={badgeIsToggled(
-                  cast.category ? cast.category : ""
-                )}
-              />
-            ))
-          : null}
+      <div
+        className={`grid grid-cols-1 gap-4 overflow-x-hidden md:px-4 lg:col-span-6 lg:col-start-4 ${
+          columns ? `lg:grid-cols-2` : "lg:grid-cols-1"
+        } lg:px-10`}
+      >
+        {fetchingCasts && !(filteredCasts && filteredCasts.length) ? (
+          <div
+            className={
+              columns
+                ? "col-span-2 mt-10 flex w-full gap-x-10  lg:flex-row lg:justify-center"
+                : "flex flex-col "
+            }
+          >
+            {columns ? (
+              <div className="hidden lg:block">
+                {" "}
+                <CastFeedSkeleton count={4} />{" "}
+              </div>
+            ) : null}
+            <CastFeedSkeleton count={4} />
+          </div>
+        ) : filteredCasts && filteredCasts.length ? (
+          filteredCasts.map((cast: CastType) => (
+            <Cast
+              key={cast.hash}
+              text={cast.text}
+              timestamp={cast.timestamp}
+              parent_url={cast.parent_url}
+              reactions={cast.reactions}
+              replies={cast.replies}
+              embeds={cast.embeds}
+              author={cast.author}
+              hash={cast.hash}
+              thread_hash={cast.thread_hash}
+              mentionedProfiles={cast.mentioned_profiles}
+              parent_hash={cast.parent_hash}
+              parent_author={cast.parent_author}
+              root_parent_url={cast.root_parent_url}
+              category={cast.category}
+              handleToggleCategoryClick={() =>
+                handleToggleCategoryClick(cast.category?.id || "")
+              }
+              badgeIsToggled={badgeIsToggled(cast.category?.id || "")}
+            />
+          ))
+        ) : (
+          <EmptyStateFallBack />
+        )}
         <div ref={ref}></div>
       </div>
     </Suspense>

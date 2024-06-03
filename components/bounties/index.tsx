@@ -11,7 +11,7 @@ import { InteractionsCheckbox } from "@/components/filters/Interactions"
 import { sendCast } from "@/app/actions"
 
 interface BountyProps {
-  hash: string
+  hash?: string
 }
 const Bounty = ({ hash }: BountyProps) => {
   const [bountyText, setBountyText] = useState("")
@@ -102,12 +102,14 @@ const Bounty = ({ hash }: BountyProps) => {
             <div className="flex flex-col">
               <p className="font-bold">Options</p>
               <div className="my-2 flex flex-wrap gap-2">
-                <InteractionsCheckbox
-                  id={"is_reply"}
-                  value={sendBountyAsReply}
-                  handleChange={handleSetAsReplyChange}
-                  text={"Cast as a reply"}
-                />
+                {hash ? (
+                  <InteractionsCheckbox
+                    id={"is_reply"}
+                    value={sendBountyAsReply}
+                    handleChange={handleSetAsReplyChange}
+                    text={"Cast as a reply"}
+                  />
+                ) : null}
                 <InteractionsCheckbox
                   id={"cast_in_channel"}
                   value={sendBountyInChannel}
@@ -129,6 +131,7 @@ const Bounty = ({ hash }: BountyProps) => {
             <Textarea
               placeholder="0.1 ETH for fixing this issue [link] in the next 2 weeks. Please share any relevant experience and confirm with me first before working on this @bountybot"
               value={bountyText}
+              className="h-60 lg:h-auto"
               onChange={handleBountyTextChange}
             />
 
@@ -188,7 +191,7 @@ const Bounty = ({ hash }: BountyProps) => {
             <NeynarAuthButton
               variant={SIWN_variant.FARCASTER}
               label="Connect Farcaster"
-              className="text-inter dark:text-white rounded-sm border border-slate-200 bg-transparent shadow-none"
+              className="text-inter rounded-sm border border-slate-200 bg-transparent shadow-none dark:text-white"
             />
           </Button>
           <div className="flex w-full flex-row items-center justify-center gap-x-1">

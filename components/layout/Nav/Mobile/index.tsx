@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Icons } from "@/components/icons"
+import MobileSearch from "@/components/layout/Nav/Mobile/Bottom/Search"
 import SignInDrawer from "@/components/layout/Nav/Mobile/SignInDrawer"
 import { ThemeToggle } from "@/components/theme-toggle"
 
@@ -37,6 +38,7 @@ export function MobileNav() {
         </Button>
 
         <div className="flex flex-row items-center gap-x-2">
+          <MobileSearch />
           <ThemeToggle />
           {!isAuthenticated ? (
             <SignInDrawer />
