@@ -48,3 +48,14 @@ export async function fetchFarcasterUsers(listOfUsers: string, userFID = 0) {
     return { users: [], error }
   }
 }
+
+export const fetchFarcasterProfile = async (username: string) => {
+  try {
+    const userResponse = await neynarClient.lookupUserByUsername(username)
+    const userObject = userResponse.result.user
+    return userObject
+  } catch (error) {
+    console.error(error)
+    return { casts: [], nextCursor: "", error: error }
+  }
+}
