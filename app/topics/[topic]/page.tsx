@@ -178,9 +178,9 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
               <div
                 className={`${
                   mobileViewParam !== "feed" ? "hidden lg:flex" : "flex"
-                } h-fit flex-col items-center lg:col-span-12`}
+                } h-fit flex-col items-center gap-y-4 lg:col-span-12`}
               >
-                <h3 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
+                <h3 className="text-center text-2xl  font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
                   Casts Feed
                 </h3>
                 <CastFeed

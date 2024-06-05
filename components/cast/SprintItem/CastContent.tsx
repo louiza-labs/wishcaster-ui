@@ -24,7 +24,7 @@ interface CastContentProps {
   routeToWarpcast?: boolean
   mentionedProfiles: any[]
   renderEmbeds?: boolean
-  tagline: string
+  tagline?: string
 }
 
 const CastContent = ({
@@ -32,13 +32,12 @@ const CastContent = ({
   embeds,
   hash,
   author,
-  tagline,
   handleToggleCategoryClick,
   badgeIsToggled,
   routeToWarpcast,
   mentionedProfiles,
   renderEmbeds,
-
+  tagline,
   maxCharacters = 150,
 }: CastContentProps) => {
   const [aspectRatio, setAspectRatio] = useState("56.25%")
@@ -80,8 +79,11 @@ const CastContent = ({
         rel={routeToWarpcast ? "noReferrer" : undefined}
       >
         <div className=" flex flex-col gap-y-4  break-words [overflow-wrap:anywhere]">
-          <p className="text-xl font-bold">{tagline}</p>
-          {renderTextWithLinks(text, mentionedProfiles, embeds)}
+          {tagline ? <h3 className="font-bold text-lg">{tagline}</h3> : null}
+
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            {renderTextWithLinks(text, mentionedProfiles, embeds)}
+          </div>
 
           <>
             {hasUrl &&

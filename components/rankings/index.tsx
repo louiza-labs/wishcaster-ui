@@ -59,7 +59,7 @@ const CardStat: React.FC<CardStatProp> = ({
   )
 }
 
-const Rankings = ({ casts }: any) => {
+const Rankings = ({ casts, tagged }: any) => {
   const { castsWithCategories } = useAddCategoriesToCasts(casts)
 
   const searchParams = useSearchParams()

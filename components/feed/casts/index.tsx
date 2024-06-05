@@ -6,7 +6,7 @@ import { Cast as CastType } from "@/types"
 
 import { useLoadMoreCasts } from "@/hooks/farcaster/casts/useLoadMoreCasts"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
-import Cast from "@/components/cast"
+import SprintItemCast from "@/components/cast/SprintItem"
 import CastFeedSkeleton from "@/components/loading/feed/casts"
 
 interface CastFeedProps {
@@ -105,7 +105,7 @@ const CastsFeed: React.FC<CastFeedProps> = ({
     <Suspense fallback={<CastFeedSkeleton count={5} />}>
       <div
         className={`grid grid-cols-1 gap-4 overflow-x-hidden md:px-4 lg:col-span-6 lg:col-start-4 ${
-          columns ? `lg:grid-cols-2` : "lg:grid-cols-1"
+          columns ? `lg:grid-cols-2` : "lg:grid-cols-2"
         } lg:px-10`}
       >
         {fetchingCasts && !(filteredCasts && filteredCasts.length) ? (
@@ -126,7 +126,7 @@ const CastsFeed: React.FC<CastFeedProps> = ({
           </div>
         ) : filteredCasts && filteredCasts.length ? (
           filteredCasts.map((cast: CastType) => (
-            <Cast
+            <SprintItemCast
               key={cast.hash}
               text={cast.text}
               timestamp={cast.timestamp}
@@ -134,6 +134,7 @@ const CastsFeed: React.FC<CastFeedProps> = ({
               reactions={cast.reactions}
               replies={cast.replies}
               embeds={cast.embeds}
+              tagline={cast.tagline}
               author={cast.author}
               hash={cast.hash}
               thread_hash={cast.thread_hash}

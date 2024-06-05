@@ -11,7 +11,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel"
-import Cast from "@/components/cast"
+import Cast from "@/components/cast/SprintItem"
 import { CastSkeleton } from "@/components/loading/cast"
 
 interface TopCastsProps {
@@ -37,6 +37,7 @@ const TopCasts = ({ casts, cursor, topic, sortParam }: TopCastsProps) => {
           >
             <Cast
               {...castItem}
+              tagline={castItem.tagline}
               hideMetrics={false}
               badgeIsToggled={false}
               routeToWarpcast={true}
@@ -71,6 +72,7 @@ const TopCasts = ({ casts, cursor, topic, sortParam }: TopCastsProps) => {
                     <Cast
                       {...castItem}
                       hideMetrics={false}
+                      tagline={castItem.tagline}
                       badgeIsToggled={false}
                       routeToWarpcast={true}
                       mentionedProfiles={castItem.mentioned_profiles}

@@ -3,10 +3,33 @@ import { Cast as CastType } from "@/types"
 import { useNeynarContext } from "@neynar/react"
 import { useInView } from "react-intersection-observer"
 
+import { addTaglinesToCasts } from "@/lib/helpers"
 import { calculateStartDate, debounce } from "@/lib/utils"
 import { fetchChannelCasts } from "@/app/actions"
 
 type dateRanges = "24-hours" | "7-days" | "30-days" | "ytd"
+
+async function fetchTaglines(casts) {
+  const response = await fetch(
+    process.env.NEXT_PUBLIC_API_URL + "/api/summarize",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        messages: casts.map((cast) => ({
+          text: cast.text,
+          hash: cast.hash,
+        })),
+      }),
+    }
+  )
+  if (!response.ok) {
+    throw new Error("Failed to fetch taglines")
+  }
+  return response.json()
+}
 
 export const useLoadMoreCasts = (
   initialCasts: CastType[],
@@ -42,7 +65,9 @@ export const useLoadMoreCasts = (
         loggedInUserFID
       )
       const newCasts = castsResponse.casts
-      setCastsToShow((prevCasts) => [...prevCasts, ...newCasts])
+      const taglines = await fetchTaglines(newCasts)
+      const castsWithTaglines = addTaglinesToCasts(newCasts, taglines)
+      setCastsToShow((prevCasts) => [...prevCasts, ...castsWithTaglines])
     } catch (error) {
       console.error("Error fetching casts:", error)
     } finally {
@@ -66,6 +91,7 @@ export const useLoadMoreCasts = (
           loggedInUserFID
         )
         const newCasts = castsResponse.casts
+
         const newCursor = castsResponse.nextCursor
         const startDate = calculateStartDate(dateRange as dateRanges)
 

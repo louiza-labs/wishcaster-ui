@@ -4,6 +4,7 @@ import { Cast as CastType, Category } from "@/types"
 import { dateOptions } from "@/lib/constants"
 import {
   addCategoryFieldsToCasts,
+  addTaglinesToCasts,
   categorizeArrayOfCasts,
   generateWhimsicalErrorMessages,
 } from "@/lib/helpers"
@@ -45,8 +46,30 @@ interface User {
   fname: string
 }
 
+async function fetchTaglines(casts) {
+  const response = await fetch(process.env.API_URL + "/api/summarize", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      messages: casts.map((cast) => ({
+        text: cast.text,
+        hash: cast.hash,
+      })),
+    }),
+  })
+  if (!response.ok) {
+    throw new Error("Failed to fetch taglines")
+  }
+  return response.json()
+}
+
 const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   const cast = await fetchFarcasterCast(params.hash)
+  const taglineWithHash = cast ? await fetchTaglines([cast]) : []
+  const castWithTagline = addTaglinesToCasts([cast], taglineWithHash)
+  let enrichedCast = cast && castWithTagline ? castWithTagline[0] : cast
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
@@ -57,11 +80,11 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
         timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
       )
   const { reactionsObject } =
-    cast && cast.hash
+    enrichedCast && enrichedCast.hash
       ? await fetchCastsReactionsUntilCovered(
-          cast?.hash,
-          cast?.reactions.likes_count,
-          cast?.reactions.recasts_count
+          enrichedCast?.hash,
+          enrichedCast?.reactions.likes_count,
+          enrichedCast?.reactions.recasts_count
         )
       : {
           reactionsObject: {
@@ -75,9 +98,9 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
     cast,
   ]) as Category[]
 
-  let singleArrayCast = cast
-    ? addCategoryFieldsToCasts([cast], categories)
-    : [cast]
+  let singleArrayCast = enrichedCast
+    ? addCategoryFieldsToCasts([enrichedCast], categories)
+    : [enrichedCast]
   const castWithCategory = singleArrayCast[0]
 
   overallChannelCasts = addCategoryFieldsToCasts(
@@ -91,7 +114,7 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   const sortParam = parseQueryParam(searchParams.sort)
   const mobileViewParam = parseQueryParam(searchParams.view)
 
-  let filteredCasts = [cast]
+  let filteredCasts = [enrichedCast]
   const isError = !filteredCasts.length
 
   return (
@@ -124,6 +147,7 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                       </h1>
                       <Cast
                         {...castWithCategory}
+                        tagline={castWithCategory.tagline}
                         hideMetrics={true}
                         badgeIsToggled={false}
                         routeToWarpcast={true}
