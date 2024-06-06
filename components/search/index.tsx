@@ -1,13 +1,22 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useInView } from "react-intersection-observer"
 
 import { dateOptions } from "@/lib/constants"
 import { addCategoryFieldsToCasts, categorizeArrayOfCasts } from "@/lib/helpers"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import Cast from "@/components/cast"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import Cast from "@/components/cast/SprintItem"
+import { Icons } from "@/components/icons"
+import Rankings from "@/components/rankings"
 import { fetchCastsUntilCovered } from "@/app/actions"
 
 interface SearchIconProps {
@@ -53,6 +62,22 @@ const Search = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [searchedCasts, setSearchedCasts] = useState<any[] | []>([])
   const [itemsToShow, setItemsToShow] = useState<number>(10)
+  const [searchType, setSearchType] = useState("casts")
+
+  const handleSearchTypeChange = (value: string) => {
+    setSearchType(value)
+  }
+
+  const searchTypeOptions = [
+    {
+      value: "casts",
+      icon: Icons.casts,
+    },
+    {
+      value: "topics",
+      icon: Icons.boxes,
+    },
+  ]
 
   // Setting up useInView hook
   const { ref, inView } = useInView({
@@ -85,13 +110,25 @@ const Search = () => {
 
       let categories: any = categorizeArrayOfCasts(initialCasts)
       let filteredCasts = addCategoryFieldsToCasts(initialCasts, categories)
-      const castsWithSearchTerm = filteredCasts.filter(
-        (cast) =>
-          cast.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (cast.category &&
-            cast.category.id &&
-            cast.category.id.toLowerCase().includes(searchTerm.toLowerCase()))
-      )
+      const castsWithSearchTerm =
+        searchType === "topics"
+          ? filteredCasts.filter(
+              (cast) =>
+                cast.category &&
+                cast.category.id &&
+                cast.category.id
+                  .toLowerCase()
+                  .includes(searchTerm.toLowerCase())
+            )
+          : filteredCasts.filter(
+              (cast) =>
+                cast.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (cast.category &&
+                  cast.category.id &&
+                  cast.category.id
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()))
+            )
       setRenderingSearchResults(false)
       setSearchedCasts(castsWithSearchTerm)
     } catch (error) {
@@ -99,14 +136,62 @@ const Search = () => {
       // Handle errors as needed, maybe set an error state to display to users
     }
   }
+  const SearchTypeIconToDisplay = useMemo(() => {
+    return searchTypeOptions.find((opt) => opt.value === searchType)
+      ? searchTypeOptions.find((opt) => opt.value === searchType)?.icon
+      : null
+  }, [searchType])
+
+  const TopicCount = useMemo(() => {
+    if (searchedCasts && searchedCasts.length) {
+      const uniqueCategories = searchedCasts.reduce((acc, cast) => {
+        if (cast.category && cast.category.id) {
+          acc.add(cast.category.id)
+        }
+        return acc
+      }, new Set())
+      return uniqueCategories.size
+    }
+    return 0
+  }, [searchedCasts])
+
+  function capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1)
+  }
 
   return (
     <>
       <div className="sticky top-10 flex w-full items-center justify-center sm:w-auto md:top-0 lg:relative">
         <div className=" flex w-full flex-col items-center px-4 sm:px-0 md:block md:max-w-md">
           <div className="relative">
+            <div className=" absolute inset-y-0 left-0 flex items-center">
+              <Select
+                defaultValue={searchType}
+                onValueChange={(value) => handleSearchTypeChange(value)}
+              >
+                <SelectTrigger className="size-fit gap-x-1 whitespace-nowrap rounded-l-md px-1 text-xs font-semibold  focus:ring-0 focus:ring-transparent focus:ring-offset-0">
+                  <SelectValue className="text-xs font-semibold" placeholder="">
+                    {capitalizeFirstLetter(searchType)}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {searchTypeOptions.map(({ icon: Icon, value }) => {
+                    return (
+                      <SelectItem
+                        className="flex flex-row items-center gap-x-2"
+                        value={value}
+                        key={value}
+                      >
+                        {/* <Icon className="size-4" /> */}
+                        {capitalizeFirstLetter(value)}
+                      </SelectItem>
+                    )
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
             <Input
-              className="w-full rounded-md border border-gray-300 px-4 py-2 pr-10  focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500  dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-gray-500 dark:focus:ring-gray-500"
+              className="w-full rounded-md border border-gray-300 px-4 py-2 pl-20 pr-10 focus:border-gray-500  focus:outline-none focus:ring-1 focus:ring-gray-500 dark:border-gray-600  dark:bg-gray-800 dark:text-gray-200 dark:focus:border-gray-500 dark:focus:ring-gray-500"
               placeholder="Search casts or topics..."
               type="search"
               onChange={handleSearchTermChange}
@@ -117,7 +202,7 @@ const Search = () => {
                 }
               }}
             />
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <div className=" absolute inset-y-0 right-4 flex items-center">
               {renderingSearchResults ? (
                 <div className="flex items-center">
                   <div className="size-5 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
@@ -138,29 +223,36 @@ const Search = () => {
       {searchedCasts && searchedCasts.length ? (
         <div className="inset-0 top-16 flex flex-col items-center gap-y-4 overflow-auto border-t bg-white bg-opacity-10 pl-6 pt-4 backdrop-blur-lg md:items-start md:px-20 md:py-10 lg:fixed">
           <p className=" gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl lg:block">
-            Results <span className="ml-2">({searchedCasts.length})</span>
+            <span className="mr-2">&quot;{searchTerm}&quot;</span> results{" "}
+            <span className="ml-2">
+              ({searchType === "topics" ? TopicCount : searchedCasts.length})
+            </span>
           </p>
-          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
-            {searchedCasts.slice(0, itemsToShow).map((searchedCast) => (
-              <Cast
-                {...searchedCast}
-                hideMetrics={false}
-                badgeIsToggled={false}
-                key={searchedCast.hash}
-                routeToWarpcast={true}
-                mentionedProfiles={searchedCast.mentioned_profiles}
-              />
-            ))}
-            {itemsToShow >= searchedCasts.length ? null : (
-              <div ref={ref} className="flex items-center justify-center ">
-                <div className="animate-bounce space-x-2">
-                  <div className="inline-block size-3 rounded-full bg-slate-900 dark:bg-white" />
-                  <div className="inline-block size-3 rounded-full bg-slate-900 dark:bg-white" />
-                  <div className="inline-block size-3 rounded-full bg-slate-900 dark:bg-white" />
+          {searchType === "topics" ? (
+            <Rankings casts={searchedCasts} view={"search"} />
+          ) : (
+            <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
+              {searchedCasts.slice(0, itemsToShow).map((searchedCast) => (
+                <Cast
+                  {...searchedCast}
+                  hideMetrics={false}
+                  badgeIsToggled={false}
+                  key={searchedCast.hash}
+                  routeToWarpcast={true}
+                  mentionedProfiles={searchedCast.mentioned_profiles}
+                />
+              ))}
+              {itemsToShow >= searchedCasts.length ? null : (
+                <div ref={ref} className="flex items-center justify-center ">
+                  <div className="animate-bounce space-x-2">
+                    <div className="inline-block size-3 rounded-full bg-slate-900 dark:bg-white" />
+                    <div className="inline-block size-3 rounded-full bg-slate-900 dark:bg-white" />
+                    <div className="inline-block size-3 rounded-full bg-slate-900 dark:bg-white" />
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       ) : null}
     </>

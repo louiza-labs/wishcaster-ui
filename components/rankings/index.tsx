@@ -2,6 +2,7 @@
 
 import { Suspense, useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { Cast as CastType } from "@/types"
 
 import { PRODUCT_CATEGORIES_AS_MAP } from "@/lib/constants"
 import { buildRankings } from "@/lib/helpers"
@@ -59,7 +60,13 @@ const CardStat: React.FC<CardStatProp> = ({
   )
 }
 
-const Rankings = ({ casts, tagged }: any) => {
+interface RankingsProps {
+  casts: CastType[]
+  tagged?: any
+  view?: "search" | "feed"
+}
+
+const Rankings = ({ casts, tagged, view }: RankingsProps) => {
   const { castsWithCategories } = useAddCategoriesToCasts(casts)
 
   const searchParams = useSearchParams()
@@ -119,19 +126,19 @@ const Rankings = ({ casts, tagged }: any) => {
     castsWithCategories,
     "category",
     "likes_count",
-    10
+    view === "search" ? 100 : 10
   )
   const rankedTopicsByReplies = buildRankings(
     castsWithCategories,
     "category",
     "replies_count",
-    10
+    view === "search" ? 100 : 10
   )
   const rankedTopicsByRecasts = buildRankings(
     castsWithCategories,
     "category",
     "recasts_count",
-    10
+    view === "search" ? 100 : 10
   )
 
   const hasResults = useMemo(() => {
@@ -173,7 +180,11 @@ const Rankings = ({ casts, tagged }: any) => {
     <Suspense>
       {hasResults ? (
         <div className="  flex h-fit flex-col gap-y-6">
-          <h3 className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:block md:text-3xl">
+          <h3
+            className={`${
+              view === "search" ? "md:hidden" : "md:block"
+            } hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter  md:text-3xl`}
+          >
             Trending Topics
           </h3>
           <Tabs
