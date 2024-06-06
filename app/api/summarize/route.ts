@@ -7,7 +7,16 @@ export async function POST(req: Request) {
     const { messages } = await req.json()
     const prompt = `Summarize each product request into a concise 4-word tagline. These taglines are meant to clearly and briefly describe what product or feature someone wants. Please return back the generated tagline and corresponding hash. There may be links or backslashed text (ex: /someone-build) or mentions (@joe), please ignore that and focus solely on the product being requested. The product requests are as follows:\n\n${messages
       .map(
-        ({ text, hash }, index) => `Request ${index}:\n${text}\nHash: ${hash}`
+        (
+          {
+            text,
+            hash,
+          }: {
+            text: string
+            hash: string
+          },
+          index: number
+        ) => `Request ${index}:\n${text}\nHash: ${hash}`
       )
       .join("\n\n")}`
 

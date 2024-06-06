@@ -74,9 +74,6 @@ export const generateTaglinesForCasts = async (casts: Cast[]) => {
   } catch (error) {
     console.log("Error in generating taglines:", error)
 
-    if (error instanceof SyntaxError) {
-      console.log("Received malformed JSON:", error.text)
-    }
     return []
   }
 }

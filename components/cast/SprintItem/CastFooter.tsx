@@ -53,17 +53,17 @@ const CastFooter = ({
           {/* <!-- Interaction Stats (Likes, Recasts, Replies) --> */}
           <div className="flex flex-col gap-y-2">
             {[
-              { icon: Icons.likes, count: reactions.likes_count, noun: "like" },
+              { icon: Icons.likes, count: reactions.likes_count, noun: "Like" },
               {
                 icon: Icons.recasts,
                 count: reactions.recasts_count,
-                noun: "recast",
+                noun: "Recast",
               },
               {
                 icon: Icons.replies,
                 count: replies.count,
                 noun:
-                  replies.count > 1 || replies.count === 0 ? "replie" : "reply",
+                  replies.count > 1 || replies.count === 0 ? "Replie" : "Reply",
               },
             ].map(({ icon: Icon, count, noun }) => (
               <div
@@ -72,12 +72,12 @@ const CastFooter = ({
               >
                 <div className="flex flex-row gap-x-2">
                   <Icon className="size-4 text-gray-700" />
-                  <p className="whitespace-nowrap">
+                  <p className="whitespace-nowrap ">
                     {count !== 1 ? `${noun}s` : noun}
                   </p>
                 </div>
                 <div className="flex flex-col items-start">
-                  <p className="whitespace-nowrap font-medium">
+                  <p className="whitespace-nowrap font-semibold">
                     {count.toLocaleString()}
                   </p>
                 </div>

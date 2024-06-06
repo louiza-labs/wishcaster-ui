@@ -8,6 +8,7 @@ import {
   categorizeArrayOfCasts,
   generateWhimsicalErrorMessages,
 } from "@/lib/helpers"
+import { fetchTaglines } from "@/lib/requests"
 import Build from "@/components/buildComponent"
 import Cast from "@/components/cast"
 import CastStats from "@/components/cast/stats"
@@ -46,29 +47,12 @@ interface User {
   fname: string
 }
 
-async function fetchTaglines(casts) {
-  const response = await fetch(process.env.API_URL + "/api/summarize", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      messages: casts.map((cast) => ({
-        text: cast.text,
-        hash: cast.hash,
-      })),
-    }),
-  })
-  if (!response.ok) {
-    throw new Error("Failed to fetch taglines")
-  }
-  return response.json()
-}
-
 const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   const cast = await fetchFarcasterCast(params.hash)
   const taglineWithHash = cast ? await fetchTaglines([cast]) : []
-  const castWithTagline = addTaglinesToCasts([cast], taglineWithHash)
+  const castWithTagline = cast
+    ? addTaglinesToCasts([cast], taglineWithHash)
+    : cast
   let enrichedCast = cast && castWithTagline ? castWithTagline[0] : cast
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)

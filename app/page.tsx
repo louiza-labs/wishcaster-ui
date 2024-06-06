@@ -10,6 +10,7 @@ import {
   searchCastsForCategories,
   sortCastsByProperty,
 } from "@/lib/helpers"
+import { fetchTaglines } from "@/lib/requests"
 import CastsFeed from "@/components/feed/casts"
 import Filters from "@/components/filters"
 import FilterBar from "@/components/filters/FilterBar"
@@ -35,24 +36,6 @@ function extractTimeFilterParam(params: undefined | string | string[]) {
       return dateOptions.find((option) => option === params)
     }
   }
-}
-async function fetchTaglines(casts) {
-  const response = await fetch(process.env.API_URL + "/api/summarize", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      messages: casts.map((cast) => ({
-        text: cast.text,
-        hash: cast.hash,
-      })),
-    }),
-  })
-  if (!response.ok) {
-    throw new Error("Failed to fetch taglines")
-  }
-  return response.json()
 }
 
 const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {

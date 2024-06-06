@@ -68,10 +68,10 @@ const CastFooter = ({
             <div key={noun} className="flex items-center gap-x-2">
               <Icon className="size-4 text-gray-700" />
               <div className="flex flex-col items-start">
-                <p className="whitespace-nowrap font-medium">
+                <p className="whitespace-nowrap font-light">
                   {count.toLocaleString()}
                 </p>
-                <p className="whitespace-nowrap">
+                <p className="font-semiibold whitespace-nowrap ">
                   {count !== 1 ? `${noun}s` : noun}
                 </p>
               </div>

@@ -6,29 +6,8 @@ import { Cast as CastType } from "@/types"
 import { useNeynarContext } from "@neynar/react"
 
 import { addTaglinesToCasts } from "@/lib/helpers"
+import { fetchTaglines } from "@/lib/requests"
 import { fetchCastsUntilCovered } from "@/app/actions"
-
-async function fetchTaglines(casts) {
-  const response = await fetch(
-    process.env.NEXT_PUBLIC_API_URL + "/api/summarize",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        messages: casts.map((cast) => ({
-          text: cast.text,
-          hash: cast.hash,
-        })),
-      }),
-    }
-  )
-  if (!response.ok) {
-    throw new Error("Failed to fetch taglines")
-  }
-  return response.json()
-}
 
 export const useFetchCastsUntilCovered = (initialCasts: CastType[]) => {
   const [castsToShow, setCastsToShow] = useState<CastType[]>(initialCasts)
