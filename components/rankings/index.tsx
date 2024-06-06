@@ -35,11 +35,11 @@ const CardStat: React.FC<CardStatProp> = ({
   return (
     <Card
       onClick={handleClick}
-      className={`flex w-40 snap-start flex-col items-center md:w-fit md:min-w-24 ${
+      className={`flex w-40 cursor-pointer snap-start flex-col items-center transition duration-150 ease-in-out md:w-fit md:min-w-24 ${
         isToggled
           ? "brightness-120 border-2 border-indigo-500 dark:border-indigo-300"
-          : ""
-      }`}
+          : "hover:brightness-105"
+      } hover:scale-105 active:scale-95`}
     >
       <span className="mt-2 text-xs">{topic}</span>
 
@@ -59,7 +59,7 @@ const CardStat: React.FC<CardStatProp> = ({
   )
 }
 
-const Rankings = ({ casts }: any) => {
+const Rankings = ({ casts, tagged }: any) => {
   const { castsWithCategories } = useAddCategoriesToCasts(casts)
 
   const searchParams = useSearchParams()

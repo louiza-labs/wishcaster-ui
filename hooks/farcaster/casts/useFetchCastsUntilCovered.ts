@@ -5,6 +5,8 @@ import { useSearchParams } from "next/navigation"
 import { Cast as CastType } from "@/types"
 import { useNeynarContext } from "@neynar/react"
 
+import { addTaglinesToCasts } from "@/lib/helpers"
+import { fetchTaglines } from "@/lib/requests"
 import { fetchCastsUntilCovered } from "@/app/actions"
 
 export const useFetchCastsUntilCovered = (initialCasts: CastType[]) => {
@@ -33,8 +35,10 @@ export const useFetchCastsUntilCovered = (initialCasts: CastType[]) => {
         loggedInUserFID
       )
       const newCasts = castsResponse.casts
+      const taglinesWithHashes = await fetchTaglines(newCasts)
+      const castsWithTaglines = addTaglinesToCasts(newCasts, taglinesWithHashes)
       const newCursor: any = castsResponse.nextCursor
-      setCastsToShow(newCasts)
+      setCastsToShow(castsWithTaglines)
       setFetchingCasts(false)
       setCursorToUse(newCursor)
     } catch (error) {

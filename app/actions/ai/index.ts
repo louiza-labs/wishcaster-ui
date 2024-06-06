@@ -2,14 +2,11 @@
 
 import { Cast } from "@/types"
 import { openai } from "@ai-sdk/openai"
-import { NeynarAPIClient } from "@neynar/nodejs-sdk"
 import { generateObject } from "ai"
 import { z } from "zod"
 
 // import { google } from "googleapis"
 import { PRODUCT_CATEGORIES } from "@/lib/constants"
-
-const neynarClient = new NeynarAPIClient(process.env.NEYNAR_API_KEY as string)
 
 export const categorizeCastsAsRequests = async (casts: Cast[]) => {
   try {
@@ -29,7 +26,7 @@ export const categorizeCastsAsRequests = async (casts: Cast[]) => {
        Please follow similar guidelines for all requests.
       `
     const result = await generateObject({
-      model: openai("gpt-3.5-turbo"),
+      model: openai("gpt-4o"),
       prompt,
       maxRetries: 4,
       // maxTokens: 600,
@@ -46,5 +43,37 @@ export const categorizeCastsAsRequests = async (casts: Cast[]) => {
   } catch (error) {
     console.log(error)
     return casts
+  }
+}
+
+export const generateTaglinesForCasts = async (casts: Cast[]) => {
+  try {
+    const prompt = `Summarize each product request into a concise 4-word tagline. These taglines are meant to clearly and briefly describe what product or feature someone wants. Please return back the generated tagline and corresponding hash. There may be links or backslashed text (ex: /someone-build) or mentions (@joe), please ignore that and focus solely on the product being requested. The product requests are as follows:\n\n${casts
+      .map(
+        ({ text, hash }, index) => `Request ${index}:\n${text}\nHash: ${hash}`
+      )
+      .join("\n\n")}`
+
+    const result = await generateObject({
+      model: openai("gpt-4o"),
+      prompt,
+      maxRetries: 3,
+      temperature: 0.3,
+      maxTokens: 1000, // Adjusted to limit the output to shorter responses
+      schema: z.object({
+        taglines: z.array(
+          z.object({
+            tagline: z.string(),
+            hash: z.string(),
+          })
+        ), // Expecting an array of objects with text and hash fields
+      }),
+    })
+
+    return result.object.taglines
+  } catch (error) {
+    console.log("Error in generating taglines:", error)
+
+    return []
   }
 }

@@ -29,6 +29,7 @@ const Cast = ({
   category,
   embeds,
   hash,
+  tagline,
   mentionedProfiles,
   handleToggleCategoryClick,
   badgeIsToggled,
@@ -56,6 +57,7 @@ const Cast = ({
           embeds={embeds}
           hash={hash ?? ""}
           author={author}
+          tagline={tagline}
           handleToggleCategoryClick={handleToggleCategoryClick}
           badgeIsToggled={badgeIsToggled}
           maxCharacters={150}

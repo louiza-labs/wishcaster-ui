@@ -4,11 +4,13 @@ import { Cast as CastType, Category } from "@/types"
 import { dateOptions } from "@/lib/constants"
 import {
   addCategoryFieldsToCasts,
+  addTaglinesToCasts,
   categorizeArrayOfCasts,
   generateWhimsicalErrorMessages,
   searchCastsForCategories,
   sortCastsByProperty,
 } from "@/lib/helpers"
+import { fetchTaglines } from "@/lib/requests"
 import CastsFeed from "@/components/feed/casts"
 import Filters from "@/components/filters"
 import FilterBar from "@/components/filters/FilterBar"
@@ -53,11 +55,15 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
       )
   let filteredCasts = initialCasts
   const categories = categorizeArrayOfCasts(filteredCasts) as Category[]
-
+  let taglinedCasts = await fetchTaglines(filteredCasts)
   filteredCasts = addCategoryFieldsToCasts(
     filteredCasts,
     categories
   ) as Array<CastType>
+
+  if (taglinedCasts.length) {
+    filteredCasts = addTaglinesToCasts(filteredCasts, taglinedCasts)
+  }
   if (categoryParam.length) {
     filteredCasts = searchCastsForCategories(filteredCasts, categoryParam)
   }
@@ -95,7 +101,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
             )}
           </article>
           <aside className="no-scrollbar sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky lg:col-span-2 lg:flex lg:flex-col">
-            <Rankings casts={initialCasts} />
+            <Rankings casts={initialCasts} tagged={taglinedCasts} />
           </aside>
         </main>
       </section>

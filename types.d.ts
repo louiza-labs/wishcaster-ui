@@ -68,6 +68,7 @@ export interface Cast {
   author: User
   text: string
   timestamp: string
+  tagline?: string
   embeds: Embed[]
   viewer_context?: CastViewerContext
   reactions: {

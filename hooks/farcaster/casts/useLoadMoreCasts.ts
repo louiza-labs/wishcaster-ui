@@ -3,6 +3,8 @@ import { Cast as CastType } from "@/types"
 import { useNeynarContext } from "@neynar/react"
 import { useInView } from "react-intersection-observer"
 
+import { addTaglinesToCasts } from "@/lib/helpers"
+import { fetchTaglines } from "@/lib/requests"
 import { calculateStartDate, debounce } from "@/lib/utils"
 import { fetchChannelCasts } from "@/app/actions"
 
@@ -42,7 +44,9 @@ export const useLoadMoreCasts = (
         loggedInUserFID
       )
       const newCasts = castsResponse.casts
-      setCastsToShow((prevCasts) => [...prevCasts, ...newCasts])
+      const taglines = await fetchTaglines(newCasts)
+      const castsWithTaglines = addTaglinesToCasts(newCasts, taglines)
+      setCastsToShow((prevCasts) => [...prevCasts, ...castsWithTaglines])
     } catch (error) {
       console.error("Error fetching casts:", error)
     } finally {
@@ -66,6 +70,7 @@ export const useLoadMoreCasts = (
           loggedInUserFID
         )
         const newCasts = castsResponse.casts
+
         const newCursor = castsResponse.nextCursor
         const startDate = calculateStartDate(dateRange as dateRanges)
 
