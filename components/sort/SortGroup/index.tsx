@@ -23,12 +23,12 @@ export function SortGroup({
       className="flex w-full flex-row items-center justify-around sm:flex-wrap sm:justify-start "
     >
       {arrayOfSortByValueObjects && arrayOfSortByValueObjects.length
-        ? arrayOfSortByValueObjects.map((sortByObject) => (
+        ? arrayOfSortByValueObjects.map((sortByObject, index) => (
             <div className="flex items-center space-x-2">
               <RadioGroupItem
                 value={sortByObject.value}
                 id={sortByObject.value}
-                key={sortByObject.value}
+                key={sortByObject.value + sortByObject.label + index}
               />
               <Label htmlFor={sortByObject.value}>{sortByObject.label}</Label>
             </div>
