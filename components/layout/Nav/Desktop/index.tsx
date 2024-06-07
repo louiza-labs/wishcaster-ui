@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { SignInButton, SignOutButton, SignedIn, SignedOut } from "@clerk/nextjs"
 import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
 
 import { NavItem } from "@/types/nav"
@@ -38,6 +39,7 @@ export function DesktopNav({ items }: MainNavProps) {
           <Link href="/topics" className="flex items-center space-x-2">
             <span className="inline-block font-normal">Topics</span>
           </Link>
+          <div></div>
 
           {items?.length ? (
             <nav className="flex gap-6">
@@ -62,8 +64,48 @@ export function DesktopNav({ items }: MainNavProps) {
         <div className="mx-10 hidden w-full lg:block">
           <Search />
         </div>
-        <div className="flex flex-1 items-center justify-end space-x-4">
-          <nav className="flex w-fit items-center space-x-1">
+        <div className="flex w-full flex-1 items-center justify-end space-x-4">
+          <nav className="xl:min-w-200 flex w-fit items-center space-x-1 ">
+            <SignedIn>
+              <DropdownMenu>
+                <DropdownMenuTrigger className="relative border-none " asChild>
+                  <Avatar className="relative size-6">
+                    <AvatarImage
+                      src={"/linear-company-icon.svg"}
+                      alt={"linear"}
+                    />
+                  </Avatar>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent className="w-fit">
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem className="px-4">
+                      <SignOutButton>Sign out of Linear</SignOutButton>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SignedIn>
+            <SignedOut>
+              <DropdownMenu>
+                <DropdownMenuTrigger className="relative border-none " asChild>
+                  <Avatar className="relative size-6 opacity-20">
+                    <AvatarImage
+                      src={"/linear-company-icon.svg"}
+                      alt={"linear"}
+                    />
+                  </Avatar>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent className="w-fit">
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem className="px-4 font-semibold">
+                      <SignInButton>Connect Linear Account</SignInButton>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SignedOut>
             <ThemeToggle />
             {!user ? (
               <div className="z-10 w-fit lg:flex">
@@ -77,8 +119,8 @@ export function DesktopNav({ items }: MainNavProps) {
               </div>
             ) : user && user.pfp_url ? (
               <DropdownMenu>
-                <DropdownMenuTrigger className="border-none " asChild>
-                  <Avatar className="size-8">
+                <DropdownMenuTrigger className="relative border-none " asChild>
+                  <Avatar className="relative size-8">
                     <AvatarImage src={user.pfp_url} alt={user.username} />
                   </Avatar>
                 </DropdownMenuTrigger>

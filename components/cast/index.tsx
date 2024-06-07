@@ -36,6 +36,7 @@ const Cast = ({
   hideMetrics,
   renderEmbeds,
   routeToWarpcast,
+  cast,
 }: CastComponentTypes | any) => {
   const categoryLabel =
     category && category.id
@@ -74,6 +75,7 @@ const Cast = ({
           hideMetrics={hideMetrics}
           hash={hash}
           author={author}
+          cast={cast}
         />
       </CardFooter>
     </Card>

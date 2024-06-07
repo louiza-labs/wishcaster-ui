@@ -1,5 +1,6 @@
 import { FC } from "react"
 import { Cast as CastType, Category } from "@/types"
+import { SignIn } from "@clerk/nextjs"
 import { auth } from "@clerk/nextjs/server"
 
 import { dateOptions } from "@/lib/constants"
@@ -40,7 +41,7 @@ function extractTimeFilterParam(params: undefined | string | string[]) {
   }
 }
 
-const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
+export default async function Page({ searchParams }: any) {
   const searchTerm = parseQueryParam(searchParams.search)
   const categoryParam = parseQueryParam(searchParams.categories)
   const filtersParam = parseQueryParam(searchParams.filters)
@@ -87,6 +88,16 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
 
   return (
     <>
+      <div className="fixed inset-x-0 inset-y-16 z-40 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-md lg:inset-0">
+        <SignIn
+          appearance={{
+            elements: {
+              formButtonPrimary:
+                "bg-slate-500 hover:bg-slate-400 text-sm normal-case",
+            },
+          }}
+        />
+      </div>
       <div className="top-66 sticky z-10 lg:hidden">
         <FilterBar initialCasts={initialCasts} />
       </div>{" "}
@@ -171,5 +182,3 @@ const ErrorDisplay: FC<ErrorDisplayProps> = ({
     </>
   )
 }
-
-export default IndexPage

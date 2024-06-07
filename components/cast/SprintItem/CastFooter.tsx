@@ -1,19 +1,24 @@
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
+import { SignedIn } from "@clerk/nextjs"
 
 import { formatDateForCastTimestamp } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import SaveCast from "@/components/cast/Save"
 import { Icons } from "@/components/icons"
 
 interface CastFooterProps {
   timestamp: string
+  cast?: any
   hideMetrics?: boolean
+  isEmbedded?: boolean
   replies: {
     count: number
   }
   hash: string
   author: any
+  isReply?: boolean
   reactions: {
     likes_count: number
     recasts_count: number
@@ -27,6 +32,9 @@ const CastFooter = ({
   hideMetrics,
   hash,
   author,
+  isReply,
+  isEmbedded,
+  cast,
 }: CastFooterProps) => {
   const router = useRouter()
   const params = useParams()
@@ -104,15 +112,23 @@ const CastFooter = ({
         >
           Visit
         </Button>
-        {!isOnCastPage && (
-          <Button
-            className="whitespace-nowrap"
-            onClick={handleRouteToCastPage}
-            variant="default"
-          >
-            Build
-          </Button>
-        )}
+        <div className="flex flex-row gap-x-2">
+          {!isOnCastPage && (
+            <Button
+              className="whitespace-nowrap"
+              onClick={handleRouteToCastPage}
+              variant="default"
+            >
+              Build
+            </Button>
+          )}
+          {isEmbedded || isReply ? null : (
+            <SignedIn>
+              {" "}
+              <SaveCast cast={cast} />{" "}
+            </SignedIn>
+          )}
+        </div>
       </div>
       <div className="flex size-full items-center justify-center">
         <div className="mt-4 flex w-fit items-center justify-center gap-x-2 rounded-full bg-slate-200 px-3 py-1 text-xs font-light dark:bg-slate-800">

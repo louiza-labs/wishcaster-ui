@@ -161,7 +161,7 @@ const Search = () => {
 
   return (
     <>
-      <div className="sticky top-10 flex w-full items-center justify-center sm:w-auto md:top-0 lg:relative">
+      <div className="top-10 flex w-full items-center justify-center sm:w-auto md:top-0 lg:relative">
         <div className=" flex w-full flex-col items-center px-4 sm:px-0 md:block md:max-w-md">
           <div className="relative">
             <div className=" absolute inset-y-0 left-0 flex items-center">
@@ -239,6 +239,7 @@ const Search = () => {
                   badgeIsToggled={false}
                   key={searchedCast.hash}
                   routeToWarpcast={true}
+                  cast={searchedCast}
                   mentionedProfiles={searchedCast.mentioned_profiles}
                 />
               ))}

@@ -21,8 +21,8 @@ function SignInDrawer() {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <Button
-            variant="ghost"
-            className="mr-2 mt-2 px-0 font-semibold text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
+            variant="outline"
+            className="mr-2  px-2 text-base font-semibold hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
           >
             Sign In to FC
             <span className="sr-only">Toggle Menu</span>
@@ -39,7 +39,7 @@ function SignInDrawer() {
                 <NeynarAuthButton
                   variant={SIWN_variant.FARCASTER}
                   label="Connect Farcaster"
-                  className="text-inter bg-transparent dark:text-white shadow-none"
+                  className="text-inter bg-transparent shadow-none dark:text-white"
                 />{" "}
               </Button>
             </div>

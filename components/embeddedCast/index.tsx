@@ -61,6 +61,7 @@ const EmbeddedCast = ({
           replies={replies}
           hash={hash ?? ""}
           author={author}
+          isEmbedded={true}
         />
       </CardFooter>
     </Card>
