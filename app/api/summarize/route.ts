@@ -36,6 +36,7 @@ export async function POST(req: Request) {
     })
     return Response.json(result.object.taglines)
   } catch (error) {
+    console.error("err with summarizing", error)
     return new Response(
       JSON.stringify({ error: "Failed to process request", message: error }),
       { status: 500 }

@@ -3,10 +3,6 @@ import { Cast as CastType } from "@/types"
 import { apiUrl } from "@/lib/constants"
 
 export async function fetchTaglines(casts: CastType[]) {
-  console.log("the api url", `${apiUrl}/summarize`)
-  console.log("the vercel url", process.env.VERCEL_URL)
-  console.log("the vercel PUBLIC url", process.env.NEXT_PUBLIC_VERCEL_URL)
-
   try {
     const response = await fetch(`${apiUrl}/summarize`, {
       method: "POST",
@@ -23,6 +19,7 @@ export async function fetchTaglines(casts: CastType[]) {
 
     return response.json()
   } catch (e) {
+    console.error("the err fetching taglines", e)
     return []
   }
 }
