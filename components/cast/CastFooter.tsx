@@ -1,18 +1,23 @@
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
+import { SignedIn } from "@clerk/nextjs"
 
 import { formatDateForCastTimestamp } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import SaveCast from "@/components/cast/Save"
 import { Icons } from "@/components/icons"
 
 interface CastFooterProps {
   timestamp: string
+  cast?: any
+
   hideMetrics?: boolean
   replies: {
     count: number
   }
   hash: string
+  isEmbedded?: boolean
   author: any
   reactions: {
     likes_count: number
@@ -24,9 +29,11 @@ const CastFooter = ({
   timestamp,
   reactions,
   replies,
+  cast,
   hideMetrics,
   hash,
   author,
+  isEmbedded,
 }: CastFooterProps) => {
   const router = useRouter()
   const params = useParams()
@@ -111,6 +118,12 @@ const CastFooter = ({
             </Button>
           )}
         </div>
+        {isEmbedded ? null : (
+          <SignedIn>
+            {" "}
+            <SaveCast cast={cast} />{" "}
+          </SignedIn>
+        )}
       </div>
     </div>
   )

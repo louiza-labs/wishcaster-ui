@@ -104,7 +104,7 @@ const CastsFeed: React.FC<CastFeedProps> = ({
   return (
     <Suspense fallback={<CastFeedSkeleton count={5} />}>
       <div
-        className={`grid grid-cols-1 gap-4 overflow-x-hidden md:px-4 lg:col-span-6 lg:col-start-4 ${
+        className={`mt-8 grid grid-cols-1 gap-4 overflow-x-hidden px-2 md:px-4 lg:col-span-6 lg:col-start-4 lg:mt-0 ${
           columns ? `lg:grid-cols-2` : "lg:grid-cols-2"
         } lg:px-10`}
       >
@@ -129,6 +129,7 @@ const CastsFeed: React.FC<CastFeedProps> = ({
             <SprintItemCast
               key={cast.hash}
               text={cast.text}
+              cast={cast}
               timestamp={cast.timestamp}
               parent_url={cast.parent_url}
               reactions={cast.reactions}

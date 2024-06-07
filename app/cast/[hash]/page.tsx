@@ -135,6 +135,7 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                         hideMetrics={true}
                         badgeIsToggled={false}
                         routeToWarpcast={true}
+                        cast={castWithCategory}
                         mentionedProfiles={castWithCategory.mentioned_profiles}
                       />
                     </div>

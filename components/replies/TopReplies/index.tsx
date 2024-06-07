@@ -34,6 +34,8 @@ const TopReplies = ({ castHash }: TopRepliesProps) => {
                       key={reply.hash}
                       hideMetrics={false}
                       badgeIsToggled={false}
+                      isReply={true}
+                      cast={reply}
                       mentionedProfiles={reply.mentioned_profiles}
                     />
                   ))
