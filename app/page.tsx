@@ -20,7 +20,6 @@ import Rankings from "@/components/rankings"
 import RedirectButton from "@/components/redirect/Button"
 import SortCasts from "@/components/sort/SortCasts"
 import { fetchCastsUntilCovered } from "@/app/actions"
-import { getLinearInfo } from "@/app/actions/linear"
 
 interface IndexPageProps {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -65,7 +64,6 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
         timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
       )
   let filteredCasts = initialCasts
-  await getLinearInfo()
   const categories = categorizeArrayOfCasts(filteredCasts) as Category[]
   let taglinedCasts = await fetchTaglines(filteredCasts)
   filteredCasts = addCategoryFieldsToCasts(

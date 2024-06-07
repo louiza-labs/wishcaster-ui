@@ -506,3 +506,8 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
   },
 }
 export const dateOptions = ["24-hours", "7-days", "30-days", "ytd"]
+
+export const apiUrl =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3000/api"
+    : `https://${process.env.VERCEL_URL}/api`
