@@ -4,6 +4,7 @@ import { apiUrl } from "@/lib/constants"
 
 export async function fetchTaglines(casts: CastType[]) {
   try {
+    return []
     const response = await fetch(`${apiUrl}/summarize`, {
       method: "POST",
       headers: {

@@ -13,6 +13,7 @@ interface CastComponentTypes extends CastType {
   handleToggleCategoryClick?: any
   badgeIsToggled?: any
   renderEmbeds?: boolean
+  cast: CastType
   category?: {
     label: string
     id: string
