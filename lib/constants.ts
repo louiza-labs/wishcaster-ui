@@ -510,4 +510,4 @@ export const dateOptions = ["24-hours", "7-days", "30-days", "ytd"]
 export const apiUrl =
   process.env.NODE_ENV === "development"
     ? "http://localhost:3000/api"
-    : `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api`
+    : `https://${process.env.VERCEL_URL}/api`
