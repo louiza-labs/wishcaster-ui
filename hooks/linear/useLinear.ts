@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 
-import { createLinearIssue } from "@/app/actions/linear"
+import { createLinearIssue } from "@/app/actions"
 
 const useLinear = (castHash: string) => {
   const wcLinkForCast = `https://www.warpcast.com/${castHash}`
