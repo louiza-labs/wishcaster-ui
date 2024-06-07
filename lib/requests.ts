@@ -2,12 +2,26 @@ import { Cast as CastType } from "@/types"
 
 import { generateTaglinesForCasts } from "@/app/actions"
 
-export async function fetchTaglines(casts: CastType[]) {
+export async function fetchTaglines(casts: CastType[], batchSize = 10) {
+  const batchedResults = []
+  const batches = []
+
+  // Split casts into smaller batches
+  for (let i = 0; i < casts.length; i += batchSize) {
+    const batch = casts.slice(i, i + batchSize)
+    batches.push(batch)
+  }
+
   try {
-    const response = await generateTaglinesForCasts(casts)
-    return response
+    // Process each batch
+    for (const batch of batches) {
+      const response = await generateTaglinesForCasts(batch)
+      batchedResults.push(...response)
+    }
   } catch (e) {
-    console.error("the err fetching taglines", e)
+    console.error("Error fetching taglines:", e)
     return []
   }
+
+  return batchedResults
 }

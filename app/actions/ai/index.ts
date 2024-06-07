@@ -46,42 +46,87 @@ export const categorizeCastsAsRequests = async (casts: Cast[]) => {
   }
 }
 
-export const generateTaglinesForCasts = async (casts: Cast[]) => {
-  try {
-    const prompt = `Summarize each product request into a concise 4-word tagline. These taglines are meant to clearly and briefly describe what product or feature someone wants. Please return back the generated tagline and corresponding hash. There may be links or backslashed text (ex: /someone-build) or mentions (@joe), please ignore that and focus solely on the product being requested. The product requests are as follows:\n\n${casts
+export const generateTaglinesForCasts = async (
+  casts: Cast[],
+  batchSize = 10,
+  delay = 1000,
+  concurrencyLimit = 3
+) => {
+  const batchedResults = []
+  const batches: any = []
+
+  // Split casts into smaller batches
+  for (let i = 0; i < casts.length; i += batchSize) {
+    const batch = casts.slice(i, i + batchSize)
+    const prompt = `Summarize each product request into a concise 4-word tagline. These taglines are meant to clearly and briefly describe what product or feature someone wants. Please return back the generated tagline and corresponding hash. There may be links or backslashed text (ex: /someone-build) or mentions (@joe), please ignore that and focus solely on the product being requested. The product requests are as follows:\n\n${batch
       .map(
-        (
-          {
-            text,
-            hash,
-          }: {
-            text: string
-            hash?: string
-          },
-          index: number
-        ) => `Request ${index}:\n${text}\nHash: ${hash}`
+        ({ text, hash }: { text: string; hash?: string }, index: number) =>
+          `Request ${index + i}:\n${text}\nHash: ${hash}`
       )
       .join("\n\n")}`
 
-    const result = await generateObject({
-      model: openai("gpt-3.5-turbo"),
-      prompt,
-      maxRetries: 3,
-      maxTokens: 800, // Adjusted to limit the output to shorter responses
-      schema: z.object({
-        taglines: z.array(
-          z.object({
-            hash: z.string(),
-            tagline: z.string(),
-          })
-        ), // Expecting an array of objects with text and hash fields
-      }),
-    })
-
-    return result.object.taglines
-  } catch (error) {
-    console.log("Error in generating taglines:", error)
-
-    return []
+    batches.push({ prompt, startIndex: i })
   }
+
+  const delayExecution = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms))
+
+  const processBatch = async (batch: any) => {
+    const { prompt, startIndex } = batch
+    let retries = 3
+    let currentDelay = delay
+
+    while (retries > 0) {
+      try {
+        const result = await generateObject({
+          model: openai("gpt-4o"),
+          prompt,
+          maxRetries: 3,
+          maxTokens: 1200,
+          schema: z.object({
+            taglines: z.array(
+              z.object({
+                hash: z.string(),
+                tagline: z.string(),
+              })
+            ),
+          }),
+        })
+        return result.object.taglines
+      } catch (error) {
+        console.log(
+          `Error in generating taglines for batch starting at ${startIndex}:`,
+          error
+        )
+        if (retries === 1) throw error
+        await delayExecution(currentDelay)
+        currentDelay *= 2 // Exponential backoff
+        retries--
+      }
+    }
+  }
+
+  const processBatchesWithConcurrency = async () => {
+    const results = []
+    for (let i = 0; i < batches.length; i += concurrencyLimit) {
+      const batchSlice = batches.slice(i, i + concurrencyLimit)
+      const promises = batchSlice.map((batch: any) => processBatch(batch))
+
+      const settledResults = await Promise.allSettled(promises)
+      for (const settled of settledResults) {
+        if (settled.status === "fulfilled") {
+          results.push(...settled.value)
+        } else {
+          console.log("Failed batch processing:", settled.reason)
+        }
+      }
+
+      if (i + concurrencyLimit < batches.length) {
+        await delayExecution(delay)
+      }
+    }
+    return results
+  }
+
+  return await processBatchesWithConcurrency()
 }
