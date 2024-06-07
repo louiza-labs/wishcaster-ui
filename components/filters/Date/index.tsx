@@ -50,7 +50,7 @@ const DateFilter = ({
               <Button
                 variant={"ghost"}
                 onClick={dateVal.handleChange}
-                key={dateVal.value}
+                key={dateVal.value + index}
               >
                 <p
                   className={cn(

@@ -50,21 +50,29 @@ export const generateTaglinesForCasts = async (casts: Cast[]) => {
   try {
     const prompt = `Summarize each product request into a concise 4-word tagline. These taglines are meant to clearly and briefly describe what product or feature someone wants. Please return back the generated tagline and corresponding hash. There may be links or backslashed text (ex: /someone-build) or mentions (@joe), please ignore that and focus solely on the product being requested. The product requests are as follows:\n\n${casts
       .map(
-        ({ text, hash }, index) => `Request ${index}:\n${text}\nHash: ${hash}`
+        (
+          {
+            text,
+            hash,
+          }: {
+            text: string
+            hash?: string
+          },
+          index: number
+        ) => `Request ${index}:\n${text}\nHash: ${hash}`
       )
       .join("\n\n")}`
 
     const result = await generateObject({
-      model: openai("gpt-4o"),
+      model: openai("gpt-3.5-turbo"),
       prompt,
       maxRetries: 3,
-      temperature: 0.3,
-      maxTokens: 1000, // Adjusted to limit the output to shorter responses
+      maxTokens: 800, // Adjusted to limit the output to shorter responses
       schema: z.object({
         taglines: z.array(
           z.object({
-            tagline: z.string(),
             hash: z.string(),
+            tagline: z.string(),
           })
         ), // Expecting an array of objects with text and hash fields
       }),
