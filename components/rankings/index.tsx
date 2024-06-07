@@ -62,11 +62,10 @@ const CardStat: React.FC<CardStatProp> = ({
 
 interface RankingsProps {
   casts: CastType[]
-  tagged?: any
   view?: "search" | "feed"
 }
 
-const Rankings = ({ casts, tagged, view }: RankingsProps) => {
+const Rankings = ({ casts, view }: RankingsProps) => {
   const { castsWithCategories } = useAddCategoriesToCasts(casts)
 
   const searchParams = useSearchParams()
