@@ -15,7 +15,7 @@ const InitialLoading = () => {
       <div className="mb-4 animate-bounce">
         <Icons.logo />
       </div>
-      <div className="text-center text-lg text-white">{reference}</div>
+      <div className="text-center text-lg "> Hold on to your butts</div>
     </div>
   )
 }
