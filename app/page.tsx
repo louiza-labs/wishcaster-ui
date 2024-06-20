@@ -1,6 +1,5 @@
 import { FC } from "react"
 import { Cast as CastType, Category } from "@/types"
-import { auth } from "@clerk/nextjs/server"
 
 import { dateOptions } from "@/lib/constants"
 import {
@@ -43,7 +42,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const filtersParam = parseQueryParam(searchParams.filters)
   const sortParam = parseQueryParam(searchParams.sort)
 
-  const { userId } = auth()
+  const userId = null
 
   if (userId) {
     // Query DB for user specific information or display assets only to signed in users

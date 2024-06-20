@@ -1,10 +1,10 @@
 "use server"
 
-import { auth, clerkClient, currentUser } from "@clerk/nextjs/server"
+import { clerkClient, currentUser } from "@clerk/nextjs/server"
 import { LinearClient } from "@linear/sdk"
 
 export const getLinearOauthToken = async () => {
-  const { userId } = auth()
+  const userId = null
   const user = await currentUser()
   const provider = "oauth_linear"
   if (!userId) return

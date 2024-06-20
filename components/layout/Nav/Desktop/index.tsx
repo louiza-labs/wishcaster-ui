@@ -7,6 +7,7 @@ import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
 import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
+import useGetUser from "@/hooks/auth/useGetUser"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,6 +18,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import AuthForms from "@/components/auth"
 import { Icons } from "@/components/icons"
 import Search from "@/components/search"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -27,6 +29,8 @@ interface MainNavProps {
 
 export function DesktopNav({ items }: MainNavProps) {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
+  const { userFromAuth } = useGetUser()
+  console.log("the auth user", userFromAuth)
 
   return (
     <header className="bg-background sticky top-0 z-40 w-full border-b">
@@ -107,6 +111,7 @@ export function DesktopNav({ items }: MainNavProps) {
               </DropdownMenu>
             </SignedOut>
             <ThemeToggle />
+            <AuthForms />
             {!user ? (
               <div className="z-10 w-fit lg:flex">
                 <Button variant={"outline"}>
