@@ -27,7 +27,6 @@ const AccountInfo = ({ user }) => {
         avatar_image: avatarImg,
       })
       setUpdatingAccount(false)
-      console.log("the res of updating profile", res)
       setShowUpdateState(false)
     } catch (e) {
       setUpdatingAccount(false)

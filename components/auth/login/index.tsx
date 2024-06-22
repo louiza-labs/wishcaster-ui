@@ -24,16 +24,17 @@ export default function AuthLoginForm() {
           <Label htmlFor="email">Email:</Label>
           <Input id="email" name="email" type="email" required />
         </div>
+        {JSON.stringify(state)}
         <div className="flex flex-col gap-y-2">
           <Label htmlFor="password">Password:</Label>
           <Input id="password" name="password" type="password" required />
         </div>
 
-        <DialogFooter className="mt-4">
-          <Button>Log in</Button>
-          <p aria-live="polite" className="sr-only" role="status">
+        <DialogFooter className="mt-4 flex flex-col items-center gap-y-10">
+          <p aria-live="polite" className="text-red-500" role="status">
             {state?.message}
           </p>
+          <Button>Log in</Button>
         </DialogFooter>
       </form>
     </>

@@ -1,7 +1,6 @@
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
-import { SignedIn } from "@clerk/nextjs"
 
 import { formatDateForCastTimestamp } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -122,12 +121,7 @@ const CastFooter = ({
               Build
             </Button>
           )}
-          {isEmbedded || isReply ? null : (
-            <SignedIn>
-              {" "}
-              <SaveCast cast={cast} />{" "}
-            </SignedIn>
-          )}
+          {isEmbedded || isReply ? null : <SaveCast cast={cast} />}
         </div>
       </div>
       <div className="flex size-full items-center justify-center">

@@ -1,4 +1,4 @@
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { CardDescription, CardTitle } from "@/components/ui/card"
 
@@ -15,6 +15,8 @@ const CastAvatar = ({
   handleToggleCategoryClick,
   badgeIsToggled,
 }: CastAvatarProps) => {
+  if (!author) return <div />
+
   return (
     <div className="flex flex-row justify-between">
       <a
@@ -25,6 +27,7 @@ const CastAvatar = ({
         <div className="flex flex-row items-center gap-x-2">
           <Avatar className="size-10">
             <AvatarImage src={author.pfp_url} alt={author.username} />
+            <AvatarFallback />
           </Avatar>
           <div className="flex flex-col items-start gap-x-4">
             <CardTitle className="flex flex-row items-center gap-x-1.5 text-sm">

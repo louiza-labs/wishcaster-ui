@@ -1,13 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { SignInButton, SignOutButton, SignedIn, SignedOut } from "@clerk/nextjs"
 import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
 
 import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
-import useGetUser from "@/hooks/auth/useGetUser"
+import useAccount from "@/hooks/auth/useAccount"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -29,9 +28,7 @@ interface MainNavProps {
 
 export function DesktopNav({ items }: MainNavProps) {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
-  const { userFromAuth } = useGetUser()
-  console.log("the auth user", userFromAuth)
-
+  const { userAccount } = useAccount()
   return (
     <header className="bg-background sticky top-0 z-40 w-full border-b">
       <div className="container hidden h-16 w-full items-center justify-between space-x-4 sm:space-x-0 md:flex">
@@ -70,46 +67,6 @@ export function DesktopNav({ items }: MainNavProps) {
         </div>
         <div className="flex w-full flex-1 items-center justify-end space-x-4">
           <nav className="xl:min-w-200 flex w-fit items-center space-x-1 ">
-            <SignedIn>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="relative border-none " asChild>
-                  <Avatar className="relative size-6">
-                    <AvatarImage
-                      src={"/linear-company-icon.svg"}
-                      alt={"linear"}
-                    />
-                  </Avatar>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent className="w-fit">
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem className="px-4">
-                      <SignOutButton>Sign out of Linear</SignOutButton>
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SignedIn>
-            <SignedOut>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="relative border-none " asChild>
-                  <Avatar className="relative size-6 opacity-20">
-                    <AvatarImage
-                      src={"/linear-company-icon.svg"}
-                      alt={"linear"}
-                    />
-                  </Avatar>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent className="w-fit">
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem className="px-4 font-semibold">
-                      <SignInButton>Connect Linear Account</SignInButton>
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SignedOut>
             <ThemeToggle />
             <AuthForms />
             {!user ? (

@@ -24,6 +24,46 @@ export const fetchFarcasterCast = async (hash: string) => {
   }
 }
 
+export const fetchFarcasterCastForUsers = async (
+  userFID: number,
+  viewerFID: number,
+  cursor = ""
+) => {
+  try {
+    const buildUrl = () => {
+      let baseUrl = `https://api.neynar.com/v2/farcaster/feed?feed_type=filter&filter_type=fids&with_recasts=true&limit=100&fids=${userFID}`
+      if (cursor && cursor.length) {
+        baseUrl += `&cursor=${cursor}`
+      }
+      if (viewerFID) {
+        baseUrl += `&viewer_fid=${viewerFID}`
+      }
+      return baseUrl
+    }
+    const url = buildUrl()
+    const config = {
+      headers: {
+        accept: "application/json",
+        api_key: process.env.NEYNAR_API_KEY, // You should secure your API key
+      },
+    }
+
+    const response = await axios.get(url, config)
+
+    const data = response.data // Axios wraps the response data in a `data` property
+    // Assuming the API returns an object with casts and cursor for the next batch
+    const returnObject = {
+      casts: data.casts,
+      nextCursor: data.next.cursor,
+    }
+
+    return returnObject
+  } catch (error) {
+    console.error("Error fetching channel casts:", error)
+    return { casts: [], nextCursor: "", error: error }
+  }
+}
+
 export const fetchChannelCasts = async (
   channelId: string,
   cursor = "",

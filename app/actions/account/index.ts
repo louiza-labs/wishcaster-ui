@@ -16,15 +16,35 @@ export async function updateAccount(userId: string, accountInfo: any) {
   }
 }
 
-export async function createAccount(name: string, email: string) {
+export async function createAccount(
+  name: string,
+  email: string,
+  authId: string
+) {
   const supabase = createClient()
 
   try {
     const res = await supabase.from("users").insert({
       name,
       email,
+      auth_user_id: authId,
     })
     return res
+  } catch (e) {
+    return { error: true, message: "Unable to create account" }
+  }
+}
+
+export async function getAccount(userId: string) {
+  const supabase = createClient()
+
+  try {
+    const res = await supabase.from("users").select().eq("auth_user_id", userId)
+    if (res && res.data && res.data.length) {
+      let accountObj = res.data[0]
+      return accountObj
+    }
+    return {}
   } catch (e) {
     return { error: true, message: "Unable to create account" }
   }

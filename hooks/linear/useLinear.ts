@@ -1,10 +1,17 @@
 "use client"
 
 import { useState } from "react"
+import { useSession } from "next-auth/react"
 
 import { createLinearIssue } from "@/app/actions"
 
 const useLinear = (castHash: string) => {
+  const { data: sessionData } = useSession()
+  const emailForLoggedInUser =
+    sessionData && sessionData.user && sessionData.user.email
+      ? sessionData.user.email
+      : null
+
   const wcLinkForCast = `https://www.warpcast.com/${castHash}`
 
   const [title, setTitle] = useState("")
@@ -89,13 +96,20 @@ const useLinear = (castHash: string) => {
 
   const handleSubmitIssue = async () => {
     try {
-      if (title && title.length && description && description.length) {
+      if (
+        title &&
+        title.length &&
+        description &&
+        description.length &&
+        emailForLoggedInUser
+      ) {
         setSubmittingIssue(true)
         setSuccessfullySubmittedIssue(false)
         setErrorSubmittingIssue(false)
         const res = await createLinearIssue(
           title,
           description,
+          emailForLoggedInUser,
           priority,
           projectId
         )

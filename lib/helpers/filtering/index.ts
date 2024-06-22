@@ -33,3 +33,12 @@ export const searchCastsForTerm = (
     cast.text.toLowerCase().includes(lowerCaseSearchTerm)
   )
 }
+
+export const filterReactionsByChannel = (reactions: any, channelId: string) => {
+  if (reactions && reactions.length) {
+    return reactions.filter(
+      (reaction: any) => reaction.channel && reaction.channel.id === channelId
+    )
+  }
+  return reactions
+}
