@@ -41,9 +41,9 @@ const AccountContainer = ({ user }: any) => {
       >
         <TabsList className="flex  flex-col items-start gap-y-6 bg-transparent  text-lg font-semibold sm:my-2 sm:h-full">
           {/* <TabsTrigger value="count">Count</TabsTrigger> */}
-          <TabsTrigger className="  text-left" value="info">
+          {/* <TabsTrigger className="  text-left" value="info">
             Info
-          </TabsTrigger>
+          </TabsTrigger> */}
           <TabsTrigger
             disabled={!(farcasterProfile && farcasterProfile.fid)}
             className=" text-left"

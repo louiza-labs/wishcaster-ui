@@ -120,6 +120,7 @@ const Rankings = ({ casts, view }: RankingsProps) => {
     },
     [categoriesFromParams, createQueryString, router]
   )
+  console.log("the casts with categories", castsWithCategories)
 
   const rankedTopicsByLikes = buildRankings(
     castsWithCategories,
@@ -127,6 +128,8 @@ const Rankings = ({ casts, view }: RankingsProps) => {
     "likes_count",
     view === "search" ? 100 : 10
   )
+  console.log("the casts with rankedTopicsByLikes", rankedTopicsByLikes)
+
   const rankedTopicsByReplies = buildRankings(
     castsWithCategories,
     "category",
@@ -228,8 +231,8 @@ const Rankings = ({ casts, view }: RankingsProps) => {
             Unable to generate topics
           </p>
           <p className="gap-x-2 text-center text-xl font-light leading-tight tracking-tighter md:text-xl">
-            This error is showing because no casts are available, try clearing
-            some filters{" "}
+            This error is showing because no casts or categories can be
+            generated, try clearing some filters or extending the timerange{" "}
           </p>
         </div>
       )}

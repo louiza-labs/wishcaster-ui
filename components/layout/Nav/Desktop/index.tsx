@@ -1,23 +1,15 @@
 "use client"
 
 import Link from "next/link"
-import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
+import { useNeynarContext } from "@neynar/react"
 
 import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
-import useAccount from "@/hooks/auth/useAccount"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import AuthForms from "@/components/auth"
+import useGetUser from "@/hooks/auth/useGetUser"
+import IntegrationsDropdown from "@/components/account/integrations/IntegrationsDropdown"
+import AuthDialog from "@/components/auth/dialog"
+import AuthDropdown from "@/components/auth/dropdown"
 import { Icons } from "@/components/icons"
 import Search from "@/components/search"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -28,9 +20,9 @@ interface MainNavProps {
 
 export function DesktopNav({ items }: MainNavProps) {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
-  const { userAccount } = useAccount()
+  const { userFromAuth } = useGetUser()
   return (
-    <header className="bg-background sticky top-0 z-40 w-full border-b">
+    <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="container hidden h-16 w-full items-center justify-between space-x-4 sm:space-x-0 md:flex">
         <div className=" hidden gap-6 md:flex md:gap-10">
           <Link href="/" className="flex items-center space-x-2">
@@ -51,7 +43,7 @@ export function DesktopNav({ items }: MainNavProps) {
                       key={index}
                       href={item.href}
                       className={cn(
-                        "text-muted-foreground flex items-center text-sm font-medium",
+                        "flex items-center text-sm font-medium text-muted-foreground",
                         item.disabled && "cursor-not-allowed opacity-80"
                       )}
                     >
@@ -67,9 +59,14 @@ export function DesktopNav({ items }: MainNavProps) {
         </div>
         <div className="flex w-full flex-1 items-center justify-end space-x-4">
           <nav className="xl:min-w-200 flex w-fit items-center space-x-1 ">
+            <IntegrationsDropdown />
             <ThemeToggle />
-            <AuthForms />
-            {!user ? (
+            {userFromAuth && Object.keys(userFromAuth).length ? (
+              <AuthDropdown />
+            ) : (
+              <AuthDialog />
+            )}
+            {/* {!user ? (
               <div className="z-10 w-fit lg:flex">
                 <Button variant={"outline"}>
                   <NeynarAuthButton
@@ -96,7 +93,7 @@ export function DesktopNav({ items }: MainNavProps) {
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
-            ) : null}
+            ) : null} */}
           </nav>
         </div>
       </div>

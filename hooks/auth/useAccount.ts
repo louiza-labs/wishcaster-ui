@@ -16,6 +16,7 @@ const useAccount = () => {
       farcaster: farcasterUserSession,
       auth: userFromAuth,
     },
+    isLoggedIn: userFromAuth && Object.keys(userFromAuth).length,
   }
 }
 

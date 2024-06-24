@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 
+import useGetUser from "@/hooks/auth/useGetUser"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -12,11 +13,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import LoginForm from "@/components/auth/login"
-import SignupForm from "@/components/auth/signup"
+import LoginForm from "@/components/auth/forms/login"
+import SignupForm from "@/components/auth/forms/signup"
 import { Icons } from "@/components/icons"
 
 export default function AuthForms() {
+  const { userFromAuth } = useGetUser()
   const [selectedTab, setSelectedTab] = useState("login")
 
   const Header = () => {
@@ -40,10 +42,10 @@ export default function AuthForms() {
   }
 
   return (
-    <Dialog>
+    <Dialog open={!(userFromAuth && Object.keys(userFromAuth).length)}>
       <DialogTrigger asChild>
         <Button variant="ghost">
-          <Icons.circledUser />
+          <Icons.Power />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

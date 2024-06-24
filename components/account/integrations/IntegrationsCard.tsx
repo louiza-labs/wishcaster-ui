@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { SignInButton } from "@clerk/nextjs"
 
 import { Button } from "@/components/ui/button"
@@ -6,7 +7,6 @@ import {
   CardContent,
   CardDescription,
   CardFooter,
-  CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 
@@ -25,13 +25,22 @@ const IntegrationsCard = ({
   isConnected,
 }: IntegrationsCardProps) => {
   return (
-    <Card>
-      <CardHeader>
+    <Card className="  gap-y-4">
+      <div className="rounded-tr-xl ">
+        <Image
+          width={0}
+          height={0}
+          sizes="100vw"
+          style={{ width: "100%", height: "80%" }} // optional
+          src={image}
+          className="rounded-t-xl"
+          alt={title}
+        />
+      </div>
+      <CardContent className=" relative mt-4  flex flex-col">
         <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col">
-        <img src={image} alt={title} />
-        <CardDescription>{description}</CardDescription>
+
+        <CardDescription className="my-6">{description}</CardDescription>
       </CardContent>
       <CardFooter>
         {title === "-inear" ? (

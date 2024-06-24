@@ -49,3 +49,12 @@ export async function getAccount(userId: string) {
     return { error: true, message: "Unable to create account" }
   }
 }
+
+export async function logoutUser() {
+  const supabase = createClient()
+  try {
+    const { error } = await supabase.auth.signOut()
+  } catch (e) {
+    console.error("error trying to signout", e)
+  }
+}
