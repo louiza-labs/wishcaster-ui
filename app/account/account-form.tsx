@@ -22,9 +22,6 @@ export default function AccountForm({ user }: { user: User | null }) {
         .eq("id", user?.id)
         .single()
 
-      console.log("the data", data)
-      console.log("the err", error)
-
       if (error && status !== 406) {
         console.log(error)
         throw error

@@ -7,8 +7,8 @@ const Integrations = () => {
   const { integrationOptions, connectedIntegrationImages } = useIntegrations()
 
   return (
-    <div className="flex w-full flex-col items-center justify-start gap-y-10 ">
-      <div className=" grid  w-full flex-wrap justify-center lg:grid-cols-4 lg:gap-10">
+    <div className="flex  flex-col items-center justify-start gap-y-10 overflow-y-scroll ">
+      <div className=" grid  w-full flex-wrap justify-center lg:grid-cols-2 lg:gap-10">
         {integrationOptions.map((integration: any) => (
           <IntegrationsCard
             title={integration.label}
@@ -17,6 +17,7 @@ const Integrations = () => {
             handleClick={integration.onClick}
             isConnected={integration.isConnected}
             key={integration.label}
+            featuresList={integration.features}
           />
         ))}
       </div>

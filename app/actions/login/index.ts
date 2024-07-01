@@ -75,8 +75,7 @@ export async function connectTwitterAccount() {
       redirectTo: `http://localhost:3000/auth/callback`,
     },
   })
-  const { data: linkedIdentity, error: errorLinkingIdentity } =
-    await supabase.auth.linkIdentity({ provider: "twitter" })
+
   if (data.url) {
     redirect(data.url) // use the redirect API for your server framework
   }
@@ -91,7 +90,6 @@ export async function connectNotionAccount() {
       redirectTo: `http://localhost:3000/auth/callback`,
     },
   })
-  console.log("the data", data)
   if (data.url) {
     redirect(data.url) // use the redirect API for your server framework
   }

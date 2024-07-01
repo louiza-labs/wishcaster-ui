@@ -9,7 +9,6 @@ export const getLinearOauthToken = async (email: string) => {
     .from("sessions")
     .select("linear_access_token")
     .eq("email", email)
-  console.log("the user res", userRes)
   if (userRes && userRes.data && userRes.data.length) {
     let userId = userRes.data[0].linear_access_token
     return userId
@@ -43,7 +42,6 @@ export const createLinearIssue = async (
 ) => {
   try {
     const accessToken = await getLinearOauthToken(emailForLoggedInUser)
-    console.log("the accessToken", accessToken)
 
     if (!accessToken) return
     const linearC = new LinearClient({
@@ -51,7 +49,6 @@ export const createLinearIssue = async (
     })
 
     const teams = await linearC.teams()
-    console.log("the teams", teams)
 
     const team = teams.nodes[0]
     if (team.id && title && title.length && description && description.length) {
@@ -62,7 +59,6 @@ export const createLinearIssue = async (
         priority: priority ? Number(priority) : undefined,
         projectId: projectId && projectId.length ? projectId : undefined,
       })
-      console.log("the result", result)
 
       return result.success
     }

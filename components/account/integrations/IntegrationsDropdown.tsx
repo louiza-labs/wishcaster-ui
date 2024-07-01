@@ -41,7 +41,10 @@ const IntegrationsDropdown = () => {
           </Avatar>
           <span>{title}</span>
         </div>
-        <span> {isConnected ? "✅" : "🔕"}</span>
+        <span>
+          {" "}
+          {isConnected ? <Icons.circledCheck /> : <Icons.dottedCircle />}
+        </span>
       </DropdownMenuItem>
     )
   }

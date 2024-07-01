@@ -12,7 +12,7 @@ export default async function Account() {
 
   const enrichedUser = user ? await getAccount(user.id) : {}
   return (
-    <div className="p-10">
+    <div className="xl:px-20 py-10">
       {enrichedUser && enrichedUser.email ? (
         <AccountContainer user={enrichedUser} />
       ) : user ? (

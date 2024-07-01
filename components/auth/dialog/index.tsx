@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useBoundStore } from "@/store"
 
 import useGetUser from "@/hooks/auth/useGetUser"
 import { Button } from "@/components/ui/button"
@@ -20,6 +21,7 @@ import { Icons } from "@/components/icons"
 export default function AuthForms() {
   const { userFromAuth } = useGetUser()
   const [selectedTab, setSelectedTab] = useState("login")
+  const isLoggedIn = useBoundStore((state) => state.isLoggedIn)
 
   const Header = () => {
     if (selectedTab === "login") {
@@ -42,7 +44,7 @@ export default function AuthForms() {
   }
 
   return (
-    <Dialog open={!(userFromAuth && Object.keys(userFromAuth).length)}>
+    <Dialog>
       <DialogTrigger asChild>
         <Button variant="ghost">
           <Icons.Power />

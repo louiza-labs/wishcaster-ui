@@ -1,24 +1,21 @@
-'use client'
+"use client"
 
-
+import { useState } from "react"
+import { useBoundStore } from "@/store"
 import { NeynarAuthButton, useNeynarContext } from "@neynar/react"
 import { signIn, signOut, useSession } from "next-auth/react"
-import { useState } from "react"
 
-import { connectNotionAccount, connectTwitterAccount } from "@/app/actions"
 import useGetUser from "@/hooks/auth/useGetUser"
-
+import { connectNotionAccount } from "@/app/actions"
 
 const useIntegrations = () => {
   const [linearRes, setLinearRes] = useState({})
   const { data: session, status } = useSession()
-
+  const isLoggedIn = useBoundStore((state) => state.isLoggedIn)
   const { userFromAuth } = useGetUser()
-  const handleConnectTwitter = async () => {
-    const res = await connectTwitterAccount()
-  }
+
   const handleConnectNotion = async () => {
-    const res = await connectNotionAccount()
+    const res = isLoggedIn ? logoutUser() : await connectNotionAccount()
   }
   const handleConnectLinear = async () => {
     const res =
@@ -26,7 +23,7 @@ const useIntegrations = () => {
   }
   // FarcasterIntegration
   const { logoutUser, isAuthenticated } = useNeynarContext()
-
+  console.log("the user from auth", userFromAuth)
   const integrationOptions = [
     {
       label: "Farcaster",
@@ -35,17 +32,14 @@ const useIntegrations = () => {
       description: "Connect your Farcaster account",
       customButton: NeynarAuthButton,
       isConnected: isAuthenticated,
-    },
-    {
-      label: "Twitter",
-      image: "/social-account-logos/twitter-logo-black.png",
-      onClick: handleConnectTwitter,
-      description: "Connect your Twitter account",
-      isConnected:
-        userFromAuth &&
-        userFromAuth.user_metadata &&
-        userFromAuth.user_metadata.iss &&
-        userFromAuth.user_metadata.iss.includes("twitter"),
+      features: [
+        { label: "See your casts and reactions", status: "live" },
+        {
+          label: "Filter on users you are followed by & follow",
+          status: "live",
+        },
+        { label: "Create bounties using Bountycaster", status: "live" },
+      ],
     },
     {
       label: "Notion",
@@ -53,11 +47,11 @@ const useIntegrations = () => {
 
       onClick: handleConnectNotion,
       description: "Connect your Notion account",
-      isConnected:
-        userFromAuth &&
-        userFromAuth.user_metadata &&
-        userFromAuth.user_metadata.iss &&
-        userFromAuth.user_metadata.iss.includes("notion"),
+      isConnected: userFromAuth.role === "authenticated",
+      features: [
+        { label: "Create pages for posts", status: "pending" },
+        { label: "Add a post to a DB", status: "pending" },
+      ],
     },
     {
       label: "Linear",
@@ -65,39 +59,21 @@ const useIntegrations = () => {
 
       onClick: handleConnectLinear,
       description: "Connect your Linear account",
-      isConnected: session && session.user,
+      isConnected: isLoggedIn,
+      features: [
+        { label: "Create issues for posts", status: "pending" },
+        { label: "Create a project for posts", status: "pending" },
+      ],
     },
-    // {
-    //   label: "Github",
-    //   image: "",
-
-    //   onClick: () => {},
-    //   description: "Connect your Github account",
-    // },
-    // {
-    //   label: "Slack",
-    //   image: "",
-
-    //   onClick: () => {},
-    //   description: "Connect your Slack account",
-    // },
-    // {
-    //   label: "Google",
-    //   image: "",
-
-    //   onClick: () => {},
-    //   description: "Connect your Google account",
-    // },
   ]
   const connectedIntegrationImages = integrationOptions
     .filter((integration: any) => integration.isConnected)
     .map((integrationOption) => integrationOption.image)
 
-
-    return {
-      integrationOptions, 
-      connectedIntegrationImages
-    }
+  return {
+    integrationOptions,
+    connectedIntegrationImages,
+  }
 }
 
 export default useIntegrations

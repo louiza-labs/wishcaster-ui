@@ -120,7 +120,6 @@ const Rankings = ({ casts, view }: RankingsProps) => {
     },
     [categoriesFromParams, createQueryString, router]
   )
-  console.log("the casts with categories", castsWithCategories)
 
   const rankedTopicsByLikes = buildRankings(
     castsWithCategories,
@@ -128,7 +127,6 @@ const Rankings = ({ casts, view }: RankingsProps) => {
     "likes_count",
     view === "search" ? 100 : 10
   )
-  console.log("the casts with rankedTopicsByLikes", rankedTopicsByLikes)
 
   const rankedTopicsByReplies = buildRankings(
     castsWithCategories,

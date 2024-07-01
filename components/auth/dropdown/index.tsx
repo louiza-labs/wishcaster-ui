@@ -1,6 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { useBoundStore } from "@/store"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -14,6 +15,8 @@ import { Icons } from "@/components/icons"
 import { logoutUser } from "@/app/actions"
 
 const AuthDropdown = ({}) => {
+  const setLoggedInState = useBoundStore((state) => state.setLoggedIn)
+
   const router = useRouter()
   const handleRouteToAccount = () => {
     router.push("/account")
@@ -21,13 +24,14 @@ const AuthDropdown = ({}) => {
 
   const handleSignout = async () => {
     const signoutRes = await logoutUser()
+    setLoggedInState(false)
   }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="relative mr-4 border-none " asChild>
         <Button variant={"ghost"} className="relative">
-          <Icons.circledUser />
+          <Icons.circledUser className="" />
         </Button>
       </DropdownMenuTrigger>
 

@@ -16,7 +16,12 @@ import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import Rankings from "@/components/rankings"
 import RedirectButton from "@/components/redirect/Button"
 import SortCasts from "@/components/sort/SortCasts"
-import { fetchCastsUntilCovered } from "@/app/actions"
+import {
+  fetchCastsUntilCovered,
+  getUserSession,
+  getUserSocialIdentities,
+  searchNotion,
+} from "@/app/actions"
 
 interface IndexPageProps {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -41,9 +46,11 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const categoryParam = parseQueryParam(searchParams.categories)
   const filtersParam = parseQueryParam(searchParams.filters)
   const sortParam = parseQueryParam(searchParams.sort)
-
+  const session = await getUserSession()
   const userId = null
-
+  const socialIdentities = await getUserSocialIdentities()
+  console.log("the session", session)
+  const notionSearch = await searchNotion("test", session?.provider_token)
   if (userId) {
     // Query DB for user specific information or display assets only to signed in users
   }

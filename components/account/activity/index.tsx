@@ -10,7 +10,7 @@ import useFetchCastsForUser from "@/hooks/farcaster/casts/useFetchCastsForUser"
 import useFetchReactionsForUser from "@/hooks/farcaster/reactions/useFetchReactionsForUser"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import Cast from "@/components/cast"
+import Cast from "@/components/cast/SprintItem"
 
 interface ActivityFeedProps {}
 const ActivityFeed = ({}: ActivityFeedProps) => {
@@ -31,7 +31,7 @@ const ActivityFeed = ({}: ActivityFeedProps) => {
 
   const CastActivities = ({ castsToShow }: any) => {
     return (
-      <div className="grid w-fit min-w-[80vw] max-w-[80vw] grid-cols-1  lg:grid-cols-2">
+      <div className="grid w-full  grid-cols-1 gap-2  lg:grid-cols-2">
         {castsToShow && castsToShow.length ? (
           castsToShow.map((reaction: any) => (
             <div key={reaction.hash} className=" col-span-1 w-fit">
@@ -47,7 +47,7 @@ const ActivityFeed = ({}: ActivityFeedProps) => {
             </div>
           ))
         ) : (
-          <div className="col-span-2 flex min-w-full flex-col items-center justify-center">
+          <div className=" flex min-w-full flex-col items-center justify-center">
             <p className="my-4 w-full items-center text-center text-2xl font-semibold ">
               No activity found
             </p>
@@ -58,11 +58,11 @@ const ActivityFeed = ({}: ActivityFeedProps) => {
   }
 
   return (
-    <div className="">
+    <div className="min-w-full">
       <Tabs
         onValueChange={(val) => setSelectedTab(val)}
         defaultValue="casts"
-        className="flex w-full flex-col items-center justify-start gap-y-10"
+        className="flex min-w-full  flex-col items-center justify-start "
       >
         <TabsList className="flex  flex-row items-start gap-y-6 bg-transparent  text-lg font-semibold sm:my-2 sm:h-full">
           {/* <TabsTrigger value="count">Count</TabsTrigger> */}
@@ -94,14 +94,14 @@ const ActivityFeed = ({}: ActivityFeedProps) => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent className=" h-fit w-full  " value="casts">
+        <TabsContent className=" h-fit min-w-full  " value="casts">
           <CastActivities castsToShow={filteredCasts} />
         </TabsContent>
-        <TabsContent className=" h-fit  w-full " value="likes">
+        <TabsContent className=" h-fit min-w-full   " value="likes">
           <CastActivities castsToShow={filteredReactions} />
         </TabsContent>
 
-        <TabsContent className=" h-fit w-full" value="recasts">
+        <TabsContent className=" h-fit min-w-full" value="recasts">
           <CastActivities castsToShow={filteredReactions} />
         </TabsContent>
       </Tabs>

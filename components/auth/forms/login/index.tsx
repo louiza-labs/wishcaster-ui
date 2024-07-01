@@ -1,5 +1,6 @@
 "use client"
 
+import { useBoundStore } from "@/store"
 import { useFormState, useFormStatus } from "react-dom"
 
 import { Button } from "@/components/ui/button"
@@ -14,12 +15,17 @@ const initialState = {
 
 export default function AuthLoginForm() {
   const [state, formAction] = useFormState(login, initialState)
+  const setIsLoggedIn = useBoundStore((state) => state.setLoggedIn)
+  const handleSubmitLogin = (payload) => {
+    const res = formAction(payload)
+    setIsLoggedIn(true)
+  }
 
   const { pending } = useFormStatus()
 
   return (
     <>
-      <form action={formAction} className="flex flex-col gap-y-2">
+      <form action={handleSubmitLogin} className="flex flex-col gap-y-2">
         <div className="flex flex-col gap-y-2">
           <Label htmlFor="email">Email:</Label>
           <Input id="email" name="email" type="email" required />

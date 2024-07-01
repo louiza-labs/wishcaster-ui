@@ -2,6 +2,8 @@
 
 import { createClient } from "@/clients/supabase/server"
 
+const supabase = createClient()
+
 export async function updateAccount(userId: string, accountInfo: any) {
   const supabase = createClient()
 
@@ -36,8 +38,6 @@ export async function createAccount(
 }
 
 export async function getAccount(userId: string) {
-  const supabase = createClient()
-
   try {
     const res = await supabase.from("users").select().eq("auth_user_id", userId)
     if (res && res.data && res.data.length) {
@@ -50,11 +50,63 @@ export async function getAccount(userId: string) {
   }
 }
 
+export async function getUserSocialIdentities() {
+  const { data, error } = await supabase.auth.getUserIdentities()
+  return data
+}
+
+export async function getAuthUser() {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  return { user }
+}
+
 export async function logoutUser() {
-  const supabase = createClient()
   try {
     const { error } = await supabase.auth.signOut()
   } catch (e) {
     console.error("error trying to signout", e)
+  }
+}
+
+export async function getUserSession() {
+  try {
+    const { data: userSession, error } = await supabase.auth.getSession()
+
+    return userSession.session
+  } catch (e) {}
+}
+
+type providerType = "twitter" | "notion" | "linear"
+export async function updateUserSessionInfoInDB(
+  provider: providerType,
+  accessToken: string,
+  refreshToken: string,
+  user_id: string
+) {
+  try {
+    const buildSessionObject = () => {
+      let baseObject = {
+        user_id,
+      }
+      if (provider === "linear") {
+        baseObject.linear_access_token = accessToken
+        baseObject.linear_refresh_token = refreshToken
+      } else if (provider === "notion") {
+        baseObject.notion_access_token = accessToken
+        baseObject.notion_refresh_token = refreshToken
+      } else if (provider === "twitter") {
+        baseObject.twitter_access_token = accessToken
+        baseObject.twitter_refresh_token = refreshToken
+      }
+      return baseObject
+    }
+    let sessionObject = buildSessionObject()
+    const res = await supabase.from("sessions").upsert(sessionObject)
+    return res
+  } catch (e) {
+    console.error("error updating sessions", e)
   }
 }

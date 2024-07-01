@@ -62,3 +62,7 @@ export const debounce = (func: Function, delay: number) => {
 export const removeSearchParams = () => {
   window.history.replaceState({}, document.title, window.location.pathname)
 }
+
+export function capitalizeFirstLetter(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
