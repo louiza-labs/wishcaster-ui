@@ -18,8 +18,8 @@ import RedirectButton from "@/components/redirect/Button"
 import SortCasts from "@/components/sort/SortCasts"
 import {
   fetchCastsUntilCovered,
-  getUserSession,
   getUserSocialIdentities,
+  getUsersNotionAccessCode,
   searchNotion,
 } from "@/app/actions"
 
@@ -46,11 +46,12 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const categoryParam = parseQueryParam(searchParams.categories)
   const filtersParam = parseQueryParam(searchParams.filters)
   const sortParam = parseQueryParam(searchParams.sort)
-  const session = await getUserSession()
   const userId = null
   const socialIdentities = await getUserSocialIdentities()
-  const notionSearch = await searchNotion(session?.provider_token)
+  const notionAccessCode = await getUsersNotionAccessCode()
+  const notionSearch = await searchNotion(notionAccessCode)
   const notionResults = notionSearch.results
+
   if (userId) {
     // Query DB for user specific information or display assets only to signed in users
   }

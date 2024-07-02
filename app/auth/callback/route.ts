@@ -38,6 +38,9 @@ export async function GET(request: Request) {
         const refreshToken = session.provider_refresh_token
         const userId = data.user.id // or however you get the user's ID
         const userEmail = data.user.email
+        const provider = data.user.user_metadata.iss.includes("notion")
+          ? "notion"
+          : "twitter"
         try {
           // first get id from sessions
           const resForId = await supabase
@@ -53,8 +56,13 @@ export async function GET(request: Request) {
             if (id) {
               baseObject.id = id
             }
-            baseObject.notion_access_token = providerToken
-            baseObject.notion_refresh_token = refreshToken
+            if (provider === "notion") {
+              baseObject.notion_access_token = providerToken
+              baseObject.notion_refresh_token = refreshToken
+            } else if (provider === "twitter") {
+              baseObject.twitter_access_token = providerToken
+              baseObject.twitter_refresh_token = refreshToken
+            }
             baseObject.email = userEmail
 
             return baseObject

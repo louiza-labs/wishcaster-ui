@@ -1,12 +1,11 @@
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
-import { SignedIn } from "@clerk/nextjs"
 
-import { formatDateForCastTimestamp } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import SaveCast from "@/components/cast/Save"
 import { Icons } from "@/components/icons"
+import { Button } from "@/components/ui/button"
+import { formatDateForCastTimestamp } from "@/lib/utils"
 
 interface CastFooterProps {
   timestamp: string
@@ -119,10 +118,8 @@ const CastFooter = ({
           )}
         </div>
         {isEmbedded ? null : (
-          <SignedIn>
             {" "}
             <SaveCast cast={cast} />{" "}
-          </SignedIn>
         )}
       </div>
     </div>

@@ -2,7 +2,6 @@ import { siteConfig } from "@/config/site"
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
 import InitialLoading from "@/components/loading/initial"
-import ClerkProviderWrapper from "@/components/providers/clerk"
 import NextAuthProvider from "@/components/providers/nextauth"
 import NeynarProvider from "@/components/providers/neynar"
 import { CSPostHogProvider } from "@/components/providers/posthog"
@@ -76,7 +75,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <NeynarProvider>
             <body
               className={cn(
-                "bg-background min-h-screen font-sans antialiased",
+                "min-h-screen bg-background font-sans antialiased",
                 fontSans.variable
               )}
             >
@@ -86,16 +85,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
                   defaultTheme="system"
                   enableSystem
                 >
-                  <ClerkProviderWrapper>
-                    <Suspense fallback={<InitialLoading />}>
-                      <div className="relative flex min-h-screen flex-col">
-                        <SiteHeader />
-                        <div className="flex-1">{children}</div>
-                        <SiteFooter />
-                      </div>
-                      <TailwindIndicator />
-                    </Suspense>
-                  </ClerkProviderWrapper>
+                  <Suspense fallback={<InitialLoading />}>
+                    <div className="relative flex min-h-screen flex-col">
+                      <SiteHeader />
+                      <div className="flex-1">{children}</div>
+                      <SiteFooter />
+                    </div>
+                    <TailwindIndicator />
+                  </Suspense>
                 </ThemeProvider>
               </NextAuthProvider>
             </body>

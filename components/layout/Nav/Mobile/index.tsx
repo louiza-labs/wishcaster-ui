@@ -1,7 +1,6 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { SignInButton, SignOutButton, SignedIn, SignedOut } from "@clerk/nextjs"
 import { useNeynarContext } from "@neynar/react"
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
@@ -27,7 +26,7 @@ export function MobileNav() {
   }
 
   return (
-    <header className="bg-background sticky top-0 z-40 w-full border-b">
+    <header className="sticky top-0 z-40 w-full border-b bg-background">
       <nav className="container flex h-16 w-full flex-row items-center justify-between pl-3 pr-2 md:hidden">
         <Button
           variant={"ghost"}
@@ -41,46 +40,7 @@ export function MobileNav() {
         <div className="flex flex-row items-center gap-x-2">
           <MobileSearch />
           <ThemeToggle />
-          <SignedIn>
-            <DropdownMenu>
-              <DropdownMenuTrigger className="relative border-none " asChild>
-                <Avatar className="relative size-6">
-                  <AvatarImage
-                    src={"/linear-company-icon.svg"}
-                    alt={"linear"}
-                  />
-                </Avatar>
-              </DropdownMenuTrigger>
 
-              <DropdownMenuContent className="w-fit">
-                <DropdownMenuGroup>
-                  <DropdownMenuItem className="px-4">
-                    <SignOutButton>Sign out of Linear</SignOutButton>
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SignedIn>
-          <SignedOut>
-            <DropdownMenu>
-              <DropdownMenuTrigger className="relative border-none " asChild>
-                <Avatar className="relative size-6 opacity-20">
-                  <AvatarImage
-                    src={"/linear-company-icon.svg"}
-                    alt={"linear"}
-                  />
-                </Avatar>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent className="w-fit">
-                <DropdownMenuGroup>
-                  <DropdownMenuItem className="px-4 font-semibold">
-                    <SignInButton>Connect Linear Account</SignInButton>
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SignedOut>
           {!isAuthenticated ? (
             <SignInDrawer />
           ) : user && user.pfp_url ? (

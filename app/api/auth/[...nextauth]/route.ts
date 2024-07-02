@@ -1,4 +1,5 @@
 // app/api/auth/[...nextauth]/route.ts
+
 import { LinearClient } from "@linear/sdk"
 import { createClient } from "@supabase/supabase-js"
 import NextAuth from "next-auth"
@@ -53,30 +54,51 @@ const handler = NextAuth({
   callbacks: {
     async signIn(params) {
       const { user, account, profile, credentials } = params
-      //write the access_token to supabase
-      const accessToken = account?.access_token
-      const email = profile?.email
-      let id = null
+      console.log("the params", params)
       try {
-        const resForId = await supabase
-          .from("users")
-          .select("id")
-          .eq("email", email)
+        //write the access_token to supabase
+        console.log("the user", user)
+        console.log("the account", account)
+        const accessToken = account?.access_token
+        const userId = user?.id
+        const email = profile?.email
 
-        if (resForId && resForId.data && resForId.data.length) {
-          id = resForId.data[0].id
+        const resForId = await supabase
+          .from("sessions")
+          .select("user_id")
+          .eq("email", email)
+        const id =
+          resForId.data && resForId.data.length
+            ? resForId.data[0].user_id
+            : null
+        console.log("the id", id)
+
+        const buildSessionObject = () => {
+          let baseObject = {
+            user_id: userId,
+          }
+          // if (id) {
+          //   baseObject.id = id
+          // }
+          baseObject.linear_access_token = accessToken
+          baseObject.email = email
+
+          return baseObject
+        }
+        let sessionObject = buildSessionObject()
+        if (!id) {
+          const resForInsertingData = await supabase
+            .from("sessions")
+            .insert(sessionObject)
+        } else {
+          const res = await supabase
+            .from("sessions")
+            .update(sessionObject)
+            .eq("email", email)
+          console.log("the res from updating", res)
         }
       } catch (e) {
-        console.error("error trying to get user", e)
-      }
-      try {
-        const res = await supabase.from("sessions").upsert({
-          email,
-          linear_access_token: accessToken,
-          user_id: id,
-        })
-      } catch (e) {
-        console.error("error trying to upsert", e)
+        console.error("error trying to update sessions for linear", e)
       }
 
       return true

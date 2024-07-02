@@ -3,14 +3,10 @@
 import { useState } from "react"
 import { useBoundStore } from "@/store"
 import { NeynarAuthButton, useNeynarContext } from "@neynar/react"
-import { signIn, signOut, useSession } from "next-auth/react"
+import { signIn, useSession } from "next-auth/react"
 
 import useGetUser from "@/hooks/auth/useGetUser"
-import {
-  connectNotionAccount,
-  getUserSession,
-  updateUserSessionInfoInDB,
-} from "@/app/actions"
+import { connectNotionAccount } from "@/app/actions"
 
 const useIntegrations = () => {
   const [linearRes, setLinearRes] = useState({})
@@ -25,21 +21,6 @@ const useIntegrations = () => {
   const handleSignIntoNotion = async () => {
     try {
       const signInRes = await connectNotionAccount()
-      // get users session
-      const currentSession = await getUserSession()
-      if (currentSession && currentSession.provider_token) {
-        const providerToken = currentSession.provider_token
-        const refreshToken = currentSession.provider_refresh_token
-        const userId = userFromAuth.id
-        alert("pizza")
-        const updateSessionRes = await updateUserSessionInfoInDB(
-          "notion",
-          providerToken,
-          refreshToken,
-          userId
-        )
-        console.log(updateSessionRes)
-      }
     } catch (e) {}
     // first sign in
     // if successfull
@@ -47,8 +28,11 @@ const useIntegrations = () => {
     // update the DB with the session info
   }
   const handleConnectLinear = async () => {
-    const res =
-      session && session.user ? await signOut() : await signIn("linear")
+    try {
+      const res = await signIn("linear")
+    } catch (e) {
+      console.log("error trying to connect ot linear", e)
+    }
   }
   // FarcasterIntegration
   const { logoutUser, isAuthenticated } = useNeynarContext()
