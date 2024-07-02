@@ -79,6 +79,25 @@ export async function getUserSession() {
   } catch (e) {}
 }
 
+export async function getUsersNotionAccessCode() {
+  try {
+    const { data: user, error } = await supabase.auth.getUser()
+    const userId = user.user ? user.user.id : null
+    if (userId) {
+      const { data: userFromSessions, error } = await supabase
+        .from("sessions")
+        .select("notion_access_token")
+        .eq("user_id", userId)
+      const accessCode =
+        userFromSessions && userFromSessions.length
+          ? userFromSessions[0].notion_access_token
+          : null
+      return accessCode
+    }
+    return null
+  } catch (e) {}
+}
+
 type providerType = "twitter" | "notion" | "linear"
 export async function updateUserSessionInfoInDB(
   provider: providerType,
@@ -89,7 +108,7 @@ export async function updateUserSessionInfoInDB(
   try {
     const buildSessionObject = () => {
       let baseObject = {
-        user_id,
+        user_id: BigInt(user_id),
       }
       if (provider === "linear") {
         baseObject.linear_access_token = accessToken

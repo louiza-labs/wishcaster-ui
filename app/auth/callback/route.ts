@@ -1,3 +1,5 @@
+"use server"
+
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 import { createServerClient, type CookieOptions } from "@supabase/ssr"
@@ -27,9 +29,51 @@ export async function GET(request: Request) {
         },
       }
     )
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    const { error, data } = await supabase.auth.exchangeCodeForSession(code)
+    console.log("the data from auth", data)
     if (!error) {
-      console.log("the code", code)
+      const session = data.session
+      if (session && session.provider_token) {
+        const providerToken = session.provider_token
+        const refreshToken = session.provider_refresh_token
+        const userId = data.user.id // or however you get the user's ID
+        const userEmail = data.user.email
+        try {
+          // first get id from sessions
+          const resForId = await supabase
+            .from("sessions")
+            .select("id")
+            .eq("user_id", userId)
+          const id =
+            resForId.data && resForId.data.length ? resForId.data[0].id : null
+          const buildSessionObject = () => {
+            let baseObject = {
+              user_id: userId,
+            }
+            if (id) {
+              baseObject.id = id
+            }
+            baseObject.notion_access_token = providerToken
+            baseObject.notion_refresh_token = refreshToken
+            baseObject.email = userEmail
+
+            return baseObject
+          }
+          let sessionObject = buildSessionObject()
+          if (!id) {
+            const resForInsertingData = await supabase
+              .from("sessions")
+              .insert(sessionObject)
+          } else {
+            let sessionObject = buildSessionObject()
+            const res = await supabase.from("sessions").upsert(sessionObject)
+            console.log("the update session res", res)
+          }
+        } catch (e) {
+          console.error("error updating sessions", e)
+        }
+      }
+
       // update the sessions
       return NextResponse.redirect(`${origin}${next}`)
     }

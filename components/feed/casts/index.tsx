@@ -14,6 +14,7 @@ interface CastFeedProps {
   nextCursor: string
   timeFilterParam: any
   columns?: number
+  notionResults?: any[]
   topic?: string
 }
 
@@ -22,6 +23,7 @@ const CastsFeed: React.FC<CastFeedProps> = ({
   nextCursor,
   timeFilterParam,
   columns,
+  notionResults,
   topic,
 }) => {
   const searchParams = useSearchParams()
@@ -144,6 +146,7 @@ const CastsFeed: React.FC<CastFeedProps> = ({
               parent_author={cast.parent_author}
               root_parent_url={cast.root_parent_url}
               category={cast.category}
+              notionResults={notionResults}
               handleToggleCategoryClick={() =>
                 handleToggleCategoryClick(cast.category?.id || "")
               }

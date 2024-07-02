@@ -93,6 +93,7 @@ export async function connectNotionAccount() {
   if (data.url) {
     redirect(data.url) // use the redirect API for your server framework
   }
+
   const { data: linkedIdentity, error: errorLinkingIdentity } =
     await supabase.auth.linkIdentity({ provider: "notion" })
 }

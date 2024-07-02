@@ -49,8 +49,8 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const session = await getUserSession()
   const userId = null
   const socialIdentities = await getUserSocialIdentities()
-  console.log("the session", session)
-  const notionSearch = await searchNotion("test", session?.provider_token)
+  const notionSearch = await searchNotion(session?.provider_token)
+  const notionResults = notionSearch.results
   if (userId) {
     // Query DB for user specific information or display assets only to signed in users
   }
@@ -111,6 +111,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
                 casts={filteredCasts}
                 timeFilterParam={timeFilterParam}
                 nextCursor={cursorToUse}
+                notionResults={notionResults}
               />
             )}
           </article>

@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation"
 
 import { formatDateForCastTimestamp } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import SaveCast from "@/components/cast/Save"
+import SaveCastToNotion from "@/components/cast/Save/Notion/index"
 import { Icons } from "@/components/icons"
 
 interface CastFooterProps {
@@ -34,6 +34,7 @@ const CastFooter = ({
   isReply,
   isEmbedded,
   cast,
+  notionResults,
 }: CastFooterProps) => {
   const router = useRouter()
   const params = useParams()
@@ -121,7 +122,9 @@ const CastFooter = ({
               Build
             </Button>
           )}
-          {isEmbedded || isReply ? null : <SaveCast cast={cast} />}
+          {isEmbedded || isReply ? null : (
+            <SaveCastToNotion cast={cast} notionResults={notionResults} />
+          )}
         </div>
       </div>
       <div className="flex size-full items-center justify-center">

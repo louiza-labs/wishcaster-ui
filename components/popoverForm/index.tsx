@@ -8,6 +8,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 
 interface PopoverFormProps {
@@ -60,7 +69,7 @@ export function PopoverForm({
                   <h4 className="font-medium leading-none">{formTitle}</h4>
                 ) : null}
                 {formDescription ? (
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-sm text-muted-foreground">
                     {formDescription}{" "}
                   </p>
                 ) : null}
@@ -74,7 +83,28 @@ export function PopoverForm({
                       >
                         <Label htmlFor="width">{field.label}</Label>
 
-                        {field.inputType === "textarea" ? (
+                        {field.inputType === "select" ? (
+                          <Select
+                            onValueChange={field.handleChange}
+                            value={field.value}
+                          >
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue placeholder={field.placeholder}>
+                                {field.name}
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>{field.label}</SelectLabel>
+                                {field.options.map((option) => (
+                                  <SelectItem value={option.value}>
+                                    {option.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        ) : field.inputType === "textarea" ? (
                           <Textarea
                             id={field.id}
                             value={field.value}

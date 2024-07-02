@@ -40,6 +40,7 @@ const SprintItemCast = ({
   tagline,
   isReply,
   renderEmbeds,
+  notionResults,
   routeToWarpcast,
 }: CastComponentTypes | any) => {
   const categoryLabel =
@@ -83,6 +84,7 @@ const SprintItemCast = ({
           author={author}
           cast={cast}
           isReply={isReply}
+          notionResults={notionResults}
         />
       </CardFooter>
     </Card>
