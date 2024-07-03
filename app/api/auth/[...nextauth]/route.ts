@@ -30,7 +30,7 @@ const LinearProvider = {
   authorization: `${linearUrl}?response_type=code&client_id=${process.env.LINEAR_CLIENT_ID}&redirect_uri=${redirect_uri}&actor=user&state=SECURE_RANDOM&scope=read,write`,
   // userinfo: "https://api.linear.app/me",
   userinfo: {
-    request: async (val) => {
+    request: async (val: any) => {
       const client = new LinearClient({ accessToken: val.tokens.access_token })
       let viewer = await client.viewer
       return viewer
@@ -54,11 +54,7 @@ const handler = NextAuth({
   callbacks: {
     async signIn(params) {
       const { user, account, profile, credentials } = params
-      console.log("the params", params)
       try {
-        //write the access_token to supabase
-        console.log("the user", user)
-        console.log("the account", account)
         const accessToken = account?.access_token
         const userId = user?.id
         const email = profile?.email
@@ -71,17 +67,22 @@ const handler = NextAuth({
           resForId.data && resForId.data.length
             ? resForId.data[0].user_id
             : null
-        console.log("the id", id)
 
         const buildSessionObject = () => {
-          let baseObject = {
+          let baseObject: {
+            user_id?: string
+            linear_access_token?: string
+            email?: string
+          } = {
             user_id: userId,
+            linear_access_token: accessToken as string,
+            email: email as string,
           }
           // if (id) {
           //   baseObject.id = id
           // }
-          baseObject.linear_access_token = accessToken
-          baseObject.email = email
+          baseObject["linear_access_token"] = accessToken as string
+          baseObject["email"] = email as string
 
           return baseObject
         }
@@ -95,7 +96,6 @@ const handler = NextAuth({
             .from("sessions")
             .update(sessionObject)
             .eq("email", email)
-          console.log("the res from updating", res)
         }
       } catch (e) {
         console.error("error trying to update sessions for linear", e)
@@ -108,8 +108,7 @@ const handler = NextAuth({
     },
     async session(params) {
       const { token, session } = params
-      session.user.id = token.id
-      session.user.access_token = token.access_token
+      session.user.id = token.id as string
       return session
     },
     async jwt({ token, user, account, profile, isNewUser }) {

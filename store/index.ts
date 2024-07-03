@@ -15,7 +15,7 @@ export const useFooterVisibilityStore = create<FooterVisibilityState>(
     setFooterVisible: (visible: boolean) => set({ isFooterVisible: visible }),
   })
 )
-
+// @ts-ignore
 export const useBoundStore = create((...a) => ({
   ...createUserSlice(...a),
   ...createFooterSlice(...a),

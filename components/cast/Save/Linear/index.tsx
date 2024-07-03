@@ -2,15 +2,14 @@
 
 import { Cast as CastType } from "@/types"
 
-import useNotion from "@/hooks/notion/useNotion"
+import useLinear from "@/hooks/linear/useLinear"
 import MobileSave from "@/components/cast/Save/Mobile"
 import { PopoverForm } from "@/components/popoverForm"
 
 interface SaveCastProps {
   cast: CastType
-  notionResults?: any
 }
-const SaveToNotion = ({ cast, notionResults }: SaveCastProps) => {
+const SaveCastToLinear = ({ cast }: SaveCastProps) => {
   const {
     fieldsForCreatingAnIssue,
     handleSubmitIssue,
@@ -18,7 +17,8 @@ const SaveToNotion = ({ cast, notionResults }: SaveCastProps) => {
     errorSubmittingIssue,
     handleClose,
     successfullySubmittedIssue,
-  } = useNotion(cast.hash ?? "", notionResults)
+  } = useLinear(cast.hash ?? "")
+
   return (
     <>
       <div className="md:hidden">
@@ -26,13 +26,13 @@ const SaveToNotion = ({ cast, notionResults }: SaveCastProps) => {
           handleSubmit={handleSubmitIssue}
           handleClose={() => {}}
           inputFields={fieldsForCreatingAnIssue}
-          buttonText="Add to Notion"
-          formTitle="Add to Notion"
+          buttonText="Add to Linear"
+          formTitle="Add to Linear"
           onClose={handleClose}
           submittingForm={submittingIssue}
           errorSubmittingForm={errorSubmittingIssue}
           successfullySubmittingForm={successfullySubmittedIssue}
-          formDescription="Create a page or database entry for this cast on your connected Notion account"
+          formDescription="Create an issue for this cast on your connected Linear account"
         />
       </div>
       <div className="hidden md:block">
@@ -40,19 +40,19 @@ const SaveToNotion = ({ cast, notionResults }: SaveCastProps) => {
           handleSubmit={handleSubmitIssue}
           handleClose={() => {}}
           inputFields={fieldsForCreatingAnIssue}
-          buttonText="Add to Notion"
-          formTitle="Add to Notion"
-          hideButton={true}
+          buttonText="Add to Linear"
+          formTitle="Add to Linear"
           onClose={handleClose}
-          defaultOpen={true}
           submittingForm={submittingIssue}
+          defaultOpen={true}
+          hideButton={true}
           errorSubmittingForm={errorSubmittingIssue}
           successfullySubmittingForm={successfullySubmittedIssue}
-          formDescription="Create a page or database entry for this cast on your connected Notion account"
+          formDescription="Create an issue for this cast on your connected Linear account"
         />
       </div>
     </>
   )
 }
 
-export default SaveToNotion
+export default SaveCastToLinear

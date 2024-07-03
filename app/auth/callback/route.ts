@@ -30,7 +30,6 @@ export async function GET(request: Request) {
       }
     )
     const { error, data } = await supabase.auth.exchangeCodeForSession(code)
-    console.log("the data from auth", data)
     if (!error) {
       const session = data.session
       if (session && session.provider_token) {
@@ -52,16 +51,22 @@ export async function GET(request: Request) {
           const buildSessionObject = () => {
             let baseObject = {
               user_id: userId,
+              notion_access_token: "",
+              notion_refresh_token: "", // Add this line
+              twitter_access_token: "",
+              twitter_refresh_token: "", // Add this line
+              email: userEmail,
+              id: null,
             }
             if (id) {
               baseObject.id = id
             }
             if (provider === "notion") {
-              baseObject.notion_access_token = providerToken
-              baseObject.notion_refresh_token = refreshToken
+              baseObject.notion_access_token = providerToken || ""
+              baseObject.notion_refresh_token = refreshToken || ""
             } else if (provider === "twitter") {
-              baseObject.twitter_access_token = providerToken
-              baseObject.twitter_refresh_token = refreshToken
+              baseObject.twitter_access_token = providerToken || ""
+              baseObject.twitter_refresh_token = refreshToken || ""
             }
             baseObject.email = userEmail
 
@@ -75,7 +80,6 @@ export async function GET(request: Request) {
           } else {
             let sessionObject = buildSessionObject()
             const res = await supabase.from("sessions").upsert(sessionObject)
-            console.log("the update session res", res)
           }
         } catch (e) {
           console.error("error updating sessions", e)

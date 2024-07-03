@@ -8,10 +8,8 @@ import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 import useGetSession from "@/hooks/auth/useGetSession"
-import useGetSocials from "@/hooks/auth/useGetSocialIdentities"
 import useGetUser from "@/hooks/auth/useGetUser"
 import IntegrationsDropdown from "@/components/account/integrations/IntegrationsDropdown"
-import AuthDropdown from "@/components/auth/dropdown"
 import { Icons } from "@/components/icons"
 import Search from "@/components/search"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -23,11 +21,9 @@ interface MainNavProps {
 export function DesktopNav({ items }: MainNavProps) {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
   const { userFromAuth } = useGetUser()
-  const { socialIdentities } = useGetSocials(userFromAuth)
   const { session } = useGetSession(userFromAuth)
-  const userIsLoggedIn = useBoundStore((state) => state.isLoggedIn)
-  console.log("the user session", session)
-  console.log("the social ids", socialIdentities)
+  const { isConnectedToNotion, isConnectedToLinear, isConnectedToTwitter } =
+    useBoundStore((state: any) => state)
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="container hidden h-16 w-full items-center justify-between space-x-4 sm:space-x-0 md:flex">
@@ -68,7 +64,6 @@ export function DesktopNav({ items }: MainNavProps) {
           <nav className="xl:min-w-200 flex w-fit items-center space-x-1 ">
             <IntegrationsDropdown />
             <ThemeToggle />
-            {userIsLoggedIn ? <AuthDropdown /> : null}
             {/* {!user ? (
               <div className="z-10 w-fit lg:flex">
                 <Button variant={"outline"}>

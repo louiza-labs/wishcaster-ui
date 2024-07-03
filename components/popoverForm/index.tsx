@@ -31,6 +31,8 @@ interface PopoverFormProps {
   successfullySubmittingForm: boolean
   errorSubmittingForm: boolean
   onClose: (val: boolean) => void
+  defaultOpen?: boolean
+  hideButton?: boolean
 }
 export function PopoverForm({
   handleSubmit,
@@ -44,11 +46,15 @@ export function PopoverForm({
   successfullySubmittingForm,
   errorSubmittingForm,
   onClose,
+  defaultOpen,
+  hideButton,
 }: PopoverFormProps) {
   return (
-    <Popover onOpenChange={onClose}>
+    <Popover onOpenChange={onClose} defaultOpen={defaultOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline">{Icon ? <Icon /> : buttonText}</Button>
+        <Button variant="ghost" className="w-full">
+          {Icon ? <Icon /> : buttonText}
+        </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full ">
         <div className="grid gap-4">

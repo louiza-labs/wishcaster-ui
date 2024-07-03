@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation"
 
 import { formatDateForCastTimestamp } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import SaveCastToNotion from "@/components/cast/Save/Notion/index"
+import SaveCast from "@/components/cast/Save/"
 import { Icons } from "@/components/icons"
 
 interface CastFooterProps {
@@ -123,7 +123,7 @@ const CastFooter = ({
             </Button>
           )}
           {isEmbedded || isReply ? null : (
-            <SaveCastToNotion cast={cast} notionResults={notionResults} />
+            <SaveCast cast={cast} notionResults={notionResults} />
           )}
         </div>
       </div>

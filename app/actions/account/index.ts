@@ -98,34 +98,26 @@ export async function getUsersNotionAccessCode() {
   } catch (e) {}
 }
 
-type providerType = "twitter" | "notion" | "linear"
-export async function updateUserSessionInfoInDB(
-  provider: providerType,
-  accessToken: string,
-  refreshToken: string,
-  user_id: string
-) {
+export async function getUserFromSessionsTable() {
   try {
-    const buildSessionObject = () => {
-      let baseObject = {
-        user_id: BigInt(user_id),
-      }
-      if (provider === "linear") {
-        baseObject.linear_access_token = accessToken
-        baseObject.linear_refresh_token = refreshToken
-      } else if (provider === "notion") {
-        baseObject.notion_access_token = accessToken
-        baseObject.notion_refresh_token = refreshToken
-      } else if (provider === "twitter") {
-        baseObject.twitter_access_token = accessToken
-        baseObject.twitter_refresh_token = refreshToken
-      }
-      return baseObject
+    const { data: user, error } = await supabase.auth.getUser()
+
+    const userId = user.user ? user.user.id : null
+    console.log("the user id is nom", userId)
+
+    if (userId) {
+      const { data: userFromSessions, error } = await supabase
+        .from("sessions")
+        .select()
+        .eq("user_id", userId)
+      console.log("the user sessions is nom", userFromSessions)
+
+      return userFromSessions && userFromSessions.length
+        ? userFromSessions[0]
+        : null
     }
-    let sessionObject = buildSessionObject()
-    const res = await supabase.from("sessions").upsert(sessionObject)
-    return res
-  } catch (e) {
-    console.error("error updating sessions", e)
-  }
+    return null
+  } catch (e) {}
 }
+
+type providerType = "twitter" | "notion" | "linear"
