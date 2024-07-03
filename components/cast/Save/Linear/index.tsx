@@ -3,7 +3,7 @@
 import { Cast as CastType } from "@/types"
 
 import useLinear from "@/hooks/linear/useLinear"
-import MobileSave from "@/components/cast/Save/Mobile"
+import MobileSave from "@/components/cast/Save/Linear/Mobile"
 import { PopoverForm } from "@/components/popoverForm"
 
 interface SaveCastProps {

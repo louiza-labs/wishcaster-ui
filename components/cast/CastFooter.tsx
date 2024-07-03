@@ -2,10 +2,10 @@
 
 import { useParams, useRouter } from "next/navigation"
 
+import { formatDateForCastTimestamp } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import SaveCast from "@/components/cast/Save"
 import { Icons } from "@/components/icons"
-import { Button } from "@/components/ui/button"
-import { formatDateForCastTimestamp } from "@/lib/utils"
 
 interface CastFooterProps {
   timestamp: string
@@ -17,6 +17,7 @@ interface CastFooterProps {
   }
   hash: string
   isEmbedded?: boolean
+  notionResults?: any
   author: any
   reactions: {
     likes_count: number
@@ -32,6 +33,7 @@ const CastFooter = ({
   hideMetrics,
   hash,
   author,
+  notionResults,
   isEmbedded,
 }: CastFooterProps) => {
   const router = useRouter()
@@ -118,8 +120,9 @@ const CastFooter = ({
           )}
         </div>
         {isEmbedded ? null : (
-            {" "}
-            <SaveCast cast={cast} />{" "}
+          <>
+            <SaveCast cast={cast} notionResults={notionResults} />
+          </>
         )}
       </div>
     </div>

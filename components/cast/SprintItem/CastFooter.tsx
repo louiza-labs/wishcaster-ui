@@ -18,6 +18,7 @@ interface CastFooterProps {
   hash: string
   author: any
   isReply?: boolean
+  notionResults?: any
   reactions: {
     likes_count: number
     recasts_count: number

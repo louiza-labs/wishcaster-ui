@@ -3,146 +3,66 @@
 import * as React from "react"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Textarea } from "@/components/ui/textarea"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import SaveToLinear from "@/components/cast/Save/Linear/index"
+import SaveToNotion from "@/components/cast/Save/Notion/index"
 
 function parseQueryParam(param?: string | string[]): string {
   return Array.isArray(param) ? param.join(",") : param || ""
 }
 
 interface MobileSaveProps {
-  handleSubmit: () => void
-  handleClose: () => void
-  inputFields: any[]
-  buttonIcon?: any
-  buttonText?: string
-  formTitle?: string
-  formDescription?: string
-  submittingForm: boolean
-  successfullySubmittingForm: boolean
-  errorSubmittingForm: boolean
-  onClose: (val: boolean) => void
+  cast: any
+  notionResults: any
+  onClose?: any
 }
 
-function MobileSave({
-  handleSubmit,
-  handleClose,
-  inputFields,
-  buttonIcon: Icon,
-  buttonText,
-  formTitle,
-  formDescription,
-  submittingForm,
-  successfullySubmittingForm,
-  errorSubmittingForm,
-  onClose,
-}: MobileSaveProps) {
+function MobileSave({ cast, notionResults, onClose }: MobileSaveProps) {
   return (
     <React.Suspense>
-      <Sheet onOpenChange={onClose}>
+      <Sheet>
         <SheetTrigger asChild>
-          <Button variant="outline">{Icon ? <Icon /> : buttonText}</Button>
+          <Button variant="outline">Save</Button>
         </SheetTrigger>
         <SheetContent side="bottom" className="h-[86vh] rounded-t-xl">
-          <span className="ml-2 text-3xl font-bold"> Add to Linear </span>
-          {formDescription ? (
-            <p className="text-muted-foreground ml-2 mt-2 text-sm">
-              {formDescription}{" "}
-            </p>
-          ) : null}
-          <ScrollArea className="mt-6 flex h-[calc(100vh-8rem)] flex-col items-center justify-center overflow-y-auto pb-2">
-            {" "}
-            <div className="grid h-full gap-10">
-              {successfullySubmittingForm ? (
-                <div className="flex flex-col items-center justify-center gap-y-2">
-                  <p className="text-lg font-bold">Success! 🥳</p>
-                  {/* <p className="text-base font-light">Details:</p>
-            <div className="flex flex-col gap-y-4">
-              <div className="flex flex-row items-center justify-between">
-                <p className="text-sm font-semibold">Title</p>
-                </div>
-              </div> */}
-                </div>
-              ) : (
-                <>
-                  <div className="grid h-full gap-8">
-                    {inputFields
-                      ? inputFields.map((field: any) => (
-                          <div
-                            key={field.id}
-                            className="grid grid-cols-1 items-center gap-4"
-                          >
-                            <Label htmlFor="width">{field.label}</Label>
+          <Tabs
+            defaultValue="notion"
+            // onValueChange={handleSelectTab}
+            className="mt-2 flex h-fit w-full flex-col items-start justify-start   px-2 "
+          >
+            <TabsList className="flex w-full flex-row items-start  justify-around gap-y-6    text-lg font-semibold  sm:h-full">
+              {/* <TabsTrigger value="count">Count</TabsTrigger> */}
+              {/* <TabsTrigger className="  text-left" value="info">
+            Info
+          </TabsTrigger> */}
+              <TabsTrigger
+                disabled={false}
+                className="flex flex-row items-center gap-x-2 text-left"
+                value="linear"
+              >
+                {/* <Icons.activity className="size-4" /> */}
+                Linear
+              </TabsTrigger>
 
-                            {field.inputType === "textarea" ? (
-                              <Textarea
-                                id={field.id}
-                                value={field.value}
-                                placeholder={field.placeholder}
-                                onChange={field.handleChange}
-                                className="col-span-2 h-8 overflow-y-scroll"
-                              />
-                            ) : field.inputType === "number" ? (
-                              <Input
-                                id={field.id}
-                                value={field.value}
-                                placeholder={field.placeholder}
-                                onChange={field.handleChange}
-                                className="col-span-2 h-8"
-                                type="number"
-                              />
-                            ) : (
-                              <Input
-                                id={field.id}
-                                value={field.value}
-                                placeholder={field.placeholder}
-                                onChange={field.handleChange}
-                                className="col-span-2 h-8"
-                              />
-                            )}
-                          </div>
-                        ))
-                      : null}
-                  </div>
-                  <div className="mt-4 flex w-full  px-4">
-                    {/* <Button onClick={handleClose} variant="destructive">
-              Cancel
-            </Button> */}
+              <TabsTrigger
+                disabled={false}
+                className="flex flex-row items-center gap-x-2 text-left"
+                value="notion"
+              >
+                {/* <Icons.Integrations className="size-4" /> */}
+                Notion
+              </TabsTrigger>
+            </TabsList>
 
-                    <Button
-                      className="w-full"
-                      onClick={handleSubmit}
-                      variant={
-                        submittingForm
-                          ? "outline"
-                          : errorSubmittingForm
-                          ? "destructive"
-                          : successfullySubmittingForm
-                          ? "secondary"
-                          : "default"
-                      }
-                    >
-                      {submittingForm
-                        ? "Submitting"
-                        : successfullySubmittingForm
-                        ? "Submitted"
-                        : errorSubmittingForm
-                        ? "Error"
-                        : "Submit"}
-                      {submittingForm ? (
-                        <div className="ml-2 flex items-center">
-                          <div className="size-5 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-                        </div>
-                      ) : null}
-                    </Button>
-                  </div>
-                </>
-              )}
-            </div>
-          </ScrollArea>
+            <TabsContent className=" h-full" value="linear">
+              <SaveToLinear cast={cast} />
+            </TabsContent>
+
+            <TabsContent className="h-full" value="notion">
+              <SaveToNotion cast={cast} notionResults={notionResults} />
+            </TabsContent>
+          </Tabs>
         </SheetContent>
       </Sheet>
     </React.Suspense>

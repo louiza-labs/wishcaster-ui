@@ -3,7 +3,7 @@
 import { Cast as CastType } from "@/types"
 
 import useNotion from "@/hooks/notion/useNotion"
-import MobileSave from "@/components/cast/Save/Mobile"
+import MobileSave from "@/components/cast/Save/Notion/Mobile"
 import { PopoverForm } from "@/components/popoverForm"
 
 interface SaveCastProps {
@@ -32,7 +32,7 @@ const SaveToNotion = ({ cast, notionResults }: SaveCastProps) => {
           submittingForm={submittingIssue}
           errorSubmittingForm={errorSubmittingIssue}
           successfullySubmittingForm={successfullySubmittedIssue}
-          formDescription="Create a page or database entry for this cast on your connected Notion account"
+          formDescription="Create a page for this cast on your connected Notion account"
         />
       </div>
       <div className="hidden md:block">

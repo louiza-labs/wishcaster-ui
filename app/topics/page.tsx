@@ -14,7 +14,12 @@ import FilterBar from "@/components/filters/FilterBar"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
 import Topics from "@/components/topics"
-import { fetchCastsUntilCovered, fetchChannelCasts } from "@/app/actions"
+import {
+  fetchCastsUntilCovered,
+  fetchChannelCasts,
+  getUsersNotionAccessCode,
+  searchNotion,
+} from "@/app/actions"
 
 interface IndexPageProps {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -40,6 +45,10 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const filtersParam = parseQueryParam(searchParams.filters)
   const sortParam = parseQueryParam(searchParams.sort)
   const mobileViewParam = parseQueryParam(searchParams.view)
+
+  const notionAccessCode = await getUsersNotionAccessCode()
+  const notionSearch = await searchNotion(notionAccessCode)
+  const notionResults = notionSearch.results
 
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
@@ -78,7 +87,11 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
 
         <main className="relative grid grid-cols-1 gap-4 py-10 lg:grid-cols-12 ">
           <article className="no-scrollbar lg:col-span-12 lg:px-2  ">
-            <Topics casts={filteredCasts} mobileView={mobileViewParam} />
+            <Topics
+              casts={filteredCasts}
+              mobileView={mobileViewParam}
+              notionResults={notionResults}
+            />
           </article>
         </main>
       </section>

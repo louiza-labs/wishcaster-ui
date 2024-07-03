@@ -1,8 +1,11 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { useBoundStore } from "@/store"
 import { useNeynarContext } from "@neynar/react"
 
+import useGetSession from "@/hooks/auth/useGetSession"
+import useGetUser from "@/hooks/auth/useGetUser"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,6 +23,10 @@ import { ThemeToggle } from "@/components/theme-toggle"
 
 export function MobileNav() {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
+  const { userFromAuth } = useGetUser()
+  const { session } = useGetSession(userFromAuth)
+  const { isConnectedToNotion, isConnectedToLinear, isConnectedToTwitter } =
+    useBoundStore((state: any) => state)
   const router = useRouter()
   const handleRouteHome = () => {
     router.push("/")

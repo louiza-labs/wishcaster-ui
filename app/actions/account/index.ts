@@ -2,8 +2,6 @@
 
 import { createClient } from "@/clients/supabase/server"
 
-const supabase = createClient()
-
 export async function updateAccount(userId: string, accountInfo: any) {
   const supabase = createClient()
 
@@ -38,6 +36,8 @@ export async function createAccount(
 }
 
 export async function getAccount(userId: string) {
+  const supabase = createClient()
+
   try {
     const res = await supabase.from("users").select().eq("auth_user_id", userId)
     if (res && res.data && res.data.length) {
@@ -51,11 +51,15 @@ export async function getAccount(userId: string) {
 }
 
 export async function getUserSocialIdentities() {
+  const supabase = createClient()
+
   const { data, error } = await supabase.auth.getUserIdentities()
   return data
 }
 
 export async function getAuthUser() {
+  const supabase = createClient()
+
   const {
     data: { user },
   } = await supabase.auth.getUser()
@@ -64,6 +68,8 @@ export async function getAuthUser() {
 }
 
 export async function logoutUser() {
+  const supabase = createClient()
+
   try {
     const { error } = await supabase.auth.signOut()
   } catch (e) {
@@ -72,6 +78,8 @@ export async function logoutUser() {
 }
 
 export async function getUserSession() {
+  const supabase = createClient()
+
   try {
     const { data: userSession, error } = await supabase.auth.getSession()
 
@@ -80,6 +88,8 @@ export async function getUserSession() {
 }
 
 export async function getUsersNotionAccessCode() {
+  const supabase = createClient()
+
   try {
     const { data: user, error } = await supabase.auth.getUser()
     const userId = user.user ? user.user.id : null
@@ -99,6 +109,8 @@ export async function getUsersNotionAccessCode() {
 }
 
 export async function getUserFromSessionsTable() {
+  const supabase = createClient()
+
   try {
     const { data: user, error } = await supabase.auth.getUser()
 

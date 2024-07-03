@@ -36,32 +36,18 @@ const PopularTopicCard = ({
   powerBadges,
 }: PopularTopicCardProps) => {
   return (
-    <Card className="hover:brightness-80 bg-background/50 mb-4 flex h-fit cursor-pointer  flex-col items-start justify-between rounded-lg p-2 backdrop-blur-lg md:mb-0  md:h-80 md:w-60">
-      <CardHeader className="flex flex-row items-center gap-x-4 ">
+    <Card className="hover:brightness-80 relative mb-4 flex h-fit  cursor-pointer flex-col rounded-lg bg-background/50 p-2 backdrop-blur-lg md:mb-0 md:w-60">
+      <CardHeader className="flex h-28 flex-col items-start gap-2">
         <CardTitle className="text-2xl font-bold">{rank}</CardTitle>
-        {/* <CardDescription>{description}</CardDescription> */}
-      </CardHeader>
-      <CardContent>
-        {" "}
         <p className="text-2xl font-bold">{name}</p>
-      </CardContent>
-      <div className="flex w-full flex-col items-start md:items-end">
-        <CardFooter className="grid h-fit w-full grid-cols-2 items-start gap-4 gap-y-2 xl:size-full">
+      </CardHeader>
+      <CardContent className="mt-10 h-28 grow">
+        <div className="grid w-full grid-cols-2 gap-4">
           {[
             { icon: Icons.likes, count: likes, noun: "like" },
-            {
-              icon: Icons.recasts,
-              count: recasts,
-              noun: "recast",
-            },
+            { icon: Icons.recasts, count: recasts, noun: "recast" },
             { icon: Icons.replies, count: replies, noun: "reply" },
-            // { icon: Icons.likes, count: powerBadges, noun: "power badge" },
-            {
-              icon: Icons.boxes,
-              count: count,
-              noun: "count",
-            },
-            // { icon: Icons.replies, count: avgFollowers, noun: "avg follower" },
+            { icon: Icons.boxes, count: count, noun: "count" },
           ].map(({ icon: Icon, count, noun }) => (
             <div
               key={noun}
@@ -80,16 +66,19 @@ const PopularTopicCard = ({
               </div>
             </div>
           ))}
-        </CardFooter>
+        </div>
+      </CardContent>
+      <CardFooter className="mb-4 mt-10 flex w-full flex-col items-start">
         <Button
-          className="items-end"
-          variant={"ghost"}
+          variant={"default"}
           onClick={() => handleClick(id)}
+          className=" self-end"
         >
           Explore {"-->"}
         </Button>
-      </div>
+      </CardFooter>
     </Card>
   )
 }
+
 export default PopularTopicCard

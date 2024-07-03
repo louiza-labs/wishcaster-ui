@@ -19,9 +19,16 @@ interface TopCastsProps {
   cursor: string
   sortParam: string
   topic: string
+  notionResults: any
 }
 
-const TopCasts = ({ casts, cursor, topic, sortParam }: TopCastsProps) => {
+const TopCasts = ({
+  casts,
+  cursor,
+  topic,
+  sortParam,
+  notionResults,
+}: TopCastsProps) => {
   const { castsToShow: castsWithUserInfo, fetchingCasts } =
     useFetchCastsUntilCovered(casts)
   let { filteredCasts } = useFilterFeed(castsWithUserInfo, topic)
@@ -41,6 +48,8 @@ const TopCasts = ({ casts, cursor, topic, sortParam }: TopCastsProps) => {
               hideMetrics={false}
               badgeIsToggled={false}
               routeToWarpcast={true}
+              cast={castItem}
+              notionResults={notionResults}
               mentionedProfiles={castItem.mentioned_profiles}
             />
           </div>
@@ -75,6 +84,8 @@ const TopCasts = ({ casts, cursor, topic, sortParam }: TopCastsProps) => {
                       tagline={castItem.tagline}
                       badgeIsToggled={false}
                       routeToWarpcast={true}
+                      notionResults={notionResults}
+                      cast={castItem}
                       mentionedProfiles={castItem.mentioned_profiles}
                     />
                   </div>

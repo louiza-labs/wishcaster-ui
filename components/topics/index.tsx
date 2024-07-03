@@ -17,9 +17,10 @@ type RankedValueType = {
 interface TopicsProps {
   casts: CastType[]
   mobileView: string | undefined
+  notionResults: any
 }
 
-const Topics = ({ casts, mobileView }: TopicsProps) => {
+const Topics = ({ casts, mobileView, notionResults }: TopicsProps) => {
   const { filteredCasts } = useFilterFeed(casts)
   const sortedTopics = summarizeByCategory(filteredCasts, "likes")
   const router = useRouter()
@@ -74,7 +75,7 @@ const Topics = ({ casts, mobileView }: TopicsProps) => {
       {hasResults ? (
         <div className="  flex flex-col items-center gap-y-6 lg:items-start">
           <h3 className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:block md:text-3xl">
-            Most popular
+            Most popular product topics 🔥
           </h3>
 
           {mobileView !== "table" ? (

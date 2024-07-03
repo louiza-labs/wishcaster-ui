@@ -4,6 +4,15 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 
 function parseQueryParam(param?: string | string[]): string {
@@ -24,7 +33,7 @@ interface MobileSaveProps {
   onClose: (val: boolean) => void
 }
 
-function MobileSaveToLinear({
+function MobileSaveToNotion({
   handleSubmit,
   handleClose,
   inputFields,
@@ -68,7 +77,28 @@ function MobileSaveToLinear({
                       >
                         <Label htmlFor="width">{field.label}</Label>
 
-                        {field.inputType === "textarea" ? (
+                        {field.inputType === "select" ? (
+                          <Select
+                            onValueChange={field.handleChange}
+                            value={field.value}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder={field.placeholder}>
+                                {field.name}
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>{field.label}</SelectLabel>
+                                {field.options.map((option: any) => (
+                                  <SelectItem value={option.value}>
+                                    {option.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        ) : field.inputType === "textarea" ? (
                           <Textarea
                             id={field.id}
                             value={field.value}
@@ -138,4 +168,4 @@ function MobileSaveToLinear({
   )
 }
 
-export default MobileSaveToLinear
+export default MobileSaveToNotion
