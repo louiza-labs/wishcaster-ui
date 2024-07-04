@@ -2,10 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react"
 
-import { extractNotionTitle } from "@/lib/helpers"
 import { createNotionItem, getUsersNotionAccessCode } from "@/app/actions"
+import { extractNotionTitle } from "@/lib/helpers"
 
-const useNotion = (castHash: string, notionResults = []) => {
+const useNotion = (castHash: string, notionResults = <any>[]) => {
   ;[]
   const [providerToken, setProviderToken] = useState("")
 
@@ -38,10 +38,10 @@ const useNotion = (castHash: string, notionResults = []) => {
   useEffect(() => {
     if (notionResults && notionResults.length) {
       const notionPagesFromResults = notionResults.filter(
-        (result) => result.object === "page" && result.in_trash === false
+        (result:any) => result.object === "page" && result.in_trash === false
       )
       const notionDBsFromResults = notionResults.filter(
-        (result) => result.object === "database" && result.in_trash === false
+        (result:any) => result.object === "database" && result.in_trash === false
       )
       const formattedNotionPages = notionPagesFromResults.map((page: any) => {
         return {

@@ -108,8 +108,10 @@ const handler = NextAuth({
     },
     async session(params) {
       const { token, session } = params
-      session.user.id = token.id as string
-      return session
+      let typedSession: any = session
+      typedSession.user.id = token.id as string
+
+      return typedSession
     },
     async jwt({ token, user, account, profile, isNewUser }) {
       if (user) {

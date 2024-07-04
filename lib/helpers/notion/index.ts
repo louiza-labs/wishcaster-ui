@@ -1,7 +1,7 @@
 export const extractNotionTitle = (page: any) => {
   if (!page && page.properties) return "untitled"
   const pageProperties = page.properties
-  const pageTitleObject = Object.keys(pageProperties).reduce(
+  const pageTitleObject: any = Object.keys(pageProperties).reduce(
     (titleObj, currentKey) => {
       if (
         pageProperties[currentKey] &&

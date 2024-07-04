@@ -102,7 +102,7 @@ export function PopoverForm({
                             <SelectContent>
                               <SelectGroup>
                                 <SelectLabel>{field.label}</SelectLabel>
-                                {field.options.map((option) => (
+                                {field.options.map((option: any) => (
                                   <SelectItem value={option.value}>
                                     {option.name}
                                   </SelectItem>

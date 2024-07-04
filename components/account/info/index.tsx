@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { updateAccount } from "@/app/actions"
 
-const AccountInfo = ({ user }) => {
+const AccountInfo = ({ user }: any) => {
   const [showUpdateState, setShowUpdateState] = useState(false)
   const [updatingAccount, setUpdatingAccount] = useState(false)
   const [errorUpdatingAccount, setErrorUpdatingAccount] = useState(false)
@@ -38,14 +38,14 @@ const AccountInfo = ({ user }) => {
     setShowUpdateState(!showUpdateState)
   }
 
-  const handleEmailChange = (e) => {
+  const handleEmailChange = (e: any) => {
     setEmail(e.target.value)
   }
-  const handleNameChange = (e) => {
+  const handleNameChange = (e: any) => {
     setName(e.target.value)
   }
 
-  const InfoField = ({ name, handler, value }) => {
+  const InfoField = ({ name, handler, value }: any) => {
     return (
       <div className="flex w-full flex-row  items-center justify-start gap-x-10">
         {/* <Label>{name}</Label> */}
