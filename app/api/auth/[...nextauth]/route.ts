@@ -59,6 +59,29 @@ const handler = NextAuth({
         const userId = user?.id
         const email = profile?.email
 
+        if (email) {
+          // check if user is already connected via notion
+          const {
+            data: { user },
+            error: errorLoggingIn,
+          } = await supabase.auth.getUser()
+          if (!user) {
+            const { data: authSignupData, error: authSignupError } =
+              await supabase.auth.signUp({
+                email: email,
+                password: userId,
+              })
+            if (authSignupError) {
+              // we've already done this and will login the user
+              const { data: authSignInData, error: authSignInError } =
+                await supabase.auth.signInWithPassword({
+                  email: email,
+                  password: userId,
+                })
+            }
+          }
+        }
+
         const resForId = await supabase
           .from("sessions")
           .select("user_id")
