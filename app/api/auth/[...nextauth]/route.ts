@@ -57,7 +57,6 @@ const handler = NextAuth({
       try {
         const accessToken = account?.access_token
         const userId = user?.id
-        console.log("the user id", userId)
         const email = profile?.email
 
         if (email) {
