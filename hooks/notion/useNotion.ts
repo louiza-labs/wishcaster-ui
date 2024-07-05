@@ -177,7 +177,6 @@ const useNotion = (castHash: string, notionResults = <any>[]) => {
     } catch (e) {
       setErrorSubmittingIssue(true)
       setSubmittingIssue(false)
-      console.error("error creating issue", e)
     }
   }
 

@@ -41,8 +41,6 @@ export const useFetchCastsUntilCovered = (initialCasts: CastType[]) => {
       setCursorToUse(newCursor)
     } catch (error) {
       setFetchingCasts(false)
-
-      console.error("Error fetching casts:", error)
     }
   }, [loggedInUserFID])
 

@@ -13,7 +13,6 @@ const useGetProfile = (userName: string) => {
         const userObject = await fetchFarcasterProfile(userName)
         setUserProfile(userObject)
       } catch (error) {
-        console.error("Error fetching profile:", error)
       } finally {
         setGettingProfile(false)
       }

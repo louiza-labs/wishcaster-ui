@@ -28,7 +28,7 @@ export const useFetchReactionsForUser = (userFID: number) => {
     } catch (error) {
       setFetchingReactions(false)
       setErrorFetchingReactions(true)
-      console.error("Error fetching reactions:", error)
+      // console.error("Error fetching reactions:", error)
     }
   }, [])
 

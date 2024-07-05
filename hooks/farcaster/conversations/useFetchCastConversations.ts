@@ -41,7 +41,6 @@ export const useFetchCastConversations = (castHashes: string[]) => {
     } catch (error) {
       setLoadingConversations(false)
       setErrorLoadingConversations(true)
-      console.error("Error fetching casts:", error)
     }
   }, [castHashes, loggedInUserFID])
 

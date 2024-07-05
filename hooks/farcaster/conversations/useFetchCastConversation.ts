@@ -29,8 +29,6 @@ export const useFetchCastConversation = (castHash: string) => {
     } catch (error) {
       setLoadingConversation(false)
       setErrorLoadingConversation(true)
-
-      console.error("Error fetching casts:", error)
     }
   }, [])
 
