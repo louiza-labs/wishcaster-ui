@@ -1,5 +1,6 @@
 "use client"
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -33,6 +34,8 @@ interface PopoverFormProps {
   onClose: (val: boolean) => void
   defaultOpen?: boolean
   hideButton?: boolean
+  buttonImage?: string
+  isDisabled?: boolean
 }
 export function PopoverForm({
   handleSubmit,
@@ -47,12 +50,28 @@ export function PopoverForm({
   errorSubmittingForm,
   onClose,
   defaultOpen,
+  buttonImage,
+  isDisabled,
   hideButton,
 }: PopoverFormProps) {
   return (
     <Popover onOpenChange={onClose} defaultOpen={defaultOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="ghost" className="w-full">
+      <PopoverTrigger asChild disabled={isDisabled}>
+        <Button
+          variant="ghost"
+          disabled={isDisabled}
+          className="flex w-full flex-row justify-start gap-x-4"
+        >
+          {buttonImage ? (
+            <Avatar className="relative size-6">
+              {buttonImage ? (
+                <AvatarImage src={buttonImage} alt={buttonText} />
+              ) : null}
+              <AvatarFallback className="text-sm font-semibold">
+                {buttonText}
+              </AvatarFallback>
+            </Avatar>
+          ) : null}
           {Icon ? <Icon /> : buttonText}
         </Button>
       </PopoverTrigger>

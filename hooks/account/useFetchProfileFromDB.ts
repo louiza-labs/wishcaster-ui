@@ -22,7 +22,6 @@ const useFetchProfileFromDB = ({ user }: { user: User | null }) => {
         .single()
 
       if (error && status !== 406) {
-        console.log(error)
         throw error
       }
 
@@ -31,8 +30,6 @@ const useFetchProfileFromDB = ({ user }: { user: User | null }) => {
       }
     } catch (error) {
       setErrorLoading(true)
-
-      console.log("the err", error)
     } finally {
       setLoading(false)
     }

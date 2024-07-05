@@ -18,7 +18,6 @@ import RedirectButton from "@/components/redirect/Button"
 import SortCasts from "@/components/sort/SortCasts"
 import {
   fetchCastsUntilCovered,
-  getUserSocialIdentities,
   getUsersNotionAccessCode,
   searchNotion,
 } from "@/app/actions"
@@ -47,7 +46,6 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const filtersParam = parseQueryParam(searchParams.filters)
   const sortParam = parseQueryParam(searchParams.sort)
   const userId = null
-  const socialIdentities = await getUserSocialIdentities()
   const notionAccessCode = await getUsersNotionAccessCode()
   const notionSearch = await searchNotion(notionAccessCode)
   const notionResults = notionSearch.results
@@ -63,7 +61,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
   const { casts: initialCasts, nextCursor: cursorToUse } = !timeFilterParam
-    ? await fetchCastsUntilCovered("someone-build", "24-hours")
+    ? await fetchCastsUntilCovered("someone-build", "7-days")
     : await fetchCastsUntilCovered(
         "someone-build",
         timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"

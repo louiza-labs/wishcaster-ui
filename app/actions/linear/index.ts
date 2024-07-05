@@ -25,11 +25,9 @@ export const getLinearInfo = async (email: string) => {
   const me = await linearC.viewer
   const myIssues = await me.assignedIssues()
   if (myIssues && myIssues.nodes && myIssues.nodes.length) {
-    myIssues.nodes.map((issue) =>
-      console.log(`${me.displayName} has issue: ${issue.title}`)
-    )
+    return myIssues.nodes
   } else {
-    console.log(`${me.displayName} has no issues`)
+    return []
   }
 }
 

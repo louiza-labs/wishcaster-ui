@@ -139,7 +139,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                 : "flex"
             } overflow-y-auto lg:col-span-8`}
           >
-            <div className="gap-y-4 overflow-y-auto pb-0 lg:pb-20">
+            <div className="lg:pb-2git 0 gap-y-4 overflow-y-auto pb-0">
               {topCast ? (
                 <div className="flex flex-col flex-wrap gap-y-4 overflow-auto bg-background">
                   <h2 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">

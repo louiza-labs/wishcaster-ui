@@ -1,5 +1,7 @@
 "use client"
 
+import { useBoundStore } from "@/store"
+
 import useLinear from "@/hooks/linear/useLinear"
 import useNotion from "@/hooks/notion/useNotion"
 import { Button } from "@/components/ui/button"
@@ -43,10 +45,22 @@ const SaveCastDropdown = ({
     successfullySubmittedIssue: successfullySubmittedToNotion,
   } = useNotion(cast.hash ?? "", notionResults)
 
+  const { isConnectedToNotion, isConnectedToLinear } = useBoundStore(
+    (state: any) => state
+  )
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="relative mr-4 border-none " asChild>
-        <Button variant={"ghost"} className="relative">
+      <DropdownMenuTrigger
+        disabled={!(isConnectedToLinear || isConnectedToNotion)}
+        className="relative mr-4 border-none "
+        asChild
+      >
+        <Button
+          variant={"ghost"}
+          disabled={!(isConnectedToLinear || isConnectedToNotion)}
+          className="relative"
+        >
           Save
         </Button>
       </DropdownMenuTrigger>
@@ -60,6 +74,8 @@ const SaveCastDropdown = ({
             buttonText="Add to Linear"
             formTitle="Add to Linear"
             onClose={handleClose}
+            isDisabled={!isConnectedToLinear}
+            buttonImage={"/social-account-logos/linear-company-icon.svg"}
             submittingForm={submittingIssue}
             errorSubmittingForm={errorSubmittingIssue}
             successfullySubmittingForm={successfullySubmittedIssue}
@@ -72,7 +88,9 @@ const SaveCastDropdown = ({
             inputFields={fieldsForCreatingAnIssue}
             buttonText="Add to Notion"
             formTitle="Add to Notion"
+            buttonImage={"/social-account-logos/notion-logo.png"}
             onClose={handleClose}
+            isDisabled={!isConnectedToNotion}
             submittingForm={submittingIssue}
             errorSubmittingForm={errorSubmittingIssue}
             successfullySubmittingForm={successfullySubmittedIssue}

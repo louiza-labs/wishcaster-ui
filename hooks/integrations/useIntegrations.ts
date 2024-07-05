@@ -15,7 +15,6 @@ const useIntegrations = () => {
     isConnectedToLinear,
     isConnectedToTwitter,
   } = useBoundStore((state: any) => state)
-  console.log("isConnectedToNotion", isConnectedToNotion)
   const { userFromAuth } = useGetUser()
 
   const handleConnectNotion = async () => {

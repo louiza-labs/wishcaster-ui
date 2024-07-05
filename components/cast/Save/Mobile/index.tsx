@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useBoundStore } from "@/store"
 
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -19,11 +20,22 @@ interface MobileSaveProps {
 }
 
 function MobileSave({ cast, notionResults, onClose }: MobileSaveProps) {
+  const { isConnectedToNotion, isConnectedToLinear } = useBoundStore(
+    (state: any) => state
+  )
   return (
     <React.Suspense>
       <Sheet>
-        <SheetTrigger asChild>
-          <Button variant="outline">Save</Button>
+        <SheetTrigger
+          asChild
+          disabled={!(isConnectedToLinear || isConnectedToNotion)}
+        >
+          <Button
+            disabled={!(isConnectedToLinear || isConnectedToNotion)}
+            variant="outline"
+          >
+            Save
+          </Button>
         </SheetTrigger>
         <SheetContent side="bottom" className="h-[86vh] rounded-t-xl">
           <Tabs
@@ -37,7 +49,7 @@ function MobileSave({ cast, notionResults, onClose }: MobileSaveProps) {
             Info
           </TabsTrigger> */}
               <TabsTrigger
-                disabled={false}
+                disabled={!isConnectedToLinear}
                 className="flex flex-row items-center gap-x-2 text-left"
                 value="linear"
               >
@@ -46,7 +58,7 @@ function MobileSave({ cast, notionResults, onClose }: MobileSaveProps) {
               </TabsTrigger>
 
               <TabsTrigger
-                disabled={false}
+                disabled={!isConnectedToNotion}
                 className="flex flex-row items-center gap-x-2 text-left"
                 value="notion"
               >

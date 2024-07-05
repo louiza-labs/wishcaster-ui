@@ -41,7 +41,6 @@ export const categorizeCastsAsRequests = async (casts: Cast[]) => {
     })
     return result.object.categorizedRequests
   } catch (error) {
-    console.log(error)
     return casts
   }
 }
@@ -94,10 +93,10 @@ export const generateTaglinesForCasts = async (
         })
         return result.object.taglines
       } catch (error) {
-        console.log(
-          `Error in generating taglines for batch starting at ${startIndex}:`,
-          error
-        )
+        // console.log(
+        //   `Error in generating taglines for batch starting at ${startIndex}:`,
+        //   error
+        // )
         if (retries === 1) throw error
         await delayExecution(currentDelay)
         currentDelay *= 2 // Exponential backoff

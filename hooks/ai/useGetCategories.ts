@@ -23,9 +23,7 @@ const useGetCategories = (casts: any) => {
         setCategories(response.data)
       } catch (e) {
         if (axios.isCancel(e)) {
-          console.log("Request canceled", e.message)
         } else {
-          console.error(e)
           setError("Failed to fetch categories")
         }
       }
