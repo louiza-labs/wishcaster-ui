@@ -132,7 +132,7 @@ const Search = () => {
       setRenderingSearchResults(false)
       setSearchedCasts(castsWithSearchTerm)
     } catch (error) {
-      console.error("Failed to fetch and filter casts:", error)
+      // console.error("Failed to fetch and filter casts:", error)
       // Handle errors as needed, maybe set an error state to display to users
     }
   }

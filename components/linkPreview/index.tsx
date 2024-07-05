@@ -29,7 +29,7 @@ const LinkPreview: React.FC<LinkPreviewProps> = ({ url }) => {
           image: data.image?.url || "",
         })
       } catch (error) {
-        console.error("Error fetching metadata:", error)
+        // console.error("Error fetching metadata:", error)
       }
     }
 
