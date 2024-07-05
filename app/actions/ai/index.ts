@@ -116,7 +116,7 @@ export const generateTaglinesForCasts = async (
         if (settled.status === "fulfilled") {
           results.push(...settled.value)
         } else {
-          console.log("Failed batch processing:", settled.reason)
+          // console.log("Failed batch processing:", settled.reason)
         }
       }
 

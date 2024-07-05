@@ -5,7 +5,7 @@ import { useBoundStore } from "@/store"
 
 import { getUserFromSessionsTable } from "@/app/actions"
 
-const useGetSession = (user: any, intervalDuration = 10000) => {
+const useGetSession = (user: any, intervalDuration = 1000) => {
   const [session, setSession] = useState({})
   const [isFetching, setIsFetching] = useState(true)
 
@@ -40,9 +40,7 @@ const useGetSession = (user: any, intervalDuration = 10000) => {
         setIsConnectedToTwitter(true)
       }
       setSession(sessionRes)
-    } catch (error) {
-      console.error("Failed to fetch identities:", error)
-    }
+    } catch (error) {}
   }, [setIsConnectedToNotion, setIsConnectedToLinear, setIsConnectedToTwitter])
 
   useEffect(() => {
