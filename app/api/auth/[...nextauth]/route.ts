@@ -57,6 +57,7 @@ const handler = NextAuth({
       try {
         const accessToken = account?.access_token
         const userId = user?.id
+        console.log("the user id", userId)
         const email = profile?.email
 
         if (email) {
@@ -91,15 +92,13 @@ const handler = NextAuth({
             ? resForId.data[0].user_id
             : null
 
-        const buildSessionObject = () => {
-          let baseObject: {
-            user_id?: string
-            linear_access_token?: string
-            email?: string
-          } = {
-            user_id: userId,
+        const buildSessionObject = (forNewAccount: boolean) => {
+          let baseObject: any = {
             linear_access_token: accessToken as string,
             email: email as string,
+          }
+          if (forNewAccount) {
+            baseObject.user_id = id
           }
           // if (id) {
           //   baseObject.id = id
@@ -109,12 +108,14 @@ const handler = NextAuth({
 
           return baseObject
         }
-        let sessionObject = buildSessionObject()
         if (!id) {
+          let sessionObjectForNewAccount = buildSessionObject(true)
+
           const resForInsertingData = await supabase
             .from("sessions")
-            .insert(sessionObject)
+            .insert(sessionObjectForNewAccount)
         } else {
+          let sessionObject = buildSessionObject(false)
           const res = await supabase
             .from("sessions")
             .update(sessionObject)

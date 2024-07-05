@@ -48,15 +48,17 @@ export async function GET(request: Request) {
             .eq("user_id", userId)
           const id =
             resForId.data && resForId.data.length ? resForId.data[0].id : null
-          const buildSessionObject = () => {
-            let baseObject = {
-              user_id: userId,
+          const buildSessionObject = (forNewAccount: boolean) => {
+            let baseObject: any = {
               notion_access_token: "",
               notion_refresh_token: "", // Add this line
               twitter_access_token: "",
               twitter_refresh_token: "", // Add this line
               email: userEmail,
               id: null,
+            }
+            if (forNewAccount) {
+              baseObject.user_id = id
             }
             if (id) {
               baseObject.id = id
@@ -72,13 +74,14 @@ export async function GET(request: Request) {
 
             return baseObject
           }
-          let sessionObject = buildSessionObject()
           if (!id) {
+            let sessionObjectForNewAccount = buildSessionObject(true)
             const resForInsertingData = await supabase
               .from("sessions")
-              .insert(sessionObject)
+              .insert(sessionObjectForNewAccount)
           } else {
-            let sessionObject = buildSessionObject()
+            let sessionsObjectForSignIn = {}
+            let sessionObject = buildSessionObject(false)
             const res = await supabase
               .from("sessions")
               .update(sessionObject)
