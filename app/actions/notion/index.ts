@@ -4,7 +4,6 @@ const { Client } = require("@notionhq/client")
 
 export async function searchNotion(accessToken: string) {
   const notion = new Client({ auth: accessToken })
-  console.log("the notion access token", accessToken)
 
   try {
     const response = await notion.search({
@@ -21,7 +20,6 @@ export async function searchNotion(accessToken: string) {
     const { results, next_cursor } = response
     return { results, next_cursor }
   } catch (e) {
-    console.log("the notion search error", e)
     return { results: [], next_cursor: "" }
   }
 }

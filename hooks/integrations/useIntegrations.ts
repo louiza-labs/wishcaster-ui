@@ -34,7 +34,7 @@ const useIntegrations = () => {
     try {
       const res = await signIn("linear")
     } catch (e) {
-      console.log("error trying to connect ot linear", e)
+      // console.log("error trying to connect ot linear", e)
     }
   }
   // FarcasterIntegration
@@ -61,7 +61,7 @@ const useIntegrations = () => {
         label: "Notion",
         image: "/social-account-logos/notion-logo.png",
 
-        onClick: handleSignIntoNotion,
+        onClick: isConnectedToNotion ? () => {} : handleSignIntoNotion,
         description: "Connect your Notion account",
         isConnected:
           // userFromAuth &&
@@ -76,7 +76,7 @@ const useIntegrations = () => {
         label: "Linear",
         image: "/social-account-logos/linear-company-icon.svg",
 
-        onClick: handleConnectLinear,
+        onClick: isConnectedToLinear ? () => {} : handleConnectLinear,
         description: "Connect your Linear account",
         isConnected:
           // userFromAuth &&

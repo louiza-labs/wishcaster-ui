@@ -22,9 +22,7 @@ export const useFetchInitialCasts = () => {
       const newCursor: any = castsResponse.nextCursor
       setCastsToShow(newCasts)
       setCursorToUse(newCursor)
-    } catch (error) {
-      console.error("Error fetching casts:", error)
-    }
+    } catch (error) {}
   }, [])
 
   useEffect(() => {

@@ -19,7 +19,7 @@ export const useFetchReactions = (castHash: string, castReactions: any) => {
         setCursorToUse(newCursor)
       }
     } catch (error) {
-      console.error("Error fetching reactions:", error)
+      // console.error("Error fetching reactions:", error)
     }
   }, [])
 

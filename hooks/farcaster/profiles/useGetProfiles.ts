@@ -19,7 +19,7 @@ const useGetProfiles = (stringOfFIDs: string) => {
         const profilesArray = profilesRes.users ?? []
         setProfiles(profilesArray)
       } catch (error) {
-        console.error("Error fetching profile:", error)
+        // console.error("Error fetching profile:", error)
       } finally {
         setLoadingProfiles(false)
       }

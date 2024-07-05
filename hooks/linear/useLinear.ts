@@ -121,7 +121,7 @@ const useLinear = (castHash: string) => {
     } catch (e) {
       setErrorSubmittingIssue(true)
       setSubmittingIssue(false)
-      console.error("error creating issue", e)
+      // console.error("error creating issue", e)
     }
   }
 

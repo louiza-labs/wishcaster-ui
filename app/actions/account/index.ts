@@ -72,9 +72,7 @@ export async function logoutUser() {
 
   try {
     const { error } = await supabase.auth.signOut()
-  } catch (e) {
-    console.error("error trying to signout", e)
-  }
+  } catch (e) {}
 }
 
 export async function getUserSession() {
@@ -115,14 +113,12 @@ export async function getUserFromSessionsTable() {
     const { data: user, error } = await supabase.auth.getUser()
 
     const userId = user.user ? user.user.id : null
-    console.log("the user id is nom", userId)
 
     if (userId) {
       const { data: userFromSessions, error } = await supabase
         .from("sessions")
         .select()
         .eq("user_id", userId)
-      console.log("the user sessions is nom", userFromSessions)
 
       return userFromSessions && userFromSessions.length
         ? userFromSessions[0]

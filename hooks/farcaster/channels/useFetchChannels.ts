@@ -17,7 +17,6 @@ const useFetchChannels = (searchTerm: string) => {
       setChannels(channelsResponse.channels)
     } catch (error) {
       setErrorGettingChannels(true)
-      console.error("Error fetching channels:", error)
     } finally {
       setGettingChannels(false)
     }

@@ -79,7 +79,10 @@ export async function GET(request: Request) {
               .insert(sessionObject)
           } else {
             let sessionObject = buildSessionObject()
-            const res = await supabase.from("sessions").upsert(sessionObject)
+            const res = await supabase
+              .from("sessions")
+              .update(sessionObject)
+              .eq("user_id", id)
           }
         } catch (e) {
           // console.error("error updating sessions", e)

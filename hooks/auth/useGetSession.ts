@@ -18,7 +18,6 @@ const useGetSession = (user: any) => {
   )
   const fetchIdentities = async () => {
     const sessionRes = await getUserFromSessionsTable()
-    console.log("the session res", sessionRes)
     if (sessionRes.notion_access_token) {
       setIsConnectedToNotion(true)
     }

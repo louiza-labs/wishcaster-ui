@@ -46,7 +46,6 @@ export const useLoadMoreCasts = (
       // const castsWithTaglines = addTaglinesToCasts(newCasts, taglines)
       setCastsToShow((prevCasts) => [...prevCasts, ...newCasts])
     } catch (error) {
-      console.error("Error fetching casts:", error)
     } finally {
       setFetchingCasts(false)
     }
@@ -82,7 +81,6 @@ export const useLoadMoreCasts = (
           setCursorToUse(newCursor)
         }
       } catch (error) {
-        console.error("Error fetching casts:", error)
       } finally {
         setFetchingCasts(false)
       }
