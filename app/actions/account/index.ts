@@ -110,12 +110,15 @@ export async function getUserFromSessionsTable() {
   const supabase = createClient()
 
   try {
-    const { data: user, error } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser()
 
     console.log("the user from auth", user)
     console.log("the error for getting the user from auth", error)
 
-    const userId = user.user ? user.user.id : null
+    const userId = user ? user.id : null
 
     if (userId) {
       const { data: userFromSessions, error } = await supabase
@@ -123,6 +126,7 @@ export async function getUserFromSessionsTable() {
         .select()
         .eq("user_id", userId)
 
+      console.log("the user from sessions", userFromSessions)
       return userFromSessions && userFromSessions.length
         ? userFromSessions[0]
         : null
