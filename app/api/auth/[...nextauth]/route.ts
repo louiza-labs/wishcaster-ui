@@ -98,7 +98,7 @@ const handler = NextAuth({
             .eq("email", email)
         }
       } catch (e) {
-        console.error("error trying to update sessions for linear", e)
+        // console.error("error trying to update sessions for linear", e)
       }
 
       return true

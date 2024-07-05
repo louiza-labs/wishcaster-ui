@@ -26,7 +26,7 @@ function useLocalStorage<T>(
           ? defaultValue()
           : defaultValue
       } catch (error) {
-        console.error("Error reading from localStorage:", error)
+        // console.error("Error reading from localStorage:", error)
         return defaultValue instanceof Function ? defaultValue() : defaultValue
       }
     }
@@ -44,7 +44,7 @@ function useLocalStorage<T>(
     try {
       window.localStorage.setItem(key, serialize(state))
     } catch (error) {
-      console.error("Error writing to localStorage:", error)
+      // console.error("Error writing to localStorage:", error)
     }
   }, [key, state, serialize])
 
