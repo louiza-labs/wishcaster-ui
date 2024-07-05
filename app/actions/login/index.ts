@@ -9,7 +9,7 @@ export async function connectTwitterAccount() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "twitter",
     options: {
-      redirectTo: `http://localhost:3000/auth/callback`,
+      redirectTo: `${process.env.API_URL}/auth/callback`,
     },
   })
 
@@ -24,7 +24,7 @@ export async function connectNotionAccount() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "notion",
     options: {
-      redirectTo: `http://localhost:3000/auth/callback`,
+      redirectTo: `${process.env.API_URL}/auth/callback`,
     },
   })
   if (data.url) {

@@ -10,7 +10,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-const redirect_uri = "http://localhost:3000/api/auth/callback/linear"
+const redirect_uri = `${process.env.API_URL}/api/auth/callback/linear`
 const linearUrl = "https://linear.app/oauth/authorize"
 interface LinearProfile {
   id: string
