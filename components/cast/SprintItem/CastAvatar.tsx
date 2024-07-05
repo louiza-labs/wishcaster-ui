@@ -15,6 +15,7 @@ const CastAvatar = ({
   handleToggleCategoryClick,
   badgeIsToggled,
 }: CastAvatarProps) => {
+  if (!author) return <div />
   return (
     <div className="flex w-full flex-row justify-between px-4">
       <a

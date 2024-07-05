@@ -80,7 +80,7 @@ export function summarizeByCategory(
 
     if (!summaries.has(category.id)) {
       summaries.set(category.id, {
-        id: category.id.replace(/\s+/g, "-").toLowerCase(),
+        id: category.id.replace(/\s+/g, "-"),
         topic: category.label,
         likes: 0,
         priorityLikes: 0,

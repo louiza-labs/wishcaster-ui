@@ -1,11 +1,10 @@
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
-import { SignedIn } from "@clerk/nextjs"
 
 import { formatDateForCastTimestamp } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import SaveCast from "@/components/cast/Save"
+import SaveCast from "@/components/cast/Save/"
 import { Icons } from "@/components/icons"
 
 interface CastFooterProps {
@@ -19,6 +18,7 @@ interface CastFooterProps {
   hash: string
   author: any
   isReply?: boolean
+  notionResults?: any
   reactions: {
     likes_count: number
     recasts_count: number
@@ -35,6 +35,7 @@ const CastFooter = ({
   isReply,
   isEmbedded,
   cast,
+  notionResults,
 }: CastFooterProps) => {
   const router = useRouter()
   const params = useParams()
@@ -123,10 +124,7 @@ const CastFooter = ({
             </Button>
           )}
           {isEmbedded || isReply ? null : (
-            <SignedIn>
-              {" "}
-              <SaveCast cast={cast} />{" "}
-            </SignedIn>
+            <SaveCast cast={cast} notionResults={notionResults} />
           )}
         </div>
       </div>

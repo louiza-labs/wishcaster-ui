@@ -169,7 +169,7 @@ const Search = () => {
                 defaultValue={searchType}
                 onValueChange={(value) => handleSearchTypeChange(value)}
               >
-                <SelectTrigger className="size-fit gap-x-1 whitespace-nowrap rounded-l-md px-1 text-xs font-semibold  focus:ring-0 focus:ring-transparent focus:ring-offset-0">
+                <SelectTrigger className="size-fit gap-x-1 whitespace-nowrap rounded-l-md px-1 pl-2 text-xs font-semibold focus:ring-0  focus:ring-transparent focus:ring-offset-0">
                   <SelectValue className="text-xs font-semibold" placeholder="">
                     {capitalizeFirstLetter(searchType)}
                   </SelectValue>

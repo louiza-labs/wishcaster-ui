@@ -100,8 +100,7 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
   )
 
   const selectedDateFilter =
-    filtersFromParams.find((filter) => dateOptions.includes(filter)) ??
-    "24-hours"
+    filtersFromParams.find((filter) => dateOptions.includes(filter)) ?? "7-days"
 
   const handleToggleFilterClick = useCallback(
     (categoryName: string) => {

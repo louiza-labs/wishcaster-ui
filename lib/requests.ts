@@ -1,3 +1,5 @@
+"use server"
+
 import { Cast as CastType } from "@/types"
 
 import { generateTaglinesForCasts } from "@/app/actions"

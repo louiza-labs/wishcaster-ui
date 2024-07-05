@@ -20,6 +20,8 @@ import {
   fetchCastsUntilCovered,
   fetchChannelCasts,
   fetchFarcasterCast,
+  getUsersNotionAccessCode,
+  searchNotion,
 } from "@/app/actions"
 
 interface CastPageProps {
@@ -57,6 +59,10 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
+
+  const notionAccessCode = await getUsersNotionAccessCode()
+  const notionSearch = await searchNotion(notionAccessCode)
+  const notionResults = notionSearch.results
   const { casts: initialCasts, nextCursor: cursorToUse } = !timeFilterParam
     ? await fetchChannelCasts("someone-build")
     : await fetchCastsUntilCovered(
@@ -125,7 +131,7 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
               <div className="gap-y-4 overflow-y-auto pb-14 lg:pb-0">
                 {castWithCategory ? (
                   <>
-                    <div className="bg-background flex flex-col gap-y-4">
+                    <div className="flex flex-col gap-y-4 bg-background">
                       <h1 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
                         Cast
                       </h1>
@@ -136,10 +142,14 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                         badgeIsToggled={false}
                         routeToWarpcast={true}
                         cast={castWithCategory}
+                        notionResults={notionResults}
                         mentionedProfiles={castWithCategory.mentioned_profiles}
                       />
                     </div>
-                    <TopReplies castHash={castWithCategory.hash ?? ""} />
+                    <TopReplies
+                      castHash={castWithCategory.hash ?? ""}
+                      notionResults={notionResults}
+                    />
                   </>
                 ) : null}
               </div>

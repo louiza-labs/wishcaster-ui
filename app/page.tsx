@@ -1,6 +1,5 @@
 import { FC } from "react"
 import { Cast as CastType, Category } from "@/types"
-import { auth } from "@clerk/nextjs/server"
 
 import { dateOptions } from "@/lib/constants"
 import {
@@ -17,7 +16,11 @@ import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import Rankings from "@/components/rankings"
 import RedirectButton from "@/components/redirect/Button"
 import SortCasts from "@/components/sort/SortCasts"
-import { fetchCastsUntilCovered } from "@/app/actions"
+import {
+  fetchCastsUntilCovered,
+  getUsersNotionAccessCode,
+  searchNotion,
+} from "@/app/actions"
 
 interface IndexPageProps {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -42,8 +45,10 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const categoryParam = parseQueryParam(searchParams.categories)
   const filtersParam = parseQueryParam(searchParams.filters)
   const sortParam = parseQueryParam(searchParams.sort)
-
-  const { userId } = auth()
+  const userId = null
+  const notionAccessCode = await getUsersNotionAccessCode()
+  const notionSearch = await searchNotion(notionAccessCode)
+  const notionResults = notionSearch.results
 
   if (userId) {
     // Query DB for user specific information or display assets only to signed in users
@@ -56,7 +61,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
   const { casts: initialCasts, nextCursor: cursorToUse } = !timeFilterParam
-    ? await fetchCastsUntilCovered("someone-build", "24-hours")
+    ? await fetchCastsUntilCovered("someone-build", "7-days")
     : await fetchCastsUntilCovered(
         "someone-build",
         timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
@@ -105,6 +110,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
                 casts={filteredCasts}
                 timeFilterParam={timeFilterParam}
                 nextCursor={cursorToUse}
+                notionResults={notionResults}
               />
             )}
           </article>

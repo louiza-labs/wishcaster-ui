@@ -12,8 +12,9 @@ import Cast from "@/components/cast/SprintItem"
 
 interface TopRepliesProps {
   castHash: string
+  notionResults?: any
 }
-const TopReplies = ({ castHash }: TopRepliesProps) => {
+const TopReplies = ({ castHash, notionResults }: TopRepliesProps) => {
   const { conversation } = useFetchCastConversation(castHash)
   const sortedRepliesByLikes = sortCastsByProperty(conversation, "likes_count")
   const topFiveRepliesByLikes = sortedRepliesByLikes.slice(0, 5)
@@ -35,6 +36,7 @@ const TopReplies = ({ castHash }: TopRepliesProps) => {
                       hideMetrics={false}
                       badgeIsToggled={false}
                       isReply={true}
+                      notionResults={notionResults}
                       cast={reply}
                       mentionedProfiles={reply.mentioned_profiles}
                     />

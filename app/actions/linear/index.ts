@@ -1,24 +1,23 @@
 "use server"
 
-import { auth, clerkClient, currentUser } from "@clerk/nextjs/server"
+import { createClient } from "@/clients/supabase/server"
 import { LinearClient } from "@linear/sdk"
 
-export const getLinearOauthToken = async () => {
-  const { userId } = auth()
-  const user = await currentUser()
-  const provider = "oauth_linear"
-  if (!userId) return
-  const clerkResponse = await clerkClient.users.getUserOauthAccessToken(
-    userId,
-    provider
-  )
-  if (!clerkResponse || !(clerkResponse && clerkResponse.data.length)) return
-  const accessToken = clerkResponse.data[0].token
-  return accessToken
+export const getLinearOauthToken = async (email: string) => {
+  const supabase = createClient()
+  const userRes = await supabase
+    .from("sessions")
+    .select("linear_access_token")
+    .eq("email", email)
+  if (userRes && userRes.data && userRes.data.length) {
+    let userId = userRes.data[0].linear_access_token
+    return userId
+  }
+  return null
 }
 
-export const getLinearInfo = async () => {
-  const accessToken = await getLinearOauthToken()
+export const getLinearInfo = async (email: string) => {
+  const accessToken = await getLinearOauthToken(email)
   if (!accessToken) return
   const linearC = new LinearClient({
     accessToken: accessToken,
@@ -26,27 +25,29 @@ export const getLinearInfo = async () => {
   const me = await linearC.viewer
   const myIssues = await me.assignedIssues()
   if (myIssues && myIssues.nodes && myIssues.nodes.length) {
-    myIssues.nodes.map((issue) =>
-      console.log(`${me.displayName} has issue: ${issue.title}`)
-    )
+    return myIssues.nodes
   } else {
-    console.log(`${me.displayName} has no issues`)
+    return []
   }
 }
 
 export const createLinearIssue = async (
   title: string,
   description: string,
+  emailForLoggedInUser: string,
   priority = 0,
   projectId = ""
 ) => {
   try {
-    const accessToken = await getLinearOauthToken()
+    const accessToken = await getLinearOauthToken(emailForLoggedInUser)
+
     if (!accessToken) return
     const linearC = new LinearClient({
       accessToken: accessToken,
     })
+
     const teams = await linearC.teams()
+
     const team = teams.nodes[0]
     if (team.id && title && title.length && description && description.length) {
       const result = await linearC.createIssue({
@@ -56,7 +57,7 @@ export const createLinearIssue = async (
         priority: priority ? Number(priority) : undefined,
         projectId: projectId && projectId.length ? projectId : undefined,
       })
-      console.log("the result ", result)
+
       return result.success
     }
   } catch (e) {

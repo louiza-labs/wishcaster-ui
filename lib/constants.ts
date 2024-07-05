@@ -35,7 +35,14 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
   },
   trading: {
     label: "📈 Trading",
-    keywords: new Set(["trade", "trading", "exchange", "swap"]),
+    keywords: new Set([
+      "trade",
+      "trading",
+      "exchange",
+      "dex",
+      "orderbook",
+      "swap",
+    ]),
   },
   messaging: {
     label: "💬 Messaging",
@@ -132,6 +139,7 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
       "leverage",
       "options",
       "levered",
+
       "vault",
       "staking",
     ]),
@@ -140,6 +148,7 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
     label: "🖼️ NFTs Marketplaces",
     keywords: new Set(["nft marketplace", "opensea", "blur"]),
   },
+
   blockchainGaming: {
     label: "🎮 Blockchain Gaming",
     keywords: new Set([
@@ -255,7 +264,11 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
   },
   newsletter: {
     label: "📃 Newsletter",
-    keywords: new Set(["newsletter"]),
+    keywords: new Set(["newsletter", "newsletters"]),
+  },
+  tipping: {
+    label: "💸 Tipping",
+    keywords: new Set(["tips", "tipping", "tip"]),
   },
   books: {
     label: "📚 Books",
@@ -297,7 +310,7 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
   },
   advertising: {
     label: "📢 Advertising",
-    keywords: new Set(["advertising", "ads", "marketing", "campaign"]),
+    keywords: new Set(["advertising", "ads", "ad", "marketing", "campaign"]),
   },
   privacy: {
     label: "🔒 Privacy",
@@ -386,7 +399,7 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
   },
   music: {
     label: "🎵 Music",
-    keywords: new Set(["music", "song", "melody", "audio"]),
+    keywords: new Set(["music", "song", "songs", "melody", "audio"]),
   },
   zk: {
     label: "🙈 ZK",
@@ -428,7 +441,7 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
   },
   payments: {
     label: "💳 Payments",
-    keywords: new Set(["payment", "remittance"]),
+    keywords: new Set(["payment", "remittance", "micropayments"]),
   },
   healthcareRecords: {
     label: "📋 Healthcare Records",
@@ -499,6 +512,10 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
   channels: {
     label: "📡 Channels",
     keywords: new Set(["channel", "channels"]),
+  },
+  fundraising: {
+    label: "💵 Fundraising",
+    keywords: new Set(["fundraise", "fundraising", "kickstarter"]),
   },
   extensions: {
     label: "➕ Extensions",

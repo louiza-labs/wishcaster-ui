@@ -1,4 +1,7 @@
 // store.ts
+// @ts-nocheck
+import { createFooterSlice } from "@/store/footer"
+import { createUserSlice } from "@/store/user"
 import { create } from "zustand"
 
 interface FooterVisibilityState {
@@ -12,3 +15,7 @@ export const useFooterVisibilityStore = create<FooterVisibilityState>(
     setFooterVisible: (visible: boolean) => set({ isFooterVisible: visible }),
   })
 )
+export const useBoundStore = create((...a) => ({
+  ...createUserSlice(...a),
+  ...createFooterSlice(...a),
+}))

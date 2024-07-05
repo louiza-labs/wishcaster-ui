@@ -7,6 +7,31 @@ import axios from "axios"
 
 const neynarClient = new NeynarAPIClient(process.env.NEYNAR_API_KEY as string)
 
+export async function fetchCastReactionsForUser(userFID: number, cursor = "") {
+  try {
+    const response: any = await neynarClient.fetchUserReactions(
+      userFID,
+      "all",
+      {
+        limit: 100,
+        cursor: cursor && cursor.length ? cursor : undefined,
+      }
+    )
+    const reactions = response.reactions // Axios wraps the response data in a `data` property
+    const nextCursor = response.cursor
+    // Assuming the API returns an object with casts and cursor for the next batch
+    const returnObject = {
+      reactions: reactions,
+      cursor: nextCursor,
+    }
+
+    return returnObject
+  } catch (error) {
+    console.error("Error fetching reactions:", error)
+    return { reactions: [], cursor: cursor, error: error }
+  }
+}
+
 export const fetchCastReactions = async (castHash: string, cursor = "") => {
   try {
     const response: any = await neynarClient.fetchReactionsForCast(

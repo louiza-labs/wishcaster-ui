@@ -2,7 +2,7 @@ import { siteConfig } from "@/config/site"
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
 import InitialLoading from "@/components/loading/initial"
-import ClerkProviderWrapper from "@/components/providers/clerk"
+import NextAuthProvider from "@/components/providers/nextauth"
 import NeynarProvider from "@/components/providers/neynar"
 import { CSPostHogProvider } from "@/components/providers/posthog"
 import { SiteFooter } from "@/components/site-footer"
@@ -75,16 +75,16 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <NeynarProvider>
             <body
               className={cn(
-                "bg-background min-h-screen font-sans antialiased",
+                "min-h-screen bg-background font-sans antialiased",
                 fontSans.variable
               )}
             >
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-              >
-                <ClerkProviderWrapper>
+              <NextAuthProvider>
+                <ThemeProvider
+                  attribute="class"
+                  defaultTheme="system"
+                  enableSystem
+                >
                   <Suspense fallback={<InitialLoading />}>
                     <div className="relative flex min-h-screen flex-col">
                       <SiteHeader />
@@ -93,8 +93,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
                     </div>
                     <TailwindIndicator />
                   </Suspense>
-                </ClerkProviderWrapper>
-              </ThemeProvider>
+                </ThemeProvider>
+              </NextAuthProvider>
             </body>
           </NeynarProvider>
         </CSPostHogProvider>

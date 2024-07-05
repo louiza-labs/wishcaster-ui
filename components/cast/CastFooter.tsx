@@ -1,7 +1,6 @@
 "use client"
 
 import { useParams, useRouter } from "next/navigation"
-import { SignedIn } from "@clerk/nextjs"
 
 import { formatDateForCastTimestamp } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -18,6 +17,7 @@ interface CastFooterProps {
   }
   hash: string
   isEmbedded?: boolean
+  notionResults?: any
   author: any
   reactions: {
     likes_count: number
@@ -33,6 +33,7 @@ const CastFooter = ({
   hideMetrics,
   hash,
   author,
+  notionResults,
   isEmbedded,
 }: CastFooterProps) => {
   const router = useRouter()
@@ -119,10 +120,9 @@ const CastFooter = ({
           )}
         </div>
         {isEmbedded ? null : (
-          <SignedIn>
-            {" "}
-            <SaveCast cast={cast} />{" "}
-          </SignedIn>
+          <>
+            <SaveCast cast={cast} notionResults={notionResults} />
+          </>
         )}
       </div>
     </div>

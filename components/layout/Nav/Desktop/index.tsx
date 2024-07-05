@@ -1,22 +1,15 @@
 "use client"
 
 import Link from "next/link"
-import { SignInButton, SignOutButton, SignedIn, SignedOut } from "@clerk/nextjs"
-import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
+import { useBoundStore } from "@/store"
+import { useNeynarContext } from "@neynar/react"
 
 import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import useGetSession from "@/hooks/auth/useGetSession"
+import useGetUser from "@/hooks/auth/useGetUser"
+import IntegrationsDropdown from "@/components/account/integrations/IntegrationsDropdown"
 import { Icons } from "@/components/icons"
 import Search from "@/components/search"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -27,9 +20,12 @@ interface MainNavProps {
 
 export function DesktopNav({ items }: MainNavProps) {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
-
+  const { userFromAuth } = useGetUser()
+  const { session } = useGetSession(userFromAuth)
+  const { isConnectedToNotion, isConnectedToLinear, isConnectedToTwitter } =
+    useBoundStore((state: any) => state)
   return (
-    <header className="bg-background sticky top-0 z-40 w-full border-b">
+    <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="container hidden h-16 w-full items-center justify-between space-x-4 sm:space-x-0 md:flex">
         <div className=" hidden gap-6 md:flex md:gap-10">
           <Link href="/" className="flex items-center space-x-2">
@@ -50,7 +46,7 @@ export function DesktopNav({ items }: MainNavProps) {
                       key={index}
                       href={item.href}
                       className={cn(
-                        "text-muted-foreground flex items-center text-sm font-medium",
+                        "flex items-center text-sm font-medium text-muted-foreground",
                         item.disabled && "cursor-not-allowed opacity-80"
                       )}
                     >
@@ -66,75 +62,8 @@ export function DesktopNav({ items }: MainNavProps) {
         </div>
         <div className="flex w-full flex-1 items-center justify-end space-x-4">
           <nav className="xl:min-w-200 flex w-fit items-center space-x-1 ">
-            <SignedIn>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="relative border-none " asChild>
-                  <Avatar className="relative size-6">
-                    <AvatarImage
-                      src={"/linear-company-icon.svg"}
-                      alt={"linear"}
-                    />
-                  </Avatar>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent className="w-fit">
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem className="px-4">
-                      <SignOutButton>Sign out of Linear</SignOutButton>
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SignedIn>
-            <SignedOut>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="relative border-none " asChild>
-                  <Avatar className="relative size-6 opacity-20">
-                    <AvatarImage
-                      src={"/linear-company-icon.svg"}
-                      alt={"linear"}
-                    />
-                  </Avatar>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent className="w-fit">
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem className="px-4 font-semibold">
-                      <SignInButton>Connect Linear Account</SignInButton>
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SignedOut>
+            <IntegrationsDropdown />
             <ThemeToggle />
-            {!user ? (
-              <div className="z-10 w-fit lg:flex">
-                <Button variant={"outline"}>
-                  <NeynarAuthButton
-                    variant={SIWN_variant.FARCASTER}
-                    label="Connect Farcaster"
-                    className="text-inter whitespace-nowrap rounded-sm border border-slate-200 bg-transparent shadow-none dark:text-white"
-                  />
-                </Button>
-              </div>
-            ) : user && user.pfp_url ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger className="relative border-none " asChild>
-                  <Avatar className="relative size-8">
-                    <AvatarImage src={user.pfp_url} alt={user.username} />
-                  </Avatar>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent className="w-56">
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem onClick={() => logoutUser()}>
-                      Sign out
-                      <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : null}
           </nav>
         </div>
       </div>
