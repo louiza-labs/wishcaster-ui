@@ -21,7 +21,7 @@ export async function fetchTaglines(casts: CastType[], batchSize = 10) {
       batchedResults.push(...response)
     }
   } catch (e) {
-    console.error("Error fetching taglines:", e)
+    // console.error("Error fetching taglines:", e)
     return []
   }
 
