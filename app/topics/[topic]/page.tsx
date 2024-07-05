@@ -69,7 +69,6 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
         "someone-build",
         timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
       )
-  console.log("the casts", initialCasts)
   let filteredCasts = initialCasts
   const categories = categorizeArrayOfCasts(filteredCasts) as Category[]
   const mobileViewParam = parseQueryParam(searchParams.view)

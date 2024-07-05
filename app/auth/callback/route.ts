@@ -82,7 +82,7 @@ export async function GET(request: Request) {
             const res = await supabase.from("sessions").upsert(sessionObject)
           }
         } catch (e) {
-          console.error("error updating sessions", e)
+          // console.error("error updating sessions", e)
         }
       }
 
