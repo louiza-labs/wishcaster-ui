@@ -5,7 +5,6 @@ import { useBoundStore } from "@/store"
 import { NeynarAuthButton, useNeynarContext } from "@neynar/react"
 import { signIn } from "next-auth/react"
 
-import useGetUser from "@/hooks/auth/useGetUser"
 import { connectNotionAccount } from "@/app/actions"
 
 const useIntegrations = () => {
@@ -15,7 +14,6 @@ const useIntegrations = () => {
     isConnectedToLinear,
     isConnectedToTwitter,
   } = useBoundStore((state: any) => state)
-  const { userFromAuth } = useGetUser()
 
   const handleConnectNotion = async () => {
     const res = isLoggedIn ? logoutUser() : await connectNotionAccount()
