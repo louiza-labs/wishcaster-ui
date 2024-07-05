@@ -112,6 +112,9 @@ export async function getUserFromSessionsTable() {
   try {
     const { data: user, error } = await supabase.auth.getUser()
 
+    console.log("the user from auth", user)
+    console.log("the error for getting the user from auth", error)
+
     const userId = user.user ? user.user.id : null
 
     if (userId) {

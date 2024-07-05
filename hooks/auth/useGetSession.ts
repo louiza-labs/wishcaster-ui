@@ -30,6 +30,7 @@ const useGetSession = (user: any, intervalDuration = 10000) => {
   const fetchIdentities = useCallback(async () => {
     try {
       const sessionRes = await getUserFromSessionsTable()
+      console.log("the user from auth sessionRes", sessionRes)
       if (sessionRes.notion_access_token) {
         setIsConnectedToNotion(true)
       }
