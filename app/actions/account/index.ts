@@ -115,14 +115,13 @@ export async function getUserFromSessionsTable() {
       error,
     } = await supabase.auth.getUser()
 
-    const userId = user ? user.id : null
+    const usersFID = user ? user.user_metadata.farcaster_id : null
 
-    if (userId) {
+    if (usersFID) {
       const { data: userFromSessions, error } = await supabase
         .from("sessions")
         .select()
-        .eq("user_id", userId)
-
+        .eq("farcaster_id", usersFID)
       return userFromSessions && userFromSessions.length
         ? userFromSessions[0]
         : null

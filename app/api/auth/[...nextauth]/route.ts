@@ -1,14 +1,9 @@
 // app/api/auth/[...nextauth]/route.ts
 
+import { createClient } from "@/clients/supabase/server"
 import { LinearClient } from "@linear/sdk"
-import { createClient } from "@supabase/supabase-js"
 import NextAuth from "next-auth"
 import { OAuthConfig } from "next-auth/providers"
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 const redirect_uri = `${process.env.API_URL}/api/auth/callback/linear`
 const linearUrl = "https://linear.app/oauth/authorize"
@@ -56,48 +51,21 @@ const handler = NextAuth({
       const { user, account, profile, credentials } = params
       try {
         const accessToken = account?.access_token
-        const userId = user?.id
         const email = profile?.email
+        const supabase = createClient()
+        const {
+          data: { user },
+          error: errorLoggingIn,
+        } = await supabase.auth.getUser()
 
-        if (email) {
-          // check if user is already connected via notion
-          const {
-            data: { user },
-            error: errorLoggingIn,
-          } = await supabase.auth.getUser()
-          if (!user) {
-            const { data: authSignupData, error: authSignupError } =
-              await supabase.auth.signUp({
-                email: email,
-                password: userId,
-              })
-            if (authSignupError) {
-              // we've already done this and will login the user
-              const { data: authSignInData, error: authSignInError } =
-                await supabase.auth.signInWithPassword({
-                  email: email,
-                  password: userId,
-                })
-            }
-          }
-        }
-
-        const resForId = await supabase
-          .from("sessions")
-          .select("user_id")
-          .eq("email", email)
-        const id =
-          resForId.data && resForId.data.length
-            ? resForId.data[0].user_id
-            : null
+        const usersFid = user?.user_metadata.farcaster_id
 
         const buildSessionObject = (forNewAccount: boolean) => {
           let baseObject: any = {
             linear_access_token: accessToken as string,
-            email: email as string,
           }
           if (forNewAccount) {
-            baseObject.user_id = id
+            baseObject.user_id = usersFid
           }
           // if (id) {
           //   baseObject.id = id
@@ -107,19 +75,12 @@ const handler = NextAuth({
 
           return baseObject
         }
-        if (!id) {
-          let sessionObjectForNewAccount = buildSessionObject(true)
 
-          const resForInsertingData = await supabase
-            .from("sessions")
-            .insert(sessionObjectForNewAccount)
-        } else {
-          let sessionObject = buildSessionObject(false)
-          const res = await supabase
-            .from("sessions")
-            .update(sessionObject)
-            .eq("email", email)
-        }
+        let sessionObject = buildSessionObject(false)
+        const res = await supabase
+          .from("sessions")
+          .update(sessionObject)
+          .eq("farcaster_id", usersFid)
       } catch (e) {
         // console.error("error trying to update sessions for linear", e)
       }

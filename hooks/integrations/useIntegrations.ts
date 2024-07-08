@@ -5,7 +5,7 @@ import { useBoundStore } from "@/store"
 import { NeynarAuthButton, useNeynarContext } from "@neynar/react"
 import { signIn } from "next-auth/react"
 
-import { connectNotionAccount } from "@/app/actions"
+import { connectGithubAccount, connectNotionAccount } from "@/app/actions"
 
 const useIntegrations = () => {
   const {
@@ -13,14 +13,23 @@ const useIntegrations = () => {
     isConnectedToNotion,
     isConnectedToLinear,
     isConnectedToTwitter,
+    isConnectedToGithub,
   } = useBoundStore((state: any) => state)
+  const {
+    logoutUser,
+    isAuthenticated,
+    user: farcasterUser,
+  } = useNeynarContext()
 
-  const handleConnectNotion = async () => {
-    const res = isLoggedIn ? logoutUser() : await connectNotionAccount()
+  const handleSignIntoGithub = async () => {
+    try {
+      const signInRes = await connectGithubAccount()
+    } catch (e) {}
   }
 
   const handleSignIntoNotion = async () => {
     try {
+      alert("pzizza")
       const signInRes = await connectNotionAccount()
     } catch (e) {}
     // first sign in
@@ -30,13 +39,15 @@ const useIntegrations = () => {
   }
   const handleConnectLinear = async () => {
     try {
-      const res = await signIn("linear")
+      const res = await signIn("linear", undefined, {
+        farcaster_id: String(farcasterUser?.fid),
+      })
     } catch (e) {
       // console.log("error trying to connect ot linear", e)
     }
   }
+
   // FarcasterIntegration
-  const { logoutUser, isAuthenticated } = useNeynarContext()
   const integrationOptions = useMemo(() => {
     return [
       {
@@ -85,8 +96,29 @@ const useIntegrations = () => {
           { label: "Create a project for posts", status: "pending" },
         ],
       },
+      {
+        label: "Github",
+        image: "/social-account-logos/github-mark.png",
+
+        onClick: isConnectedToGithub ? () => {} : handleSignIntoGithub,
+        description: "Connect your Github account",
+        isConnected:
+          // userFromAuth &&
+          // userFromAuth.role === "authenticated" &&
+          isConnectedToGithub,
+        features: [
+          { label: "Create a repo for a post", status: "pending" },
+          { label: "Create a project for posts", status: "pending" },
+        ],
+      },
     ]
-  }, [isConnectedToLinear, isConnectedToNotion, isConnectedToTwitter])
+  }, [
+    isConnectedToLinear,
+    isConnectedToNotion,
+    isConnectedToGithub,
+    isConnectedToTwitter,
+    farcasterUser,
+  ])
   const connectedIntegrationImages = integrationOptions
     .filter((integration: any) => integration.isConnected)
     .map((integrationOption) => integrationOption.image)

@@ -21,8 +21,25 @@ export async function connectTwitterAccount() {
 export async function connectNotionAccount() {
   const supabase = createClient()
 
-  const { data, error } = await supabase.auth.signInWithOAuth({
+  const { data, error } = await supabase.auth.linkIdentity({
     provider: "notion",
+    options: {
+      redirectTo: `${process.env.API_URL}/auth/callback`,
+    },
+  })
+  if (error) {
+    console.log("error trying to link account", error)
+  }
+  if (data.url) {
+    redirect(`${data.url}`) // use the redirect API for your server framework
+  }
+}
+
+export async function connectGithubAccount() {
+  const supabase = createClient()
+
+  const { data, error } = await supabase.auth.linkIdentity({
+    provider: "github",
     options: {
       redirectTo: `${process.env.API_URL}/auth/callback`,
     },
@@ -30,7 +47,4 @@ export async function connectNotionAccount() {
   if (data.url) {
     redirect(data.url) // use the redirect API for your server framework
   }
-
-  const { data: linkedIdentity, error: errorLinkingIdentity } =
-    await supabase.auth.linkIdentity({ provider: "notion" })
 }

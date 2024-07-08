@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useBoundStore } from "@/store"
-import { useNeynarContext } from "@neynar/react"
+import { NeynarAuthButton, useNeynarContext } from "@neynar/react"
 
 import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
@@ -63,6 +63,7 @@ export function DesktopNav({ items }: MainNavProps) {
         <div className="flex w-full flex-1 items-center justify-end space-x-4">
           <nav className="xl:min-w-200 flex w-fit items-center space-x-1 ">
             <IntegrationsDropdown />
+            <NeynarAuthButton />
             <ThemeToggle />
           </nav>
         </div>
