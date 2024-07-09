@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import { useBoundStore } from "@/store"
-import { NeynarAuthButton, useNeynarContext } from "@neynar/react"
+import { useNeynarContext } from "@neynar/react"
 import { signIn } from "next-auth/react"
 
 import { connectGithubAccount, connectNotionAccount } from "@/app/actions"
@@ -50,22 +50,22 @@ const useIntegrations = () => {
   // FarcasterIntegration
   const integrationOptions = useMemo(() => {
     return [
-      {
-        label: "Farcaster",
-        image: "/social-account-logos/farcaster-purple-white.png",
-        onClick: isAuthenticated ? logoutUser : () => {},
-        description: "Connect your Farcaster account",
-        customButton: NeynarAuthButton,
-        isConnected: isAuthenticated,
-        features: [
-          { label: "See your casts and reactions", status: "live" },
-          {
-            label: "Filter on users you are followed by & follow",
-            status: "live",
-          },
-          { label: "Create bounties using Bountycaster", status: "live" },
-        ],
-      },
+      // {
+      //   label: "Farcaster",
+      //   image: "/social-account-logos/farcaster-purple-white.png",
+      //   onClick: isAuthenticated ? logoutUser : () => {},
+      //   description: "Connect your Farcaster account",
+      //   customButton: NeynarAuthButton,
+      //   isConnected: isAuthenticated,
+      //   features: [
+      //     { label: "See your casts and reactions", status: "live" },
+      //     {
+      //       label: "Filter on users you are followed by & follow",
+      //       status: "live",
+      //     },
+      //     { label: "Create bounties using Bountycaster", status: "live" },
+      //   ],
+      // },
       {
         label: "Notion",
         image: "/social-account-logos/notion-logo.png",

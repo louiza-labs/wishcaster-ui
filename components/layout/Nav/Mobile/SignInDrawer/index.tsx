@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useSearchParams } from "next/navigation"
-import { useNeynarContext } from "@neynar/react"
+import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
 
 import useIntegrations from "@/hooks/integrations/useIntegrations"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
@@ -30,6 +30,8 @@ const IntegrationsDropdownItem = ({
   handleClick,
   isConnected,
 }: IntegrationsCardProps) => {
+  const { logoutUser, user } = useNeynarContext()
+
   return (
     <div
       onClick={handleClick}
@@ -72,22 +74,36 @@ function SignInDrawer() {
             <span className="ml-0 text-2xl font-bold"> Connect accounts </span>
             <span className="ml-0 text-lg font-light">
               {" "}
-              Save and personalize your feed
+              Sign into Farcaster to connect more accounts
             </span>
           </div>
 
           <ScrollArea className="mt-6 flex h-[calc(100vh-8rem)] flex-col items-center justify-center pb-2 ">
             <div className="flex w-full flex-col items-start justify-start gap-y-4">
-              {integrationOptions.map((integration: any) => (
-                <IntegrationsDropdownItem
-                  title={integration.label}
-                  description={integration.description}
-                  image={integration.image}
-                  handleClick={integration.onClick}
-                  isConnected={integration.isConnected}
-                  key={integration.label}
-                />
-              ))}
+              <Button
+                variant={"secondary"}
+                className=" whitespace-nowrap font-semibold"
+              >
+                <NeynarAuthButton
+                  variant={SIWN_variant.FARCASTER}
+                  label="Connect Farcaster"
+                  className="text-inter bg-transparent shadow-none dark:text-white"
+                />{" "}
+              </Button>
+              {user && user.pfp_url ? (
+                <>
+                  {integrationOptions.map((integration: any) => (
+                    <IntegrationsDropdownItem
+                      title={integration.label}
+                      description={integration.description}
+                      image={integration.image}
+                      handleClick={integration.onClick}
+                      isConnected={integration.isConnected}
+                      key={integration.label}
+                    />
+                  ))}
+                </>
+              ) : null}
             </div>
           </ScrollArea>
         </SheetContent>

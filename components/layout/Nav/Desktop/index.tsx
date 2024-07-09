@@ -2,13 +2,23 @@
 
 import Link from "next/link"
 import { useBoundStore } from "@/store"
-import { NeynarAuthButton, useNeynarContext } from "@neynar/react"
+import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
 
 import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 import useGetSession from "@/hooks/auth/useGetSession"
 import useGetUser from "@/hooks/auth/useGetUser"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import IntegrationsDropdown from "@/components/account/integrations/IntegrationsDropdown"
 import { Icons } from "@/components/icons"
 import Search from "@/components/search"
@@ -61,10 +71,39 @@ export function DesktopNav({ items }: MainNavProps) {
           <Search />
         </div>
         <div className="flex w-full flex-1 items-center justify-end space-x-4">
-          <nav className="xl:min-w-200 flex w-fit items-center space-x-1 ">
-            <IntegrationsDropdown />
-            <NeynarAuthButton />
+          <nav className="xl:min-w-200 flex w-fit items-center space-x-4 ">
             <ThemeToggle />
+            {user && user.pfp_url ? <IntegrationsDropdown /> : null}
+            {!user ? (
+              <div className="z-10 w-fit lg:flex">
+                <Button variant={"outline"}>
+                  <NeynarAuthButton
+                    variant={SIWN_variant.FARCASTER}
+                    label="Connect Farcaster"
+                    className="text-inter whitespace-nowrap rounded-sm border border-slate-200 bg-transparent shadow-none dark:text-white"
+                  />
+                </Button>
+              </div>
+            ) : user && user.pfp_url ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger className=" w-fit border-none " asChild>
+                  <Button variant={"ghost"}>
+                    <Avatar className="size-8">
+                      <AvatarImage src={user.pfp_url} alt={user.username} />
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent className="w-56">
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem onClick={() => logoutUser()}>
+                      Disconnect accounts
+                      <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : null}{" "}
           </nav>
         </div>
       </div>
