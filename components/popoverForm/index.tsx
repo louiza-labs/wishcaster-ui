@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 
 interface PopoverFormProps {
@@ -108,7 +109,12 @@ export function PopoverForm({
                       >
                         <Label htmlFor="width">{field.label}</Label>
 
-                        {field.inputType === "select" ? (
+                        {field.inputType === "boolean" ? (
+                          <Switch
+                            onChange={field.handleChange}
+                            value={field.value}
+                          />
+                        ) : field.inputType === "select" ? (
                           <Select
                             onValueChange={field.handleChange}
                             value={field.value}

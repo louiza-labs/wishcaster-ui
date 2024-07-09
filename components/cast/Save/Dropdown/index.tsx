@@ -2,6 +2,7 @@
 
 import { useBoundStore } from "@/store"
 
+import useGithub from "@/hooks/github/useGithub"
 import useLinear from "@/hooks/linear/useLinear"
 import useNotion from "@/hooks/notion/useNotion"
 import { Button } from "@/components/ui/button"
@@ -45,9 +46,18 @@ const SaveCastDropdown = ({
     successfullySubmittedIssue: successfullySubmittedToNotion,
   } = useNotion(cast.hash ?? "", notionResults)
 
-  const { isConnectedToNotion, isConnectedToLinear } = useBoundStore(
-    (state: any) => state
-  )
+  const {
+    fieldsForCreatingAnIssue: fieldsForGithub,
+    handleSubmitIssue: handleSubmitForGithub,
+    successfullyCreatedRepo,
+    errorCreatingRepo,
+    creatingRepo,
+    createdRepoResult,
+    handleClose: handleCloseGithub,
+  } = useGithub(cast.hash ?? "")
+
+  const { isConnectedToNotion, isConnectedToGithub, isConnectedToLinear } =
+    useBoundStore((state: any) => state)
 
   return (
     <DropdownMenu>
@@ -68,6 +78,20 @@ const SaveCastDropdown = ({
       <DropdownMenuContent className="w-56">
         <DropdownMenuGroup>
           <PopoverForm
+            handleSubmit={handleSubmitForGithub}
+            handleClose={() => {}}
+            inputFields={fieldsForGithub}
+            buttonText="Create Github Repo"
+            formTitle="Create Github Repository"
+            buttonImage={"/social-account-logos/notion-logo.png"}
+            onClose={handleCloseGithub}
+            isDisabled={!isConnectedToGithub}
+            submittingForm={creatingRepo}
+            errorSubmittingForm={errorCreatingRepo}
+            successfullySubmittingForm={successfullyCreatedRepo}
+            formDescription="Create a Github Reposity for this cast on your connected Github account"
+          />
+          <PopoverForm
             handleSubmit={handleSubmitIssue}
             handleClose={() => {}}
             inputFields={fieldsForCreatingAnIssue}
@@ -83,18 +107,18 @@ const SaveCastDropdown = ({
           />
 
           <PopoverForm
-            handleSubmit={handleSubmitIssue}
+            handleSubmit={handleSubmitForNotion}
             handleClose={() => {}}
             inputFields={fieldsForCreatingAnIssue}
             buttonText="Add to Notion"
             formTitle="Add to Notion"
             buttonImage={"/social-account-logos/notion-logo.png"}
-            onClose={handleClose}
+            onClose={handleCloseNotion}
             isDisabled={!isConnectedToNotion}
-            submittingForm={submittingIssue}
-            errorSubmittingForm={errorSubmittingIssue}
-            successfullySubmittingForm={successfullySubmittedIssue}
-            formDescription="Create a page or database entry for this cast on your connected Notion account"
+            submittingForm={submittingToNotion}
+            errorSubmittingForm={errorSubmittingToNotion}
+            successfullySubmittingForm={successfullySubmittedToNotion}
+            formDescription="Create a page for this cast on your connected Notion account"
           />
         </DropdownMenuGroup>
       </DropdownMenuContent>

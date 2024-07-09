@@ -42,6 +42,7 @@ export async function connectGithubAccount() {
     provider: "github",
     options: {
       redirectTo: `${process.env.API_URL}/auth/callback`,
+      scopes: `repo user`,
     },
   })
   if (data.url) {
