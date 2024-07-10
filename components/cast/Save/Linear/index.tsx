@@ -3,8 +3,8 @@
 import { Cast as CastType } from "@/types"
 
 import useLinear from "@/hooks/linear/useLinear"
-import MobileSave from "@/components/cast/Save/Linear/Mobile"
-import { PopoverForm } from "@/components/popoverForm"
+import SuccessUI from "@/components/cast/Save/Linear/SuccessUI"
+import MobileSave from "@/components/cast/Save/Mobile/SheetElements"
 
 interface SaveCastProps {
   cast: CastType
@@ -17,6 +17,7 @@ const SaveCastToLinear = ({ cast }: SaveCastProps) => {
     errorSubmittingIssue,
     handleClose,
     successfullySubmittedIssue,
+    successfulResult,
   } = useLinear(cast.hash ?? "")
 
   return (
@@ -29,25 +30,13 @@ const SaveCastToLinear = ({ cast }: SaveCastProps) => {
           buttonText="Add to Linear"
           formTitle="Add to Linear"
           onClose={handleClose}
+          cast={cast}
+          successResult={successfulResult}
+          SuccessUI={SuccessUI}
           submittingForm={submittingIssue}
           errorSubmittingForm={errorSubmittingIssue}
           successfullySubmittingForm={successfullySubmittedIssue}
-          formDescription="Create an issue for this cast on your connected Linear account"
-        />
-      </div>
-      <div className="hidden md:block">
-        <PopoverForm
-          handleSubmit={handleSubmitIssue}
-          handleClose={() => {}}
-          inputFields={fieldsForCreatingAnIssue}
-          buttonText="Add to Linear"
-          formTitle="Add to Linear"
-          onClose={handleClose}
-          submittingForm={submittingIssue}
-          defaultOpen={true}
-          hideButton={true}
-          errorSubmittingForm={errorSubmittingIssue}
-          successfullySubmittingForm={successfullySubmittedIssue}
+          successMessage="Successfully created an issue!"
           formDescription="Create an issue for this cast on your connected Linear account"
         />
       </div>

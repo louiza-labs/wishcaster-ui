@@ -1,5 +1,7 @@
 "use client"
 
+import { useState } from "react"
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -59,6 +61,10 @@ export function PopoverForm({
   SuccessUI,
   cast,
 }: PopoverFormProps) {
+  const [currentSuccessTab, setCurrentSuccessTab] = useState("result")
+  const handleSuccessTabChange = (val: string) => {
+    setCurrentSuccessTab(val)
+  }
   return (
     <Sheet onOpenChange={(val) => (!val ? onClose : null)}>
       <SheetTrigger asChild>
@@ -93,7 +99,12 @@ export function PopoverForm({
           ) : null}
         </div>
         {successfullySubmittingForm ? (
-          <Tabs defaultValue="result" className="mt-4 flex flex-col gap-y-4">
+          <Tabs
+            defaultValue="result"
+            value={currentSuccessTab}
+            onValueChange={handleSuccessTabChange}
+            className="mt-4 flex flex-col gap-y-4"
+          >
             <TabsList className="flex flex-row items-start  justify-around bg-transparent  text-lg font-semibold  sm:h-full">
               {/* <TabsTrigger value="count">Count</TabsTrigger> */}
               {/* <TabsTrigger className="  text-left" value="info">

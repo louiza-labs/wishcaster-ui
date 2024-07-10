@@ -153,14 +153,29 @@ const Rankings = ({ casts, view }: RankingsProps) => {
     const topicLabel =
       PRODUCT_CATEGORIES_AS_MAP[value.name]?.label || value.name
     return (
-      <CardStat
-        title={`#${index}`}
-        value={value.value}
-        rank={index}
-        topic={topicLabel}
-        isToggled={badgeIsToggled(value.name)}
-        handleClick={() => handleToggleCategoryClick(value.name)}
-      />
+      <>
+        <div className="flex xl:hidden">
+          <div className="md:cols-span-3 col-span-1">
+            <Badge
+              onClick={() => handleToggleCategoryClick(value.name)}
+              variant={badgeIsToggled(value.name) ? "default" : "outline"}
+              className="h-10 w-fit cursor-pointer whitespace-nowrap"
+            >
+              {topicLabel}
+            </Badge>
+          </div>
+        </div>
+        <div className="hidden xl:flex">
+          <CardStat
+            title={`#${index}`}
+            value={value.value}
+            rank={index}
+            topic={topicLabel}
+            isToggled={badgeIsToggled(value.name)}
+            handleClick={() => handleToggleCategoryClick(value.name)}
+          />
+        </div>
+      </>
     )
   }
 
@@ -187,10 +202,11 @@ const Rankings = ({ casts, view }: RankingsProps) => {
           >
             Trending Topics
           </h3>
+
           <Tabs
             orientation="vertical"
             defaultValue="likes"
-            className="flex w-full flex-col items-center gap-y-2 md:w-fit md:items-start"
+            className="hidden w-full flex-col items-center gap-y-2 md:w-fit md:items-start xl:flex"
           >
             <TabsList className="flex size-auto items-start md:h-full md:w-fit md:flex-col lg:flex-col xl:flex-row">
               <TabsTrigger
@@ -222,6 +238,9 @@ const Rankings = ({ casts, view }: RankingsProps) => {
               <RankedValues values={rankedTopicsByRecasts} />
             </TabsContent>
           </Tabs>
+          <div className="-mt-4 flex xl:hidden">
+            <RankedValues values={rankedTopicsByLikes} />
+          </div>
         </div>
       ) : (
         <div className="flex flex-col  gap-y-2">
