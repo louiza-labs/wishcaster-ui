@@ -32,10 +32,13 @@ const DateFilter = ({
             <SelectValue placeholder="📆 Date" />
           </SelectTrigger>
           <SelectContent>
-            {datesArray.map((dateVal) => {
+            {datesArray.map((dateVal, index: number) => {
               if (dateVal) {
                 return (
-                  <SelectItem value={dateVal.value} key={dateVal.label}>
+                  <SelectItem
+                    value={dateVal.value}
+                    key={dateVal.label + index + dateVal.value}
+                  >
                     {dateVal.label}
                   </SelectItem>
                 )
@@ -50,7 +53,7 @@ const DateFilter = ({
               <Button
                 variant={"ghost"}
                 onClick={dateVal.handleChange}
-                key={dateVal.value + index}
+                key={dateVal.label + index + dateVal.value}
               >
                 <p
                   className={cn(

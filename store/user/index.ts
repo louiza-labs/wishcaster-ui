@@ -3,6 +3,7 @@ export const createUserSlice = (set: any) => ({
   isConnectedToNotion: false,
   isConnectedToLinear: false,
   isConnectedToTwitter: false,
+  isConnectedToGithub: false,
   setLoggedIn: (loggedInState: boolean) =>
     set(() => ({ isLoggedIn: loggedInState })),
   setIsConnectedToNotion: (loggedInState: boolean) =>
@@ -11,4 +12,6 @@ export const createUserSlice = (set: any) => ({
     set(() => ({ isConnectedToLinear: loggedInState })),
   setIsConnectedToTwitter: (loggedInState: boolean) =>
     set(() => ({ isConnectedToTwitter: loggedInState })),
+  setIsConnectedToGithub: (loggedInState: boolean) =>
+    set(() => ({ isConnectedToGithub: loggedInState })),
 })

@@ -363,6 +363,10 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
       "learn",
     ]),
   },
+  analytics: {
+    label: "🔬 Analytics",
+    keywords: new Set(["analytics", "stats", "data-points"]),
+  },
   charity: {
     label: "❤️ Charity",
     keywords: new Set(["charity", "donation", "donate", "philanthropy"]),

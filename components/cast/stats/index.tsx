@@ -20,9 +20,9 @@ interface CardStatProp {
 }
 const CardStat = ({ title, value }: CardStatProp) => {
   return (
-    <Card className="w-32">
-      <CardHeader className="flex flex-col items-center justify-center p-6">
-        <CardDescription className="text-4xl font-bold text-black dark:text-white">
+    <Card className="w-32 lg:w-24 2xl:w-32">
+      <CardHeader className="flex flex-col items-center justify-center p-6 lg:p-4 2xl:p-6">
+        <CardDescription className="text-4xl font-bold text-black dark:text-white lg:text-2xl 2xl:text-4xl">
           {value}
         </CardDescription>
 

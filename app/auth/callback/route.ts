@@ -5,7 +5,8 @@ import { NextResponse } from "next/server"
 import { createServerClient, type CookieOptions } from "@supabase/ssr"
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url)
+  const { searchParams, origin, pathname } = new URL(request.url)
+
   const code = searchParams.get("code")
   // if "next" is in param, use it as the redirect URL
   const next = searchParams.get("next") ?? "/"
@@ -29,64 +30,57 @@ export async function GET(request: Request) {
         },
       }
     )
+    const authedUser = await supabase.auth.getUser()
+
     const { error, data } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
       const session = data.session
       if (session && session.provider_token) {
+        const userMetadata = data.user.user_metadata
+        const usersFID = userMetadata?.farcaster_id
         const providerToken = session.provider_token
         const refreshToken = session.provider_refresh_token
-        const userId = data.user.id // or however you get the user's ID
         const userEmail = data.user.email
-        const provider = data.user.user_metadata.iss.includes("notion")
-          ? "notion"
-          : "twitter"
+        const provider =
+          providerToken && providerToken.includes("secret_")
+            ? "notion"
+            : providerToken && providerToken.includes("gho_")
+            ? "github"
+            : "twitter"
         try {
           // first get id from sessions
-          const resForId = await supabase
-            .from("sessions")
-            .select("id")
-            .eq("user_id", userId)
-          const id =
-            resForId.data && resForId.data.length ? resForId.data[0].id : null
+
           const buildSessionObject = (forNewAccount: boolean) => {
             let baseObject: any = {
-              notion_access_token: "",
-              notion_refresh_token: "", // Add this line
-              twitter_access_token: "",
-              twitter_refresh_token: "", // Add this line
+              farcaster_id: usersFID,
               email: userEmail,
-              id: null,
+              id: usersFID,
             }
             if (forNewAccount) {
-              baseObject.user_id = id
+              baseObject.user_id = usersFID
             }
-            if (id) {
-              baseObject.id = id
-            }
+
             if (provider === "notion") {
               baseObject.notion_access_token = providerToken || ""
               baseObject.notion_refresh_token = refreshToken || ""
             } else if (provider === "twitter") {
               baseObject.twitter_access_token = providerToken || ""
               baseObject.twitter_refresh_token = refreshToken || ""
+            } else if (provider === "github") {
+              baseObject.github_access_token = providerToken || ""
+              baseObject.github_refresh_token = refreshToken || ""
             }
+
             baseObject.email = userEmail
 
             return baseObject
           }
-          if (!id) {
-            let sessionObjectForNewAccount = buildSessionObject(true)
-            const resForInsertingData = await supabase
-              .from("sessions")
-              .insert(sessionObjectForNewAccount)
-          } else {
-            let sessionsObjectForSignIn = {}
-            let sessionObject = buildSessionObject(false)
-            const res = await supabase
-              .from("sessions")
-              .update(sessionObject)
-              .eq("user_id", id)
-          }
+
+          let sessionObject = buildSessionObject(false)
+          const res = await supabase
+            .from("sessions")
+            .update(sessionObject)
+            .eq("farcaster_id", usersFID)
         } catch (e) {
           // console.error("error updating sessions", e)
         }

@@ -1,5 +1,7 @@
 "use client"
 
+import { NeynarAuthButton } from "@neynar/react"
+
 import useIntegrations from "@/hooks/integrations/useIntegrations"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -21,6 +23,7 @@ const IntegrationsDropdown = () => {
     image: string
     handleClick: any
     isConnected: boolean
+    CustomButton?: any
   }
 
   const IntegrationsDropdownItem = ({
@@ -29,18 +32,23 @@ const IntegrationsDropdown = () => {
     image,
     handleClick,
     isConnected,
+    CustomButton,
   }: IntegrationsCardProps) => {
     return (
       <DropdownMenuItem
         onClick={handleClick}
         className="flex cursor-pointer flex-row justify-between"
       >
-        <div className="flex flex-row items-center gap-x-2">
-          <Avatar className="size-6 rounded-full shadow-sm">
-            <AvatarImage className="p-0.5" src={image} alt={"name"} />
-          </Avatar>
-          <span>{title}</span>
-        </div>
+        {CustomButton ? (
+          <NeynarAuthButton />
+        ) : (
+          <div className="flex flex-row items-center gap-x-2">
+            <Avatar className="size-6 rounded-full shadow-sm">
+              <AvatarImage className="p-0.5" src={image} alt={"name"} />
+            </Avatar>
+            <span>{title}</span>
+          </div>
+        )}
         <span>
           {" "}
           {isConnected ? <Icons.circledCheck /> : <Icons.dottedCircle />}
@@ -74,6 +82,7 @@ const IntegrationsDropdown = () => {
               handleClick={integration.onClick}
               isConnected={integration.isConnected}
               key={integration.label}
+              CustomButton={integration.customButton}
             />
           ))}
         </DropdownMenuGroup>

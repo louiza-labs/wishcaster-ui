@@ -102,8 +102,10 @@ export async function createNotionItem(
         },
       ],
     })
-
-    return response
+    if (response) {
+      const { url } = response
+      return { url }
+    }
   } catch (e) {
     console.error("error creating a page", e)
   }

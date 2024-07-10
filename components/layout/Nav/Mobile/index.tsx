@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation"
 import { useBoundStore } from "@/store"
 import { useNeynarContext } from "@neynar/react"
 
-import useGetSession from "@/hooks/auth/useGetSession"
 import useGetUser from "@/hooks/auth/useGetUser"
+import useSubscribeToSessionChanges from "@/hooks/auth/useSubscribeToSessionChanges"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -24,10 +24,10 @@ import { ThemeToggle } from "@/components/theme-toggle"
 export function MobileNav() {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
   const { userFromAuth } = useGetUser()
-  const { session } = useGetSession(userFromAuth)
   const { isConnectedToNotion, isConnectedToLinear, isConnectedToTwitter } =
     useBoundStore((state: any) => state)
   const router = useRouter()
+  useSubscribeToSessionChanges()
   const handleRouteHome = () => {
     router.push("/")
   }
@@ -61,7 +61,7 @@ export function MobileNav() {
               <DropdownMenuContent className="w-56">
                 <DropdownMenuGroup>
                   <DropdownMenuItem onClick={() => logoutUser()}>
-                    Sign out
+                    Disconnect accounts
                     <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>

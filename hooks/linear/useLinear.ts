@@ -23,6 +23,7 @@ const useLinear = (castHash: string) => {
   const [errorSubmittingIssue, setErrorSubmittingIssue] = useState(false)
   const [successfullySubmittedIssue, setSuccessfullySubmittedIssue] =
     useState(false)
+  const [successfulResult, setSuccessfulResult] = useState({})
   const [projectId, setProjectId] = useState("")
 
   const handleTitleChange = (e: React.BaseSyntheticEvent) => {
@@ -88,6 +89,7 @@ const useLinear = (castHash: string) => {
       ${wcLinkForCast}
         `)
       setPriority(0)
+      setSuccessfulResult({})
       setProjectId("")
     }
   }
@@ -113,15 +115,24 @@ const useLinear = (castHash: string) => {
           priority,
           projectId
         )
-        setSubmittingIssue(false)
+
         if (res) {
           setSuccessfullySubmittedIssue(true)
+          setSuccessfulResult({
+            url: res.url,
+            name: res.title,
+            description: res.description,
+            priority: res.priority,
+            projectId: res.projectId,
+          })
         }
+        setSubmittingIssue(false)
       }
     } catch (e) {
+      alert("error")
       setErrorSubmittingIssue(true)
       setSubmittingIssue(false)
-      // console.error("error creating issue", e)
+      console.error("error creating issue", e)
     }
   }
 
@@ -131,6 +142,7 @@ const useLinear = (castHash: string) => {
     submittingIssue,
     errorSubmittingIssue,
     successfullySubmittedIssue,
+    successfulResult,
     handleClose,
   }
 }

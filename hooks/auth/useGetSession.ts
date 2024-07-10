@@ -1,11 +1,11 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 import { useBoundStore } from "@/store"
 
 import { getUserFromSessionsTable } from "@/app/actions"
 
-const useGetSession = (user: any, intervalDuration = 1000) => {
+const useGetSession = (user: any, intervalDuration = 5000) => {
   const [session, setSession] = useState({})
   const [isFetching, setIsFetching] = useState(true)
 
@@ -27,6 +27,13 @@ const useGetSession = (user: any, intervalDuration = 1000) => {
     (state: any) => state.setIsConnectedToTwitter
   )
 
+  const isConnectedToGithub = useBoundStore(
+    (state: any) => state.isConnectedToGithub
+  )
+  const setIsConnectedToGithub = useBoundStore(
+    (state: any) => state.setIsConnectedToGithub
+  )
+
   const fetchIdentities = useCallback(async () => {
     try {
       const sessionRes = await getUserFromSessionsTable()
@@ -39,35 +46,22 @@ const useGetSession = (user: any, intervalDuration = 1000) => {
       if (sessionRes.twitter_access_token) {
         setIsConnectedToTwitter(true)
       }
+      if (sessionRes.github_access_token) {
+        setIsConnectedToGithub(true)
+      }
       setSession(sessionRes)
     } catch (error) {}
-  }, [setIsConnectedToNotion, setIsConnectedToLinear, setIsConnectedToTwitter])
-
-  useEffect(() => {
-    if (user) {
-      const interval = setInterval(() => {
-        fetchIdentities()
-
-        // Stop fetching if both connections are established
-        if (isConnectedToNotion && isConnectedToLinear) {
-          setIsFetching(false)
-          clearInterval(interval)
-        }
-      }, intervalDuration)
-
-      return () => clearInterval(interval)
-    }
   }, [
-    user,
-    isConnectedToNotion,
-    isConnectedToLinear,
-    fetchIdentities,
-    intervalDuration,
+    setIsConnectedToNotion,
+    setIsConnectedToLinear,
+    setIsConnectedToTwitter,
+    setIsConnectedToGithub,
   ])
 
   return {
     session,
     isFetching,
+    fetchIdentities,
   }
 }
 
