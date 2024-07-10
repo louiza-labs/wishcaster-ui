@@ -105,7 +105,7 @@ const SaveCastDropdown = ({
             inputFields={fieldsForCreatingAnIssue}
             buttonText="Add to Linear"
             cast={cast}
-            formTitle="Add to Linear"
+            formTitle="Add to your Linear"
             successResult={successfulResult}
             onClose={handleClose}
             SuccessUI={LinearSuccessUI}
@@ -122,7 +122,7 @@ const SaveCastDropdown = ({
             handleClose={() => {}}
             inputFields={fieldsForNotion}
             buttonText="Add to Notion"
-            formTitle="Add to Notion"
+            formTitle="Add to your Notion"
             cast={cast}
             buttonImage={"/social-account-logos/notion-logo.png"}
             onClose={handleCloseNotion}

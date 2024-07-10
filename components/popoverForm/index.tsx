@@ -96,7 +96,19 @@ export function PopoverForm({
       >
         <div className="space-y-2">
           {formTitle ? (
-            <h4 className="font-medium leading-none">{formTitle}</h4>
+            <div className="flex flex-row items-center gap-x-2">
+              {buttonImage ? (
+                <Avatar className="relative size-10">
+                  {buttonImage ? (
+                    <AvatarImage src={buttonImage} alt={buttonText} />
+                  ) : null}
+                  <AvatarFallback className="text-sm font-semibold">
+                    {buttonText}
+                  </AvatarFallback>
+                </Avatar>
+              ) : null}
+              <h4 className="font-medium leading-none">{formTitle}</h4>
+            </div>
           ) : null}
           {formDescription ? (
             <p className="text-sm text-muted-foreground">{formDescription} </p>
