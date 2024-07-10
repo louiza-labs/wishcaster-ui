@@ -47,15 +47,10 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const sortParam = parseQueryParam(searchParams.sort)
   const userId = null
   const notionAccessCode = await getUsersNotionAccessCode()
-  const notionSearch = await searchNotion(notionAccessCode)
+  const notionSearch = notionAccessCode
+    ? await searchNotion(notionAccessCode)
+    : { results: [] }
   const notionResults = notionSearch.results
-
-  if (userId) {
-    // Query DB for user specific information or display assets only to signed in users
-  }
-
-  // Get the Backend API User object when you need access to the user's information
-  // let linear = await getLinearIssues()
 
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)

@@ -28,7 +28,7 @@ export function SortGroup({
               <RadioGroupItem
                 value={sortByObject.value}
                 id={sortByObject.value}
-                key={sortByObject.value + sortByObject.label + index}
+                key={sortByObject.value + sortByObject.label + Math.random()}
               />
               <Label htmlFor={sortByObject.value}>{sortByObject.label}</Label>
             </div>

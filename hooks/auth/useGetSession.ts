@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 import { useBoundStore } from "@/store"
 
 import { getUserFromSessionsTable } from "@/app/actions"
@@ -58,31 +58,10 @@ const useGetSession = (user: any, intervalDuration = 5000) => {
     setIsConnectedToGithub,
   ])
 
-  useEffect(() => {
-    if (user) {
-      const interval = setInterval(() => {
-        fetchIdentities()
-
-        // Stop fetching if both connections are established
-        if (isConnectedToNotion && isConnectedToLinear) {
-          setIsFetching(false)
-          clearInterval(interval)
-        }
-      }, intervalDuration)
-
-      return () => clearInterval(interval)
-    }
-  }, [
-    user,
-    isConnectedToNotion,
-    isConnectedToLinear,
-    fetchIdentities,
-    intervalDuration,
-  ])
-
   return {
     session,
     isFetching,
+    fetchIdentities,
   }
 }
 

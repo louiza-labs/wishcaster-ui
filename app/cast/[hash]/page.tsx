@@ -62,7 +62,9 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
     : undefined
 
   const notionAccessCode = await getUsersNotionAccessCode()
-  const notionSearch = await searchNotion(notionAccessCode)
+  const notionSearch = notionAccessCode
+    ? await searchNotion(notionAccessCode)
+    : { results: [] }
   const notionResults = notionSearch.results
   const { casts: initialCasts, nextCursor: cursorToUse } = !timeFilterParam
     ? await fetchChannelCasts("someone-build")

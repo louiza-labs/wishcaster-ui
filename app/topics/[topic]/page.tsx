@@ -52,7 +52,9 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   const sortParam = parseQueryParam(searchParams.sort)
 
   const notionAccessCode = await getUsersNotionAccessCode()
-  const notionSearch = await searchNotion(notionAccessCode)
+  const notionSearch = notionAccessCode
+    ? await searchNotion(notionAccessCode)
+    : { results: [] }
   const notionResults = notionSearch.results
 
   const selectedTopic = params.topic

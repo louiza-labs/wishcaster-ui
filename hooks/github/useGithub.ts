@@ -111,7 +111,6 @@ const useGithub = (castHash: string) => {
         setIsCreatingRepo(false)
         if (res && res[0]) {
           setSuccessfullyCreatedRepo(true)
-          console.log("the res", res)
           setCreatedRepoResult(res[0])
         }
       }
