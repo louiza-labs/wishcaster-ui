@@ -66,6 +66,10 @@ const useIntegrations = () => {
     }
   }, [farcasterUser])
 
+  useEffect(() => {
+    updateIdentities()
+  }, [])
+
   const handleSignIntoGithub = async () => {
     if (farcasterUser && farcasterUser.custody_address) {
       try {
