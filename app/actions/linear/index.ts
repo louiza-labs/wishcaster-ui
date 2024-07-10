@@ -3,12 +3,18 @@
 import { createClient } from "@/clients/supabase/server"
 import { LinearClient } from "@linear/sdk"
 
-export const getLinearOauthToken = async (email: string) => {
+export const getLinearOauthToken = async () => {
   const supabase = createClient()
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
+  const userMetatada = user ? user.user_metadata : {}
+  const farcaster_id = userMetatada.farcaster_id
   const userRes = await supabase
     .from("sessions")
     .select("linear_access_token")
-    .eq("email", email)
+    .eq("farcaster_id", farcaster_id)
   if (userRes && userRes.data && userRes.data.length) {
     let userId = userRes.data[0].linear_access_token
     return userId
@@ -16,8 +22,8 @@ export const getLinearOauthToken = async (email: string) => {
   return null
 }
 
-export const getLinearInfo = async (email: string) => {
-  const accessToken = await getLinearOauthToken(email)
+export const getLinearInfo = async () => {
+  const accessToken = await getLinearOauthToken()
   if (!accessToken) return
   const linearC = new LinearClient({
     accessToken: accessToken,
@@ -39,7 +45,7 @@ export const createLinearIssue = async (
   projectId = ""
 ) => {
   try {
-    const accessToken = await getLinearOauthToken(emailForLoggedInUser)
+    const accessToken = await getLinearOauthToken()
 
     if (!accessToken) return
     const linearC = new LinearClient({
@@ -57,8 +63,13 @@ export const createLinearIssue = async (
         priority: priority ? Number(priority) : undefined,
         projectId: projectId && projectId.length ? projectId : undefined,
       })
-
-      return result.success
+      const issue = await result.issue
+      if (issue) {
+        const { url, title, description, priority, project } = issue
+        const fetchedProject = await project
+        const projectId = fetchedProject?.id
+        return { url, title, description, priority, projectId }
+      }
     }
   } catch (e) {
     console.error("error creating linear issue", e)

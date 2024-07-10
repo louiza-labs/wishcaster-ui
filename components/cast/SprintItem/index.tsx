@@ -14,6 +14,7 @@ interface CastComponentTypes extends CastType {
   handleToggleCategoryClick?: any
   badgeIsToggled?: any
   renderEmbeds?: boolean
+  hideActions?: boolean
   cast?: CastType
   isReply?: boolean
   category?: {
@@ -29,6 +30,7 @@ const SprintItemCast = ({
   parent_url,
   reactions,
   replies,
+  hideActions,
   category,
   embeds,
   hash,
@@ -84,6 +86,7 @@ const SprintItemCast = ({
           author={author}
           cast={cast}
           isReply={isReply}
+          hideActions={hideActions}
           notionResults={notionResults}
         />
       </CardFooter>

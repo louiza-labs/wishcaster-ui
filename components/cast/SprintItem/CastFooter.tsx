@@ -18,6 +18,7 @@ interface CastFooterProps {
   hash: string
   author: any
   isReply?: boolean
+  hideActions?: boolean
   notionResults?: any
   reactions: {
     likes_count: number
@@ -34,6 +35,7 @@ const CastFooter = ({
   author,
   isReply,
   isEmbedded,
+  hideActions,
   cast,
   notionResults,
 }: CastFooterProps) => {
@@ -123,7 +125,7 @@ const CastFooter = ({
               Build
             </Button>
           )}
-          {isEmbedded || isReply ? null : (
+          {hideActions || isEmbedded || isReply ? null : (
             <SaveCast cast={cast} notionResults={notionResults} />
           )}
         </div>

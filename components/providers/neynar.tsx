@@ -47,7 +47,6 @@ export default function NeynarProvider({
 
   // 3. create user via auth
   const createAuthUser = async (fid: Number, address: string) => {
-    alert(address)
     const supabase = createClient()
 
     const { data, error } = await supabase.auth.signUp({

@@ -5,6 +5,7 @@ import { Octokit } from "octokit"
 import { connectGithubAccount, getUserFromSessionsTable } from "@/app/actions"
 
 export const createGithubRepoForUser = async (
+  farcaster_custody_address: string,
   repoName: string,
   repoDescription: string,
   homepage = "",
@@ -32,7 +33,9 @@ export const createGithubRepoForUser = async (
     }
   } else {
     // connect account
-    const resForLinkingAccount = await connectGithubAccount()
+    const resForLinkingAccount = await connectGithubAccount(
+      farcaster_custody_address
+    )
     const sessionRes = await getUserFromSessionsTable()
     const githubAccessToken = sessionRes.github_access_token
     try {

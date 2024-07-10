@@ -6,8 +6,9 @@ import { useBoundStore } from "@/store"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import SaveToLinear from "@/components/cast/Save/Linear/index"
-import SaveToNotion from "@/components/cast/Save/Notion/index"
+import SaveToGithub from "@/components/cast/Save/Github/"
+import SaveToLinear from "@/components/cast/Save/Linear"
+import SaveToNotion from "@/components/cast/Save/Notion"
 
 function parseQueryParam(param?: string | string[]): string {
   return Array.isArray(param) ? param.join(",") : param || ""
@@ -20,9 +21,8 @@ interface MobileSaveProps {
 }
 
 function MobileSave({ cast, notionResults, onClose }: MobileSaveProps) {
-  const { isConnectedToNotion, isConnectedToLinear } = useBoundStore(
-    (state: any) => state
-  )
+  const { isConnectedToNotion, isConnectedToLinear, isConnectedToGithub } =
+    useBoundStore((state: any) => state)
   return (
     <React.Suspense>
       <Sheet>
@@ -49,6 +49,14 @@ function MobileSave({ cast, notionResults, onClose }: MobileSaveProps) {
             Info
           </TabsTrigger> */}
               <TabsTrigger
+                disabled={!isConnectedToGithub}
+                className="flex flex-row items-center gap-x-2 text-left"
+                value="github"
+              >
+                {/* <Icons.activity className="size-4" /> */}
+                Github
+              </TabsTrigger>
+              <TabsTrigger
                 disabled={!isConnectedToLinear}
                 className="flex flex-row items-center gap-x-2 text-left"
                 value="linear"
@@ -66,7 +74,9 @@ function MobileSave({ cast, notionResults, onClose }: MobileSaveProps) {
                 Notion
               </TabsTrigger>
             </TabsList>
-
+            <TabsContent className=" h-full" value="github">
+              <SaveToGithub cast={cast} />
+            </TabsContent>
             <TabsContent className=" h-full" value="linear">
               <SaveToLinear cast={cast} />
             </TabsContent>

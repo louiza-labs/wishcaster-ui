@@ -21,6 +21,7 @@ const useNotion = (castHash: string, notionResults = <any>[]) => {
   const [parentDBId, setParentDBId] = useState("")
   const [priority, setPriority] = useState(0)
   const [isPageOrDB, setIsPageOrDB] = useState("page")
+  const [successResult, setSuccessResult] = useState({})
   const [submittingIssue, setSubmittingIssue] = useState(false)
   const [errorSubmittingIssue, setErrorSubmittingIssue] = useState(false)
   const [successfullySubmittedIssue, setSuccessfullySubmittedIssue] =
@@ -145,6 +146,7 @@ const useNotion = (castHash: string, notionResults = <any>[]) => {
       setParentPageId("")
       setParentDBId("")
       setProjectId("")
+      setSuccessResult({})
     }
   }
 
@@ -171,6 +173,7 @@ const useNotion = (castHash: string, notionResults = <any>[]) => {
         )
         setSubmittingIssue(false)
         if (res) {
+          setSuccessResult(res)
           setSuccessfullySubmittedIssue(true)
         }
       }
@@ -187,6 +190,7 @@ const useNotion = (castHash: string, notionResults = <any>[]) => {
     errorSubmittingIssue,
     successfullySubmittedIssue,
     handleClose,
+    successResult
   }
 }
 

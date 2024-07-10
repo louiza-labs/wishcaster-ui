@@ -5,11 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import {
   Select,
   SelectContent,
   SelectGroup,
@@ -18,8 +13,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
+import CastItem from "@/components/cast/SprintItem"
 
 interface PopoverFormProps {
   handleSubmit: () => void
@@ -37,6 +35,9 @@ interface PopoverFormProps {
   hideButton?: boolean
   buttonImage?: string
   isDisabled?: boolean
+  successResult?: any
+  SuccessUI: any
+  cast: any
 }
 export function PopoverForm({
   handleSubmit,
@@ -54,10 +55,13 @@ export function PopoverForm({
   buttonImage,
   isDisabled,
   hideButton,
+  successResult,
+  SuccessUI,
+  cast,
 }: PopoverFormProps) {
   return (
-    <Popover onOpenChange={onClose} defaultOpen={defaultOpen}>
-      <PopoverTrigger asChild disabled={isDisabled}>
+    <Sheet onOpenChange={(val) => (!val ? onClose : null)}>
+      <SheetTrigger asChild>
         <Button
           variant="ghost"
           disabled={isDisabled}
@@ -75,132 +79,211 @@ export function PopoverForm({
           ) : null}
           {Icon ? <Icon /> : buttonText}
         </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-full ">
-        <div className="grid gap-4">
-          {successfullySubmittingForm ? (
-            <div className="flex flex-col items-center justify-center gap-y-2">
-              <p className="text-lg font-bold">Success! 🥳</p>
-              {/* <p className="text-base font-light">Details:</p>
-            <div className="flex flex-col gap-y-4">
-              <div className="flex flex-row items-center justify-between">
-                <p className="text-sm font-semibold">Title</p>
-                </div>
-              </div> */}
-            </div>
-          ) : (
-            <>
-              <div className="space-y-2">
-                {formTitle ? (
-                  <h4 className="font-medium leading-none">{formTitle}</h4>
-                ) : null}
-                {formDescription ? (
-                  <p className="text-sm text-muted-foreground">
-                    {formDescription}{" "}
-                  </p>
-                ) : null}
-              </div>
-              <div className="grid gap-2">
-                {inputFields
-                  ? inputFields.map((field: any) => (
-                      <div
-                        key={field.id}
-                        className="grid grid-cols-3 items-center gap-4"
-                      >
-                        <Label htmlFor="width">{field.label}</Label>
+      </SheetTrigger>
+      <SheetContent
+        side={"right"}
+        className="flex min-h-full min-w-[30vw] flex-col gap-x-4 overflow-y-scroll  px-10  "
+      >
+        <div className="space-y-2">
+          {formTitle ? (
+            <h4 className="font-medium leading-none">{formTitle}</h4>
+          ) : null}
+          {formDescription ? (
+            <p className="text-sm text-muted-foreground">{formDescription} </p>
+          ) : null}
+        </div>
+        {successfullySubmittingForm ? (
+          <Tabs defaultValue="result" className="mt-4 flex flex-col gap-y-4">
+            <TabsList className="flex flex-row items-start  justify-around bg-transparent  text-lg font-semibold  sm:h-full">
+              {/* <TabsTrigger value="count">Count</TabsTrigger> */}
+              {/* <TabsTrigger className="  text-left" value="info">
+                Info
+              </TabsTrigger> */}
+              <TabsTrigger
+                className="flex flex-row items-center gap-x-2 text-left shadow-none"
+                value="result"
+              >
+                Result
+              </TabsTrigger>
 
-                        {field.inputType === "boolean" ? (
-                          <Switch
-                            onChange={field.handleChange}
-                            value={field.value}
-                          />
-                        ) : field.inputType === "select" ? (
-                          <Select
-                            onValueChange={field.handleChange}
-                            value={field.value}
-                          >
-                            <SelectTrigger className="w-[180px]">
-                              <SelectValue placeholder={field.placeholder}>
-                                {field.name}
-                              </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                <SelectLabel>{field.label}</SelectLabel>
-                                {field.options.map((option: any) => (
-                                  <SelectItem value={option.value}>
-                                    {option.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        ) : field.inputType === "textarea" ? (
-                          <Textarea
-                            id={field.id}
-                            value={field.value}
-                            placeholder={field.placeholder}
-                            onChange={field.handleChange}
-                            className="col-span-2 h-8"
-                          />
-                        ) : field.inputType === "number" ? (
-                          <Input
-                            id={field.id}
-                            value={field.value}
-                            placeholder={field.placeholder}
-                            onChange={field.handleChange}
-                            className="col-span-2 h-8"
-                            type="number"
-                          />
-                        ) : (
-                          <Input
-                            id={field.id}
-                            value={field.value}
-                            placeholder={field.placeholder}
-                            onChange={field.handleChange}
-                            className="col-span-2 h-8"
-                          />
-                        )}
-                      </div>
-                    ))
-                  : null}
-              </div>
-              <div className="mt-4 flex w-full  px-4">
-                {/* <Button onClick={handleClose} variant="destructive">
+              <TabsTrigger
+                className="flex flex-row items-center gap-x-2 text-left"
+                value="cast"
+              >
+                Cast
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent className="h-fit" value="result">
+              <SuccessUI fields={inputFields} result={successResult} />
+            </TabsContent>
+            <TabsContent className=" h-full" value="cast">
+              {cast ? (
+                <div className="size-full p-4">
+                  <CastItem
+                    {...cast}
+                    hideMetrics={false}
+                    badgeIsToggled={false}
+                    cast={cast}
+                    hideActions={true}
+                    routeToWarpcast={true}
+                    mentionedProfiles={cast.mentioned_profiles}
+                  />
+                </div>
+              ) : null}
+            </TabsContent>
+          </Tabs>
+        ) : (
+          <Tabs defaultValue="form" className="mt-4 flex flex-col gap-y-4">
+            <TabsList className="flex flex-row items-start  justify-around gap-x-10 bg-transparent  text-lg font-semibold  sm:h-full">
+              {/* <TabsTrigger value="count">Count</TabsTrigger> */}
+              {/* <TabsTrigger className="  text-left" value="info">
+              Info
+            </TabsTrigger> */}
+              <TabsTrigger
+                className="flex flex-row items-center gap-x-2  text-left"
+                value="form"
+              >
+                Form
+              </TabsTrigger>
+
+              <TabsTrigger
+                className="flex flex-row items-center gap-x-2 text-left"
+                value="cast"
+              >
+                Cast
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent className=" h-fit " value="form">
+              <>
+                <div className="flex h-full flex-col justify-between gap-4 ">
+                  {inputFields
+                    ? inputFields.map((field: any) => (
+                        <div
+                          key={field.id}
+                          className="flex flex-col items-start gap-4"
+                        >
+                          <Label htmlFor="width">{field.label}</Label>
+
+                          {field.inputType === "boolean" ? (
+                            <div className="flex flex-row items-center gap-x-4">
+                              <Switch
+                                onCheckedChange={field.handleChange}
+                                checked={field.value}
+                                required={field.isRequired}
+                              />
+                              <span className="text-sm font-semibold">
+                                {field.value ? "Private" : "Public"}
+                              </span>
+                            </div>
+                          ) : field.inputType === "select" ? (
+                            <Select
+                              onValueChange={field.handleChange}
+                              value={field.value}
+                              required={field.isRequired}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder={field.placeholder}>
+                                  {field.name}
+                                </SelectValue>
+                              </SelectTrigger>
+                              <SelectContent className="w-full">
+                                <SelectGroup>
+                                  <SelectLabel>{field.label}</SelectLabel>
+                                  {field.options.map((option: any) => (
+                                    <SelectItem value={option.value}>
+                                      {option.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          ) : field.inputType === "textarea" ? (
+                            <Textarea
+                              id={field.id}
+                              value={field.value}
+                              placeholder={field.placeholder}
+                              onChange={field.handleChange}
+                              className="col-span-2  min-h-[120px]"
+                              required={field.isRequired}
+                            />
+                          ) : field.inputType === "number" ? (
+                            <Input
+                              id={field.id}
+                              value={field.value}
+                              placeholder={field.placeholder}
+                              onChange={field.handleChange}
+                              className="col-span-2 h-8"
+                              type="number"
+                              required={field.isRequired}
+                            />
+                          ) : (
+                            <Input
+                              id={field.id}
+                              value={field.value}
+                              placeholder={field.placeholder}
+                              onChange={field.handleChange}
+                              className="col-span-2 h-8"
+                              required={field.isRequired}
+                            />
+                          )}
+                        </div>
+                      ))
+                    : null}
+                </div>
+                <div className="mt-10 flex w-full  px-4">
+                  {/* <Button onClick={handleClose} variant="destructive">
               Cancel
             </Button> */}
 
-                <Button
-                  className="w-full"
-                  onClick={handleSubmit}
-                  variant={
-                    submittingForm
-                      ? "outline"
-                      : errorSubmittingForm
-                      ? "destructive"
+                  <Button
+                    className="w-full"
+                    onClick={handleSubmit}
+                    variant={
+                      submittingForm
+                        ? "outline"
+                        : errorSubmittingForm
+                        ? "destructive"
+                        : successfullySubmittingForm
+                        ? "secondary"
+                        : "default"
+                    }
+                  >
+                    {submittingForm
+                      ? "Submitting"
                       : successfullySubmittingForm
-                      ? "secondary"
-                      : "default"
-                  }
-                >
-                  {submittingForm
-                    ? "Submitting"
-                    : successfullySubmittingForm
-                    ? "Submitted"
-                    : errorSubmittingForm
-                    ? "Error"
-                    : "Submit"}
-                  {submittingForm ? (
-                    <div className="ml-2 flex items-center">
-                      <div className="size-5 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-                    </div>
-                  ) : null}
-                </Button>
-              </div>
-            </>
-          )}
-        </div>
-      </PopoverContent>
-    </Popover>
+                      ? "Submitted"
+                      : errorSubmittingForm
+                      ? "Error"
+                      : "Submit"}
+                    {submittingForm ? (
+                      <div className="ml-2 flex items-center">
+                        <div className="size-5 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+                      </div>
+                    ) : null}
+                  </Button>
+                </div>
+              </>
+            </TabsContent>
+            <TabsContent className=" h-full" value="cast">
+              {cast ? (
+                <div className="size-full p-4">
+                  <CastItem
+                    {...cast}
+                    hideMetrics={false}
+                    badgeIsToggled={false}
+                    cast={cast}
+                    hideActions={true}
+                    routeToWarpcast={true}
+                    mentionedProfiles={cast.mentioned_profiles}
+                  />
+                </div>
+              ) : null}
+            </TabsContent>
+          </Tabs>
+        )}
+      </SheetContent>
+    </Sheet>
   )
 }

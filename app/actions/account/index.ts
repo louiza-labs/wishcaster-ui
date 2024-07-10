@@ -90,12 +90,12 @@ export async function getUsersNotionAccessCode() {
 
   try {
     const { data: user, error } = await supabase.auth.getUser()
-    const userId = user.user ? user.user.id : null
+    const userId = user.user ? user.user.user_metadata.farcaster_id : null
     if (userId) {
       const { data: userFromSessions, error } = await supabase
         .from("sessions")
         .select("notion_access_token")
-        .eq("user_id", userId)
+        .eq("farcaster_id", userId)
       const accessCode =
         userFromSessions && userFromSessions.length
           ? userFromSessions[0].notion_access_token
@@ -131,3 +131,83 @@ export async function getUserFromSessionsTable() {
 }
 
 type providerType = "twitter" | "notion" | "linear"
+
+export async function unlinkUsersSocialAccount(
+  socialAccount: "github" | "notion" | "linear"
+) {
+  const supabase = createClient()
+
+  if (socialAccount === "linear") return
+
+  try {
+    // retrieve all identites linked to a user
+    const { data: identities } = await supabase.auth.getUserIdentities()
+    const identitiesArray = identities?.identities
+    if (!identitiesArray || !Array.isArray(identitiesArray)) return
+    // find the google identity
+    const identityToUnlink = identitiesArray.find(
+      (identity) => identity.provider === socialAccount
+    )
+    if (!identityToUnlink) return
+
+    // unlink the google identity
+    const { error, data } = await supabase.auth.unlinkIdentity(identityToUnlink)
+    return { error, data }
+  } catch (e) {
+    console.error("error trying to unlink an identity", e)
+  }
+}
+
+export async function removeUsersSocialAccessTokenFromTable(
+  socialAccount: "github" | "notion" | "linear",
+  usersFID: number
+) {
+  const supabase = createClient()
+
+  const userObjectToUpdate:
+    | {
+        github_access_token: string | undefined
+        linear_access_token: string | undefined
+        notion_access_token: string | undefined
+      }
+    | any = {}
+
+  if (socialAccount === "github") {
+    userObjectToUpdate.github_access_token = ""
+  } else if (socialAccount === "linear") {
+    userObjectToUpdate.linear_access_token = ""
+  } else if (socialAccount === "notion") {
+    userObjectToUpdate.notion_access_token = ""
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("sessions")
+      .update(userObjectToUpdate)
+      .eq("farcaster_id", usersFID)
+    return { data, error }
+  } catch (e) {
+    console.error("error updating user session", e)
+  }
+}
+
+export async function disconnectUsersSocialAccountFromDB(
+  socialAccount: "notion" | "github" | "linear",
+  usersFID: number
+) {
+  if (socialAccount && usersFID) {
+    // first unlink the acccount from auth settings
+
+    const resForUnlinkingAccount = await unlinkUsersSocialAccount(socialAccount)
+
+    const resForRemovingUsersAccessTokenFromSessions =
+      await removeUsersSocialAccessTokenFromTable(socialAccount, usersFID)
+
+    return {
+      resultForUnlinkingAccount: resForUnlinkingAccount,
+      resultForRemovingUsersAccessTokens:
+        resForRemovingUsersAccessTokenFromSessions,
+    }
+    // then remove the stored data in the sessions table
+  }
+}

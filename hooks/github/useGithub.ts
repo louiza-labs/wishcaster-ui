@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useNeynarContext } from "@neynar/react"
 
 import { createGithubRepoForUser } from "@/app/actions"
 
@@ -8,16 +9,14 @@ const useGithub = (castHash: string) => {
   const wcLinkForCast = `https://www.warpcast.com/${castHash}`
 
   const [title, setTitle] = useState("")
-  const [description, setDescription] = useState(`Repo Description for...
-  ${wcLinkForCast}
-    `)
+  const [description, setDescription] = useState(`Repo Description...`)
   const [isPrivate, setIsPrivate] = useState(false)
   const [homePage, setHomepage] = useState("")
   const [creatingRepo, setIsCreatingRepo] = useState(false)
   const [errorCreatingRepo, setErrorCreatingRepo] = useState(false)
   const [successfullyCreatedRepo, setSuccessfullyCreatedRepo] = useState(false)
   const [createdRepoResult, setCreatedRepoResult] = useState({})
-
+  const { user } = useNeynarContext()
   const handleTitleChange = (e: React.BaseSyntheticEvent) => {
     let titleVal = e.target.value
     setTitle(titleVal)
@@ -51,14 +50,12 @@ const useGithub = (castHash: string) => {
       value: description,
       handleChange: handleDescriptionChange,
       id: "description",
-      inputType: "textarea",
-      placeholder: `Repo Description for...
-    ${wcLinkForCast}
-      `,
+      inputType: "text",
+      placeholder: `Repo Description...`,
       isRequired: false,
     },
     {
-      label: "Is Private/Public",
+      label: "Is Private?",
       value: isPrivate,
       handleChange: handleIsPrivate,
       id: "private",
@@ -97,21 +94,25 @@ const useGithub = (castHash: string) => {
         title.length &&
         description &&
         description.length &&
-        isPrivate !== undefined
+        isPrivate !== undefined &&
+        user &&
+        user.custody_address
       ) {
         setIsCreatingRepo(true)
         setSuccessfullyCreatedRepo(false)
         setErrorCreatingRepo(false)
         const res = await createGithubRepoForUser(
+          user.custody_address,
           title,
           description,
           homePage,
           isPrivate
         )
         setIsCreatingRepo(false)
-        if (res) {
+        if (res && res[0]) {
           setSuccessfullyCreatedRepo(true)
-          setCreatedRepoResult(res)
+          console.log("the res", res)
+          setCreatedRepoResult(res[0])
         }
       }
     } catch (e) {

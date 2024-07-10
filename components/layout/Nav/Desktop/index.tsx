@@ -1,28 +1,28 @@
 "use client"
 
-import Link from "next/link"
 import { useBoundStore } from "@/store"
 import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
+import Link from "next/link"
 
-import { NavItem } from "@/types/nav"
-import { siteConfig } from "@/config/site"
-import { cn } from "@/lib/utils"
-import useGetSession from "@/hooks/auth/useGetSession"
-import useGetUser from "@/hooks/auth/useGetUser"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import IntegrationsDropdown from "@/components/account/integrations/IntegrationsDropdown"
 import { Icons } from "@/components/icons"
 import Search from "@/components/search"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import
+  {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuShortcut,
+    DropdownMenuTrigger,
+  } from "@/components/ui/dropdown-menu"
+import { siteConfig } from "@/config/site"
+import useGetUser from "@/hooks/auth/useGetUser"
+import { cn } from "@/lib/utils"
+import { NavItem } from "@/types/nav"
 
 interface MainNavProps {
   items?: NavItem[]
@@ -31,7 +31,6 @@ interface MainNavProps {
 export function DesktopNav({ items }: MainNavProps) {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
   const { userFromAuth } = useGetUser()
-  const { session } = useGetSession(userFromAuth)
   const { isConnectedToNotion, isConnectedToLinear, isConnectedToTwitter } =
     useBoundStore((state: any) => state)
   return (
