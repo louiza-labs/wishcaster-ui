@@ -15,6 +15,7 @@ import CastStats from "@/components/cast/stats"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
 import TopReplies from "@/components/replies/TopReplies"
+import SaveCast from "@/components/save"
 import {
   fetchCastsReactionsUntilCovered,
   fetchCastsUntilCovered,
@@ -135,17 +136,45 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                       <h1 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
                         Cast
                       </h1>
-                      <Cast
-                        {...castWithCategory}
-                        tagline={castWithCategory.tagline}
-                        hideMetrics={true}
-                        badgeIsToggled={false}
-                        routeToWarpcast={true}
-                        cast={castWithCategory}
-                        notionResults={notionResults}
-                        mentionedProfiles={castWithCategory.mentioned_profiles}
-                      />
+                      <div className="hidden xl:block">
+                        <Cast
+                          {...castWithCategory}
+                          tagline={castWithCategory.tagline}
+                          hideMetrics={true}
+                          badgeIsToggled={false}
+                          routeToWarpcast={true}
+                          cast={castWithCategory}
+                          notionResults={notionResults}
+                          hideActions={true}
+                          mentionedProfiles={
+                            castWithCategory.mentioned_profiles
+                          }
+                        />
+                      </div>
+                      <div className="block xl:hidden">
+                        <Cast
+                          {...castWithCategory}
+                          tagline={castWithCategory.tagline}
+                          hideMetrics={true}
+                          badgeIsToggled={false}
+                          routeToWarpcast={true}
+                          cast={castWithCategory}
+                          notionResults={notionResults}
+                          hideActions={false}
+                          mentionedProfiles={
+                            castWithCategory.mentioned_profiles
+                          }
+                        />
+                      </div>
                     </div>
+                    {!isError ? (
+                      <div className="hidden lg:col-span-12 lg:block">
+                        <SaveCast
+                          notionResults={notionResults}
+                          cast={castWithCategory}
+                        />
+                      </div>
+                    ) : null}
                     <TopReplies
                       castHash={castWithCategory.hash ?? ""}
                       notionResults={notionResults}

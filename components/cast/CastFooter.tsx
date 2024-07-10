@@ -19,6 +19,7 @@ interface CastFooterProps {
   isEmbedded?: boolean
   notionResults?: any
   author: any
+  hideActions?: boolean
   reactions: {
     likes_count: number
     recasts_count: number
@@ -34,6 +35,7 @@ const CastFooter = ({
   hash,
   author,
   notionResults,
+  hideActions,
   isEmbedded,
 }: CastFooterProps) => {
   const router = useRouter()
@@ -119,7 +121,7 @@ const CastFooter = ({
             </Button>
           )}
         </div>
-        {isEmbedded ? null : (
+        {isEmbedded || hideActions ? null : (
           <>
             <SaveCast cast={cast} notionResults={notionResults} />
           </>

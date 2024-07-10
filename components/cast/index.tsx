@@ -14,6 +14,7 @@ interface CastComponentTypes extends CastType {
   badgeIsToggled?: any
   renderEmbeds?: boolean
   cast: CastType
+  hideActions?: boolean
   category?: {
     label: string
     id: string
@@ -36,6 +37,7 @@ const Cast = ({
   badgeIsToggled,
   hideMetrics,
   renderEmbeds,
+  hideActions,
   routeToWarpcast,
   cast,
 }: CastComponentTypes | any) => {
@@ -74,6 +76,7 @@ const Cast = ({
           reactions={reactions}
           replies={replies}
           hideMetrics={hideMetrics}
+          hideActions={hideActions}
           hash={hash}
           author={author}
           cast={cast}

@@ -27,7 +27,7 @@ const BuildComponent = ({ hash, cast, reactions }: BuildProps) => {
         defaultValue="find-team"
         className="mt-4 flex h-fit w-full min-w-full flex-col items-center gap-y-2  px-4 sm:px-0 md:w-fit md:items-start"
       >
-        <TabsList className="flex w-full min-w-full flex-row justify-between sm:my-2 sm:h-full sm:flex-wrap xl:flex-nowrap">
+        <TabsList className="flex w-full min-w-full flex-row justify-between sm:my-2 sm:h-full sm:flex-wrap lg:flex-row lg:flex-nowrap xl:flex-nowrap">
           {/* <TabsTrigger value="count">Count</TabsTrigger> */}
           <TabsTrigger className=" w-full" value="find-team">
             Find a Team

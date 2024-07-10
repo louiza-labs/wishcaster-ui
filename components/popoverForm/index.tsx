@@ -40,6 +40,7 @@ interface PopoverFormProps {
   successResult?: any
   SuccessUI: any
   cast: any
+  isForCastPage?: boolean
 }
 export function PopoverForm({
   handleSubmit,
@@ -59,6 +60,7 @@ export function PopoverForm({
   hideButton,
   successResult,
   SuccessUI,
+  isForCastPage,
   cast,
 }: PopoverFormProps) {
   const [currentSuccessTab, setCurrentSuccessTab] = useState("result")
@@ -69,9 +71,11 @@ export function PopoverForm({
     <Sheet onOpenChange={(val) => (!val ? onClose : null)}>
       <SheetTrigger asChild>
         <Button
-          variant="ghost"
+          variant={isForCastPage ? "outline" : "ghost"}
           disabled={isDisabled}
-          className="flex w-full flex-row justify-start gap-x-4"
+          className={`flex w-full flex-row justify-start gap-x-4 ${
+            isForCastPage ? "text-xs" : ""
+          }`}
         >
           {buttonImage ? (
             <Avatar className="relative size-6">
