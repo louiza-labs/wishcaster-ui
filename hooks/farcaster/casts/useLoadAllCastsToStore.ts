@@ -20,7 +20,6 @@ export const useLoadAllCastsToStore = () => {
         loggedInUserFID
       )
       const newCasts = castsResponse.casts
-      console.log("the new casts", newCasts)
       // const taglinesWithHashes = await fetchTaglines(newCasts)
       // const castsWithTaglines = addTaglinesToCasts(newCasts, taglinesWithHashes)
       loadCastsToStore(newCasts)

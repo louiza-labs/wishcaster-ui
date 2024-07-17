@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react"
-import { useBoundStore } from "@/store"
 import { Cast as CastType } from "@/types"
 import { useNeynarContext } from "@neynar/react"
 import { useInView } from "react-intersection-observer"
@@ -18,7 +17,6 @@ export const useLoadMoreCasts = (
   const [cursorToUse, setCursorToUse] = useState<string>(initialCursor)
   const [fetchingCasts, setFetchingCasts] = useState(false)
   const [isRangeCovered, setIsRangeCovered] = useState<boolean>(false)
-  const { casts } = useBoundStore((state: any) => state)
 
   const { ref, inView } = useInView()
   const { user } = useNeynarContext()
