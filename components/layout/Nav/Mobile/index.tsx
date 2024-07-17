@@ -1,8 +1,10 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { useBoundStore } from "@/store"
 import { useNeynarContext } from "@neynar/react"
 
+import useGetUser from "@/hooks/auth/useGetUser"
 import useSubscribeToSessionChanges from "@/hooks/auth/useSubscribeToSessionChanges"
 import useLoadAllCastsToStore from "@/hooks/farcaster/casts/useLoadAllCastsToStore"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
@@ -22,8 +24,10 @@ import { ThemeToggle } from "@/components/theme-toggle"
 
 export function MobileNav() {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
+  const { userFromAuth } = useGetUser()
   useLoadAllCastsToStore()
-
+  const { isConnectedToNotion, isConnectedToLinear, isConnectedToTwitter } =
+    useBoundStore((state: any) => state)
   const router = useRouter()
   useSubscribeToSessionChanges()
   const handleRouteHome = () => {
@@ -46,9 +50,9 @@ export function MobileNav() {
           <MobileSearch />
           <ThemeToggle />
 
-          {!isAuthenticated ? (
-            <SignInDrawer />
-          ) : user && user.pfp_url ? (
+          <SignInDrawer />
+
+          {user && user.pfp_url ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="border-none " asChild>
                 <Avatar className="size-8">
