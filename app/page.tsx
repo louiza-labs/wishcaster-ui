@@ -56,7 +56,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
   const { casts: initialCasts, nextCursor: cursorToUse } = !timeFilterParam
-    ? await fetchCastsUntilCovered("someone-build", "7-days")
+    ? await fetchCastsUntilCovered("someone-build", "ytd")
     : await fetchCastsUntilCovered(
         "someone-build",
         timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"

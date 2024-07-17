@@ -1,14 +1,13 @@
 "use client"
 
 import Link from "next/link"
-import { useBoundStore } from "@/store"
 import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
 
 import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
-import useGetUser from "@/hooks/auth/useGetUser"
 import useSubscribeToSessionChanges from "@/hooks/auth/useSubscribeToSessionChanges"
+import useLoadAllCastsToStore from "@/hooks/farcaster/casts/useLoadAllCastsToStore"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -30,10 +29,9 @@ interface MainNavProps {
 
 export function DesktopNav({ items }: MainNavProps) {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
-  const { userFromAuth } = useGetUser()
   useSubscribeToSessionChanges()
-  const { isConnectedToNotion, isConnectedToLinear, isConnectedToTwitter } =
-    useBoundStore((state: any) => state)
+  useLoadAllCastsToStore()
+
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="container hidden h-16 w-full items-center justify-between space-x-4 sm:space-x-0 md:flex">
