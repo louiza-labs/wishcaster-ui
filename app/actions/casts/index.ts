@@ -1,6 +1,5 @@
 "use server"
 
-import { createClient } from "@/clients/supabase/server"
 import { NeynarAPIClient, isApiErrorResponse } from "@neynar/nodejs-sdk"
 import axios from "axios"
 
@@ -163,23 +162,4 @@ export const sendCast = async (
       hash: "",
     }
   }
-}
-
-export async function uploadCastsToDB(castsToUpload: any) {
-  try {
-    const supabase = createClient()
-    const { data, error } = await supabase.from("casts").insert(castsToUpload)
-    return {
-      data,
-      error,
-    }
-  } catch (e) {
-    console.log("error uploading casts", e)
-    return { error: e }
-  }
-}
-
-// this func will check if there's
-export async function updateCastsInDB(castsToUpload: any) {
-  //
 }
