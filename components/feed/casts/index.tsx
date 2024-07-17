@@ -97,8 +97,8 @@ const CastsFeed: React.FC<CastFeedProps> = ({
 
   const EmptyStateFallBack = () => (
     <div className="flex flex-col items-center justify-center py-2">
-      <p className="text-2xl font-light">
-        No casts found, try adjusting the filters
+      <p className="text-center text-2xl font-light">
+        No casts found, try adjusting the search terms or filters
       </p>
     </div>
   )

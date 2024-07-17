@@ -1,5 +1,6 @@
 // store.ts
 // @ts-nocheck
+import { createCastsSlice } from "@/store/casts"
 import { createFooterSlice } from "@/store/footer"
 import { createUserSlice } from "@/store/user"
 import { create } from "zustand"
@@ -18,4 +19,5 @@ export const useFooterVisibilityStore = create<FooterVisibilityState>(
 export const useBoundStore = create((...a) => ({
   ...createUserSlice(...a),
   ...createFooterSlice(...a),
+  ...createCastsSlice(...a),
 }))

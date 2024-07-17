@@ -1,9 +1,10 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useBoundStore } from "@/store"
 import { useInView } from "react-intersection-observer"
 
-import { dateOptions } from "@/lib/constants"
 import { addCategoryFieldsToCasts, categorizeArrayOfCasts } from "@/lib/helpers"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,7 +18,6 @@ import {
 import Cast from "@/components/cast/SprintItem"
 import { Icons } from "@/components/icons"
 import Rankings from "@/components/rankings"
-import { fetchCastsUntilCovered } from "@/app/actions"
 
 interface SearchIconProps {
   handleClick: () => void
@@ -47,22 +47,17 @@ function SearchIcon({ handleClick, className }: SearchIconProps) {
   )
 }
 
-function extractTimeFilterParam(params: undefined | string | string[]) {
-  if (params) {
-    if (params && Array.isArray(params)) {
-      return params.find((param: string) => dateOptions.includes(param))
-    } else if (params && typeof params === "string") {
-      return dateOptions.find((option) => option === params)
-    }
-  }
-}
-
 const Search = () => {
   const [renderingSearchResults, setRenderingSearchResults] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [searchedCasts, setSearchedCasts] = useState<any[] | []>([])
   const [itemsToShow, setItemsToShow] = useState<number>(10)
   const [searchType, setSearchType] = useState("casts")
+
+  const searchParamsObj = useSearchParams()
+  const searchParams = searchParamsObj.get("search")
+  const router = useRouter()
+  const { casts } = useBoundStore((state: any) => state)
 
   const handleSearchTypeChange = (value: string) => {
     setSearchType(value)
@@ -98,18 +93,48 @@ const Search = () => {
     setSearchTerm(term)
   }
 
+  // const createQueryString = useCallback(
+  //   (name: string, value: string, addValue: boolean) => {
+  //     if (!searchParams) return
+  //     const params = new URLSearchParams(searchParams.toString())
+
+  //     const existedFilters = params.getAll(name)
+
+  //     if (addValue) {
+  //       if (!existedFilters.includes(value)) {
+  //         // check if the new filter is a date value
+  //         if (viewOptions.includes(value)) {
+  //           // filter out any existing date filters
+  //           const updatedFilters = existedFilters.filter(
+  //             (filter) => !viewOptions.includes(filter)
+  //           )
+  //           params.delete(name)
+  //           updatedFilters.forEach((filter) => {
+  //             params.append(name, filter)
+  //           })
+  //         }
+  //         params.append(name, value)
+  //       }
+  //     } else {
+  //       const updatedCategories = existedFilters.filter(
+  //         (category) => category !== value
+  //       )
+  //       params.delete(name)
+  //       updatedCategories.forEach((filter) => {
+  //         params.append(name, filter)
+  //       })
+  //     }
+
+  //     return params.toString()
+  //   },
+  //   [searchParams]
+  // )
+
   const handleSubmitSearchTerm = async () => {
     if (!(searchTerm && searchTerm.length)) return
-
     try {
-      setRenderingSearchResults(true)
-      const { casts: initialCasts } = await fetchCastsUntilCovered(
-        "someone-build",
-        "ytd"
-      )
-
-      let categories: any = categorizeArrayOfCasts(initialCasts)
-      let filteredCasts = addCategoryFieldsToCasts(initialCasts, categories)
+      let categories: any = categorizeArrayOfCasts(casts)
+      let filteredCasts = addCategoryFieldsToCasts(casts, categories)
       const castsWithSearchTerm =
         searchType === "topics"
           ? filteredCasts.filter(
@@ -132,6 +157,8 @@ const Search = () => {
       setRenderingSearchResults(false)
       setSearchedCasts(castsWithSearchTerm)
     } catch (error) {
+      setRenderingSearchResults(false)
+
       // console.error("Failed to fetch and filter casts:", error)
       // Handle errors as needed, maybe set an error state to display to users
     }
