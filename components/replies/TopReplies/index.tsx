@@ -8,7 +8,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import Cast from "@/components/cast/SprintItem"
+import Cast from "@/components/cast/variants/SprintItem"
 
 interface TopRepliesProps {
   castHash: string

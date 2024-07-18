@@ -18,7 +18,7 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
-import CastItem from "@/components/cast/SprintItem"
+import CastItem from "@/components/cast/variants/SprintItem"
 
 function parseQueryParam(param?: string | string[]): string {
   return Array.isArray(param) ? param.join(",") : param || ""

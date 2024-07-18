@@ -9,6 +9,7 @@ import {
   searchCastsForCategories,
   sortCastsByProperty,
 } from "@/lib/helpers"
+import CardLayoutToggle from "@/components/cardLayout"
 import CastsFeed from "@/components/feed/casts"
 import Filters from "@/components/filters"
 import FilterBar from "@/components/filters/FilterBar"
@@ -90,6 +91,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
         <Header />
         <main className="relative grid grid-cols-1 gap-4 lg:grid-cols-12 ">
           <aside className="no-scrollbar sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:flex">
+            <CardLayoutToggle />
             <SortCasts />
             <Filters initialCasts={initialCasts} />
           </aside>

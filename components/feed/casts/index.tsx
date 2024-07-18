@@ -1,12 +1,13 @@
 "use client"
 
-import { Suspense, useCallback } from "react"
+import { Suspense, useCallback, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Cast as CastType } from "@/types"
 
 import { useLoadMoreCasts } from "@/hooks/farcaster/casts/useLoadMoreCasts"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
-import SprintItemCast from "@/components/cast/SprintItem"
+import SpringItemCast from "@/components/cast/variants/SprintItem"
+import MinimalItemCast from "@/components/cast/variants/TableRow/Row"
 import CastFeedSkeleton from "@/components/loading/feed/casts"
 
 interface CastFeedProps {
@@ -32,11 +33,12 @@ const CastsFeed: React.FC<CastFeedProps> = ({
     nextCursor,
     timeFilterParam
   )
-
+  const [castCardStyleToShow, setCastCardStyleToShow] = useState("product")
   const { filteredCasts } = useFilterFeed(castsToShow, topic)
 
   const router = useRouter()
   const categoriesFromParams = searchParams.getAll("topics").join(",")
+  const cardLayoutFromParams = searchParams.getAll("card-layout").join(",")
 
   const createQueryString = useCallback(
     (name: string, value: string, addValue: boolean) => {
@@ -103,11 +105,26 @@ const CastsFeed: React.FC<CastFeedProps> = ({
     </div>
   )
 
+  const layoutValueIsSelected = useCallback(
+    (categoryName: string) => {
+      return cardLayoutFromParams.includes(categoryName)
+    },
+    [cardLayoutFromParams]
+  )
+
+  const CastCardToUse = useMemo(() => {
+    return !layoutValueIsSelected("compact") ? SpringItemCast : MinimalItemCast
+  }, [layoutValueIsSelected])
+
   return (
     <Suspense fallback={<CastFeedSkeleton count={5} />}>
       <div
-        className={`mt-8 grid grid-cols-1 gap-4 overflow-x-hidden px-2 md:px-4 lg:col-span-6 lg:col-start-4 lg:mt-0 ${
-          columns ? `lg:grid-cols-2` : "lg:grid-cols-2"
+        className={`mt-8 grid grid-cols-1  overflow-x-hidden px-2 md:px-4 lg:col-span-6 lg:col-start-4 lg:mt-0 ${
+          layoutValueIsSelected("compact")
+            ? "gap-y-1 lg:grid-cols-1"
+            : columns
+            ? `gap-4 lg:grid-cols-2`
+            : "gap-4 lg:grid-cols-2"
         } lg:px-10`}
       >
         {fetchingCasts && !(filteredCasts && filteredCasts.length) ? (
@@ -128,30 +145,34 @@ const CastsFeed: React.FC<CastFeedProps> = ({
           </div>
         ) : filteredCasts && filteredCasts.length ? (
           filteredCasts.map((cast: CastType) => (
-            <SprintItemCast
-              key={cast.hash}
-              text={cast.text}
-              cast={cast}
-              timestamp={cast.timestamp}
-              parent_url={cast.parent_url}
-              reactions={cast.reactions}
-              replies={cast.replies}
-              embeds={cast.embeds}
-              tagline={cast.tagline}
-              author={cast.author}
-              hash={cast.hash}
-              thread_hash={cast.thread_hash}
-              mentionedProfiles={cast.mentioned_profiles}
-              parent_hash={cast.parent_hash}
-              parent_author={cast.parent_author}
-              root_parent_url={cast.root_parent_url}
-              category={cast.category}
-              notionResults={notionResults}
-              handleToggleCategoryClick={() =>
-                handleToggleCategoryClick(cast.category?.id || "")
-              }
-              badgeIsToggled={badgeIsToggled(cast.category?.id || "")}
-            />
+            <>
+              {cast.text && cast.text.length ? (
+                <CastCardToUse
+                  key={cast.hash}
+                  text={cast.text}
+                  cast={cast}
+                  timestamp={cast.timestamp}
+                  parent_url={cast.parent_url}
+                  reactions={cast.reactions}
+                  replies={cast.replies}
+                  embeds={cast.embeds}
+                  tagline={cast.tagline}
+                  author={cast.author}
+                  hash={cast.hash}
+                  thread_hash={cast.thread_hash}
+                  mentionedProfiles={cast.mentioned_profiles}
+                  parent_hash={cast.parent_hash}
+                  parent_author={cast.parent_author}
+                  root_parent_url={cast.root_parent_url}
+                  category={cast.category}
+                  notionResults={notionResults}
+                  handleToggleCategoryClick={() =>
+                    handleToggleCategoryClick(cast.category?.id || "")
+                  }
+                  badgeIsToggled={badgeIsToggled(cast.category?.id || "")}
+                />
+              ) : null}
+            </>
           ))
         ) : (
           <EmptyStateFallBack />

@@ -68,13 +68,13 @@ const SaveCastDropdown = ({
     <DropdownMenu>
       <DropdownMenuTrigger
         disabled={!(isConnectedToLinear || isConnectedToNotion)}
-        className="relative mr-4 border-none "
+        className="relative h-fit border-none "
         asChild
       >
         <Button
           variant={"ghost"}
           disabled={!(isConnectedToLinear || isConnectedToNotion)}
-          className="relative"
+          className="relative h-fit"
         >
           Save
         </Button>

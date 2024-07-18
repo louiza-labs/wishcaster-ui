@@ -89,6 +89,18 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
     label: "👥 Clients",
     keywords: new Set(["client"]),
   },
+  filters: {
+    label: "🙅🏻‍♀️ Filters",
+    keywords: new Set(["scam", "spam", "scammers", "scams"]),
+  },
+  layerTwos: {
+    label: "🛜 L2's",
+    keywords: new Set(["layer two", "L2", "Layer2", "L2s"]),
+  },
+  pizza: {
+    label: "🍕 Pizza",
+    keywords: new Set(["grandma slice", "deep-dish", "pizza", "deepdish"]),
+  },
   attestations: {
     label: "📜 Attestations",
     keywords: new Set(["attest", "attestation", "certify"]),

@@ -10,7 +10,7 @@ import useFetchCastsForUser from "@/hooks/farcaster/casts/useFetchCastsForUser"
 import useFetchReactionsForUser from "@/hooks/farcaster/reactions/useFetchReactionsForUser"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import Cast from "@/components/cast/SprintItem"
+import Cast from "@/components/cast/variants/SprintItem"
 
 interface ActivityFeedProps {}
 const ActivityFeed = ({}: ActivityFeedProps) => {

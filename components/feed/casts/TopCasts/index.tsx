@@ -11,7 +11,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel"
-import Cast from "@/components/cast/SprintItem"
+import Cast from "@/components/cast/variants/SprintItem"
 import { CastSkeleton } from "@/components/loading/cast"
 
 interface TopCastsProps {
