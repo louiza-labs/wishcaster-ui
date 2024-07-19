@@ -1,3 +1,8 @@
+import {
+  CastResponseSchema,
+  PostElementType,
+  TweetResponseSchema,
+} from "@/schemas"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -65,4 +70,43 @@ export const removeSearchParams = () => {
 
 export function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
+// Transformation function for Casts
+export const transformCastResponseToPost = (obj: any): PostElementType => {
+  const parsedObj = CastResponseSchema.parse(obj)
+
+  return {
+    timestamp: parsedObj.timestamp,
+    text: parsedObj.text,
+    author: {
+      id: parsedObj.author.fid.toString(),
+      username: parsedObj.author.username,
+      display_name: parsedObj.author.display_name,
+      pfp_url: parsedObj.author.pfp_url,
+    },
+    parent_url: parsedObj.parent_url,
+    reactions: {
+      likes_count: parsedObj.reactions.likes_count,
+      recasts_count: parsedObj.reactions.recasts_count,
+    },
+    replies: { count: parsedObj.replies.count },
+    embeds: parsedObj.embeds,
+    hash: parsedObj.hash,
+    mentionedProfiles: parsedObj.mentioned_profiles,
+  }
+}
+
+// Transformation function for Object 2
+export const transformTweetResponseToPost = (obj: any): PostElementType => {
+  const parsedObj = TweetResponseSchema.parse(obj)
+
+  return {
+    timestamp: parsedObj.created_at,
+    text: parsedObj.text,
+    author: {
+      id: parsedObj.author_id,
+      username: parsedObj.username,
+    },
+  }
 }

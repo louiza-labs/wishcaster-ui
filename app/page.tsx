@@ -4,12 +4,15 @@ import { Cast as CastType, Category } from "@/types"
 import { dateOptions } from "@/lib/constants"
 import {
   addCategoryFieldsToCasts,
+  addCategoryFieldsToTweets,
+  addUserInfoToTweets,
   categorizeArrayOfCasts,
+  extractUserIdsFromTweets,
   generateWhimsicalErrorMessages,
   searchCastsForCategories,
   sortCastsByProperty,
 } from "@/lib/helpers"
-import CastsFeed from "@/components/feed/casts"
+import TweetsFeed from "@/components/feed/tweets"
 import Filters from "@/components/filters"
 import FilterBar from "@/components/filters/FilterBar"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
@@ -18,6 +21,8 @@ import RedirectButton from "@/components/redirect/Button"
 import SortCasts from "@/components/sort/SortCasts"
 import {
   fetchCastsUntilCovered,
+  fetchTweets,
+  fetchTwitterUsers,
   getUsersNotionAccessCode,
   searchNotion,
 } from "@/app/actions"
@@ -45,7 +50,10 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const categoryParam = parseQueryParam(searchParams.categories)
   const filtersParam = parseQueryParam(searchParams.filters)
   const sortParam = parseQueryParam(searchParams.sort)
-  const userId = null
+  const tweets = await fetchTweets()
+
+  const users = await fetchTwitterUsers(extractUserIdsFromTweets(tweets?.data))
+  const tweetsWithUsers = addUserInfoToTweets(tweets?.data, users?.data)
   const notionAccessCode = await getUsersNotionAccessCode()
   const notionSearch = notionAccessCode
     ? await searchNotion(notionAccessCode)
@@ -61,19 +69,31 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
         "someone-build",
         timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
       )
+
   let filteredCasts = initialCasts
-  const categories = categorizeArrayOfCasts(filteredCasts) as Category[]
+  const categories = categorizeArrayOfCasts([
+    ...filteredCasts,
+    tweets?.data,
+  ]) as Category[]
   // let taglinedCasts = await fetchTaglines(filteredCasts)
   filteredCasts = addCategoryFieldsToCasts(
     filteredCasts,
     categories
   ) as Array<CastType>
+  let tweetsWithCategories = addCategoryFieldsToTweets(
+    tweetsWithUsers,
+    categories
+  )
 
   // if (filteredCasts.length) {
   //   filteredCasts = addTaglinesToCasts(filteredCasts, taglinedCasts)
   // }
   if (categoryParam.length) {
     filteredCasts = searchCastsForCategories(filteredCasts, categoryParam)
+    tweetsWithCategories = searchCastsForCategories(
+      tweetsWithCategories,
+      categoryParam
+    )
   }
   if (sortParam) {
     filteredCasts = sortCastsByProperty(filteredCasts, sortParam)
@@ -101,12 +121,13 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
                 categoryParam={categoryParam}
               />
             ) : (
-              <CastsFeed
-                casts={filteredCasts}
-                timeFilterParam={timeFilterParam}
-                nextCursor={cursorToUse}
-                notionResults={notionResults}
-              />
+              <TweetsFeed tweets={tweetsWithCategories} />
+              // <CastsFeed
+              //   casts={filteredCasts}
+              //   timeFilterParam={timeFilterParam}
+              //   nextCursor={cursorToUse}
+              //   notionResults={notionResults}
+              // />
             )}
           </article>
           <aside className="no-scrollbar sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky lg:col-span-2 lg:flex lg:flex-col">

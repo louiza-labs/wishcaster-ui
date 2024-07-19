@@ -42,6 +42,24 @@ export const addCategoryFieldsToCasts = (
     return { ...cast, category: categoryMatch ? categoryMatch.category : null }
   })
 }
+export const addCategoryFieldsToTweets = (
+  tweets: CastType[],
+  categories: Category[]
+) => {
+  if (
+    !categories ||
+    (Array.isArray(categories) && !categories.length) ||
+    !Array.isArray(categories)
+  ) {
+    return []
+  }
+  return tweets.map((tweet) => {
+    const categoryMatch = categories.find(
+      (category) => category.request === tweet.text
+    )
+    return { ...tweet, category: categoryMatch ? categoryMatch.category : null }
+  })
+}
 interface CategoryDetails {
   label: string
   keywords: Set<string>
