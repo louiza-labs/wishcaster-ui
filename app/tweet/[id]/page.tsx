@@ -5,30 +5,31 @@ import { dateOptions } from "@/lib/constants"
 import {
   addCategoryFieldsToCasts,
   addTaglinesToCasts,
+  addUserInfoToTweets,
   categorizeArrayOfCasts,
+  extractUserIdsFromTweets,
   generateWhimsicalErrorMessages,
 } from "@/lib/helpers"
 import { fetchTaglines } from "@/lib/requests"
-import Build from "@/components/buildComponent"
-import CastStats from "@/components/cast/stats"
-import Cast from "@/components/cast/variants/Classic"
-import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
 import TopReplies from "@/components/replies/TopReplies"
 import SaveCast from "@/components/save"
+import TweetStats from "@/components/tweet/stats"
+import TweetCard from "@/components/tweet/variants/card"
 import {
-  fetchCastsReactionsUntilCovered,
   fetchCastsUntilCovered,
   fetchChannelCasts,
-  fetchFarcasterCast,
+  fetchTweetByIds,
+  fetchTweets,
+  fetchTwitterUsers,
   getUsersNotionAccessCode,
   searchNotion,
 } from "@/app/actions"
 
-interface CastPageProps {
+interface TweetPageProps {
   searchParams: { [key: string]: string | string[] | undefined }
   params: {
-    hash: string
+    id: string
   }
 }
 
@@ -50,13 +51,17 @@ interface User {
   fname: string
 }
 
-const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
-  const cast = await fetchFarcasterCast(params.hash)
-  const taglineWithHash = cast ? await fetchTaglines([cast]) : []
-  const castWithTagline = cast
-    ? addTaglinesToCasts([cast], taglineWithHash)
-    : cast
-  let enrichedCast = cast && castWithTagline ? castWithTagline[0] : cast
+const TweetPage: FC<TweetPageProps> = async ({ searchParams, params }) => {
+  const tweet = await fetchTweetByIds(params.id)
+  const historicalTweets = await fetchTweets()
+  const taglineWithHash =
+    tweet && tweet.data ? await fetchTaglines([tweet?.data]) : []
+  const tweetWithTagline =
+    tweet && tweet.data
+      ? addTaglinesToCasts([tweet.data], taglineWithHash)
+      : tweet
+  let enrichedTweet =
+    tweet && tweetWithTagline ? tweetWithTagline[0] : tweetWithTagline
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
@@ -72,29 +77,34 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
         "someone-build",
         timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
       )
-  const { reactionsObject } =
-    enrichedCast && enrichedCast.hash
-      ? await fetchCastsReactionsUntilCovered(
-          enrichedCast?.hash,
-          enrichedCast?.reactions.likes_count,
-          enrichedCast?.reactions.recasts_count
-        )
-      : {
-          reactionsObject: {
-            likes: [],
-            recasts: [],
-          },
-        }
+  // const { reactionsObject } =
+  //   enrichedTweet && enrichedTweet.hash
+  //     ? await fetchCastsReactionsUntilCovered(
+  //         enrichedTweet?.hash,
+  //         enrichedTweet?.reactions.likes_count,
+  //         enrichedTweet?.reactions.recasts_count
+  //       )
+  //     : {
+  //         reactionsObject: {
+  //           likes: [],
+  //           recasts: [],
+  //         },
+  //       }
   let overallChannelCasts = initialCasts
   const categories = categorizeArrayOfCasts([
     ...overallChannelCasts,
-    cast,
+    ...historicalTweets?.data,
+    tweet?.data,
   ]) as Category[]
 
-  let singleArrayCast = enrichedCast
-    ? addCategoryFieldsToCasts([enrichedCast], categories)
-    : [enrichedCast]
-  const castWithCategory = singleArrayCast[0]
+  const users = await fetchTwitterUsers(extractUserIdsFromTweets([tweet?.data]))
+
+  const tweetsWithUsers = addUserInfoToTweets([tweet?.data], users?.data)
+
+  let singleArrayCast = tweetsWithUsers
+    ? addCategoryFieldsToCasts(tweetsWithUsers, categories)
+    : [enrichedTweet]
+  const tweetWithCategory = singleArrayCast[0]
 
   overallChannelCasts = addCategoryFieldsToCasts(
     overallChannelCasts,
@@ -107,7 +117,7 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   const sortParam = parseQueryParam(searchParams.sort)
   const mobileViewParam = parseQueryParam(searchParams.view)
 
-  let filteredCasts = [enrichedCast]
+  let filteredCasts = [enrichedTweet]
   const isError = !filteredCasts.length
 
   return (
@@ -132,53 +142,46 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
               />
             ) : (
               <div className="gap-y-4 overflow-y-auto pb-14 lg:pb-0">
-                {castWithCategory ? (
+                {tweetWithCategory ? (
                   <>
                     <div className="flex flex-col gap-y-4 bg-background">
                       <h1 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
-                        Cast
+                        Tweet
                       </h1>
                       <div className="hidden xl:block">
-                        <Cast
-                          {...castWithCategory}
-                          tagline={castWithCategory.tagline}
-                          hideMetrics={true}
-                          badgeIsToggled={false}
-                          routeToWarpcast={true}
-                          cast={castWithCategory}
-                          notionResults={notionResults}
-                          hideActions={true}
-                          mentionedProfiles={
-                            castWithCategory.mentioned_profiles
+                        <TweetCard
+                          text={tweetWithCategory.text}
+                          likes={tweetWithCategory.public_metrics.like_count}
+                          replies={tweetWithCategory.public_metrics.reply_count}
+                          retweets={
+                            tweetWithCategory.public_metrics.retweet_count
                           }
+                          username={tweetWithCategory.username}
+                          user={tweetWithCategory.user}
+                          category={tweetWithCategory.category}
+                          tweet={tweetWithCategory}
+                          notionResults={notionResults}
                         />
                       </div>
                       <div className="block xl:hidden">
-                        <Cast
-                          {...castWithCategory}
-                          tagline={castWithCategory.tagline}
-                          hideMetrics={true}
-                          badgeIsToggled={false}
-                          routeToWarpcast={true}
-                          cast={castWithCategory}
-                          notionResults={notionResults}
-                          hideActions={false}
-                          mentionedProfiles={
-                            castWithCategory.mentioned_profiles
+                        <TweetCard
+                          text={tweetWithCategory.text}
+                          likes={tweetWithCategory.public_metrics.like_count}
+                          replies={tweetWithCategory.public_metrics.reply_count}
+                          retweets={
+                            tweetWithCategory.public_metrics.retweet_count
                           }
+                          username={tweetWithCategory.username}
+                          user={tweetWithCategory.user}
+                          category={tweetWithCategory.category}
+                          tweet={tweetWithCategory}
+                          notionResults={notionResults}
                         />
                       </div>
                     </div>
-                    {!isError ? (
-                      <div className="hidden lg:col-span-12 lg:block">
-                        <SaveCast
-                          notionResults={notionResults}
-                          cast={castWithCategory}
-                        />
-                      </div>
-                    ) : null}
+
                     <TopReplies
-                      castHash={castWithCategory.hash ?? ""}
+                      castHash={tweetWithCategory.hash ?? ""}
                       notionResults={notionResults}
                     />
                   </>
@@ -195,10 +198,10 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
               <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
                 Stats
               </h1>
-              <CastStats
-                cast={castWithCategory}
-                reactions={reactionsObject}
-                overallChannelCasts={overallChannelCasts}
+              <TweetStats
+                tweet={tweetWithCategory}
+                likes={tweetWithCategory.public_metrics.like_count}
+                overallTweets={historicalTweets?.data}
               />
             </div>
           </div>
@@ -211,21 +214,30 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
               <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
                 Let&apos;s build
               </h1>
-              <Build
-                cast={castWithCategory}
-                hash={castWithCategory ? castWithCategory.hash ?? "" : ""}
+              {!isError ? (
+                <div className="hidden lg:col-span-12 lg:block">
+                  <SaveCast
+                    isOnTweetsPage={true}
+                    notionResults={notionResults}
+                    cast={tweetWithCategory}
+                  />
+                </div>
+              ) : null}
+              {/* <Build
+                cast={tweetWithCategory}
+                hash={tweetWithCategory ? tweetWithCategory.hash ?? "" : ""}
                 reactions={reactionsObject}
-              />
+              /> */}
             </div>
           </div>
         </main>
       </section>
       <div className="flex flex-col items-start lg:hidden">
-        <BottomMobileNav
-          filteredCasts={[castWithCategory]}
-          initialCasts={[castWithCategory]}
+        {/* <BottomMobileNav
+          filteredCasts={[tweetWithCategory]}
+          initialCasts={[tweetWithCategory]}
           page="cast"
-        />
+        /> */}
       </div>
     </>
   )
@@ -262,4 +274,4 @@ const ErrorDisplay: FC<ErrorDisplayProps> = ({
   )
 }
 
-export default CastPage
+export default TweetPage

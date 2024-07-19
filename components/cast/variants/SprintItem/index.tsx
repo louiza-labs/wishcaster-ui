@@ -3,11 +3,12 @@
 import { Cast as CastType } from "@/types"
 
 import { PRODUCT_CATEGORIES_AS_MAP } from "@/lib/constants"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import AuthorAvatar from "@/components/cast/SprintItem/CastAvatar"
-import CastContent from "@/components/cast/SprintItem/CastContent"
-import CastFooter from "@/components/cast/SprintItem/CastFooter"
+import AuthorAvatar from "@/components/cast/variants/SprintItem/CastAvatar"
+import CastContent from "@/components/cast/variants/SprintItem/CastContent"
+import CastFooter from "@/components/cast/variants/SprintItem/CastFooter"
 
 interface CastComponentTypes extends CastType {
   hideMetrics?: boolean
@@ -50,7 +51,14 @@ const SprintItemCast = ({
       ? PRODUCT_CATEGORIES_AS_MAP[category.id].label
       : null
   return (
-    <Card className="md:border-auto md:shadow-auto flex w-full flex-col justify-between   lg:h-fit">
+    <Card className="md:border-auto md:shadow-auto relative flex w-full flex-col justify-between   lg:h-fit">
+      <Avatar className="absolute right-2 top-2 size-5 rounded-full border p-0.5 shadow-sm">
+        <AvatarImage
+          src={"/social-account-logos/farcaster-purple-white.png"}
+          alt={"farcaster"}
+          className="rounded-full"
+        />
+      </Avatar>
       <CardHeader className="flex w-full flex-col gap-y-2 px-0">
         <AuthorAvatar
           author={author}

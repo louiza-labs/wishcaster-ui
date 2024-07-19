@@ -9,8 +9,9 @@ import MobileSave from "@/components/cast/Save/Mobile"
 interface SaveCastProps {
   cast: CastType
   notionResults?: any
+  isOnTweetsPage?: boolean
 }
-const SaveCast = ({ cast, notionResults }: SaveCastProps) => {
+const SaveCast = ({ cast, notionResults, isOnTweetsPage }: SaveCastProps) => {
   const [selectedSaveOption, setSelectedSaveOption] = useState("")
 
   const handleSaveOptionChange = (val: string) => {
@@ -29,6 +30,7 @@ const SaveCast = ({ cast, notionResults }: SaveCastProps) => {
             label={selectedSaveOption}
             handleClick={handleSaveOptionChange}
             notionResults={notionResults}
+            isOnTweetsPage={isOnTweetsPage}
             cast={cast}
           />
         </>

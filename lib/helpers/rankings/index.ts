@@ -94,6 +94,52 @@ export function getRanking(
   return null
 }
 
+export function getTweetRanking(
+  target: CastType,
+  items: CastType[],
+  metric: "likes" | "recasts" | "replies",
+  filterField?: keyof CastType
+): number | null {
+  // Apply filtering only if filterField is provided and the target has this property defined
+  const filteredItems =
+    filterField && target[filterField] !== undefined
+      ? filterField === "category"
+        ? items.filter(
+            (item) =>
+              item["category"] &&
+              target["category"] &&
+              item["category"].id === target["category"].id
+          )
+        : items.filter((item) => item[filterField] === target[filterField])
+      : items
+
+  const getValueByMetric = (objectToGetValueFrom: any) => {
+    if (metric === "likes") {
+      return objectToGetValueFrom.public_metrics.like_count
+    }
+    if (metric === "retweets") {
+      return objectToGetValueFrom.public_metrics.retweet_count
+    }
+    if (metric === "replies") {
+      return objectToGetValueFrom.public_metrics.reply_count
+    }
+    return 0
+  }
+
+  // Sort the filtered items by value in descending order
+  filteredItems.sort((a, b) => getValueByMetric(b) - getValueByMetric(a))
+
+  // Find the rank of the target item by comparing values
+  for (let rank = 0; rank < filteredItems.length; rank++) {
+    if (getValueByMetric(filteredItems[rank]) === getValueByMetric(target)) {
+      return rank + 1 // Return rank starting from 1 (more human-readable)
+    }
+  }
+
+  // If no matching value is found, return null
+  return null
+}
+
 type TopicRanking = {
   category: string
   rankings: {

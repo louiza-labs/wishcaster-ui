@@ -5,7 +5,7 @@ import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Bounty from "@/components/bounties"
-import Cast from "@/components/cast"
+import Cast from "@/components/cast/variants/Classic"
 import TeamForTopics from "@/components/team/topics"
 
 interface BuildProps {

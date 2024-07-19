@@ -1,14 +1,16 @@
 "use client"
 
-import { Suspense, useCallback, useMemo, useState } from "react"
+import { Fragment, Suspense, useCallback, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Cast as CastType } from "@/types"
 
 import { useLoadMoreCasts } from "@/hooks/farcaster/casts/useLoadMoreCasts"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import SpringItemCast from "@/components/cast/variants/SprintItem"
-import MinimalItemCast from "@/components/cast/variants/TableRow/Row"
+import CastAsTableRow from "@/components/cast/variants/TableRow"
 import CastFeedSkeleton from "@/components/loading/feed/casts"
+import TweetAsCard from "@/components/tweet/variants/card"
+import TweetAsRow from "@/components/tweet/variants/row"
 
 interface CastFeedProps {
   casts: CastType[]
@@ -17,16 +19,18 @@ interface CastFeedProps {
   columns?: number
   notionResults?: any[]
   topic?: string
+  tweets: any
 }
 
-const CastsFeed: React.FC<CastFeedProps> = ({
+const CastAndTweetsFeed = ({
   casts,
   nextCursor,
   timeFilterParam,
   columns,
   notionResults,
   topic,
-}) => {
+  tweets,
+}: CastFeedProps) => {
   const searchParams = useSearchParams()
   const { castsToShow, ref, fetchingCasts } = useLoadMoreCasts(
     casts,
@@ -72,9 +76,9 @@ const CastsFeed: React.FC<CastFeedProps> = ({
 
   const badgeIsToggled = (categoryName: string) => {
     return (
-      (categoryName &&
-        categoriesFromParams &&
-        categoriesFromParams.includes(categoryName)) === true
+      categoryName &&
+      categoriesFromParams &&
+      categoriesFromParams.includes(categoryName)
     )
   }
 
@@ -113,8 +117,16 @@ const CastsFeed: React.FC<CastFeedProps> = ({
   )
 
   const CastCardToUse = useMemo(() => {
-    return !layoutValueIsSelected("compact") ? SpringItemCast : MinimalItemCast
+    return !layoutValueIsSelected("compact") ? SpringItemCast : CastAsTableRow
   }, [layoutValueIsSelected])
+
+  const TweetCardToUse = useMemo(() => {
+    return !layoutValueIsSelected("compact") ? TweetAsCard : TweetAsRow
+  }, [layoutValueIsSelected])
+
+  const tweetsAndCasts = useMemo(() => {
+    return [...tweets, ...filteredCasts]
+  }, [tweets, filteredCasts])
 
   return (
     <Suspense fallback={<CastFeedSkeleton count={5} />}>
@@ -143,36 +155,49 @@ const CastsFeed: React.FC<CastFeedProps> = ({
             ) : null}
             <CastFeedSkeleton count={4} />
           </div>
-        ) : filteredCasts && filteredCasts.length ? (
-          filteredCasts.map((cast: CastType) => (
-            <>
-              {cast.text && cast.text.length ? (
+        ) : tweetsAndCasts && tweetsAndCasts.length ? (
+          tweetsAndCasts.map((tweetOrCast: CastType, index) => (
+            <Fragment key={tweetOrCast.hash || tweetOrCast.id || index}>
+              {tweetOrCast.type === "tweet" ? (
+                <TweetCardToUse
+                  text={tweetOrCast.text}
+                  likes={tweetOrCast.public_metrics.like_count}
+                  replies={tweetOrCast.public_metrics.reply_count}
+                  retweets={tweetOrCast.public_metrics.retweet_count}
+                  username={tweetOrCast.username}
+                  user={tweetOrCast.user}
+                  category={tweetOrCast.category}
+                  tweet={tweetOrCast}
+                />
+              ) : (
                 <CastCardToUse
-                  key={cast.hash}
-                  text={cast.text}
-                  cast={cast}
-                  timestamp={cast.timestamp}
-                  parent_url={cast.parent_url}
-                  reactions={cast.reactions}
-                  replies={cast.replies}
-                  embeds={cast.embeds}
-                  tagline={cast.tagline}
-                  author={cast.author}
-                  hash={cast.hash}
-                  thread_hash={cast.thread_hash}
-                  mentionedProfiles={cast.mentioned_profiles}
-                  parent_hash={cast.parent_hash}
-                  parent_author={cast.parent_author}
-                  root_parent_url={cast.root_parent_url}
-                  category={cast.category}
+                  key={tweetOrCast.hash}
+                  text={tweetOrCast.text}
+                  cast={tweetOrCast}
+                  timestamp={tweetOrCast.timestamp}
+                  parent_url={tweetOrCast.parent_url}
+                  reactions={tweetOrCast.reactions}
+                  replies={tweetOrCast.replies}
+                  embeds={tweetOrCast.embeds}
+                  tagline={tweetOrCast.tagline}
+                  author={tweetOrCast.author}
+                  hash={tweetOrCast.hash}
+                  thread_hash={tweetOrCast.thread_hash}
+                  mentionedProfiles={tweetOrCast.mentioned_profiles}
+                  parent_hash={tweetOrCast.parent_hash}
+                  parent_author={tweetOrCast.parent_author}
+                  root_parent_url={tweetOrCast.root_parent_url}
+                  category={tweetOrCast.category}
                   notionResults={notionResults}
                   handleToggleCategoryClick={() =>
-                    handleToggleCategoryClick(cast.category?.id || "")
+                    handleToggleCategoryClick(tweetOrCast.category?.id || "")
                   }
-                  badgeIsToggled={badgeIsToggled(cast.category?.id || "")}
+                  badgeIsToggled={badgeIsToggled(
+                    tweetOrCast.category?.id || ""
+                  )}
                 />
-              ) : null}
-            </>
+              )}
+            </Fragment>
           ))
         ) : (
           <EmptyStateFallBack />
@@ -183,4 +208,4 @@ const CastsFeed: React.FC<CastFeedProps> = ({
   )
 }
 
-export default CastsFeed
+export default CastAndTweetsFeed

@@ -18,7 +18,7 @@ const SaveCastToLinear = ({ cast }: SaveCastProps) => {
     handleClose,
     successfullySubmittedIssue,
     successfulResult,
-  } = useLinear(cast.hash ?? "")
+  } = useLinear(cast.hash ?? "", cast.username, cast.username !== undefined)
 
   return (
     <>
@@ -37,7 +37,7 @@ const SaveCastToLinear = ({ cast }: SaveCastProps) => {
           errorSubmittingForm={errorSubmittingIssue}
           successfullySubmittingForm={successfullySubmittedIssue}
           successMessage="Successfully created an issue!"
-          formDescription="Create an issue for this cast on your connected Linear account"
+          formDescription="Create an issue for this post on your connected Linear account"
         />
       </div>
     </>

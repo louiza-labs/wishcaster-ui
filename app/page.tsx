@@ -12,7 +12,8 @@ import {
   searchCastsForCategories,
   sortCastsByProperty,
 } from "@/lib/helpers"
-import TweetsFeed from "@/components/feed/tweets"
+import CardLayoutToggle from "@/components/cardLayout"
+import CastAndTweetsFeed from "@/components/feed/castsAndTweets"
 import Filters from "@/components/filters"
 import FilterBar from "@/components/filters/FilterBar"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
@@ -21,6 +22,7 @@ import RedirectButton from "@/components/redirect/Button"
 import SortCasts from "@/components/sort/SortCasts"
 import {
   fetchCastsUntilCovered,
+  fetchLikesForTweet,
   fetchTweets,
   fetchTwitterUsers,
   getUsersNotionAccessCode,
@@ -51,7 +53,8 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const filtersParam = parseQueryParam(searchParams.filters)
   const sortParam = parseQueryParam(searchParams.sort)
   const tweets = await fetchTweets()
-
+  const likes = await fetchLikesForTweet("1754888991164498373")
+  console.log("the likes", likes)
   const users = await fetchTwitterUsers(extractUserIdsFromTweets(tweets?.data))
   const tweetsWithUsers = addUserInfoToTweets(tweets?.data, users?.data)
   const notionAccessCode = await getUsersNotionAccessCode()
@@ -110,6 +113,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
         <Header />
         <main className="relative grid grid-cols-1 gap-4 lg:grid-cols-12 ">
           <aside className="no-scrollbar sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:flex">
+            <CardLayoutToggle />
             <SortCasts />
             <Filters initialCasts={initialCasts} />
           </aside>
@@ -121,13 +125,13 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
                 categoryParam={categoryParam}
               />
             ) : (
-              <TweetsFeed tweets={tweetsWithCategories} />
-              // <CastsFeed
-              //   casts={filteredCasts}
-              //   timeFilterParam={timeFilterParam}
-              //   nextCursor={cursorToUse}
-              //   notionResults={notionResults}
-              // />
+              <CastAndTweetsFeed
+                casts={filteredCasts}
+                timeFilterParam={timeFilterParam}
+                nextCursor={cursorToUse}
+                notionResults={notionResults}
+                tweets={tweetsWithCategories}
+              />
             )}
           </article>
           <aside className="no-scrollbar sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky lg:col-span-2 lg:flex lg:flex-col">

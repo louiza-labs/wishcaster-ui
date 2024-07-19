@@ -28,6 +28,8 @@ export const addCategoryFieldsToCasts = (
   casts: CastType[],
   categories: Category[]
 ) => {
+  console.log("the casts,", casts)
+  console.log("the categories", categories)
   if (
     !categories ||
     (Array.isArray(categories) && !categories.length) ||
@@ -115,7 +117,7 @@ export function categorizeText(
 }
 
 export function categorizeArrayOfCasts(casts: CastType[]) {
-  if (!casts || !Array.isArray(casts)) return []
+  if (!casts || !Array.isArray(casts) || !casts[0]) return []
   let categorizedArray = casts.map((cast: CastType) => {
     const castText = cast.text
     const category = categorizeText(castText, PRODUCT_CATEGORIES_AS_MAP)

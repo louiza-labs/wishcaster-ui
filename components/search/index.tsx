@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import Cast from "@/components/cast/SprintItem"
+import Cast from "@/components/cast/variants/SprintItem"
 import { Icons } from "@/components/icons"
 import Rankings from "@/components/rankings"
 

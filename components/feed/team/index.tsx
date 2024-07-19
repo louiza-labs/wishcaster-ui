@@ -5,7 +5,7 @@ import { FixedSizeList as List } from "react-window"
 
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import CastAvatar from "@/components/cast/CastAvatar"
+import CastAvatar from "@/components/cast/variants/Classic/CastAvatar"
 
 const handleVisitProfile = (username: string) => {
   if (typeof window !== "undefined") {

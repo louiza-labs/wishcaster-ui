@@ -161,6 +161,28 @@ export const generateStatsObjectForCast = (
   return statsObject
 }
 
+export const generateStatsObjectForTweet = (
+  tweet: any,
+  priorityLikes: number,
+  channelRank: number,
+  categoryRank: number
+) => {
+  if (!tweet) return {}
+  const statsObject = {
+    channelRanking: { label: "Channel Rank", value: channelRank },
+    categoryRanking: { label: "Topic Rank", value: categoryRank },
+    likes: {
+      label: "Likes",
+      value: tweet.public_metrics.like_count,
+    },
+    // priorityLikes: { label: "Power Badge Likes", value: priorityLikes },
+
+    replies: { label: "Replies", value: tweet.public_metrics.reply_count },
+    recasts: { label: "Retweets", value: tweet.public_metrics.retweet_count },
+  }
+  return statsObject
+}
+
 interface CategorySummary {
   id: string
   topic: string

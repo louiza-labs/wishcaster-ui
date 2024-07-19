@@ -6,7 +6,7 @@ import useFetchCastConversation from "@/hooks/farcaster/conversations/useFetchCa
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Bounty from "@/components/bounties"
-import Cast from "@/components/cast"
+import Cast from "@/components/cast/variants/Classic"
 import Team from "@/components/team"
 
 interface BuildProps {
