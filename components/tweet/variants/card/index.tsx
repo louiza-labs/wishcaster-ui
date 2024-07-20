@@ -61,7 +61,7 @@ const SprintItemCast = ({
           alt={"twitter"}
         />
       </Avatar>
-      <CardHeader className="flex w-full flex-col gap-y-2 px-0">
+      <CardHeader className="mt-2 flex w-full flex-col gap-y-2 px-0">
         <AuthorAvatar
           author={user}
           isTweet={true}

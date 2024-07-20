@@ -44,9 +44,20 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
       "swap",
     ]),
   },
+  blockchainGaming: {
+    label: "🎮 Blockchain Gaming",
+    keywords: new Set([
+      "onchain gaming",
+      "onchain game",
+      "blockchain game",
+      "play-to-earn",
+      "web3 games",
+      "metaverse",
+    ]),
+  },
   messaging: {
     label: "💬 Messaging",
-    keywords: new Set(["message", "messaging", "chat"]),
+    keywords: new Set(["message", "messaging", "chat app", "telegram"]),
   },
   wallets: {
     label: "👛 Wallets",
@@ -168,6 +179,7 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
       "onchain game",
       "blockchain game",
       "play-to-earn",
+      "web3 games",
       "metaverse",
     ]),
   },
@@ -272,7 +284,13 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
   },
   contentCreation: {
     label: "🎨 Content Creation",
-    keywords: new Set(["content creation", "media", "publish", "art creation"]),
+    keywords: new Set([
+      "content creation",
+      "media",
+      "publish",
+      "podcast",
+      "art creation",
+    ]),
   },
   newsletter: {
     label: "📃 Newsletter",
@@ -528,6 +546,10 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
   channels: {
     label: "📡 Channels",
     keywords: new Set(["channel", "channels"]),
+  },
+  gaming: {
+    label: "🕹️ Gaming",
+    keywords: new Set(["video game", "gaming"]),
   },
   fundraising: {
     label: "💵 Fundraising",

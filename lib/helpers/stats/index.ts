@@ -169,7 +169,7 @@ export const generateStatsObjectForTweet = (
 ) => {
   if (!tweet) return {}
   const statsObject = {
-    channelRanking: { label: "Channel Rank", value: channelRank },
+    // channelRanking: { label: "Overall Rank", value: channelRank },
     categoryRanking: { label: "Topic Rank", value: categoryRank },
     likes: {
       label: "Likes",

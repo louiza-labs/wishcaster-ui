@@ -32,10 +32,16 @@ const CardStat = ({ title, value }: CardStatProp) => {
 interface TweetStatsProps {
   tweet: any
   overallTweets: any
+  overallCasts: any
   likes: number
 }
 
-const TweetStats = ({ tweet, overallTweets, likes }: TweetStatsProps) => {
+const TweetStats = ({
+  tweet,
+  overallTweets,
+  overallCasts,
+  likes,
+}: TweetStatsProps) => {
   const { filteredCasts: updatedCast } = useFilterFeed([tweet])
   let castWithCategories = updatedCast[0] ?? tweet
 
@@ -49,7 +55,7 @@ const TweetStats = ({ tweet, overallTweets, likes }: TweetStatsProps) => {
   const channelRankByLikes = getTweetRanking(tweet, overallTweets, "likes")
   const categoryRankByLikes = getTweetRanking(
     tweet,
-    overallTweets,
+    [...overallTweets, ...overallCasts],
     "likes",
     "category"
   )

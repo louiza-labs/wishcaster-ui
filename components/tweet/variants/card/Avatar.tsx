@@ -1,4 +1,5 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import { CardTitle } from "@/components/ui/card"
 
 interface CastAvatarProps {
@@ -20,7 +21,7 @@ const CastAvatar = ({
 }: CastAvatarProps) => {
   if (!author) return <div />
   return (
-    <div className="flex w-full flex-row justify-between px-4 lg:w-64">
+    <div className="flex w-full flex-row justify-between px-4 ">
       <a
         href={`https://www.warpcast.com/${author.username}`}
         target="_blank"
@@ -34,7 +35,7 @@ const CastAvatar = ({
             />
           </Avatar>
           <div className="flex flex-col items-start gap-y-2 ">
-            <CardTitle className="flex flex-row items-center gap-x-1.5 text-sm">
+            <CardTitle className="flex flex-row items-center gap-x-1.5 text-sm lg:w-40">
               <span>{isTweet ? author.name : author.display_name} </span>
               {author.verified || author.power_badge ? (
                 <div className="flex flex-col items-center rounded-full  bg-purple-600 p-1">
@@ -52,6 +53,17 @@ const CastAvatar = ({
           </div>
         </div>
       </a>
+      <div className="flex flex-col items-start ">
+        {category && category.length ? (
+          <Badge
+            onClick={() => handleToggleCategoryClick(category)}
+            variant={badgeIsToggled ? "default" : "outline"}
+            className="w-30 h-10 cursor-pointer whitespace-nowrap"
+          >
+            {category}
+          </Badge>
+        ) : null}
+      </div>
     </div>
   )
 }

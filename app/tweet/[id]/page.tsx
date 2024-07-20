@@ -4,11 +4,13 @@ import { Cast as CastType, Category } from "@/types"
 import { dateOptions } from "@/lib/constants"
 import {
   addCategoryFieldsToCasts,
+  addCategoryFieldsToTweets,
   addTaglinesToCasts,
   addUserInfoToTweets,
   categorizeArrayOfCasts,
   extractUserIdsFromTweets,
   generateWhimsicalErrorMessages,
+  removeDuplicateTweets,
 } from "@/lib/helpers"
 import { fetchTaglines } from "@/lib/requests"
 import RedirectButton from "@/components/redirect/Button"
@@ -54,6 +56,8 @@ interface User {
 const TweetPage: FC<TweetPageProps> = async ({ searchParams, params }) => {
   const tweet = await fetchTweetByIds(params.id)
   const historicalTweets = await fetchTweets()
+  let tweetsWithoutDuplicates = removeDuplicateTweets(historicalTweets?.data)
+
   const taglineWithHash =
     tweet && tweet.data ? await fetchTaglines([tweet?.data]) : []
   const tweetWithTagline =
@@ -93,7 +97,7 @@ const TweetPage: FC<TweetPageProps> = async ({ searchParams, params }) => {
   let overallChannelCasts = initialCasts
   const categories = categorizeArrayOfCasts([
     ...overallChannelCasts,
-    ...historicalTweets?.data,
+    ...tweetsWithoutDuplicates,
     tweet?.data,
   ]) as Category[]
 
@@ -110,6 +114,11 @@ const TweetPage: FC<TweetPageProps> = async ({ searchParams, params }) => {
     overallChannelCasts,
     categories
   ) as Array<CastType>
+
+  let tweetsWithCategories = addCategoryFieldsToTweets(
+    tweetsWithoutDuplicates,
+    categories
+  )
 
   const searchTerm = parseQueryParam(searchParams.search)
   const categoryParam = parseQueryParam(searchParams.categories)
@@ -201,7 +210,8 @@ const TweetPage: FC<TweetPageProps> = async ({ searchParams, params }) => {
               <TweetStats
                 tweet={tweetWithCategory}
                 likes={tweetWithCategory.public_metrics.like_count}
-                overallTweets={historicalTweets?.data}
+                overallTweets={tweetsWithCategories}
+                overallCasts={overallChannelCasts}
               />
             </div>
           </div>

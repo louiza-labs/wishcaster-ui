@@ -97,9 +97,13 @@ export function getRanking(
 export function getTweetRanking(
   target: CastType,
   items: CastType[],
-  metric: "likes" | "recasts" | "replies",
+  metric: "likes" | "retweets" | "replies",
   filterField?: keyof CastType
 ): number | null {
+  console.log(
+    "the ranking items",
+    items.map((item) => item.category)
+  )
   // Apply filtering only if filterField is provided and the target has this property defined
   const filteredItems =
     filterField && target[filterField] !== undefined
@@ -115,12 +119,21 @@ export function getTweetRanking(
 
   const getValueByMetric = (objectToGetValueFrom: any) => {
     if (metric === "likes") {
+      if (objectToGetValueFrom.object === "cast") {
+        return objectToGetValueFrom.reactions.likes_count
+      }
       return objectToGetValueFrom.public_metrics.like_count
     }
     if (metric === "retweets") {
+      if (objectToGetValueFrom.object === "cast") {
+        return objectToGetValueFrom.reactions.recasts_count
+      }
       return objectToGetValueFrom.public_metrics.retweet_count
     }
     if (metric === "replies") {
+      if (objectToGetValueFrom.object === "cast") {
+        return objectToGetValueFrom.replies
+      }
       return objectToGetValueFrom.public_metrics.reply_count
     }
     return 0

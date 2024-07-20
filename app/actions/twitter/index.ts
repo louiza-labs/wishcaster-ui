@@ -5,14 +5,13 @@ import { Client, auth } from "twitter-api-sdk"
 export async function fetchTweets() {
   try {
     const client = new Client(process.env.TWITTER_BEARER_TOKEN as string)
-
+    let domainEntities = `(context:67.1158813612409929728 OR context:66.847869481888096256 OR context:131.1491481998862348291 OR context:131.913142676819648512 OR context:30.781974596794716162 OR context:46.1557697333571112960 OR context:30.781974596752842752)`
     const response = await client.tweets.tweetsRecentSearch({
       query:
-        'is:verified ("product-request:" OR "someone should build:" OR "feature request:" OR "Please add:" OR "please add" OR "Feature request")',
+        'lang:en is:verified (context:131.1491481998862348291 OR context:131.913142676819648512 OR context:46.1557697333571112960) ("product-request" OR "who\'s building" OR "someone should build" OR "will pay money for:" OR "someone build" OR "someone should make" OR "feature request" OR "please add")',
       "tweet.fields": [
         "attachments",
         "author_id",
-        "card_uri",
         "created_at",
         "entities",
         "id",
@@ -21,11 +20,7 @@ export async function fetchTweets() {
       ],
       sort_order: "relevancy",
       max_results: 100,
-      expansions: [
-        "author_id",
-        "entities.mentions.username",
-        "author_screen_name",
-      ],
+      expansions: ["author_id", "entities.mentions.username"],
       "media.fields": ["public_metrics", "type", "url"],
       "user.fields": [
         "created_at",
@@ -44,7 +39,9 @@ export async function fetchTweets() {
     })
 
     return response
-  } catch (e) {}
+  } catch (e) {
+    console.log("the error fetching tweetz", e.error.errors[0].parameters)
+  }
 }
 
 // switch to using a time-frame param after testing POC
@@ -54,7 +51,7 @@ export async function fetchHistoricalTweets() {
 
     const response = await client.tweets.tweetsFullarchiveSearch({
       query:
-        'is:verified ("product-request:" OR "someone should build:" OR "feature request:" OR "Please add:" OR "please add" OR "Feature request" OR "Suggestion:" )',
+        'is:verified ("product-request:" OR "someone should build" OR "will pay money for:" OR "somone build" OR "someone should build:" OR "feature request:" OR "Please add:" OR "Feature request")',
       start_time: "2024-06-01T00:00:00.000Z",
       end_time: "2024-07-19T00:00:00.000Z",
       sort_order: "relevancy",
@@ -100,7 +97,6 @@ export async function fetchHistoricalTweets() {
       ],
     })
     console.log("twitter response", JSON.stringify(response, null, 2))
-
     return response
   } catch (e) {
     console.log("the error fetching historical", e)

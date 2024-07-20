@@ -9,6 +9,7 @@ import {
   categorizeArrayOfCasts,
   extractUserIdsFromTweets,
   generateWhimsicalErrorMessages,
+  removeDuplicateTweets,
   searchCastsForCategories,
   sortCastsByProperty,
 } from "@/lib/helpers"
@@ -54,9 +55,14 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const sortParam = parseQueryParam(searchParams.sort)
   const tweets = await fetchTweets()
   const likes = await fetchLikesForTweet("1754888991164498373")
-  console.log("the likes", likes)
-  const users = await fetchTwitterUsers(extractUserIdsFromTweets(tweets?.data))
-  const tweetsWithUsers = addUserInfoToTweets(tweets?.data, users?.data)
+  let tweetsWithoutDuplicates = removeDuplicateTweets(tweets?.data)
+  const users = await fetchTwitterUsers(
+    extractUserIdsFromTweets(tweetsWithoutDuplicates)
+  )
+  const tweetsWithUsers = addUserInfoToTweets(
+    tweetsWithoutDuplicates,
+    users?.data
+  )
   const notionAccessCode = await getUsersNotionAccessCode()
   const notionSearch = notionAccessCode
     ? await searchNotion(notionAccessCode)
@@ -76,7 +82,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   let filteredCasts = initialCasts
   const categories = categorizeArrayOfCasts([
     ...filteredCasts,
-    tweets?.data,
+    ...tweetsWithUsers,
   ]) as Category[]
   // let taglinedCasts = await fetchTaglines(filteredCasts)
   filteredCasts = addCategoryFieldsToCasts(
@@ -94,7 +100,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   if (categoryParam.length) {
     filteredCasts = searchCastsForCategories(filteredCasts, categoryParam)
     tweetsWithCategories = searchCastsForCategories(
-      tweetsWithCategories,
+      tweetsWithoutDuplicates,
       categoryParam
     )
   }

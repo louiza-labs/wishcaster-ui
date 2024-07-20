@@ -42,3 +42,15 @@ export const filterReactionsByChannel = (reactions: any, channelId: string) => {
   }
   return reactions
 }
+
+export const removeDuplicateTweets = (tweets) => {
+  let tweetObj = {}
+  return tweets.reduce((filteredTweets, currentTweet) => {
+    let tweetText = currentTweet.text
+    if (!tweetObj[tweetText]) {
+      tweetObj[tweetText] = currentTweet.id
+      filteredTweets.push(currentTweet)
+    }
+    return filteredTweets
+  }, [])
+}

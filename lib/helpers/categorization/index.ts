@@ -1,6 +1,7 @@
 import { Cast as CastType, Category } from "@/types"
 
 import { PRODUCT_CATEGORIES_AS_MAP } from "@/lib/constants"
+import { normalizeTweetText } from "@/lib/helpers"
 
 export const searchCastsForCategories = (
   casts: CastType[],
@@ -38,9 +39,17 @@ export const addCategoryFieldsToCasts = (
     return []
   }
   return casts.map((cast) => {
-    const categoryMatch = categories.find(
-      (category) => category.request === cast.text
-    )
+    let categoryMatch
+    if (!(cast.object === "cast")) {
+      let normalizedText = normalizeTweetText(cast.text)
+      categoryMatch = categories.find(
+        (category) => category.request === normalizedText
+      )
+    } else {
+      categoryMatch = categories.find(
+        (category) => category.request === cast.text
+      )
+    }
     return { ...cast, category: categoryMatch ? categoryMatch.category : null }
   })
 }
@@ -56,9 +65,12 @@ export const addCategoryFieldsToTweets = (
     return []
   }
   return tweets.map((tweet) => {
+    let normalizedText = normalizeTweetText(tweet.text)
     const categoryMatch = categories.find(
-      (category) => category.request === tweet.text
+      (category) => category.request === normalizedText
     )
+    console.log("the tweet matches", categoryMatch)
+
     return { ...tweet, category: categoryMatch ? categoryMatch.category : null }
   })
 }
@@ -118,8 +130,10 @@ export function categorizeText(
 
 export function categorizeArrayOfCasts(casts: CastType[]) {
   if (!casts || !Array.isArray(casts) || !casts[0]) return []
+
   let categorizedArray = casts.map((cast: CastType) => {
-    const castText = cast.text
+    const castText =
+      cast.object === "cast" ? cast.text : normalizeTweetText(cast.text)
     const category = categorizeText(castText, PRODUCT_CATEGORIES_AS_MAP)
     return {
       request: castText,
