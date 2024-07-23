@@ -40,7 +40,7 @@ const SaveCastToGithub = ({ cast }: SaveCastProps) => {
           errorSubmittingForm={errorCreatingRepo}
           successfullySubmittingForm={successfullyCreatedRepo}
           successMessage="Successfully created a Repo!"
-          formDescription="Create a Github Repository for this cast on your connected Github account"
+          formDescription="Create a Github Repository for this post on your connected Github account"
         />
       </div>
     </>

@@ -122,17 +122,23 @@ export async function fetchCastsUntilCovered(
     allCasts = allCasts.concat(casts)
     cursor = nextCursor
     // Check if the last cast's timestamp is earlier than the start date
-    if (new Date(casts[casts.length - 1].timestamp) < startDate) {
+    if (
+      new Date(
+        casts[casts.length - 1]
+          ? casts[casts.length - 1].timestamp
+          : new Date().getUTCDate()
+      ) < startDate
+    ) {
       break // Stop fetching more data as the range is covered
     }
   } while (cursor)
 
   // Filter casts to ensure only those within the date range are included
-  const filteredCasts = allCasts.filter(
+  const filteredPosts = allCasts.filter(
     (cast) => new Date(cast.timestamp) >= startDate
   )
   return {
-    casts: filteredCasts,
+    casts: filteredPosts,
     nextCursor: cursor,
   }
 }

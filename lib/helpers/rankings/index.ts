@@ -24,14 +24,25 @@ export const buildRankings = (
       // Count occurrences of each focus value
       metricsMap.set(focusValue, (metricsMap.get(focusValue) || 0) + 1)
     } else if (metric === "replies_count") {
+      const metricValue =
+        cast.object === "cast"
+          ? cast["replies"]["count"] || 0
+          : cast.public_metrics.reply_count || 0
       metricsMap.set(
         focusValue,
-        (metricsMap.get(focusValue) || 0) + (cast["replies"]["count"] || 0)
+        (metricsMap.get(focusValue) || 0) + metricValue
       )
     } else {
+      const metricValue =
+        cast.object === "cast"
+          ? cast["reactions"][metric] || 0
+          : cast.public_metrics[
+              metric === "likes_count" ? "like_count" : "retweet_count"
+            ] || 0
+
       metricsMap.set(
         focusValue,
-        (metricsMap.get(focusValue) || 0) + (cast["reactions"][metric] || 0)
+        (metricsMap.get(focusValue) || 0) + metricValue
       )
 
       // Sum the metric values for each focus value
@@ -94,6 +105,65 @@ export function getRanking(
   return null
 }
 
+export function getTweetRanking(
+  target: CastType,
+  items: CastType[],
+  metric: "likes" | "retweets" | "replies",
+  filterField?: keyof CastType
+): number | null {
+  console.log(
+    "the ranking items",
+    items.map((item) => item.category)
+  )
+  // Apply filtering only if filterField is provided and the target has this property defined
+  const filteredItems =
+    filterField && target[filterField] !== undefined
+      ? filterField === "category"
+        ? items.filter(
+            (item) =>
+              item["category"] &&
+              target["category"] &&
+              item["category"].id === target["category"].id
+          )
+        : items.filter((item) => item[filterField] === target[filterField])
+      : items
+
+  const getValueByMetric = (objectToGetValueFrom: any) => {
+    if (metric === "likes") {
+      if (objectToGetValueFrom.object === "cast") {
+        return objectToGetValueFrom.reactions.likes_count
+      }
+      return objectToGetValueFrom.public_metrics.like_count
+    }
+    if (metric === "retweets") {
+      if (objectToGetValueFrom.object === "cast") {
+        return objectToGetValueFrom.reactions.recasts_count
+      }
+      return objectToGetValueFrom.public_metrics.retweet_count
+    }
+    if (metric === "replies") {
+      if (objectToGetValueFrom.object === "cast") {
+        return objectToGetValueFrom.replies
+      }
+      return objectToGetValueFrom.public_metrics.reply_count
+    }
+    return 0
+  }
+
+  // Sort the filtered items by value in descending order
+  filteredItems.sort((a, b) => getValueByMetric(b) - getValueByMetric(a))
+
+  // Find the rank of the target item by comparing values
+  for (let rank = 0; rank < filteredItems.length; rank++) {
+    if (getValueByMetric(filteredItems[rank]) === getValueByMetric(target)) {
+      return rank + 1 // Return rank starting from 1 (more human-readable)
+    }
+  }
+
+  // If no matching value is found, return null
+  return null
+}
+
 type TopicRanking = {
   category: string
   rankings: {
@@ -104,7 +174,7 @@ type TopicRanking = {
   }
 }
 export function rankTopics(
-  casts: CastType[],
+  casts: any[],
   topic = ""
 ): TopicRanking[] | TopicRanking | null {
   // Initialize storage for metrics per category
@@ -129,9 +199,18 @@ export function rankTopics(
         count: 0,
       }
     }
-    metrics[category].likes_count += cast.reactions.likes_count
-    metrics[category].recasts_count += cast.reactions.recasts_count
-    metrics[category].replies_count += cast.replies.count
+    metrics[category].likes_count +=
+      cast.object === "cast"
+        ? cast.reactions.likes_count
+        : cast.public_metrics.like_count
+    metrics[category].recasts_count +=
+      cast.object === "cast"
+        ? cast.reactions.recasts_count
+        : cast.public_metrics.retweet_count
+    metrics[category].replies_count +=
+      cast.object === "cast"
+        ? cast.replies.count
+        : cast.public_metrics.reply_count
     metrics[category].count += 1
   })
 

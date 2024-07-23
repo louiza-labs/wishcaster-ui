@@ -55,7 +55,7 @@ interface CategoryDetails {
 }
 
 export interface Cast {
-  // object: string
+  object?: string
   hash?: string
   thread_hash: string | null
   parent_hash: string | null

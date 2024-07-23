@@ -13,8 +13,13 @@ import { PopoverForm } from "@/components/popoverForm"
 interface SaveCastDropdownProps {
   cast: any
   notionResults?: any
+  isOnTweetsPage?: boolean
 }
-const SaveCast = ({ cast, notionResults }: SaveCastDropdownProps) => {
+const SaveCast = ({
+  cast,
+  notionResults,
+  isOnTweetsPage,
+}: SaveCastDropdownProps) => {
   const {
     fieldsForCreatingAnIssue,
     handleSubmitIssue,
@@ -23,7 +28,7 @@ const SaveCast = ({ cast, notionResults }: SaveCastDropdownProps) => {
     handleClose,
     successfullySubmittedIssue,
     successfulResult,
-  } = useLinear(cast.hash ?? "")
+  } = useLinear(cast.hash ?? "", cast.username, isOnTweetsPage)
 
   const {
     fieldsForCreatingAnIssue: fieldsForNotion,
@@ -33,7 +38,7 @@ const SaveCast = ({ cast, notionResults }: SaveCastDropdownProps) => {
     handleClose: handleCloseNotion,
     successfullySubmittedIssue: successfullySubmittedToNotion,
     successResult: notionSuccessResult,
-  } = useNotion(cast.hash ?? "", notionResults)
+  } = useNotion(cast.hash ?? "", notionResults, isOnTweetsPage, cast.username)
 
   const {
     fieldsForCreatingAnIssue: fieldsForGithub,
@@ -43,13 +48,19 @@ const SaveCast = ({ cast, notionResults }: SaveCastDropdownProps) => {
     creatingRepo,
     createdRepoResult,
     handleClose: handleCloseGithub,
-  } = useGithub(cast.hash ?? "")
+  } = useGithub(cast.hash ?? "", cast.username, isOnTweetsPage)
 
   const { isConnectedToNotion, isConnectedToGithub, isConnectedToLinear } =
     useBoundStore((state: any) => state)
 
   return (
-    <div className="flex flex-row items-center gap-x-4">
+    <div
+      className={`${
+        isOnTweetsPage
+          ? " flex-col items-start gap-y-4"
+          : "flex-row items-center gap-x-4"
+      } flex `}
+    >
       <PopoverForm
         handleSubmit={handleSubmitForGithub}
         handleClose={() => {}}
@@ -66,7 +77,7 @@ const SaveCast = ({ cast, notionResults }: SaveCastDropdownProps) => {
         isForCastPage={true}
         successResult={createdRepoResult}
         successfullySubmittingForm={successfullyCreatedRepo}
-        formDescription="Create a Github Repository for this cast on your connected Github account"
+        formDescription="Create a Github Repository for this post on your connected Github account"
       />
       <PopoverForm
         handleSubmit={handleSubmitIssue}
@@ -84,7 +95,7 @@ const SaveCast = ({ cast, notionResults }: SaveCastDropdownProps) => {
         submittingForm={submittingIssue}
         errorSubmittingForm={errorSubmittingIssue}
         successfullySubmittingForm={successfullySubmittedIssue}
-        formDescription="Create an issue for this cast on your connected Linear account"
+        formDescription="Create an issue for this post on your connected Linear account"
       />
 
       <PopoverForm
@@ -103,7 +114,7 @@ const SaveCast = ({ cast, notionResults }: SaveCastDropdownProps) => {
         submittingForm={submittingToNotion}
         errorSubmittingForm={errorSubmittingToNotion}
         successfullySubmittingForm={successfullySubmittedToNotion}
-        formDescription="Create a page for this cast on your connected Notion account"
+        formDescription="Create a page for this post on your connected Notion account"
       />
     </div>
   )

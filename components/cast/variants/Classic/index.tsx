@@ -4,9 +4,9 @@ import { Cast as CastType } from "@/types"
 
 import { PRODUCT_CATEGORIES_AS_MAP } from "@/lib/constants"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import AuthorAvatar from "@/components/cast/CastAvatar"
-import CastContent from "@/components/cast/CastContent"
-import CastFooter from "@/components/cast/CastFooter"
+import AuthorAvatar from "@/components/cast/variants/Classic/CastAvatar"
+import CastContent from "@/components/cast/variants/Classic/CastContent"
+import CastFooter from "@/components/cast/variants/Classic/CastFooter"
 
 interface CastComponentTypes extends CastType {
   hideMetrics?: boolean

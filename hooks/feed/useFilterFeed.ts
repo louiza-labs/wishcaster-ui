@@ -11,7 +11,7 @@ import {
   sortCastsByProperty,
 } from "@/lib/helpers"
 
-const useFilterFeed = (casts: CastType[], topic = "") => {
+const useFilterFeed = (posts: CastType[], topic = "") => {
   const searchParams = useSearchParams()
 
   // Extract search parameters
@@ -24,28 +24,30 @@ const useFilterFeed = (casts: CastType[], topic = "") => {
   const likedFilter = filtersFromParams.includes("liked")
   const followingFilter = filtersFromParams.includes("following")
   const recastedFilter = filtersFromParams.includes("recasted")
+  const hideFarcasterFilter = filtersFromParams.includes("hide-farcaster")
+  const hideXFilter = filtersFromParams.includes("hide-twitter")
 
   const params = useParams()
   const path = usePathname()
 
   // Start with the initial set of casts
-  let filteredCasts = [...casts]
+  let filteredPosts = [...posts]
 
   // Apply priority badge filter
   if (priorityBadgeFilter) {
-    filteredCasts = filteredCasts.filter((cast) => cast.author.power_badge)
+    filteredPosts = filteredPosts.filter((cast) => cast.author.power_badge)
   }
 
   // Apply liked filter
   if (likedFilter) {
-    filteredCasts = filteredCasts.filter(
+    filteredPosts = filteredPosts.filter(
       (cast) => cast.viewer_context && cast.viewer_context.liked
     )
   }
 
   // Apply following filter
   if (followingFilter) {
-    filteredCasts = filteredCasts.filter(
+    filteredPosts = filteredPosts.filter(
       (cast) =>
         cast.author &&
         cast.author.viewer_context &&
@@ -55,44 +57,44 @@ const useFilterFeed = (casts: CastType[], topic = "") => {
 
   // Apply recasted filter
   if (recastedFilter) {
-    filteredCasts = filteredCasts.filter(
+    filteredPosts = filteredPosts.filter(
       (cast) => cast.viewer_context && cast.viewer_context.recasted
     )
   }
 
   // Filter by search term if it exists
   if (searchTermFromParams) {
-    filteredCasts = searchCastsForTerm(filteredCasts, searchTermFromParams)
+    filteredPosts = searchCastsForTerm(filteredPosts, searchTermFromParams)
   }
 
   // Categorize and filter duplicate categories
-  const categories = categorizeArrayOfCasts(filteredCasts) as Category[]
+  const categories = categorizeArrayOfCasts(filteredPosts) as Category[]
   const filteredCategories = categories
 
   // Add category fields to casts
-  filteredCasts = addCategoryFieldsToCasts(
-    filteredCasts,
+  filteredPosts = addCategoryFieldsToCasts(
+    filteredPosts,
     filteredCategories
   ) as CastType[]
 
   // Filter by categories if specified
   if (categoriesFromParams) {
-    filteredCasts = searchCastsForCategories(
-      filteredCasts,
+    filteredPosts = searchCastsForCategories(
+      filteredPosts,
       categoriesFromParams
     )
   }
   // Filter by topic page if on one
   if (topic && topic.length) {
-    filteredCasts = searchCastsForCategories(filteredCasts, topic)
+    filteredPosts = searchCastsForCategories(filteredPosts, topic)
   }
 
   // Sort by appropriate field if specified
   if (sortFieldFromParams) {
-    filteredCasts = sortCastsByProperty(filteredCasts, sortFieldFromParams)
+    filteredPosts = sortCastsByProperty(filteredPosts, sortFieldFromParams)
   }
 
-  return { filteredCasts }
+  return { filteredPosts }
 }
 
 export default useFilterFeed

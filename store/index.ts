@@ -2,6 +2,7 @@
 // @ts-nocheck
 import { createCastsSlice } from "@/store/casts"
 import { createFooterSlice } from "@/store/footer"
+import { createTweetsSlice } from "@/store/tweets"
 import { createUserSlice } from "@/store/user"
 import { create } from "zustand"
 
@@ -20,4 +21,5 @@ export const useBoundStore = create((...a) => ({
   ...createUserSlice(...a),
   ...createFooterSlice(...a),
   ...createCastsSlice(...a),
+  ...createTweetsSlice(...a),
 }))

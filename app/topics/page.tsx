@@ -17,6 +17,7 @@ import Topics from "@/components/topics"
 import {
   fetchCastsUntilCovered,
   fetchChannelCasts,
+  fetchTweets,
   getUsersNotionAccessCode,
   searchNotion,
 } from "@/app/actions"
@@ -59,21 +60,22 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
         "someone-build",
         timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
       )
-  let filteredCasts = initialCasts
-  const categories = categorizeArrayOfCasts(filteredCasts) as Category[]
+  const tweets = await fetchTweets()
+  let filteredPosts = [...initialCasts, ...(tweets?.data ? tweets.data : [])]
+  const categories = categorizeArrayOfCasts(filteredPosts) as Category[]
 
-  filteredCasts = addCategoryFieldsToCasts(
-    filteredCasts,
+  filteredPosts = addCategoryFieldsToCasts(
+    filteredPosts,
     categories
   ) as Array<CastType>
   if (categoryParam.length) {
-    filteredCasts = searchCastsForCategories(filteredCasts, categoryParam)
+    filteredPosts = searchCastsForCategories(filteredPosts, categoryParam)
   }
   if (sortParam) {
-    filteredCasts = sortCastsByProperty(filteredCasts, sortParam)
+    filteredPosts = sortCastsByProperty(filteredPosts, sortParam)
   }
 
-  const isError = !filteredCasts.length
+  const isError = !filteredPosts.length
   const breadCrumbPages = [{ name: "Topics", link: "/topics" }]
 
   return (
@@ -88,7 +90,7 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
         <main className="relative grid grid-cols-1 gap-4 py-10 lg:grid-cols-12 ">
           <article className="no-scrollbar lg:col-span-12 lg:px-2  ">
             <Topics
-              casts={filteredCasts}
+              casts={filteredPosts}
               mobileView={mobileViewParam}
               notionResults={notionResults}
             />
@@ -97,7 +99,7 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
       </section>
       <div className="flex flex-col items-start lg:hidden">
         <BottomMobileNav
-          filteredCasts={filteredCasts}
+          filteredPosts={filteredPosts}
           initialCasts={initialCasts}
           page={"topics"}
         />

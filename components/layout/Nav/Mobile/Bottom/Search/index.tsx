@@ -49,7 +49,7 @@ function MobileSearch({}: any) {
           <ScrollArea className="mt-6 h-[calc(100vh-8rem)] w-full overflow-y-auto pb-10 ">
             <div className="flex w-full flex-col space-y-3">
               <aside className="relative flex w-full  flex-col gap-y-6 sm:col-span-3 sm:flex">
-                <Search />
+                <Search notionResults={[]} />
               </aside>
             </div>
           </ScrollArea>

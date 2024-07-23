@@ -10,8 +10,8 @@ import {
 } from "@/lib/helpers"
 import { fetchTaglines } from "@/lib/requests"
 import Build from "@/components/buildComponent"
-import Cast from "@/components/cast"
 import CastStats from "@/components/cast/stats"
+import Cast from "@/components/cast/variants/Classic"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
 import TopReplies from "@/components/replies/TopReplies"
@@ -107,8 +107,8 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   const sortParam = parseQueryParam(searchParams.sort)
   const mobileViewParam = parseQueryParam(searchParams.view)
 
-  let filteredCasts = [enrichedCast]
-  const isError = !filteredCasts.length
+  let filteredPosts = [enrichedCast]
+  const isError = !filteredPosts.length
 
   return (
     <>
@@ -222,7 +222,7 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
       </section>
       <div className="flex flex-col items-start lg:hidden">
         <BottomMobileNav
-          filteredCasts={[castWithCategory]}
+          filteredPosts={[castWithCategory]}
           initialCasts={[castWithCategory]}
           page="cast"
         />

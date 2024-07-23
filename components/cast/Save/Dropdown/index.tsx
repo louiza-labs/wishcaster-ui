@@ -23,6 +23,7 @@ interface SaveCastDropdownProps {
   value: string
   cast: any
   notionResults?: any
+  isOnTweetsPage?: boolean
 }
 const SaveCastDropdown = ({
   handleClick,
@@ -30,6 +31,7 @@ const SaveCastDropdown = ({
   value,
   cast,
   notionResults,
+  isOnTweetsPage,
 }: SaveCastDropdownProps) => {
   const {
     fieldsForCreatingAnIssue,
@@ -39,7 +41,7 @@ const SaveCastDropdown = ({
     handleClose,
     successfullySubmittedIssue,
     successfulResult,
-  } = useLinear(cast.hash ?? "")
+  } = useLinear(cast.hash ?? "", cast.username, isOnTweetsPage)
 
   const {
     fieldsForCreatingAnIssue: fieldsForNotion,
@@ -49,7 +51,7 @@ const SaveCastDropdown = ({
     handleClose: handleCloseNotion,
     successfullySubmittedIssue: successfullySubmittedToNotion,
     successResult: notionSuccessResult,
-  } = useNotion(cast.hash ?? "", notionResults)
+  } = useNotion(cast.hash ?? "", notionResults, isOnTweetsPage, cast.username)
 
   const {
     fieldsForCreatingAnIssue: fieldsForGithub,
@@ -59,7 +61,7 @@ const SaveCastDropdown = ({
     creatingRepo,
     createdRepoResult,
     handleClose: handleCloseGithub,
-  } = useGithub(cast.hash ?? "")
+  } = useGithub(cast.hash ?? "", cast.username, isOnTweetsPage)
 
   const { isConnectedToNotion, isConnectedToGithub, isConnectedToLinear } =
     useBoundStore((state: any) => state)
@@ -68,13 +70,13 @@ const SaveCastDropdown = ({
     <DropdownMenu>
       <DropdownMenuTrigger
         disabled={!(isConnectedToLinear || isConnectedToNotion)}
-        className="relative mr-4 border-none "
+        className="relative h-fit border-none "
         asChild
       >
         <Button
           variant={"ghost"}
           disabled={!(isConnectedToLinear || isConnectedToNotion)}
-          className="relative"
+          className="relative h-fit"
         >
           Save
         </Button>

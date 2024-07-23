@@ -46,7 +46,7 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
   },
   messaging: {
     label: "💬 Messaging",
-    keywords: new Set(["message", "messaging", "chat"]),
+    keywords: new Set(["message", "messaging", "chat app", "telegram"]),
   },
   wallets: {
     label: "👛 Wallets",
@@ -88,6 +88,18 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
   clients: {
     label: "👥 Clients",
     keywords: new Set(["client"]),
+  },
+  filters: {
+    label: "🙅🏻‍♀️ Filters",
+    keywords: new Set(["scam", "spam", "scammers", "scams"]),
+  },
+  layerTwos: {
+    label: "🛜 L2's",
+    keywords: new Set(["layer two", "L2", "Layer2", "L2s"]),
+  },
+  pizza: {
+    label: "🍕 Pizza",
+    keywords: new Set(["grandma slice", "deep-dish", "pizza", "deepdish"]),
   },
   attestations: {
     label: "📜 Attestations",
@@ -146,7 +158,7 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
   },
   nftsMarketplaces: {
     label: "🖼️ NFTs Marketplaces",
-    keywords: new Set(["nft marketplace", "opensea", "blur"]),
+    keywords: new Set(["nft marketplace", "opensea", "blur", "rarible"]),
   },
 
   blockchainGaming: {
@@ -156,6 +168,7 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
       "onchain game",
       "blockchain game",
       "play-to-earn",
+      "web3 games",
       "metaverse",
     ]),
   },
@@ -231,9 +244,20 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
       "inventory",
     ]),
   },
+  politics: {
+    label: "🏛️ Politics",
+    keywords: new Set([
+      "politics",
+      "Politics",
+      "politic",
+      "elections",
+      "trump",
+      "biden",
+    ]),
+  },
   voting: {
     label: "🗳️ Voting",
-    keywords: new Set(["vote", "voting", "election", "ballot", "poll"]),
+    keywords: new Set(["vote", "voting", "ballot", "poll"]),
   },
   devTools: {
     label: "🔧 Dev Tools",
@@ -260,7 +284,13 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
   },
   contentCreation: {
     label: "🎨 Content Creation",
-    keywords: new Set(["content creation", "media", "publish", "art creation"]),
+    keywords: new Set([
+      "content creation",
+      "media",
+      "publish",
+      "podcast",
+      "art creation",
+    ]),
   },
   newsletter: {
     label: "📃 Newsletter",
@@ -516,6 +546,10 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
   channels: {
     label: "📡 Channels",
     keywords: new Set(["channel", "channels"]),
+  },
+  gaming: {
+    label: "🕹️ Gaming",
+    keywords: new Set(["video game", "gaming"]),
   },
   fundraising: {
     label: "💵 Fundraising",

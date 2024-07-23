@@ -19,7 +19,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
-import CastItem from "@/components/cast/SprintItem"
+import CastItem from "@/components/cast/variants/SprintItem"
 
 interface PopoverFormProps {
   handleSubmit: () => void

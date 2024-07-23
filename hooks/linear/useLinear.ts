@@ -5,14 +5,16 @@ import { useSession } from "next-auth/react"
 
 import { createLinearIssue } from "@/app/actions"
 
-const useLinear = (castHash: string) => {
+const useLinear = (castHash: string, username = "", isOnTweetPage = false) => {
   const { data: sessionData } = useSession()
   const emailForLoggedInUser =
     sessionData && sessionData.user && sessionData.user.email
       ? sessionData.user.email
       : null
 
-  const wcLinkForCast = `https://www.warpcast.com/${castHash}`
+  const wcLinkForCast = isOnTweetPage
+    ? `https://www.x.com/${username}/status/${castHash}`
+    : `https://www.warpcast.com/${castHash}`
 
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState(`Issue Description for...

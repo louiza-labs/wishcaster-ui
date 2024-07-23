@@ -17,12 +17,12 @@ interface BottomMobileNavProps {
   castWithCategory?: any
   reactionsObject?: any
   overallChannelCast?: any
-  filteredCasts: CastType[] | any
+  filteredPosts: CastType[] | any
   page?: "cast" | "home" | "topics" | "topic"
 }
 const BottomMobileNav = ({
   initialCasts,
-  filteredCasts,
+  filteredPosts,
   castWithCategory,
   reactionsObject,
   overallChannelCast,
@@ -62,7 +62,7 @@ const BottomMobileNav = ({
         </>
       ) : (
         <>
-          {/* <MobileFiltering initialCasts={filteredCasts} /> */}
+          {/* <MobileFiltering initialCasts={filteredPosts} /> */}
 
           <TopicsNavButton />
 

@@ -5,11 +5,13 @@ import { useEffect, useMemo, useState } from "react"
 import { createNotionItem, getUsersNotionAccessCode } from "@/app/actions"
 import { extractNotionTitle } from "@/lib/helpers"
 
-const useNotion = (castHash: string, notionResults = <any>[]) => {
+const useNotion = (castHash: string, notionResults = <any>[], isOnTweetPage = false, username = '') => {
   ;[]
   const [providerToken, setProviderToken] = useState("")
 
-  const wcLinkForCast = `https://www.warpcast.com/${castHash}`
+  const wcLinkForCast = isOnTweetPage
+    ? `https://www.x.com/${username}/status/${castHash}`
+    : `https://www.warpcast.com/${castHash}`
 
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState(`Issue Description for...

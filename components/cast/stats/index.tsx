@@ -41,7 +41,7 @@ interface CastStatProps {
 }
 
 const CastStats = ({ cast, overallChannelCasts, reactions }: CastStatProps) => {
-  const { filteredCasts: updatedCast } = useFilterFeed([cast])
+  const { filteredPosts: updatedCast } = useFilterFeed([cast])
   const { likes, recasts } = reactions
   let castWithCategories = updatedCast[0] ?? cast
   const stringOfLikesFIDs =

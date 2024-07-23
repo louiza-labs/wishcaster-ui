@@ -5,8 +5,10 @@ import { useNeynarContext } from "@neynar/react"
 
 import { createGithubRepoForUser } from "@/app/actions"
 
-const useGithub = (castHash: string) => {
-  const wcLinkForCast = `https://www.warpcast.com/${castHash}`
+const useGithub = (castHash: string, username = "", isOnTweetPage = false) => {
+  const wcLinkForCast = isOnTweetPage
+    ? `https://www.x.com/${username}/status/${castHash}`
+    : `https://www.warpcast.com/${castHash}`
 
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState(`Repo Description...`)
