@@ -48,13 +48,9 @@ export function sortCastsByProperty(
         valueB = reactionsB[sortField] ?? 0
     }
 
-    console.log("the aValue", valueA)
-    console.log("the bValue", valueA)
-
     // Return negative, zero, or positive based on the comparison for descending order
     return Number(valueB) - Number(valueA)
   })
-  console.log("the sortedCasts", sortedCasts)
 
   return sortedCasts
 }

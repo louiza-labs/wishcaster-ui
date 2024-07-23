@@ -62,30 +62,35 @@ export async function fetchTweetsUntilCovered() {
     nextCursor: cursor,
   }
 }
+async function fetchChunk(chunk: string) {
+  const { data } = await fetchTwitterUsers(chunk.split(","))
+  return data
+}
 
 export async function fetchTwitterUsersUntilCovered(twitterUserIds: string[]) {
-  let allTweets = [] as any[]
+  try {
+    let allTweets = [] as any[]
 
-  // Split the twitterUserIds into an array and create chunks of 100 IDs each
-  const chunks = []
-  for (let i = 0; i < twitterUserIds.length; i += 100) {
-    chunks.push(twitterUserIds.slice(i, i + 100).join(","))
-  }
+    // Split the twitterUserIds into chunks of 100 IDs each
+    const chunks = []
+    for (let i = 0; i < twitterUserIds.length; i += 100) {
+      chunks.push(twitterUserIds.slice(i, i + 100).join(","))
+    }
 
-  // Helper function to fetch data for a given chunk of IDs
-  async function fetchChunk(chunk: string) {
-    const { data } = await fetchTwitterUsers(chunk.split(","))
-    return data
-  }
+    // Fetch data for each chunk sequentially
+    for (const chunk of chunks) {
+      const chunkTweets = await fetchChunk(chunk)
+      allTweets = allTweets.concat(chunkTweets)
+    }
 
-  // Fetch data for each chunk se
-  for (const chunk of chunks) {
-    const chunkTweets = await fetchChunk(chunk)
-    allTweets = allTweets.concat(chunkTweets)
-  }
-
-  return {
-    tweets: allTweets,
+    return {
+      tweets: allTweets,
+    }
+  } catch (e) {
+    console.log("the error fetching users", e)
+    return {
+      tweets: [],
+    }
   }
 }
 

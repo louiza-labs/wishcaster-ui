@@ -24,14 +24,12 @@ export const useAddUsersToTweets = (tweets: any[]) => {
       const arrayOfStringsOfUserIds = tweets
         .filter((tweet) => !(tweet.object === "cast"))
         .map((tweet) => tweet.author_id)
-      console.log("the arrayOfStringsOfUserIds", arrayOfStringsOfUserIds)
 
       const usersResponse = await fetchTwitterUsersUntilCovered(
         arrayOfStringsOfUserIds
       )
 
       const users = usersResponse.tweets
-      console.log("the users", users)
       const tweetsWithUsersAdded = tweets.map((tweet) => {
         const userForTweet = users.find((user) => user.id === tweet.author_id)
         return {

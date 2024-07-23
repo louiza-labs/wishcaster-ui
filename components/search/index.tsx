@@ -18,6 +18,7 @@ import {
 import Cast from "@/components/cast/variants/SprintItem"
 import { Icons } from "@/components/icons"
 import Rankings from "@/components/rankings"
+import TweetCard from "@/components/tweet/variants/card"
 
 interface SearchIconProps {
   handleClick: () => void
@@ -46,26 +47,27 @@ function SearchIcon({ handleClick, className }: SearchIconProps) {
     </button>
   )
 }
-
-const Search = () => {
+interface SearchProps {
+  notionResults?: any
+}
+const Search = ({ notionResults }: SearchProps) => {
   const [renderingSearchResults, setRenderingSearchResults] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [searchedCasts, setSearchedCasts] = useState<any[] | []>([])
   const [itemsToShow, setItemsToShow] = useState<number>(10)
-  const [searchType, setSearchType] = useState("casts")
+  const [searchType, setSearchType] = useState("posts")
 
   const searchParamsObj = useSearchParams()
   const searchParams = searchParamsObj.get("search")
   const router = useRouter()
-  const { casts } = useBoundStore((state: any) => state)
-
+  const { casts, tweets } = useBoundStore((state: any) => state)
   const handleSearchTypeChange = (value: string) => {
     setSearchType(value)
   }
 
   const searchTypeOptions = [
     {
-      value: "casts",
+      value: "posts",
       icon: Icons.casts,
     },
     {
@@ -134,7 +136,10 @@ const Search = () => {
     if (!(searchTerm && searchTerm.length)) return
     try {
       let categories: any = categorizeArrayOfCasts(casts)
-      let filteredPosts = addCategoryFieldsToCasts(casts, categories)
+      let filteredPosts = addCategoryFieldsToCasts(
+        [...casts, ...tweets],
+        categories
+      )
       const castsWithSearchTerm =
         searchType === "topics"
           ? filteredPosts.filter(
@@ -219,7 +224,7 @@ const Search = () => {
             </div>
             <Input
               className="w-full rounded-md border border-gray-300 px-4 py-2 pl-20 pr-10 focus:border-gray-500  focus:outline-none focus:ring-1 focus:ring-gray-500 dark:border-gray-600  dark:bg-gray-800 dark:text-gray-200 dark:focus:border-gray-500 dark:focus:ring-gray-500"
-              placeholder="Search casts or topics..."
+              placeholder="Search casts, tweets, or topics..."
               type="search"
               onChange={handleSearchTermChange}
               value={searchTerm}
@@ -259,16 +264,33 @@ const Search = () => {
             <Rankings casts={searchedCasts} view={"search"} />
           ) : (
             <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
-              {searchedCasts.slice(0, itemsToShow).map((searchedCast) => (
-                <Cast
-                  {...searchedCast}
-                  hideMetrics={false}
-                  badgeIsToggled={false}
-                  key={searchedCast.hash}
-                  routeToWarpcast={true}
-                  cast={searchedCast}
-                  mentionedProfiles={searchedCast.mentioned_profiles}
-                />
+              {searchedCasts.slice(0, itemsToShow).map((searchedPost) => (
+                <>
+                  {searchedPost.mentioned_profiles ? (
+                    <Cast
+                      {...searchedPost}
+                      hideMetrics={false}
+                      badgeIsToggled={false}
+                      key={searchedPost.hash}
+                      routeToWarpcast={true}
+                      notionResults={notionResults}
+                      cast={searchedPost}
+                      mentionedProfiles={searchedPost.mentioned_profiles}
+                    />
+                  ) : (
+                    <TweetCard
+                      text={searchedPost.text}
+                      likes={searchedPost.public_metrics.like_count}
+                      replies={searchedPost.public_metrics.reply_count}
+                      retweets={searchedPost.public_metrics.retweet_count}
+                      username={searchedPost.username}
+                      user={searchedPost.user}
+                      category={searchedPost.category}
+                      tweet={searchedPost}
+                      notionResults={notionResults}
+                    />
+                  )}
+                </>
               ))}
               {itemsToShow >= searchedCasts.length ? null : (
                 <div ref={ref} className="flex items-center justify-center ">

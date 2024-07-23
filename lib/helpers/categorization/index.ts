@@ -67,7 +67,6 @@ export const addCategoryFieldsToTweets = (
     const categoryMatch = categories.find(
       (category) => category.request === normalizedText
     )
-    console.log("the tweet matches", categoryMatch)
 
     return { ...tweet, category: categoryMatch ? categoryMatch.category : null }
   })

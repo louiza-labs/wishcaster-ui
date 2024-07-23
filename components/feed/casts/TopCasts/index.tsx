@@ -41,7 +41,6 @@ const TopCasts = ({
     [...castsWithUserInfo, ...tweetsWithUsers],
     topic
   )
-  console.log("the tweets with users", tweetsWithUsers)
   const sortedPosts = sortCastsByProperty(filteredPosts, "likes_count")
 
   return (
