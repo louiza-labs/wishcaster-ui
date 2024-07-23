@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useCallback, useMemo } from "react"
+import { Suspense, useCallback, useMemo, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useNeynarContext } from "@neynar/react"
 
@@ -45,6 +45,14 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
   const { user, isAuthenticated } = useNeynarContext()
   const path = usePathname()
   const isOnTopicsPage = path === "topics"
+  const [
+    shouldShowTwitterFilterSelectedOnLoad,
+    setShouldShowTwitterFilterSelectedOnLoad,
+  ] = useState(true)
+  const [
+    shouldShowFarcasterFilterSelectedOnLoad,
+    setShouldShowFarcasterFilterSelectedOnLoad,
+  ] = useState(true)
 
   const categories = categorizeArrayOfCasts(initialCasts) as Category[]
 
@@ -139,6 +147,12 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
   const handleYTDFilterChange = () => {
     handleToggleFilterClick("ytd")
   }
+  const handleHideFarcasterSourceFilterChange = () => {
+    handleToggleFilterClick("hide-farcaster")
+  }
+  const handleHideXSourceFilterChange = () => {
+    handleToggleFilterClick("hide-twitter")
+  }
 
   const handleSelectDateValueChange = (value: string) => {
     handleToggleFilterClick(value)
@@ -200,6 +214,64 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
             Filters
           </p>
         )}
+        <div className=" flex flex-col items-start">
+          {asFilterBar ? null : (
+            <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
+              Sources
+            </p>
+          )}
+          <div
+            className={`${
+              asFilterBar
+                ? "flex flex-row items-center gap-x-2"
+                : "md:gap-x-auto grid grid-cols-2 gap-x-10 md:flex md:flex-wrap md:gap-4 xl:grid xl:gap-x-10 xl:gap-y-0"
+            }`}
+          >
+            {asFilterBar ? (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="mr-4 w-fit whitespace-nowrap rounded-full font-semibold"
+                  >
+                    {getSelectedFilterValues()
+                      ? `${getSelectedFilterValues()}`
+                      : "🍿 Feeds"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="flex w-fit flex-col gap-y-4 p-4">
+                  <InteractionsCheckbox
+                    handleChange={handleHideXSourceFilterChange}
+                    value={!filterIsSelected("hide-twitter")}
+                    text={"X"}
+                    id={"hide-twitter"}
+                  />
+                  <InteractionsCheckbox
+                    handleChange={handleHideFarcasterSourceFilterChange}
+                    value={!filterIsSelected("hide-farcaster")}
+                    text={"Farcaster"}
+                    id={"hide-farcaster"}
+                  />
+                </PopoverContent>
+              </Popover>
+            ) : (
+              <>
+                <InteractionsCheckbox
+                  handleChange={handleHideXSourceFilterChange}
+                  value={!filterIsSelected("hide-twitter")}
+                  text={"X"}
+                  id={"twitter"}
+                />
+                <InteractionsCheckbox
+                  handleChange={handleHideFarcasterSourceFilterChange}
+                  value={!filterIsSelected("hide-farcaster")}
+                  text={"Farcaster"}
+                  id={"farcaster"}
+                />
+              </>
+            )}
+          </div>
+        </div>
         <div
           className={`${
             asFilterBar

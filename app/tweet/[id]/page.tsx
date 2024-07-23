@@ -55,17 +55,19 @@ interface User {
 
 const TweetPage: FC<TweetPageProps> = async ({ searchParams, params }) => {
   const tweet = await fetchTweetByIds(params.id)
-  const historicalTweets = await fetchTweets()
-  let tweetsWithoutDuplicates = removeDuplicateTweets(historicalTweets?.data)
+  const { data: historicalTweets, meta } = await fetchTweets()
+  let tweetsWithoutDuplicates = removeDuplicateTweets(historicalTweets)
 
   const taglineWithHash =
-    tweet && tweet.data ? await fetchTaglines([tweet?.data]) : []
-  const tweetWithTagline =
+    tweet && tweet.data ? await fetchTaglines([historicalTweets]) : []
+  const tweetWithTagline: any =
     tweet && tweet.data
-      ? addTaglinesToCasts([tweet.data], taglineWithHash)
+      ? addTaglinesToCasts([historicalTweets], taglineWithHash)
       : tweet
   let enrichedTweet =
-    tweet && tweetWithTagline ? tweetWithTagline[0] : tweetWithTagline
+    tweet && tweetWithTagline && tweetWithTagline[0]
+      ? tweetWithTagline[0]
+      : tweetWithTagline
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
@@ -126,8 +128,8 @@ const TweetPage: FC<TweetPageProps> = async ({ searchParams, params }) => {
   const sortParam = parseQueryParam(searchParams.sort)
   const mobileViewParam = parseQueryParam(searchParams.view)
 
-  let filteredCasts = [enrichedTweet]
-  const isError = !filteredCasts.length
+  let filteredPosts = [enrichedTweet]
+  const isError = !filteredPosts.length
 
   return (
     <>
@@ -244,7 +246,7 @@ const TweetPage: FC<TweetPageProps> = async ({ searchParams, params }) => {
       </section>
       <div className="flex flex-col items-start lg:hidden">
         {/* <BottomMobileNav
-          filteredCasts={[tweetWithCategory]}
+          filteredPosts={[tweetWithCategory]}
           initialCasts={[tweetWithCategory]}
           page="cast"
         /> */}

@@ -1,7 +1,5 @@
 "use client"
 
-import { Cast as CastType } from "@/types"
-
 import { PRODUCT_CATEGORIES_AS_MAP } from "@/lib/constants"
 import useAddTaglineToHash from "@/hooks/farcaster/casts/useAddTaglineToHash"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
@@ -10,20 +8,6 @@ import { Separator } from "@/components/ui/separator"
 import AuthorAvatar from "@/components/tweet/variants/card/Avatar"
 import CastContent from "@/components/tweet/variants/card/Content"
 import CastFooter from "@/components/tweet/variants/card/Footer"
-
-interface CastComponentTypes extends CastType {
-  hideMetrics?: boolean
-  handleToggleCategoryClick?: any
-  badgeIsToggled?: any
-  renderEmbeds?: boolean
-  hideActions?: boolean
-  cast?: CastType
-  isReply?: boolean
-  category?: {
-    label: string
-    id: string
-  }
-}
 
 interface TweetProps {
   text: string
@@ -55,13 +39,15 @@ const SprintItemCast = ({
       : null
   return (
     <Card className="md:border-auto md:shadow-auto relative flex w-full flex-col justify-between   lg:h-fit">
-      <Avatar className="absolute right-2 top-2 size-5 rounded-full border p-0.5 shadow-sm">
-        <AvatarImage
-          src={"/social-account-logos/twitter-logo-black.png"}
-          alt={"twitter"}
-        />
-      </Avatar>
-      <CardHeader className="mt-2 flex w-full flex-col gap-y-2 px-0">
+      <div className="-mb-4 mt-2 flex flex-col items-center">
+        <Avatar className="border-1 flex size-5 flex-col items-center rounded-full border  p-1 shadow">
+          <AvatarImage
+            src={"/social-account-logos/twitter-logo-black.png"}
+            alt={"twitter"}
+          />
+        </Avatar>
+      </div>
+      <CardHeader className=" flex w-full flex-col gap-y-2 px-0">
         <AuthorAvatar
           author={user}
           isTweet={true}
@@ -94,7 +80,6 @@ const SprintItemCast = ({
           reactions={tweet.public_metrics}
           replies={replies}
           likes={likes}
-          replies={replies}
           retweets={retweets}
           hideMetrics={false}
           hash={tweet.hash}

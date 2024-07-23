@@ -33,12 +33,12 @@ const CastAndTweetsFeed = ({
 }: CastFeedProps) => {
   const searchParams = useSearchParams()
   const { castsToShow, ref, fetchingCasts } = useLoadMoreCasts(
-    casts,
+    [...tweets, ...casts],
     nextCursor,
     timeFilterParam
   )
   const [castCardStyleToShow, setCastCardStyleToShow] = useState("product")
-  const { filteredCasts } = useFilterFeed(castsToShow, topic)
+  const { filteredPosts } = useFilterFeed(castsToShow, topic)
 
   const router = useRouter()
   const categoriesFromParams = searchParams.getAll("topics").join(",")
@@ -125,8 +125,8 @@ const CastAndTweetsFeed = ({
   }, [layoutValueIsSelected])
 
   const tweetsAndCasts = useMemo(() => {
-    return [...tweets, ...filteredCasts]
-  }, [tweets, filteredCasts])
+    return [...filteredPosts]
+  }, [filteredPosts])
 
   return (
     <Suspense fallback={<CastFeedSkeleton count={5} />}>
@@ -139,7 +139,7 @@ const CastAndTweetsFeed = ({
             : "gap-4 lg:grid-cols-2"
         } lg:px-10`}
       >
-        {fetchingCasts && !(filteredCasts && filteredCasts.length) ? (
+        {fetchingCasts && !(filteredPosts && filteredPosts.length) ? (
           <div
             className={
               columns
@@ -156,7 +156,7 @@ const CastAndTweetsFeed = ({
             <CastFeedSkeleton count={4} />
           </div>
         ) : tweetsAndCasts && tweetsAndCasts.length ? (
-          tweetsAndCasts.map((tweetOrCast: CastType, index) => (
+          tweetsAndCasts.map((tweetOrCast: any, index) => (
             <Fragment key={tweetOrCast.hash || tweetOrCast.id || index}>
               {tweetOrCast.type === "tweet" ? (
                 <TweetCardToUse
@@ -168,6 +168,7 @@ const CastAndTweetsFeed = ({
                   user={tweetOrCast.user}
                   category={tweetOrCast.category}
                   tweet={tweetOrCast}
+                  notionResults={notionResults}
                 />
               ) : (
                 <CastCardToUse

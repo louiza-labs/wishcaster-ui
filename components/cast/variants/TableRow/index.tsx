@@ -77,7 +77,7 @@ const TableRowCast = ({
         routeToWarpcast={routeToWarpcast}
         renderEmbeds={renderEmbeds}
         mentionedProfiles={mentionedProfiles}
-        categoryLabel={categoryLabel}
+        categoryLabel={categoryLabel ?? ""}
         notionResults={notionResults}
         replies={replies}
         castWithTagline={castWithTagline}
@@ -100,9 +100,9 @@ const TableRowCast = ({
         renderEmbeds={renderEmbeds}
         aspectRatio=""
         embeds={embeds}
+        handleToggleCategoryClick={() => {}}
         text={text}
         mentionedProfiles={mentionedProfiles}
-        handleToggleCategoryClick={() => {}}
         badgeIsToggled={false}
       />
     </Card>

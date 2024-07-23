@@ -9,7 +9,7 @@ const Header = ({ author, categoryLabel }: CastAvatarProps) => {
   if (!author) return <div />
   return (
     <>
-      <Avatar className="absolute left-2 top-2 size-5 rounded-full border p-0.5 shadow-sm">
+      <Avatar className="flex size-5 flex-col rounded-full border p-0.5 shadow-sm">
         <AvatarImage
           src={"/social-account-logos/twitter-logo-black.png"}
           alt={"twitter"}

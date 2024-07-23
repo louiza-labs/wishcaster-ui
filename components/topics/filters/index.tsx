@@ -21,8 +21,8 @@ const TopicFilters = ({ initialCasts }: CategoriesFeedProps) => {
   const router = useRouter()
   const { user, isAuthenticated } = useNeynarContext()
 
-  let { filteredCasts } = useFilterFeed(initialCasts)
-  const categories = categorizeArrayOfCasts(filteredCasts) as Category[]
+  let { filteredPosts } = useFilterFeed(initialCasts)
+  const categories = categorizeArrayOfCasts(filteredPosts) as Category[]
   const filteredCategories = filterDuplicateCategories(categories)
 
   const filtersFromParams = useMemo(

@@ -42,7 +42,7 @@ const TweetStats = ({
   overallCasts,
   likes,
 }: TweetStatsProps) => {
-  const { filteredCasts: updatedCast } = useFilterFeed([tweet])
+  const { filteredPosts: updatedCast } = useFilterFeed([tweet])
   let castWithCategories = updatedCast[0] ?? tweet
 
   // const { profiles: likedUsers } = useGetProfiles(stringOfLikesFIDs)

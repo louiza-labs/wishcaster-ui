@@ -1,4 +1,7 @@
-import { useCallback, useEffect, useState } from "react"
+"use client"
+
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { Cast as CastType } from "@/types"
 import { useNeynarContext } from "@neynar/react"
 import { useInView } from "react-intersection-observer"
@@ -7,6 +10,9 @@ import { calculateStartDate, debounce } from "@/lib/utils"
 import { fetchChannelCasts } from "@/app/actions"
 
 type dateRanges = "24-hours" | "7-days" | "30-days" | "ytd"
+function parseQueryParam(param?: string | string[]): string {
+  return Array.isArray(param) ? param.join(",") : param || ""
+}
 
 export const useLoadMoreCasts = (
   initialCasts: CastType[],
@@ -17,18 +23,27 @@ export const useLoadMoreCasts = (
   const [cursorToUse, setCursorToUse] = useState<string>(initialCursor)
   const [fetchingCasts, setFetchingCasts] = useState(false)
   const [isRangeCovered, setIsRangeCovered] = useState<boolean>(false)
+  const searchParams = useSearchParams()
+  const filtersFromParams = useMemo(
+    () => searchParams.getAll("filters"),
+    [searchParams]
+  )
 
   const { ref, inView } = useInView()
   const { user } = useNeynarContext()
   const loggedInUserFID = Number(user?.fid) ?? 0
 
   useEffect(() => {
+    if (filtersFromParams && filtersFromParams.includes("hide-farcaster")) {
+      setCastsToShow(initialCasts)
+      return
+    }
     if (dateRange && dateRange.length && initialCasts.length) {
       const startDate = calculateStartDate(dateRange as dateRanges)
-      const filteredCasts = initialCasts.filter(
+      const filteredPosts = initialCasts.filter(
         (cast) => new Date(cast.timestamp) >= startDate
       )
-      setCastsToShow(filteredCasts)
+      setCastsToShow(filteredPosts)
       setIsRangeCovered(false)
     }
   }, [initialCasts, dateRange])
@@ -52,6 +67,10 @@ export const useLoadMoreCasts = (
   }, [loggedInUserFID])
 
   useEffect(() => {
+    if (filtersFromParams && filtersFromParams.includes("hide-farcaster")) {
+      setCastsToShow(initialCasts)
+      return
+    }
     if (castsToShow.length === 0) {
       loadInitialCasts()
     }
@@ -88,7 +107,12 @@ export const useLoadMoreCasts = (
   }, [cursorToUse, isRangeCovered, loggedInUserFID, dateRange])
 
   useEffect(() => {
-    if (inView && !isRangeCovered && castsToShow.length > 0) {
+    if (
+      inView &&
+      !isRangeCovered &&
+      castsToShow.length > 0 &&
+      !(filtersFromParams && filtersFromParams.includes("hide-farcaster"))
+    ) {
       const debouncedLoadMore = debounce(loadMoreCasts, 500)
       const timer = setTimeout(debouncedLoadMore, 1000)
       return () => clearTimeout(timer)

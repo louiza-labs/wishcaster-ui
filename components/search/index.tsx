@@ -134,10 +134,10 @@ const Search = () => {
     if (!(searchTerm && searchTerm.length)) return
     try {
       let categories: any = categorizeArrayOfCasts(casts)
-      let filteredCasts = addCategoryFieldsToCasts(casts, categories)
+      let filteredPosts = addCategoryFieldsToCasts(casts, categories)
       const castsWithSearchTerm =
         searchType === "topics"
-          ? filteredCasts.filter(
+          ? filteredPosts.filter(
               (cast) =>
                 cast.category &&
                 cast.category.id &&
@@ -145,7 +145,7 @@ const Search = () => {
                   .toLowerCase()
                   .includes(searchTerm.toLowerCase())
             )
-          : filteredCasts.filter(
+          : filteredPosts.filter(
               (cast) =>
                 cast.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 (cast.category &&

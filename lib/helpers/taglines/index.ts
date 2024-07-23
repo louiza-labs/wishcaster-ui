@@ -1,11 +1,9 @@
-import { Cast as CastType } from "@/types"
-
 interface taglinesWithHashesArr {
   hash: string
   tagline: string
 }
 export const addTaglinesToCasts = (
-  casts: CastType[],
+  casts: any[],
   taglinesWithHashes: taglinesWithHashesArr[]
 ) => {
   const taglineHashDict = taglinesWithHashes.reduce((dict: any, tagHash) => {

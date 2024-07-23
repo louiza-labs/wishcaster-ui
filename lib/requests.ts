@@ -1,10 +1,8 @@
 "use server"
 
-import { Cast as CastType } from "@/types"
-
 import { generateTaglinesForCasts } from "@/app/actions"
 
-export async function fetchTaglines(casts: CastType[], batchSize = 10) {
+export async function fetchTaglines(casts: any[], batchSize = 10) {
   const batchedResults = []
   const batches = []
 

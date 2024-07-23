@@ -29,7 +29,7 @@ const TweetContent = ({
   renderEmbeds,
   tagline,
   maxCharacters = 150,
-}: CastContentProps) => {
+}: any) => {
   const [aspectRatio, setAspectRatio] = useState("56.25%")
 
   return (

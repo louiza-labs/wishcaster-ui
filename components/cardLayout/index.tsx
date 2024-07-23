@@ -12,7 +12,10 @@ import {
 } from "@/components/ui/select"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 
-const CardLayoutToggle = ({ asFilterBar }) => {
+interface CardLayoutToggleProps {
+  asFilterBar: boolean
+}
+const CardLayoutToggle = ({ asFilterBar }: CardLayoutToggleProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
 

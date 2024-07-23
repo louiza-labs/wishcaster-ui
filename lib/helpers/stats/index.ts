@@ -70,12 +70,12 @@ interface CategorySummary {
 }
 
 export function summarizeByCategory(
-  casts: CastType[],
+  posts: any[],
   sortField?: keyof CategorySummary
 ): CategorySummary[] {
   const summaries = new Map<string, CategorySummary>()
-  casts.forEach((cast) => {
-    const { category, reactions, replies, author } = cast
+  posts.forEach((post) => {
+    const { category, reactions, replies, author } = post
     if (!category || !(category && category.id)) return
 
     if (!summaries.has(category.id)) {
@@ -94,11 +94,18 @@ export function summarizeByCategory(
     }
 
     const summary = summaries.get(category.id)!
-    summary.likes += reactions.likes_count
-    summary.recasts += reactions.recasts_count
-    summary.replies += replies.count
+    summary.likes +=
+      post.object === "cast"
+        ? reactions.likes_count
+        : post.public_metrics.like_count
+    summary.recasts +=
+      post.object === "cast"
+        ? reactions.recasts_count
+        : post.public_metrics.retweet_count
+    summary.replies +=
+      post.object === "cast" ? replies.count : post.public_metrics.reply_count
     summary.count += 1
-    summary.totalFollowers += author.follower_count
+    summary.totalFollowers += post.object === "cast" ? author.follower_count : 0
     summary.averageFollowerCount = Math.floor(
       summary.totalFollowers / summary.count
     )

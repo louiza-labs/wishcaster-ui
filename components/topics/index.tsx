@@ -1,11 +1,12 @@
 "use client"
 
 import { Suspense, useCallback, useMemo } from "react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Cast as CastType } from "@/types"
 
 import { buildRankings, summarizeByCategory } from "@/lib/helpers"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
+import { Button } from "@/components/ui/button"
 import PopularTopicCard from "@/components/topics/popular"
 import TopicsTable from "@/components/topics/table"
 
@@ -21,9 +22,11 @@ interface TopicsProps {
 }
 
 const Topics = ({ casts, mobileView, notionResults }: TopicsProps) => {
-  const { filteredCasts } = useFilterFeed(casts)
-  const sortedTopics = summarizeByCategory(filteredCasts, "likes")
+  let { filteredPosts } = useFilterFeed(casts)
+  const sortedTopics = summarizeByCategory(filteredPosts, "likes")
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const pathname = usePathname()
 
   const handleToggleCategoryClick = useCallback(
     (topic: string) => {
@@ -32,26 +35,68 @@ const Topics = ({ casts, mobileView, notionResults }: TopicsProps) => {
     [, router]
   )
 
+  const handleFilterSourceChange = (
+    source: "hide-twitter" | "hide-farcaster" | "clear"
+  ) => {
+    const currentParams = new URLSearchParams(searchParams.toString())
+
+    if (source === "clear") {
+      currentParams.delete("source")
+    } else {
+      if (currentParams.get("source") === source) {
+        currentParams.delete("source")
+      } else {
+        currentParams.set("source", source)
+      }
+    }
+
+    const query = currentParams.toString()
+    const path = `${pathname}${query ? `?${query}` : ""}`
+
+    router.push(path)
+  }
+  const filtersFromParams = useMemo(
+    () => searchParams.getAll("source"),
+    [searchParams]
+  )
+
+  const isSourceFilterSelected = useCallback(
+    (filterName: "hide-twitter" | "hide-farcaster") => {
+      return filtersFromParams.includes(filterName)
+    },
+    [searchParams]
+  )
+
+  filteredPosts = useMemo(() => {
+    if (isSourceFilterSelected("hide-twitter")) {
+      return filteredPosts.filter((cast: any) => cast.object === "cast")
+    } else if (isSourceFilterSelected("hide-farcaster")) {
+      return filteredPosts.filter((cast: any) => !(cast.object === "cast"))
+    } else {
+      return filteredPosts
+    }
+  }, [searchParams])
+
   // const rankedTopicsByCount = buildRankings(
-  //   filteredCasts,
+  //   filteredPosts,
   //   "category",
   //   "count",
   //   5
   // )
   const rankedTopicsByLikes = buildRankings(
-    filteredCasts,
+    filteredPosts,
     "category",
     "likes_count",
     5
   )
   const rankedTopicsByReplies = buildRankings(
-    filteredCasts,
+    filteredPosts,
     "category",
     "replies_count",
     3
   )
   const rankedTopicsByRecasts = buildRankings(
-    filteredCasts,
+    filteredPosts,
     "category",
     "recasts_count",
     3
@@ -74,9 +119,44 @@ const Topics = ({ casts, mobileView, notionResults }: TopicsProps) => {
     <Suspense>
       {hasResults ? (
         <div className="  flex flex-col items-center gap-y-6 lg:items-start">
-          <h3 className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:block md:text-3xl">
-            Most popular product topics 🔥
-          </h3>
+          <div className="flex flex-col lg:flex-row lg:gap-x-2">
+            <h3 className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:block md:text-3xl">
+              Most popular product topics 🔥
+            </h3>
+            <div className="flex flex-row items-center gap-x-2">
+              <Button
+                variant={
+                  !isSourceFilterSelected("hide-farcaster")
+                    ? "secondary"
+                    : "ghost"
+                }
+                onClick={() => handleFilterSourceChange("hide-farcaster")}
+                className={`${
+                  isSourceFilterSelected("hide-farcaster")
+                    ? "font-light"
+                    : "font-semibold"
+                } rounded-full `}
+              >
+                Farcaster
+              </Button>
+              /
+              <Button
+                variant={
+                  !isSourceFilterSelected("hide-twitter")
+                    ? "secondary"
+                    : "ghost"
+                }
+                onClick={() => handleFilterSourceChange("hide-twitter")}
+                className={`${
+                  isSourceFilterSelected("hide-twitter")
+                    ? "font-light"
+                    : "font-semibold"
+                } rounded-full`}
+              >
+                Twitter
+              </Button>
+            </div>
+          </div>
 
           {mobileView !== "table" ? (
             <>
@@ -160,7 +240,7 @@ const Topics = ({ casts, mobileView, notionResults }: TopicsProps) => {
           ) : null}
           {mobileView === "popular" ? null : (
             <TopicsTable
-              topicsData={filteredCasts}
+              topicsData={filteredPosts}
               mobileView={mobileView}
               handleRowClick={handleToggleCategoryClick}
             />

@@ -4,7 +4,7 @@ import { PRODUCT_CATEGORIES_AS_MAP } from "@/lib/constants"
 import { normalizeTweetText } from "@/lib/helpers"
 
 export const searchCastsForCategories = (
-  casts: CastType[],
+  casts: any[],
   searchTerm: string
 ): CastType[] => {
   if (!casts || !Array.isArray(casts)) return []
@@ -26,11 +26,9 @@ export const searchCastsForCategories = (
 }
 
 export const addCategoryFieldsToCasts = (
-  casts: CastType[],
+  casts: any[],
   categories: Category[]
 ) => {
-  console.log("the casts,", casts)
-  console.log("the categories", categories)
   if (
     !categories ||
     (Array.isArray(categories) && !categories.length) ||
@@ -54,7 +52,7 @@ export const addCategoryFieldsToCasts = (
   })
 }
 export const addCategoryFieldsToTweets = (
-  tweets: CastType[],
+  tweets: any[],
   categories: Category[]
 ) => {
   if (

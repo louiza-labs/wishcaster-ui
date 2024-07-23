@@ -1,16 +1,13 @@
-export const addUserInfoToTweets = (tweets, users) => {
-  console.log("the tweets in adduser info", tweets)
-  console.log("the users in adduser info", users)
-
+export const addUserInfoToTweets = (tweets: any, users: any) => {
   if (!(tweets && tweets.length && users && users.length)) return tweets
 
-  const usersObj = users.reduce((userObject, currentUser) => {
+  const usersObj = users.reduce((userObject: any, currentUser: any) => {
     const user_id = currentUser.id
     userObject[user_id] = currentUser
     return userObject
   }, {})
 
-  return tweets.map((tweet) => {
+  return tweets.map((tweet: any) => {
     return {
       ...tweet,
       type: "tweet",

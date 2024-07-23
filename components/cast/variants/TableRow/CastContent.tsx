@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 
 import { isImageUrl, isVideoUrl, loadImageAspectRatio } from "@/lib/helpers"
 import useGetCast from "@/hooks/farcaster/casts/useGetCast"
@@ -197,7 +198,7 @@ const CastContent = ({
 
 export default CastContent
 
-function ChevronsUpDownIcon(props) {
+function ChevronsUpDownIcon(props: any) {
   return (
     <svg
       {...props}
@@ -217,7 +218,7 @@ function ChevronsUpDownIcon(props) {
   )
 }
 
-function MoveHorizontalIcon(props) {
+function MoveHorizontalIcon(props: any) {
   return (
     <svg
       {...props}

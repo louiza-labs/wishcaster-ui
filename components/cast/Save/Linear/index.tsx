@@ -9,7 +9,7 @@ import MobileSave from "@/components/cast/Save/Mobile/SheetElements"
 interface SaveCastProps {
   cast: CastType
 }
-const SaveCastToLinear = ({ cast }: SaveCastProps) => {
+const SaveCastToLinear = ({ cast }: any) => {
   const {
     fieldsForCreatingAnIssue,
     handleSubmitIssue,

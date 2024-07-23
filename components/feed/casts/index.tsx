@@ -7,7 +7,7 @@ import { Cast as CastType } from "@/types"
 import { useLoadMoreCasts } from "@/hooks/farcaster/casts/useLoadMoreCasts"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import SpringItemCast from "@/components/cast/variants/SprintItem"
-import MinimalItemCast from "@/components/cast/variants/TableRow/Row"
+import MinimalItemCast from "@/components/cast/variants/TableRow"
 import CastFeedSkeleton from "@/components/loading/feed/casts"
 
 interface CastFeedProps {
@@ -34,7 +34,7 @@ const CastsFeed: React.FC<CastFeedProps> = ({
     timeFilterParam
   )
   const [castCardStyleToShow, setCastCardStyleToShow] = useState("product")
-  const { filteredCasts } = useFilterFeed(castsToShow, topic)
+  const { filteredPosts } = useFilterFeed(castsToShow, topic)
 
   const router = useRouter()
   const categoriesFromParams = searchParams.getAll("topics").join(",")
@@ -127,7 +127,7 @@ const CastsFeed: React.FC<CastFeedProps> = ({
             : "gap-4 lg:grid-cols-2"
         } lg:px-10`}
       >
-        {fetchingCasts && !(filteredCasts && filteredCasts.length) ? (
+        {fetchingCasts && !(filteredPosts && filteredPosts.length) ? (
           <div
             className={
               columns
@@ -143,8 +143,8 @@ const CastsFeed: React.FC<CastFeedProps> = ({
             ) : null}
             <CastFeedSkeleton count={4} />
           </div>
-        ) : filteredCasts && filteredCasts.length ? (
-          filteredCasts.map((cast: CastType) => (
+        ) : filteredPosts && filteredPosts.length ? (
+          filteredPosts.map((cast: CastType) => (
             <>
               {cast.text && cast.text.length ? (
                 <CastCardToUse

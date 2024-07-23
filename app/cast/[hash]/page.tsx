@@ -107,8 +107,8 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   const sortParam = parseQueryParam(searchParams.sort)
   const mobileViewParam = parseQueryParam(searchParams.view)
 
-  let filteredCasts = [enrichedCast]
-  const isError = !filteredCasts.length
+  let filteredPosts = [enrichedCast]
+  const isError = !filteredPosts.length
 
   return (
     <>
@@ -222,7 +222,7 @@ const CastPage: FC<CastPageProps> = async ({ searchParams, params }) => {
       </section>
       <div className="flex flex-col items-start lg:hidden">
         <BottomMobileNav
-          filteredCasts={[castWithCategory]}
+          filteredPosts={[castWithCategory]}
           initialCasts={[castWithCategory]}
           page="cast"
         />

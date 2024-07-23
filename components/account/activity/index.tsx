@@ -26,8 +26,8 @@ const ActivityFeed = ({}: ActivityFeedProps) => {
       farcasterProfile && farcasterProfile?.fid ? farcasterProfile.fid : 0
     )
   const filteredReactions = filterReactionsByChannel(reactions, "someone-build")
-  const filteredCasts = filterReactionsByChannel(fetchedCasts, "someone-build")
-  const castsAndReactions = [...filteredReactions, ...filteredCasts]
+  const filteredPosts = filterReactionsByChannel(fetchedCasts, "someone-build")
+  const castsAndReactions = [...filteredReactions, ...filteredPosts]
 
   const CastActivities = ({ castsToShow }: any) => {
     return (
@@ -95,7 +95,7 @@ const ActivityFeed = ({}: ActivityFeedProps) => {
         </TabsList>
 
         <TabsContent className=" h-fit min-w-full  " value="casts">
-          <CastActivities castsToShow={filteredCasts} />
+          <CastActivities castsToShow={filteredPosts} />
         </TabsContent>
         <TabsContent className=" h-fit min-w-full   " value="likes">
           <CastActivities castsToShow={filteredReactions} />

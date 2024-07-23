@@ -42,8 +42,7 @@ const CardStat: React.FC<CardStatProp> = ({
           : "hover:brightness-105"
       } hover:scale-105 active:scale-95`}
     >
-      <span className="mt-2 text-xs">{topic}</span>
-
+      <span className="mt-2 break-all px-2 text-xs">{topic}</span>
       <CardHeader className="flex w-full flex-col items-center justify-center p-2">
         <CardDescription className="text-xl font-bold text-black dark:text-white">
           {value}
@@ -62,11 +61,13 @@ const CardStat: React.FC<CardStatProp> = ({
 
 interface RankingsProps {
   casts: CastType[]
+  tweets?: any
+  castsAndOrTweets?: any
   view?: "search" | "feed"
 }
 
-const Rankings = ({ casts, view }: RankingsProps) => {
-  const { castsWithCategories } = useAddCategoriesToCasts(casts)
+const Rankings = ({ casts, view, castsAndOrTweets }: RankingsProps) => {
+  const { castsWithCategories } = useAddCategoriesToCasts(castsAndOrTweets)
 
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -108,18 +109,16 @@ const Rankings = ({ casts, view }: RankingsProps) => {
     [categoriesFromParams]
   )
 
-  const handleToggleCategoryClick = useCallback(
-    (categoryName: string) => {
-      const isToggled = categoriesFromParams.includes(categoryName)
-      const newSearchParams = createQueryString(
-        "topics",
-        categoryName,
-        !isToggled
-      )
-      router.push("?" + newSearchParams)
-    },
-    [categoriesFromParams, createQueryString, router]
-  )
+  const handleToggleCategoryClick = (categoryName: string) => {
+    alert(categoryName)
+    const isToggled = categoriesFromParams.includes(categoryName)
+    const newSearchParams = createQueryString(
+      "topics",
+      categoryName,
+      !isToggled
+    )
+    router.push("?" + newSearchParams)
+  }
 
   const rankedTopicsByLikes = buildRankings(
     castsWithCategories,

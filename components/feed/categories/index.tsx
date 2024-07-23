@@ -8,6 +8,7 @@ import {
   useSearchParams,
 } from "next/navigation"
 
+import { PRODUCT_CATEGORIES_AS_MAP } from "@/lib/constants"
 import { Badge } from "@/components/ui/badge"
 import {
   Select,
@@ -41,9 +42,8 @@ const CategoriesFeed = ({ categories, asFilterBar }: CategoriesFeedProps) => {
       ? Array.isArray(params.topic)
         ? params.topic.join(",")
         : params.topic
-      : null
-    : null
-
+      : ""
+    : ""
   const categoriesFromParams = useMemo(
     () => searchParams.getAll("topics"),
     [searchParams]
@@ -98,6 +98,13 @@ const CategoriesFeed = ({ categories, asFilterBar }: CategoriesFeedProps) => {
     [categoriesFromParams, createQueryString, router]
   )
 
+  const categoryLabelFromPage = useMemo(() => {
+    if (PRODUCT_CATEGORIES_AS_MAP[topicFromTopicPage]) {
+      return PRODUCT_CATEGORIES_AS_MAP[topicFromTopicPage].label
+    }
+    return topicFromTopicPage
+  }, [topicFromTopicPage])
+
   return (
     <Suspense>
       <div className="flex h-fit flex-col gap-y-6 lg:col-span-3">
@@ -108,11 +115,17 @@ const CategoriesFeed = ({ categories, asFilterBar }: CategoriesFeedProps) => {
         )}
         {asFilterBar && categories && categories.length ? (
           <Select
-            defaultValue={topicFromTopicPage ? topicFromTopicPage : undefined}
+            defaultValue={topicFromTopicPage ? topicFromTopicPage : "Select"}
             onValueChange={(value) => handleToggleCategoryClick(value)}
           >
             <SelectTrigger className="size-fit gap-x-2 whitespace-nowrap rounded-full px-2 text-sm font-semibold focus:ring-0 focus:ring-transparent focus:ring-offset-0">
-              <SelectValue placeholder="Select a Topic" />
+              <SelectValue
+                placeholder="Select a Topic"
+                defaultValue={
+                  topicFromTopicPage ? topicFromTopicPage : "Select"
+                }
+              />
+              {categoryLabelFromPage ? categoryLabelFromPage : "Topic"}
             </SelectTrigger>
             <SelectContent>
               {categories.map((category) => {

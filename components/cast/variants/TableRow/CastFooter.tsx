@@ -29,7 +29,7 @@ interface CastFooterProps {
   renderEmbeds: boolean
   showToggle: boolean
   aspectRatio: string
-  handleToggleCategoryClick: () => {}
+  handleToggleCategoryClick: any
   badgeIsToggled: boolean
   text: string
   embeds: any

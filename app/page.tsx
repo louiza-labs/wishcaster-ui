@@ -13,7 +13,6 @@ import {
   searchCastsForCategories,
   sortCastsByProperty,
 } from "@/lib/helpers"
-import CardLayoutToggle from "@/components/cardLayout"
 import CastAndTweetsFeed from "@/components/feed/castsAndTweets"
 import Filters from "@/components/filters"
 import FilterBar from "@/components/filters/FilterBar"
@@ -23,7 +22,6 @@ import RedirectButton from "@/components/redirect/Button"
 import SortCasts from "@/components/sort/SortCasts"
 import {
   fetchCastsUntilCovered,
-  fetchLikesForTweet,
   fetchTweets,
   fetchTwitterUsers,
   getUsersNotionAccessCode,
@@ -53,16 +51,19 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const categoryParam = parseQueryParam(searchParams.categories)
   const filtersParam = parseQueryParam(searchParams.filters)
   const sortParam = parseQueryParam(searchParams.sort)
-  const tweets = await fetchTweets()
-  const likes = await fetchLikesForTweet("1754888991164498373")
-  let tweetsWithoutDuplicates = removeDuplicateTweets(tweets?.data)
-  const users = await fetchTwitterUsers(
-    extractUserIdsFromTweets(tweetsWithoutDuplicates)
-  )
-  const tweetsWithUsers = addUserInfoToTweets(
-    tweetsWithoutDuplicates,
-    users?.data
-  )
+  const shouldHideCasts =
+    filtersParam && filtersParam.includes("hide-farcaster")
+  const shouldHideTweets = filtersParam && filtersParam.includes("hide-twitter")
+  const tweets = !shouldHideTweets ? await fetchTweets() : { data: [] }
+  let tweetsWithoutDuplicates = !shouldHideTweets
+    ? removeDuplicateTweets(tweets?.data)
+    : []
+  const users = !shouldHideTweets
+    ? await fetchTwitterUsers(extractUserIdsFromTweets(tweetsWithoutDuplicates))
+    : { data: [] }
+  const tweetsWithUsers = !shouldHideTweets
+    ? addUserInfoToTweets(tweetsWithoutDuplicates, users?.data)
+    : []
   const notionAccessCode = await getUsersNotionAccessCode()
   const notionSearch = notionAccessCode
     ? await searchNotion(notionAccessCode)
@@ -72,21 +73,23 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
-  const { casts: initialCasts, nextCursor: cursorToUse } = !timeFilterParam
-    ? await fetchCastsUntilCovered("someone-build", "7-days")
-    : await fetchCastsUntilCovered(
-        "someone-build",
-        timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
-      )
+  const { casts: initialCasts, nextCursor: cursorToUse } = !shouldHideCasts
+    ? !timeFilterParam
+      ? await fetchCastsUntilCovered("someone-build", "7-days")
+      : await fetchCastsUntilCovered(
+          "someone-build",
+          timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
+        )
+    : { casts: [], nextCursor: "" }
 
-  let filteredCasts = initialCasts
+  let filteredPosts = initialCasts
   const categories = categorizeArrayOfCasts([
-    ...filteredCasts,
+    ...filteredPosts,
     ...tweetsWithUsers,
   ]) as Category[]
-  // let taglinedCasts = await fetchTaglines(filteredCasts)
-  filteredCasts = addCategoryFieldsToCasts(
-    filteredCasts,
+  // let taglinedCasts = await fetchTaglines(filteredPosts)
+  filteredPosts = addCategoryFieldsToCasts(
+    filteredPosts,
     categories
   ) as Array<CastType>
   let tweetsWithCategories = addCategoryFieldsToTweets(
@@ -94,21 +97,24 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
     categories
   )
 
-  // if (filteredCasts.length) {
-  //   filteredCasts = addTaglinesToCasts(filteredCasts, taglinedCasts)
+  // if (filteredPosts.length) {
+  //   filteredPosts = addTaglinesToCasts(filteredPosts, taglinedCasts)
   // }
   if (categoryParam.length) {
-    filteredCasts = searchCastsForCategories(filteredCasts, categoryParam)
+    filteredPosts = searchCastsForCategories(filteredPosts, categoryParam)
     tweetsWithCategories = searchCastsForCategories(
       tweetsWithoutDuplicates,
       categoryParam
     )
   }
   if (sortParam) {
-    filteredCasts = sortCastsByProperty(filteredCasts, sortParam)
+    filteredPosts = sortCastsByProperty(
+      [...filteredPosts, ...tweetsWithCategories],
+      sortParam
+    )
   }
 
-  const isError = !filteredCasts.length
+  const isError = ![...tweetsWithCategories, ...filteredPosts].length
 
   return (
     <>
@@ -119,7 +125,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
         <Header />
         <main className="relative grid grid-cols-1 gap-4 lg:grid-cols-12 ">
           <aside className="no-scrollbar sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:flex">
-            <CardLayoutToggle />
+            {/* <CardLayoutToggle /> */}
             <SortCasts />
             <Filters initialCasts={initialCasts} />
           </aside>
@@ -132,7 +138,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
               />
             ) : (
               <CastAndTweetsFeed
-                casts={filteredCasts}
+                casts={filteredPosts}
                 timeFilterParam={timeFilterParam}
                 nextCursor={cursorToUse}
                 notionResults={notionResults}
@@ -141,13 +147,16 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
             )}
           </article>
           <aside className="no-scrollbar sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky lg:col-span-2 lg:flex lg:flex-col">
-            <Rankings casts={initialCasts} />
+            <Rankings
+              casts={initialCasts}
+              castsAndOrTweets={[...filteredPosts, ...tweetsWithCategories]}
+            />
           </aside>
         </main>
       </section>
       <div className="flex flex-col items-start lg:hidden">
         <BottomMobileNav
-          filteredCasts={filteredCasts}
+          filteredPosts={filteredPosts}
           initialCasts={initialCasts}
         />
       </div>
@@ -164,8 +173,7 @@ const Header: FC<HeaderProps> = () => {
         What people want! <br className="hidden sm:inline" />
       </h1>
       <p className="text-center text-xs sm:text-lg md:text-left lg:max-w-[700px]">
-        Sourced from Farcaster&apos;s{" "}
-        <span className="font-bold">someone-build channel</span>
+        Sourced from <span className="font-semibold">Farcaster and X </span>
       </p>
     </div>
   )

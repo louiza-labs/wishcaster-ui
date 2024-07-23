@@ -1,9 +1,9 @@
 import Tweet from "@/components/tweet/variants/row"
 
-const TweetsFeed = ({ tweets }) => {
+const TweetsFeed = ({ tweets, notionResults }: any) => {
   return (
     <div className="flex flex-col gap-y-2">
-      {tweets.map((tweet) => (
+      {tweets.map((tweet: any) => (
         <Tweet
           text={tweet.text}
           likes={tweet.public_metrics.like_count}
@@ -13,6 +13,7 @@ const TweetsFeed = ({ tweets }) => {
           user={tweet.user}
           category={tweet.category}
           tweet={tweet}
+          notionResults={notionResults}
         />
       ))}
     </div>

@@ -24,14 +24,25 @@ export const buildRankings = (
       // Count occurrences of each focus value
       metricsMap.set(focusValue, (metricsMap.get(focusValue) || 0) + 1)
     } else if (metric === "replies_count") {
+      const metricValue =
+        cast.object === "cast"
+          ? cast["replies"]["count"] || 0
+          : cast.public_metrics.reply_count || 0
       metricsMap.set(
         focusValue,
-        (metricsMap.get(focusValue) || 0) + (cast["replies"]["count"] || 0)
+        (metricsMap.get(focusValue) || 0) + metricValue
       )
     } else {
+      const metricValue =
+        cast.object === "cast"
+          ? cast["reactions"][metric] || 0
+          : cast.public_metrics[
+              metric === "likes_count" ? "like_count" : "retweet_count"
+            ] || 0
+
       metricsMap.set(
         focusValue,
-        (metricsMap.get(focusValue) || 0) + (cast["reactions"][metric] || 0)
+        (metricsMap.get(focusValue) || 0) + metricValue
       )
 
       // Sum the metric values for each focus value
@@ -163,7 +174,7 @@ type TopicRanking = {
   }
 }
 export function rankTopics(
-  casts: CastType[],
+  casts: any[],
   topic = ""
 ): TopicRanking[] | TopicRanking | null {
   // Initialize storage for metrics per category
@@ -188,9 +199,18 @@ export function rankTopics(
         count: 0,
       }
     }
-    metrics[category].likes_count += cast.reactions.likes_count
-    metrics[category].recasts_count += cast.reactions.recasts_count
-    metrics[category].replies_count += cast.replies.count
+    metrics[category].likes_count +=
+      cast.object === "cast"
+        ? cast.reactions.likes_count
+        : cast.public_metrics.like_count
+    metrics[category].recasts_count +=
+      cast.object === "cast"
+        ? cast.reactions.recasts_count
+        : cast.public_metrics.retweet_count
+    metrics[category].replies_count +=
+      cast.object === "cast"
+        ? cast.replies.count
+        : cast.public_metrics.reply_count
     metrics[category].count += 1
   })
 

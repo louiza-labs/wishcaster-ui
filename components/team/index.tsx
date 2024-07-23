@@ -36,7 +36,7 @@ const Team = ({ cast, reactions, conversation }: TeamProps) => {
     () => searchParams.getAll("filters"),
     [searchParams]
   )
-  const { filteredCasts: updatedCast } = useFilterFeed([cast])
+  const { filteredPosts: updatedCast } = useFilterFeed([cast])
 
   const createQueryString = useCallback(
     (name: string, value: string, addValue: boolean) => {

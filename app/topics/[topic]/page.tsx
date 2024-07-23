@@ -4,16 +4,18 @@ import { Cast as CastType, Category } from "@/types"
 import { PRODUCT_CATEGORIES_AS_MAP, dateOptions } from "@/lib/constants"
 import {
   addCategoryFieldsToCasts,
+  addUserInfoToTweets,
   categorizeArrayOfCasts,
+  extractUserIdsFromTweets,
   filterCastsForCategory,
   generateWhimsicalErrorMessages,
+  removeDuplicateTweets,
   sortCastsByProperty,
 } from "@/lib/helpers"
 import { Badge } from "@/components/ui/badge"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import BuildComponent from "@/components/buildComponent/Topic"
-import CastFeed from "@/components/feed/casts"
 import TopCasts from "@/components/feed/casts/TopCasts"
+import CastsAndTweetsFeed from "@/components/feed/castsAndTweets"
 import FilterBar from "@/components/filters/FilterBar"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
@@ -21,6 +23,8 @@ import TopicStats from "@/components/topics/stats"
 import {
   fetchCastsUntilCovered,
   fetchChannelCasts,
+  fetchTweets,
+  fetchTwitterUsers,
   getUsersNotionAccessCode,
   searchNotion,
 } from "@/app/actions"
@@ -71,19 +75,37 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
         "someone-build",
         timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
       )
-  let filteredCasts = initialCasts
-  const categories = categorizeArrayOfCasts(filteredCasts) as Category[]
+
+  const { data: tweets } = await fetchTweets()
+  let tweetsWithoutDuplicates = removeDuplicateTweets(tweets)
+
+  const users = await fetchTwitterUsers(
+    extractUserIdsFromTweets(tweetsWithoutDuplicates)
+  )
+
+  const tweetsWithUsers = addUserInfoToTweets(
+    tweetsWithoutDuplicates,
+    users?.data
+  )
+
+  let filteredPosts = initialCasts
+  const categories = categorizeArrayOfCasts([
+    ...filteredPosts,
+    ...tweetsWithUsers,
+  ]) as Category[]
   const mobileViewParam = parseQueryParam(searchParams.view)
 
-  filteredCasts = addCategoryFieldsToCasts(
-    filteredCasts,
+  filteredPosts = addCategoryFieldsToCasts(
+    [...filteredPosts, ...tweetsWithUsers],
     categories
   ) as CastType[]
-  filteredCasts = filterCastsForCategory(filteredCasts, params.topic)
-  const sortedCasts = sortCastsByProperty(filteredCasts, "liked_count")
-  const topCast = sortedCasts[0]
 
-  const isError = !filteredCasts.length || !selectedTopic
+  filteredPosts = filterCastsForCategory(filteredPosts, params.topic)
+  let topCast = filteredPosts.length === 1 ? filteredPosts[0] : undefined
+  const sortedCasts = sortCastsByProperty(filteredPosts, "likes_count")
+  topCast = topCast ? topCast : sortedCasts[0]
+
+  const isError = !filteredPosts.length || !selectedTopic
   const breadCrumbPages = [
     { name: "Topics", link: "/topics" },
     {
@@ -109,9 +131,9 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
             </h1>
             <div className="hidden flex-row items-center gap-x-2 md:flex">
               <p className="text-sm font-semibold md:block">
-                Based on casts that mention:
+                Based on relevant posts that mention:
               </p>
-              <div className="flex flex-wrap gap-x-1">
+              <div className="flex flex-wrap gap-1">
                 {Array.from(selectedTopic?.keywords || []).map((keyword) => (
                   <Badge
                     variant={"outline"}
@@ -138,13 +160,13 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
               mobileViewParam.length && mobileViewParam !== "popular"
                 ? "hidden lg:flex"
                 : "flex"
-            } overflow-y-auto lg:col-span-8`}
+            } overflow-y-auto lg:col-span-12`}
           >
-            <div className="lg:pb-2git 0 gap-y-4 overflow-y-auto pb-0">
+            <div className="gap-y-4  overflow-y-auto pb-0 lg:pb-2">
               {topCast ? (
                 <div className="flex flex-col flex-wrap gap-y-4 overflow-auto bg-background">
                   <h2 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
-                    Top Casts
+                    Top Posts
                   </h2>
                   <div className="flex size-fit flex-row items-start lg:h-[70vh] xl:h-fit">
                     <TopCasts
@@ -165,7 +187,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
               mobileViewParam !== "build" ? "hidden lg:block" : "block"
             } col-span-12  overflow-y-auto sm:col-span-4`}
           >
-            <div className="flex flex-col gap-y-8">
+            {/* <div className="flex flex-col items-end gap-y-8">
               <h1 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl lg:block">
                 Let&apos;s build
               </h1>
@@ -174,7 +196,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                 cursor={cursorToUse}
                 topic={params.topic}
               />
-            </div>
+            </div> */}
           </div>
           <div
             className={`${
@@ -182,21 +204,22 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
             } h-fit flex-col items-center gap-y-4 lg:col-span-12`}
           >
             <h3 className="text-center text-2xl  font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
-              Casts Feed
+              Feed
             </h3>
-            <CastFeed
+            <CastsAndTweetsFeed
               casts={[]}
               timeFilterParam={timeFilterParam}
               nextCursor={cursorToUse}
               columns={3}
               topic={params.topic}
+              tweets={tweetsWithUsers}
             />
           </div>
         </main>
       </section>
       <div className="flex flex-col items-start lg:hidden">
         <BottomMobileNav
-          filteredCasts={sortedCasts}
+          filteredPosts={sortedCasts}
           initialCasts={sortedCasts}
           page="topic"
         />

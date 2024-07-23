@@ -18,7 +18,7 @@ interface TweetProps {
   user: any
   notionResults: any
   tweet: any
-  category: string
+  category: { label: string; id: string }
 }
 export default function TweetAsRow({
   text,
@@ -42,17 +42,17 @@ export default function TweetAsRow({
       <TweetAsRowHeader author={user} categoryLabel={categoryLabel} />
       <TweetAsRowContent
         user={user}
-        categoryLabel={categoryLabel}
+        categoryLabel={categoryLabel ?? ""}
         castWithTagline={castWithTagline}
         likes={likes}
         replies={replies}
         retweets={retweets}
         tweet={tweet}
         notionResults={notionResults}
-        setShowToggle={() => {}}
-        showToggle={false}
+        setShowToggle={setShowToggle}
+        showToggle={showToggle}
       />
-      <TweetFooter showToggle={false} setShowToggle={() => {}} />
+      <TweetFooter showToggle={showToggle} text={text} />
     </Card>
   )
 }

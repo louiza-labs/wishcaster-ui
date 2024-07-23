@@ -30,10 +30,10 @@ const TeamForTopics = ({ casts, cursor, topic }: TeamProps) => {
   const router = useRouter()
   const { castsToShow: castsWithUserInfo } = useFetchCastsUntilCovered(casts)
 
-  const { filteredCasts } = useFilterFeed(castsWithUserInfo, topic)
+  const { filteredPosts } = useFilterFeed(castsWithUserInfo, topic)
 
   let sortedUsersByCasts = aggregateCastMetricsByUser(
-    filteredCasts,
+    filteredPosts,
     "likes_count"
   )
 

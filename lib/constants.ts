@@ -44,17 +44,6 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
       "swap",
     ]),
   },
-  blockchainGaming: {
-    label: "🎮 Blockchain Gaming",
-    keywords: new Set([
-      "onchain gaming",
-      "onchain game",
-      "blockchain game",
-      "play-to-earn",
-      "web3 games",
-      "metaverse",
-    ]),
-  },
   messaging: {
     label: "💬 Messaging",
     keywords: new Set(["message", "messaging", "chat app", "telegram"]),
@@ -169,7 +158,7 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
   },
   nftsMarketplaces: {
     label: "🖼️ NFTs Marketplaces",
-    keywords: new Set(["nft marketplace", "opensea", "blur"]),
+    keywords: new Set(["nft marketplace", "opensea", "blur", "rarible"]),
   },
 
   blockchainGaming: {
@@ -255,9 +244,20 @@ export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
       "inventory",
     ]),
   },
+  politics: {
+    label: "🏛️ Politics",
+    keywords: new Set([
+      "politics",
+      "Politics",
+      "politic",
+      "elections",
+      "trump",
+      "biden",
+    ]),
+  },
   voting: {
     label: "🗳️ Voting",
-    keywords: new Set(["vote", "voting", "election", "ballot", "poll"]),
+    keywords: new Set(["vote", "voting", "ballot", "poll"]),
   },
   devTools: {
     label: "🔧 Dev Tools",

@@ -1,12 +1,11 @@
 import { Cast as CastType } from "@/types"
 
 export function sortCastsByProperty(
-  casts: CastType[],
+  casts: any[],
   sortField: "recent" | "replies" | string
 ): CastType[] {
   // Create a shallow copy of the array to sort, to avoid modifying the original array
   const sortedCasts = [...casts]
-
   // Sort the copied array
   sortedCasts.sort((a, b) => {
     let valueA: number | string
@@ -15,13 +14,31 @@ export function sortCastsByProperty(
     switch (sortField) {
       case "recent":
         // Sort by timestamp in descending order
-        valueA = a.timestamp
-        valueB = b.timestamp
+        valueA = a.object === "cast" ? a.timestamp : a.created_at
+        valueB = b.object === "cast" ? b.timestamp : b.created_at
         break
       case "replies":
         // Sort by replies count
-        valueA = a.replies.count
-        valueB = b.replies.count
+        valueA =
+          a.object === "cast" ? a.replies.count : a.public_metrics.reply_count
+        valueB =
+          b.object === "cast" ? b.replies.count : b.public_metrics.reply_count
+        break
+      case "likes_count":
+        valueA =
+          a.object === "cast" ? a.reactions.likes : a.public_metrics.like_count
+        valueB =
+          b.object === "cast" ? b.reactions.likes : b.public_metrics.like_count
+        break
+      case "recasts_count":
+        valueA =
+          a.object === "cast"
+            ? a.reactions.recasts
+            : a.public_metrics.retweet_count
+        valueB =
+          b.object === "cast"
+            ? b.reactions.recasts
+            : b.public_metrics.retweet_count
         break
       default:
         let reactionsA: any = a.reactions
@@ -31,9 +48,13 @@ export function sortCastsByProperty(
         valueB = reactionsB[sortField] ?? 0
     }
 
+    console.log("the aValue", valueA)
+    console.log("the bValue", valueA)
+
     // Return negative, zero, or positive based on the comparison for descending order
     return Number(valueB) - Number(valueA)
   })
+  console.log("the sortedCasts", sortedCasts)
 
   return sortedCasts
 }

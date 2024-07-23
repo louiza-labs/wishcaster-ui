@@ -16,7 +16,7 @@ function parseQueryParam(param?: string | string[]): string {
   return Array.isArray(param) ? param.join(",") : param || ""
 }
 
-function MobileSortingAndFiltering({ initialCasts, filteredCasts }: any) {
+function MobileSortingAndFiltering({ initialCasts, filteredPosts }: any) {
   const [open, setOpen] = React.useState(false)
   const searchParams = useSearchParams()
 

@@ -70,8 +70,7 @@ const TweetContent = ({
               {
                 icon: Icons.replies,
                 count: replies,
-                noun:
-                  replies.count > 1 || replies.count === 0 ? "Replie" : "Reply",
+                noun: replies > 1 || replies === 0 ? "Replie" : "Reply",
               },
             ].map(({ icon: Icon, count, noun }) => (
               <div
@@ -138,7 +137,7 @@ const TweetContent = ({
 
 export default TweetContent
 
-function ChevronsUpDownIcon(props) {
+function ChevronsUpDownIcon(props: any) {
   return (
     <svg
       {...props}
@@ -158,7 +157,7 @@ function ChevronsUpDownIcon(props) {
   )
 }
 
-function MoveHorizontalIcon(props) {
+function MoveHorizontalIcon(props: any) {
   return (
     <svg
       {...props}

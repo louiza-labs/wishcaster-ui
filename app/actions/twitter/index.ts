@@ -2,7 +2,7 @@
 
 import { Client, auth } from "twitter-api-sdk"
 
-export async function fetchTweets() {
+export async function fetchTweets(nextCursor = "") {
   try {
     const client = new Client(process.env.TWITTER_BEARER_TOKEN as string)
     let domainEntities = `(context:67.1158813612409929728 OR context:66.847869481888096256 OR context:131.1491481998862348291 OR context:131.913142676819648512 OR context:30.781974596794716162 OR context:46.1557697333571112960 OR context:30.781974596752842752)`
@@ -20,6 +20,7 @@ export async function fetchTweets() {
       ],
       sort_order: "relevancy",
       max_results: 100,
+      next_token: nextCursor && nextCursor.length ? nextCursor : undefined,
       expansions: ["author_id", "entities.mentions.username"],
       "media.fields": ["public_metrics", "type", "url"],
       "user.fields": [
@@ -37,10 +38,54 @@ export async function fetchTweets() {
         "withheld",
       ],
     })
-
-    return response
+    const { data, errors, meta } = response
+    return { data, errors, meta }
   } catch (e) {
-    console.log("the error fetching tweetz", e.error.errors[0].parameters)
+    return { data: [], errors: e }
+  }
+}
+
+export async function fetchTweetsUntilCovered() {
+  let allTweets = [] as any[]
+  let cursor = null
+
+  do {
+    const { data, meta } = await fetchTweets()
+
+    allTweets = allTweets.concat(data)
+    cursor = meta ? meta.next_token : ""
+    // Check if the last cast's timestamp is earlier than the start date
+  } while (cursor)
+
+  return {
+    tweets: allTweets,
+    nextCursor: cursor,
+  }
+}
+
+export async function fetchTwitterUsersUntilCovered(twitterUserIds: string[]) {
+  let allTweets = [] as any[]
+
+  // Split the twitterUserIds into an array and create chunks of 100 IDs each
+  const chunks = []
+  for (let i = 0; i < twitterUserIds.length; i += 100) {
+    chunks.push(twitterUserIds.slice(i, i + 100).join(","))
+  }
+
+  // Helper function to fetch data for a given chunk of IDs
+  async function fetchChunk(chunk: string) {
+    const { data } = await fetchTwitterUsers(chunk.split(","))
+    return data
+  }
+
+  // Fetch data for each chunk se
+  for (const chunk of chunks) {
+    const chunkTweets = await fetchChunk(chunk)
+    allTweets = allTweets.concat(chunkTweets)
+  }
+
+  return {
+    tweets: allTweets,
   }
 }
 
@@ -58,7 +103,6 @@ export async function fetchHistoricalTweets() {
       "tweet.fields": [
         "attachments",
         "author_id",
-        "card_uri",
         "context_annotations",
         "conversation_id",
         "created_at",
@@ -66,21 +110,17 @@ export async function fetchHistoricalTweets() {
         "public_metrics",
         "referenced_tweets",
         "text",
-        "username",
       ],
       expansions: [
         "attachments.media_keys",
-        "attachments.media_source_tweet",
         "attachments.poll_ids",
         "author_id",
         "edit_history_tweet_ids",
         "entities.mentions.username",
         "geo.place_id",
         "in_reply_to_user_id",
-        "entities.note.mentions.username",
         "referenced_tweets.id",
         "referenced_tweets.id.author_id",
-        "author_screen_name",
       ],
       "media.fields": [
         "alt_text",
@@ -96,10 +136,10 @@ export async function fetchHistoricalTweets() {
         "width",
       ],
     })
-    console.log("twitter response", JSON.stringify(response, null, 2))
-    return response
+    const { data, errors, meta } = response
+    return { data, errors, meta }
   } catch (e) {
-    console.log("the error fetching historical", e)
+    return { data: [], errors: e }
   }
 }
 
@@ -109,27 +149,27 @@ export async function fetchTwitterUsers(user_ids: string[]) {
 
     const response = await client.users.findUsersById({
       ids: user_ids,
+
       "user.fields": [
-        "connection_status",
         "created_at",
         "description",
         "entities",
         "id",
         "location",
-        "most_recent_tweet_id",
         "name",
         "pinned_tweet_id",
-        "profile_banner_url",
         "profile_image_url",
         "public_metrics",
         "url",
         "username",
         "verified",
-        "verified_type",
       ],
     })
-    return response
-  } catch (e) {}
+    const { data, errors } = response
+    return { data, errors }
+  } catch (e) {
+    return { data: [], errors: e }
+  }
 }
 
 export async function fetchTweetByIds(tweetId: string) {
@@ -140,18 +180,13 @@ export async function fetchTweetByIds(tweetId: string) {
       "tweet.fields": [
         "attachments",
         "author_id",
-        "card_uri",
         "created_at",
         "entities",
         "id",
         "text",
         "public_metrics",
       ],
-      expansions: [
-        "author_id",
-        "entities.mentions.username",
-        "author_screen_name",
-      ],
+      expansions: ["author_id", "entities.mentions.username"],
       "media.fields": ["public_metrics", "type", "url"],
       "user.fields": [
         "created_at",
@@ -168,9 +203,10 @@ export async function fetchTweetByIds(tweetId: string) {
         "withheld",
       ],
     })
-    return response
+    const { data, errors } = response
+    return { data, errors }
   } catch (e) {
-    console.log("the error fetched tweet", e)
+    return { data: {}, errors: e }
   }
 }
 
@@ -184,7 +220,6 @@ export async function fetchLikesForTweet(tweetId: string) {
       client_secret: process.env.TWITTER_CLIENT_SECRET as string,
       callback: `${URL}:${PORT}/callback`,
       scopes: ["like.read", "tweet.read", "users.read"],
-      token: process.env.TWITTER_BEARER_TOKEN,
     })
     const client = new Client(authClient)
 
@@ -192,7 +227,6 @@ export async function fetchLikesForTweet(tweetId: string) {
       "1754888991164498373",
       {
         "user.fields": [
-          "connection_status",
           "created_at",
           "description",
           "entities",

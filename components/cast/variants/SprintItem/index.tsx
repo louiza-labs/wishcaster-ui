@@ -52,13 +52,15 @@ const SprintItemCast = ({
       : null
   return (
     <Card className="md:border-auto md:shadow-auto relative flex w-full flex-col justify-between   lg:h-fit">
-      <Avatar className="absolute right-2 top-2 size-5 rounded-full border p-0.5 shadow-sm">
-        <AvatarImage
-          src={"/social-account-logos/farcaster-purple-white.png"}
-          alt={"farcaster"}
-          className="rounded-full"
-        />
-      </Avatar>
+      <div className="-mb-4 mt-2 flex flex-col items-center">
+        <Avatar className="flex size-5 flex-col items-center rounded-full border  shadow-sm">
+          <AvatarImage
+            src={"/social-account-logos/farcaster-purple-white.png"}
+            alt={"farcaster"}
+            className="rounded-full"
+          />
+        </Avatar>
+      </div>
       <CardHeader className="flex w-full flex-col gap-y-2 px-0">
         <AuthorAvatar
           author={author}
