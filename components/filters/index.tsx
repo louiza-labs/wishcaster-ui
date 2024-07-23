@@ -9,6 +9,7 @@ import {
   filterDuplicateCategories,
 } from "@/lib/helpers"
 import { cn } from "@/lib/utils"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -306,9 +307,18 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
               {asFilterBar ? null : <Separator />}
               <div className=" flex flex-col items-start">
                 {asFilterBar ? null : (
-                  <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
-                    User
-                  </p>
+                  <div className="gap-x flex flex-row items-center gap-x-2 pb-4">
+                    <p className=" text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
+                      User
+                    </p>
+                    <Avatar className="relative size-4">
+                      <AvatarImage
+                        src={"/social-account-logos/farcaster-purple-white.png"}
+                        alt={"farcaster"}
+                        className="rounded-lg"
+                      />
+                    </Avatar>
+                  </div>
                 )}
                 <div
                   className={`${
@@ -326,7 +336,7 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
                         >
                           {getSelectedFilterValues()
                             ? `${getSelectedFilterValues()}`
-                            : "👥 User Filters"}
+                            : "👥 FC User Filters"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="flex w-fit flex-col gap-y-4 p-4">
@@ -400,14 +410,23 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
                   </Tooltip>
                 </TooltipProvider>
               ) : !asFilterBar ? (
-                <p
-                  className={cn(
-                    !isAuthenticated ? "opacity-80" : "",
-                    "pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left  md:text-xl"
-                  )}
-                >
-                  For You
-                </p>
+                <div className="flex flex-row items-center gap-x-2 pb-4">
+                  <p
+                    className={cn(
+                      !isAuthenticated ? "opacity-80" : "",
+                      "text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left  md:text-xl"
+                    )}
+                  >
+                    For You
+                  </p>
+                  <Avatar className="relative size-4">
+                    <AvatarImage
+                      src={"/social-account-logos/farcaster-purple-white.png"}
+                      alt={"farcaster"}
+                      className="rounded-lg"
+                    />
+                  </Avatar>
+                </div>
               ) : null}
 
               <div
