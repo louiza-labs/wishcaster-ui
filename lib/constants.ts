@@ -15,8 +15,158 @@ interface CategoryDetails {
   keywords: Set<string>
 }
 
+const droneShowSpecificCategories = {
+  aerialPhotography: {
+    label: "📸 Aerial Photography",
+    keywords: new Set([
+      "aerial photography",
+      "drone shots",
+      "drone footage",
+      "drone pics",
+    ]),
+  },
+  lightShows: {
+    label: "🎆 Light Shows",
+    keywords: new Set([
+      "light show",
+      "drone light show",
+      "night show",
+      "drone lighting",
+    ]),
+  },
+  performances: {
+    label: "🎭 Performances",
+    keywords: new Set(["drone performance"]),
+  },
+  events: {
+    label: "🎉 Events",
+    keywords: new Set(["event", "drone event", "festival", "drone display"]),
+  },
+  technology: {
+    label: "💻 Technology",
+    keywords: new Set(["drone technology", "drone tech", "drone innovations"]),
+  },
+  safety: {
+    label: "🛡️ Safety",
+    keywords: new Set(["drone safety", "show safety", "drone regulations"]),
+  },
+  art: {
+    label: "🎨 Art",
+    keywords: new Set(["drone art", "drone creativity", "aerial art"]),
+  },
+  promotions: {
+    label: "📢 Promotions",
+    keywords: new Set([
+      "drone promotions",
+      "drone advertising",
+      "drone marketing",
+    ]),
+  },
+  weather: {
+    label: "🌤️ Weather",
+    keywords: new Set([
+      "weather",
+      "drone show weather",
+      "show weather conditions",
+    ]),
+  },
+  entertainment: {
+    label: "🎬 Entertainment",
+    keywords: new Set([
+      "drone entertainment",
+      "drone show fun",
+      "drone show experience",
+    ]),
+  },
+  environmentalImpact: {
+    label: "🌍 Environmental Impact",
+    keywords: new Set([
+      "environmental impact",
+      "drone eco-friendly",
+      "drone sustainability",
+    ]),
+  },
+  innovation: {
+    label: "🚀 Innovation",
+    keywords: new Set([
+      "drone innovation",
+      "drone advancements",
+      "drone future",
+    ]),
+  },
+  audienceEngagement: {
+    label: "👥 Audience Engagement",
+    keywords: new Set([
+      "audience engagement",
+      "drone show reactions",
+      "drone show audience",
+    ]),
+  },
+  logistics: {
+    label: "🚚 Logistics",
+    keywords: new Set([
+      "drone show logistics",
+      "drone show planning",
+      "drone show setup",
+    ]),
+  },
+  legal: {
+    label: "⚖️ Legal",
+    keywords: new Set([
+      "drone laws",
+      "drone show regulations",
+      "drone show permits",
+    ]),
+  },
+  industryNews: {
+    label: "📰 Industry News",
+    keywords: new Set([
+      "drone industry news",
+      "drone show updates",
+      "drone show trends",
+    ]),
+  },
+  tutorials: {
+    label: "📚 Tutorials",
+    keywords: new Set([
+      "drone tutorials",
+      "drone show how-to",
+      "drone show guides",
+    ]),
+  },
+  reviews: {
+    label: "📝 Reviews",
+    keywords: new Set([
+      "drone show reviews",
+      "drone show feedback",
+      "drone show ratings",
+    ]),
+  },
+  collaborations: {
+    label: "🤝 Collaborations",
+    keywords: new Set(["drone show collaborations", "drone show partnerships"]),
+  },
+  sponsorships: {
+    label: "🏅 Sponsorships",
+    keywords: new Set(["drone show sponsorships", "drone show sponsors"]),
+  },
+  highlights: {
+    label: "🌟 Highlights",
+    keywords: new Set(["drone show highlights", "drone show moments"]),
+  },
+  behindTheScenes: {
+    label: "🎥 Behind the Scenes",
+    keywords: new Set([
+      "behind the scenes",
+      "drone show BTS",
+      "drone show production",
+    ]),
+  },
+}
+
 // Define categories with keywords
 export const PRODUCT_CATEGORIES_AS_MAP: { [key: string]: CategoryDetails } = {
+  ...droneShowSpecificCategories,
   frames: {
     label: "🖼️ Frames",
     keywords: new Set(["frame", "OpenGraph"]),

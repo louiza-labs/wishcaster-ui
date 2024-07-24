@@ -5,6 +5,7 @@ import { dateOptions } from "@/lib/constants"
 import {
   addCategoryFieldsToCasts,
   addCategoryFieldsToTweets,
+  addMediaToTweets,
   addTaglinesToCasts,
   addUserInfoToTweets,
   categorizeArrayOfCasts,
@@ -19,8 +20,6 @@ import SaveCast from "@/components/save"
 import TweetStats from "@/components/tweet/stats"
 import TweetCard from "@/components/tweet/variants/card"
 import {
-  fetchCastsUntilCovered,
-  fetchChannelCasts,
   fetchTweetByIds,
   fetchTweets,
   fetchTwitterUsers,
@@ -55,6 +54,7 @@ interface User {
 
 const TweetPage: FC<TweetPageProps> = async ({ searchParams, params }) => {
   const tweet = await fetchTweetByIds(params.id)
+
   const { data: historicalTweets, meta } = await fetchTweets()
   let tweetsWithoutDuplicates = removeDuplicateTweets(historicalTweets)
 
@@ -77,12 +77,14 @@ const TweetPage: FC<TweetPageProps> = async ({ searchParams, params }) => {
     ? await searchNotion(notionAccessCode)
     : { results: [] }
   const notionResults = notionSearch.results
-  const { casts: initialCasts, nextCursor: cursorToUse } = !timeFilterParam
-    ? await fetchChannelCasts("someone-build")
-    : await fetchCastsUntilCovered(
-        "someone-build",
-        timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
-      )
+  // const { casts: initialCasts, nextCursor: cursorToUse } = !timeFilterParam
+  //   ? await fetchChannelCasts("someone-build")
+  //   : await fetchCastsUntilCovered(
+  //       "someone-build",
+  //       timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
+  //     )
+  let initialCasts = []
+  let nextCursor = ""
   // const { reactionsObject } =
   //   enrichedTweet && enrichedTweet.hash
   //     ? await fetchCastsReactionsUntilCovered(
@@ -104,8 +106,8 @@ const TweetPage: FC<TweetPageProps> = async ({ searchParams, params }) => {
   ]) as Category[]
 
   const users = await fetchTwitterUsers(extractUserIdsFromTweets([tweet?.data]))
-
-  const tweetsWithUsers = addUserInfoToTweets([tweet?.data], users?.data)
+  const tweetWithMedia = addMediaToTweets([tweet.data], tweet.includes)
+  const tweetsWithUsers = addUserInfoToTweets(tweetWithMedia, users?.data)
 
   let singleArrayCast = tweetsWithUsers
     ? addCategoryFieldsToCasts(tweetsWithUsers, categories)
@@ -172,6 +174,9 @@ const TweetPage: FC<TweetPageProps> = async ({ searchParams, params }) => {
                           category={tweetWithCategory.category}
                           tweet={tweetWithCategory}
                           notionResults={notionResults}
+                          attachments={tweetWithCategory.attachments}
+                          entities={tweetWithCategory.entities}
+                          media={tweetWithCategory.media}
                         />
                       </div>
                       <div className="block xl:hidden">

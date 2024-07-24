@@ -5,6 +5,7 @@ import { dateOptions } from "@/lib/constants"
 import {
   addCategoryFieldsToCasts,
   addCategoryFieldsToTweets,
+  addMediaToTweets,
   addUserInfoToTweets,
   categorizeArrayOfCasts,
   extractUserIdsFromTweets,
@@ -21,7 +22,6 @@ import Rankings from "@/components/rankings"
 import RedirectButton from "@/components/redirect/Button"
 import SortCasts from "@/components/sort/SortCasts"
 import {
-  fetchCastsUntilCovered,
   fetchTweets,
   fetchTwitterUsers,
   getUsersNotionAccessCode,
@@ -54,15 +54,22 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const shouldHideCasts =
     filtersParam && filtersParam.includes("hide-farcaster")
   const shouldHideTweets = filtersParam && filtersParam.includes("hide-twitter")
-  const tweets = !shouldHideTweets ? await fetchTweets() : { data: [] }
+  const tweets = !shouldHideTweets
+    ? await fetchTweets()
+    : { data: [], includes: {} }
+
   let tweetsWithoutDuplicates = !shouldHideTweets
     ? removeDuplicateTweets(tweets?.data)
     : []
+  const tweetsWithMediaAdded = addMediaToTweets(
+    tweetsWithoutDuplicates,
+    tweets.includes
+  )
   const users = !shouldHideTweets
-    ? await fetchTwitterUsers(extractUserIdsFromTweets(tweetsWithoutDuplicates))
+    ? await fetchTwitterUsers(extractUserIdsFromTweets(tweetsWithMediaAdded))
     : { data: [] }
   const tweetsWithUsers = !shouldHideTweets
-    ? addUserInfoToTweets(tweetsWithoutDuplicates, users?.data)
+    ? addUserInfoToTweets(tweetsWithMediaAdded, users?.data)
     : []
   const notionAccessCode = await getUsersNotionAccessCode()
   const notionSearch = notionAccessCode
@@ -73,15 +80,19 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
-  const { casts: initialCasts, nextCursor: cursorToUse } = !shouldHideCasts
-    ? !timeFilterParam
-      ? await fetchCastsUntilCovered("someone-build", "7-days")
-      : await fetchCastsUntilCovered(
-          "someone-build",
-          timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
-        )
-    : { casts: [], nextCursor: "" }
 
+  // commenting out casts since its not relevant here
+
+  // const { casts: initialCasts, nextCursor: cursorToUse } = !shouldHideCasts
+  //   ? !timeFilterParam
+  //     ? await fetchCastsUntilCovered("someone-build", "7-days")
+  //     : await fetchCastsUntilCovered(
+  //         "someone-build",
+  //         timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
+  //       )
+  //   : { casts: [], nextCursor: "" }
+  let cursorToUse = ""
+  let initialCasts: any[] = []
   let filteredPosts = initialCasts
   const categories = categorizeArrayOfCasts([
     ...filteredPosts,
@@ -103,7 +114,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   if (categoryParam.length) {
     filteredPosts = searchCastsForCategories(filteredPosts, categoryParam)
     tweetsWithCategories = searchCastsForCategories(
-      tweetsWithoutDuplicates,
+      tweetsWithCategories,
       categoryParam
     )
   }
@@ -170,10 +181,10 @@ const Header: FC<HeaderProps> = () => {
   return (
     <div className="flex flex-col items-center gap-2 md:items-start md:pb-10">
       <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
-        What people want! <br className="hidden sm:inline" />
+        What (drone shows) people want! <br className="hidden sm:inline" />
       </h1>
       <p className="text-center text-xs sm:text-lg md:text-left lg:max-w-[700px]">
-        Sourced from <span className="font-semibold">Farcaster and X </span>
+        Sourced from <span className="font-semibold">X </span>
       </p>
     </div>
   )

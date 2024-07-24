@@ -4,7 +4,6 @@ import { Fragment, Suspense, useCallback, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Cast as CastType } from "@/types"
 
-import { useLoadMoreCasts } from "@/hooks/farcaster/casts/useLoadMoreCasts"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import SpringItemCast from "@/components/cast/variants/SprintItem"
 import CastAsTableRow from "@/components/cast/variants/TableRow"
@@ -32,18 +31,18 @@ const CastAndTweetsFeed = ({
   tweets,
 }: CastFeedProps) => {
   const searchParams = useSearchParams()
-  const { castsToShow, ref, fetchingCasts } = useLoadMoreCasts(
-    [...tweets, ...casts],
-    nextCursor,
-    timeFilterParam
-  )
+  let castsToShow = [...tweets, ...casts]
+  // const { castsToShow, ref, fetchingCasts } = useLoadMoreCasts(
+  //   [...tweets, ...casts],
+  //   nextCursor,
+  //   timeFilterParam
+  // )
   const [castCardStyleToShow, setCastCardStyleToShow] = useState("product")
-  const { filteredPosts } = useFilterFeed(castsToShow, topic)
+  let { filteredPosts } = useFilterFeed(castsToShow, topic)
 
   const router = useRouter()
   const categoriesFromParams = searchParams.getAll("topics").join(",")
   const cardLayoutFromParams = searchParams.getAll("card-layout").join(",")
-
   const createQueryString = useCallback(
     (name: string, value: string, addValue: boolean) => {
       const params = new URLSearchParams(searchParams.toString())
@@ -73,6 +72,10 @@ const CastAndTweetsFeed = ({
     },
     [searchParams]
   )
+  const filtersFromParams = searchParams.getAll("filters").join(",")
+
+  const hideVideoFilter = filtersFromParams.includes("hide-videos")
+  const hidePhotosFilter = filtersFromParams.includes("hide-photos")
 
   const badgeIsToggled = (categoryName: string) => {
     return (
@@ -139,7 +142,7 @@ const CastAndTweetsFeed = ({
             : "gap-4 lg:grid-cols-2"
         } lg:px-10`}
       >
-        {fetchingCasts && !(filteredPosts && filteredPosts.length) ? (
+        {!(filteredPosts && filteredPosts.length) ? (
           <div
             className={
               columns
@@ -159,17 +162,75 @@ const CastAndTweetsFeed = ({
           tweetsAndCasts.map((tweetOrCast: any, index) => (
             <Fragment key={tweetOrCast.hash || tweetOrCast.id || index}>
               {tweetOrCast.type === "tweet" ? (
-                <TweetCardToUse
-                  text={tweetOrCast.text}
-                  likes={tweetOrCast.public_metrics.like_count}
-                  replies={tweetOrCast.public_metrics.reply_count}
-                  retweets={tweetOrCast.public_metrics.retweet_count}
-                  username={tweetOrCast.username}
-                  user={tweetOrCast.user}
-                  category={tweetOrCast.category}
-                  tweet={tweetOrCast}
-                  notionResults={notionResults}
-                />
+                <>
+                  {hidePhotosFilter && hideVideoFilter ? (
+                    tweetOrCast.media.length === 0 ? (
+                      <TweetCardToUse
+                        text={tweetOrCast.text}
+                        likes={tweetOrCast.public_metrics.like_count}
+                        replies={tweetOrCast.public_metrics.reply_count}
+                        retweets={tweetOrCast.public_metrics.retweet_count}
+                        username={tweetOrCast.username}
+                        user={tweetOrCast.user}
+                        category={tweetOrCast.category}
+                        tweet={tweetOrCast}
+                        notionResults={notionResults}
+                        attachments={tweetOrCast.attachments}
+                        media={tweetOrCast.media}
+                        entities={tweetOrCast.entities}
+                      />
+                    ) : null
+                  ) : hidePhotosFilter ? (
+                    !tweetOrCast.hasVideo ? (
+                      <TweetCardToUse
+                        text={tweetOrCast.text}
+                        likes={tweetOrCast.public_metrics.like_count}
+                        replies={tweetOrCast.public_metrics.reply_count}
+                        retweets={tweetOrCast.public_metrics.retweet_count}
+                        username={tweetOrCast.username}
+                        user={tweetOrCast.user}
+                        category={tweetOrCast.category}
+                        tweet={tweetOrCast}
+                        notionResults={notionResults}
+                        attachments={tweetOrCast.attachments}
+                        media={tweetOrCast.media}
+                        entities={tweetOrCast.entities}
+                      />
+                    ) : null
+                  ) : hideVideoFilter ? (
+                    !tweetOrCast.hasVideo ? (
+                      <TweetCardToUse
+                        text={tweetOrCast.text}
+                        likes={tweetOrCast.public_metrics.like_count}
+                        replies={tweetOrCast.public_metrics.reply_count}
+                        retweets={tweetOrCast.public_metrics.retweet_count}
+                        username={tweetOrCast.username}
+                        user={tweetOrCast.user}
+                        category={tweetOrCast.category}
+                        tweet={tweetOrCast}
+                        notionResults={notionResults}
+                        attachments={tweetOrCast.attachments}
+                        media={tweetOrCast.media}
+                        entities={tweetOrCast.entities}
+                      />
+                    ) : null
+                  ) : (
+                    <TweetCardToUse
+                      text={tweetOrCast.text}
+                      likes={tweetOrCast.public_metrics.like_count}
+                      replies={tweetOrCast.public_metrics.reply_count}
+                      retweets={tweetOrCast.public_metrics.retweet_count}
+                      username={tweetOrCast.username}
+                      user={tweetOrCast.user}
+                      category={tweetOrCast.category}
+                      tweet={tweetOrCast}
+                      notionResults={notionResults}
+                      attachments={tweetOrCast.attachments}
+                      media={tweetOrCast.media}
+                      entities={tweetOrCast.entities}
+                    />
+                  )}
+                </>
               ) : (
                 <CastCardToUse
                   key={tweetOrCast.hash}
@@ -203,7 +264,7 @@ const CastAndTweetsFeed = ({
         ) : (
           <EmptyStateFallBack />
         )}
-        <div ref={ref}></div>
+        {/* <div ref={ref}></div> */}
       </div>
     </Suspense>
   )

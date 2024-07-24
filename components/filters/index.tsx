@@ -8,8 +8,6 @@ import {
   categorizeArrayOfCasts,
   filterDuplicateCategories,
 } from "@/lib/helpers"
-import { cn } from "@/lib/utils"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -17,12 +15,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 import Categories from "@/components/feed/categories"
 import DateFilters from "@/components/filters/Date"
 import { InteractionsCheckbox } from "@/components/filters/Interactions"
@@ -154,7 +146,21 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
   const handleHideXSourceFilterChange = () => {
     handleToggleFilterClick("hide-twitter")
   }
+  const handleVideosFilterChange = () => {
+    if (!filterIsSelected("hide-photos") && filterIsSelected("hide-videos")) {
+      alert("Unable to hide posts with both photos and videos")
+      return
+    }
+    handleToggleFilterClick("hide-videos")
+  }
 
+  const handlePhotosFilterChange = () => {
+    if (!filterIsSelected("hide-videos") && filterIsSelected("hide-photos")) {
+      alert("Unable to hide posts with both photos and videos")
+      return
+    }
+    handleToggleFilterClick("hide-photos")
+  }
   const handleSelectDateValueChange = (value: string) => {
     handleToggleFilterClick(value)
   }
@@ -218,6 +224,64 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
         <div className=" flex flex-col items-start">
           {asFilterBar ? null : (
             <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
+              Content Type
+            </p>
+          )}
+          <div
+            className={`${
+              asFilterBar
+                ? "flex flex-row items-center gap-x-2"
+                : "md:gap-x-auto grid grid-cols-2 gap-x-10 md:flex md:flex-wrap md:gap-4 xl:grid xl:gap-x-10 xl:gap-y-0"
+            }`}
+          >
+            {asFilterBar ? (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="mr-4 w-fit whitespace-nowrap rounded-full font-semibold"
+                  >
+                    {getSelectedFilterValues()
+                      ? `${getSelectedFilterValues()}`
+                      : "🎥 Content Type"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="flex w-fit flex-col gap-y-4 p-4">
+                  <InteractionsCheckbox
+                    handleChange={handleVideosFilterChange}
+                    value={!filterIsSelected("hide-videos")}
+                    text={"Videos"}
+                    id={"hide-photos"}
+                  />
+                  <InteractionsCheckbox
+                    handleChange={handlePhotosFilterChange}
+                    value={!filterIsSelected("hide-photos")}
+                    text={"Photos"}
+                    id={"hide-videos"}
+                  />
+                </PopoverContent>
+              </Popover>
+            ) : (
+              <>
+                <InteractionsCheckbox
+                  handleChange={handleVideosFilterChange}
+                  value={!filterIsSelected("hide-videos")}
+                  text={"Videos"}
+                  id={"hide-photos"}
+                />
+                <InteractionsCheckbox
+                  handleChange={handlePhotosFilterChange}
+                  value={!filterIsSelected("hide-photos")}
+                  text={"Photos"}
+                  id={"hide-videos"}
+                />
+              </>
+            )}
+          </div>
+        </div>
+        {/* <div className=" flex flex-col items-start">
+          {asFilterBar ? null : (
+            <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
               Sources
             </p>
           )}
@@ -272,7 +336,7 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
               </>
             )}
           </div>
-        </div>
+        </div> */}
         <div
           className={`${
             asFilterBar
@@ -300,12 +364,13 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
             <>
               <div className={"flex  flex-col"}>
                 <Categories
-                  categories={filteredCategories}
+                  cat
+                  egories={filteredCategories}
                   asFilterBar={asFilterBar}
                 />
               </div>
               {asFilterBar ? null : <Separator />}
-              <div className=" flex flex-col items-start">
+              {/* <div className=" flex flex-col items-start">
                 {asFilterBar ? null : (
                   <div className="gap-x flex flex-row items-center gap-x-2 pb-4">
                     <p className=" text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
@@ -385,11 +450,11 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
                     </>
                   )}
                 </div>
-              </div>
-              {asFilterBar ? null : <Separator />}
+              </div> */}
+              {/* {asFilterBar ? null : <Separator />} */}
             </>
           )}
-          {asFilterBar ? null : (
+          {/* {asFilterBar ? null : (
             <div className=" flex flex-col items-start">
               {!isAuthenticated && !asFilterBar ? (
                 <TooltipProvider>
@@ -452,7 +517,7 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
                 />
               </div>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </Suspense>

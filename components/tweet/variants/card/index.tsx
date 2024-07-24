@@ -6,8 +6,8 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import AuthorAvatar from "@/components/tweet/variants/card/Avatar"
-import CastContent from "@/components/tweet/variants/card/Content"
-import CastFooter from "@/components/tweet/variants/card/Footer"
+import TweetContent from "@/components/tweet/variants/card/Content"
+import TweetFooter from "@/components/tweet/variants/card/Footer"
 
 interface TweetProps {
   text: string
@@ -18,7 +18,10 @@ interface TweetProps {
   user: any
   notionResults: any
   tweet: any
+  attachments?: any
+  entities?: any
   category: any
+  media?: any
 }
 
 const SprintItemCast = ({
@@ -31,7 +34,11 @@ const SprintItemCast = ({
   notionResults,
   tweet,
   category,
+  entities,
+  media,
+  attachments,
 }: TweetProps) => {
+  console.log("the tweet", tweet)
   const { castWithTagline } = useAddTaglineToHash(tweet)
   const categoryLabel =
     category && category.id
@@ -60,7 +67,7 @@ const SprintItemCast = ({
       </CardHeader>
 
       <CardContent>
-        <CastContent
+        <TweetContent
           text={text}
           embeds={[]}
           hash={tweet.hash}
@@ -71,11 +78,12 @@ const SprintItemCast = ({
           maxCharacters={150}
           routeToWarpcast={() => {}}
           renderEmbeds={true}
-          mentionedProfiles={[]}
+          mentions={entities ? entities.mentions : []}
+          media={media}
         />
       </CardContent>
       <CardFooter>
-        <CastFooter
+        <TweetFooter
           timestamp={tweet.created_at}
           reactions={tweet.public_metrics}
           replies={replies}

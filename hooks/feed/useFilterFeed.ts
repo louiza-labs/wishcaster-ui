@@ -11,7 +11,7 @@ import {
   sortCastsByProperty,
 } from "@/lib/helpers"
 
-const useFilterFeed = (posts: CastType[], topic = "") => {
+const useFilterFeed = (posts: any[], topic = "") => {
   const searchParams = useSearchParams()
 
   // Extract search parameters
@@ -24,8 +24,6 @@ const useFilterFeed = (posts: CastType[], topic = "") => {
   const likedFilter = filtersFromParams.includes("liked")
   const followingFilter = filtersFromParams.includes("following")
   const recastedFilter = filtersFromParams.includes("recasted")
-  const hideFarcasterFilter = filtersFromParams.includes("hide-farcaster")
-  const hideXFilter = filtersFromParams.includes("hide-twitter")
 
   const params = useParams()
   const path = usePathname()
