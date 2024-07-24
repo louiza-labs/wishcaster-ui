@@ -23,7 +23,10 @@ import MobileSearch from "@/components/layout/Nav/Mobile/Bottom/Search"
 import SignInDrawer from "@/components/layout/Nav/Mobile/SignInDrawer"
 import { ThemeToggle } from "@/components/theme-toggle"
 
-export function MobileNav() {
+interface MobileNavProps {
+  notionResults: any
+}
+export function MobileNav({ notionResults }: MobileNavProps) {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
   const { userFromAuth } = useGetUser()
   useLoadAllCastsToStore()
@@ -49,7 +52,7 @@ export function MobileNav() {
         </Button>
 
         <div className="flex flex-row items-center gap-x-2">
-          <MobileSearch />
+          <MobileSearch notionResults={notionResults} />
           <ThemeToggle />
 
           <SignInDrawer />

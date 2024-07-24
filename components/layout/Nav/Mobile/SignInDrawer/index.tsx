@@ -69,7 +69,12 @@ function SignInDrawer() {
             <span className="sr-only">Toggle Menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="bottom" className="h-[35vh] rounded-t-xl">
+        <SheetContent
+          side="bottom"
+          className={`${
+            user && user.pfp_url ? "h-[80vh]" : "h-[35vh]"
+          } rounded-t-xl`}
+        >
           <div className="flex flex-col items-start gap-y-1">
             <span className="ml-0 text-2xl font-bold"> Connect accounts </span>
             <span className="ml-0 text-lg font-light">
@@ -79,9 +84,9 @@ function SignInDrawer() {
           </div>
 
           <ScrollArea className="mt-6 flex h-[calc(100vh-8rem)] flex-col items-center justify-center pb-2 ">
-            <div className="flex w-full flex-col items-start justify-start gap-y-4">
+            <div className="flex size-full flex-col items-center justify-start gap-y-4">
               <Button
-                variant={"secondary"}
+                variant={"outline"}
                 className=" whitespace-nowrap font-semibold"
               >
                 <NeynarAuthButton

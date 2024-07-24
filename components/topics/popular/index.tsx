@@ -45,7 +45,7 @@ const PopularTopicCard = ({
         <div className="grid w-full grid-cols-2 gap-4">
           {[
             { icon: Icons.likes, count: likes, noun: "like" },
-            { icon: Icons.recasts, count: recasts, noun: "recast" },
+            { icon: Icons.recasts, count: recasts, noun: "repost" },
             { icon: Icons.replies, count: replies, noun: "reply" },
             { icon: Icons.boxes, count: count, noun: "count" },
           ].map(({ icon: Icon, count, noun }) => (
