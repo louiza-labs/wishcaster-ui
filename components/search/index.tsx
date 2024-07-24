@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useBoundStore } from "@/store"
 import { useInView } from "react-intersection-observer"
@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select"
 import Cast from "@/components/cast/variants/SprintItem"
 import { Icons } from "@/components/icons"
-import Rankings from "@/components/rankings"
+import TopicSearchResults from "@/components/topics/search"
 import TweetCard from "@/components/tweet/variants/card"
 
 interface SearchIconProps {
@@ -47,20 +47,26 @@ function SearchIcon({ handleClick, className }: SearchIconProps) {
     </button>
   )
 }
+
 interface SearchProps {
   notionResults?: any
 }
+
 const Search = ({ notionResults }: SearchProps) => {
   const [renderingSearchResults, setRenderingSearchResults] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
-  const [searchedCasts, setSearchedCasts] = useState<any[] | []>([])
+  const [searchedCasts, setSearchedCasts] = useState<any[]>([])
   const [itemsToShow, setItemsToShow] = useState<number>(10)
   const [searchType, setSearchType] = useState("posts")
+  const [justSearched, setJustSearched] = useState(false)
 
   const searchParamsObj = useSearchParams()
   const searchParams = searchParamsObj.get("search")
   const router = useRouter()
   const { casts, tweets } = useBoundStore((state: any) => state)
+
+  const searchResultsRef = useRef<HTMLDivElement>(null)
+
   const handleSearchTypeChange = (value: string) => {
     setSearchType(value)
   }
@@ -84,58 +90,23 @@ const Search = ({ notionResults }: SearchProps) => {
 
   useEffect(() => {
     if (inView) {
-      setItemsToShow(itemsToShow + 10) // Load more items incrementally when the observed element is in view
+      setItemsToShow((prevItemsToShow) => prevItemsToShow + 10) // Load more items incrementally when the observed element is in view
     }
   }, [inView]) // Trigger more items to be shown when the last item comes into view
 
   const handleSearchTermChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value
-    setSearchedCasts([])
-
     setSearchTerm(term)
   }
 
-  // const createQueryString = useCallback(
-  //   (name: string, value: string, addValue: boolean) => {
-  //     if (!searchParams) return
-  //     const params = new URLSearchParams(searchParams.toString())
-
-  //     const existedFilters = params.getAll(name)
-
-  //     if (addValue) {
-  //       if (!existedFilters.includes(value)) {
-  //         // check if the new filter is a date value
-  //         if (viewOptions.includes(value)) {
-  //           // filter out any existing date filters
-  //           const updatedFilters = existedFilters.filter(
-  //             (filter) => !viewOptions.includes(filter)
-  //           )
-  //           params.delete(name)
-  //           updatedFilters.forEach((filter) => {
-  //             params.append(name, filter)
-  //           })
-  //         }
-  //         params.append(name, value)
-  //       }
-  //     } else {
-  //       const updatedCategories = existedFilters.filter(
-  //         (category) => category !== value
-  //       )
-  //       params.delete(name)
-  //       updatedCategories.forEach((filter) => {
-  //         params.append(name, filter)
-  //       })
-  //     }
-
-  //     return params.toString()
-  //   },
-  //   [searchParams]
-  // )
-
   const handleSubmitSearchTerm = async () => {
     if (!(searchTerm && searchTerm.length)) return
+    setJustSearched(true)
+    setRenderingSearchResults(true)
+    setSearchedCasts([]) // Clear previous search results
+
     try {
-      let categories: any = categorizeArrayOfCasts(casts)
+      let categories: any = categorizeArrayOfCasts([...casts, ...tweets])
       let filteredPosts = addCategoryFieldsToCasts(
         [...casts, ...tweets],
         categories
@@ -159,19 +130,40 @@ const Search = ({ notionResults }: SearchProps) => {
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase()))
             )
-      setRenderingSearchResults(false)
+
       setSearchedCasts(castsWithSearchTerm)
     } catch (error) {
-      setRenderingSearchResults(false)
-
-      // console.error("Failed to fetch and filter casts:", error)
       // Handle errors as needed, maybe set an error state to display to users
+    } finally {
+      setRenderingSearchResults(false)
     }
   }
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      searchResultsRef.current &&
+      !searchResultsRef.current.contains(event.target as Node)
+    ) {
+      setJustSearched(false)
+      setSearchedCasts([])
+      setSearchTerm("")
+    }
+  }
+
+  useEffect(() => {
+    if (justSearched) {
+      document.addEventListener("click", handleClickOutside)
+    } else {
+      document.removeEventListener("click", handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside)
+    }
+  }, [justSearched])
+
   const SearchTypeIconToDisplay = useMemo(() => {
-    return searchTypeOptions.find((opt) => opt.value === searchType)
-      ? searchTypeOptions.find((opt) => opt.value === searchType)?.icon
-      : null
+    return searchTypeOptions.find((opt) => opt.value === searchType)?.icon
   }, [searchType])
 
   const TopicCount = useMemo(() => {
@@ -201,29 +193,26 @@ const Search = ({ notionResults }: SearchProps) => {
                 defaultValue={searchType}
                 onValueChange={(value) => handleSearchTypeChange(value)}
               >
-                <SelectTrigger className="size-fit gap-x-1 whitespace-nowrap rounded-l-md px-1 pl-2 text-xs font-semibold focus:ring-0  focus:ring-transparent focus:ring-offset-0">
+                <SelectTrigger className="size-fit gap-x-1 whitespace-nowrap rounded-l-md px-1 pl-2 text-xs font-semibold focus:ring-0 focus:ring-transparent focus:ring-offset-0">
                   <SelectValue className="text-xs font-semibold" placeholder="">
                     {capitalizeFirstLetter(searchType)}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  {searchTypeOptions.map(({ icon: Icon, value }) => {
-                    return (
-                      <SelectItem
-                        className="flex flex-row items-center gap-x-2"
-                        value={value}
-                        key={value}
-                      >
-                        {/* <Icon className="size-4" /> */}
-                        {capitalizeFirstLetter(value)}
-                      </SelectItem>
-                    )
-                  })}
+                  {searchTypeOptions.map(({ icon: Icon, value }) => (
+                    <SelectItem
+                      className="flex flex-row items-center gap-x-2"
+                      value={value}
+                      key={value}
+                    >
+                      {capitalizeFirstLetter(value)}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
             <Input
-              className="w-full rounded-md border border-gray-300 px-4 py-2 pl-20 pr-10 focus:border-gray-500  focus:outline-none focus:ring-1 focus:ring-gray-500 dark:border-gray-600  dark:bg-gray-800 dark:text-gray-200 dark:focus:border-gray-500 dark:focus:ring-gray-500"
+              className="w-full rounded-md border border-gray-300 px-4 py-2 pl-20 pr-10 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:focus:border-gray-500 dark:focus:ring-gray-500"
               placeholder="Search casts, tweets, or topics..."
               type="search"
               onChange={handleSearchTermChange}
@@ -252,16 +241,24 @@ const Search = ({ notionResults }: SearchProps) => {
           </Button>
         </div>
       </div>
-      {searchedCasts && searchedCasts.length ? (
-        <div className="inset-0 top-16 flex flex-col items-center gap-y-4 overflow-auto border-t bg-white bg-opacity-10 pl-6 pt-4 backdrop-blur-lg md:items-start md:px-20 md:py-10 lg:fixed">
+      {((searchedCasts && searchedCasts.length) || justSearched) &&
+      searchTerm.length ? (
+        <div
+          ref={searchResultsRef}
+          className="inset-0 top-16 flex flex-col items-center gap-y-4 overflow-auto border-t bg-white bg-opacity-10 pt-4 backdrop-blur-lg md:items-start md:px-20 md:py-10 md:pl-6 lg:fixed"
+        >
           <p className=" gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl lg:block">
-            <span className="mr-2">&quot;{searchTerm}&quot;</span> results{" "}
+            <span className="mr-2">&quot;{searchTerm}&quot;</span>{" "}
+            <span className="ml-2">{searchType}</span> results{" "}
             <span className="ml-2">
               ({searchType === "topics" ? TopicCount : searchedCasts.length})
             </span>
           </p>
           {searchType === "topics" ? (
-            <Rankings casts={searchedCasts} view={"search"} />
+            <TopicSearchResults
+              notionResults={notionResults}
+              casts={searchedCasts}
+            />
           ) : (
             <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
               {searchedCasts.slice(0, itemsToShow).map((searchedPost) => (
@@ -293,7 +290,7 @@ const Search = ({ notionResults }: SearchProps) => {
                 </>
               ))}
               {itemsToShow >= searchedCasts.length ? null : (
-                <div ref={ref} className="flex items-center justify-center ">
+                <div ref={ref} className="flex items-center justify-center">
                   <div className="animate-bounce space-x-2">
                     <div className="inline-block size-3 rounded-full bg-slate-900 dark:bg-white" />
                     <div className="inline-block size-3 rounded-full bg-slate-900 dark:bg-white" />

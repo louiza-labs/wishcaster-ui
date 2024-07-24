@@ -20,7 +20,7 @@ const useAddCategoriesToCasts = (casts: CastType[], topic = "") => {
   const path = usePathname()
 
   // Start with the initial set of casts
-  let castsWithCategories = [...casts]
+  let castsWithCategories = casts && Array.isArray(casts) ? [...casts] : casts
 
   // Categorize and filter duplicate categories
   const categories = categorizeArrayOfCasts(castsWithCategories) as Category[]

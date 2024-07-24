@@ -26,9 +26,10 @@ import { ThemeToggle } from "@/components/theme-toggle"
 
 interface MainNavProps {
   items?: NavItem[]
+  notionResults: any
 }
 
-export function DesktopNav({ items }: MainNavProps) {
+export function DesktopNav({ items, notionResults }: MainNavProps) {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
   useSubscribeToSessionChanges()
   useLoadAllCastsToStore()
@@ -68,7 +69,7 @@ export function DesktopNav({ items }: MainNavProps) {
           ) : null}
         </div>
         <div className="mx-10 hidden w-full lg:block">
-          <Search />
+          <Search notionResults={notionResults} />
         </div>
         <div className="flex w-full flex-1 items-center justify-end space-x-4">
           <nav className="xl:min-w-200 flex w-fit items-center space-x-4 ">

@@ -13,7 +13,7 @@ function parseQueryParam(param?: string | string[]): string {
   return Array.isArray(param) ? param.join(",") : param || ""
 }
 
-function MobileSearch({}: any) {
+function MobileSearch({ notionResults }: any) {
   const [open, setOpen] = useState(false)
   const searchParams = useSearchParams()
   const filtersFromParams = useMemo(
@@ -43,13 +43,13 @@ function MobileSearch({}: any) {
         </SheetTrigger>
         <SheetContent
           side="bottom"
-          className="h-[70vh] w-full rounded-t-xl pb-10"
+          className="h-[90vh] w-full overflow-y-auto rounded-t-xl pb-10"
         >
           <span className="ml-2 text-3xl font-bold"> Search </span>
-          <ScrollArea className="mt-6 h-[calc(100vh-8rem)] w-full overflow-y-auto pb-10 ">
+          <ScrollArea className="mt-6 size-full overflow-y-auto pb-10 ">
             <div className="flex w-full flex-col space-y-3">
               <aside className="relative flex w-full  flex-col gap-y-6 sm:col-span-3 sm:flex">
-                <Search notionResults={[]} />
+                <Search notionResults={notionResults} />
               </aside>
             </div>
           </ScrollArea>
