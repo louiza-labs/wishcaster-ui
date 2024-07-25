@@ -91,6 +91,8 @@ const TopicSearchResults = ({ casts, notionResults }: TopicsProps) => {
                 id={topic.id}
                 recasts={topic.recasts}
                 replies={topic.replies}
+                bookmarks={topic.bookmarks}
+                impressions={topic.impressions}
                 avgFollowers={topic.averageFollowerCount}
                 count={topic.count}
                 powerBadges={topic.priorityLikes}
@@ -110,6 +112,8 @@ const TopicSearchResults = ({ casts, notionResults }: TopicsProps) => {
                 id={topic.id}
                 recasts={topic.recasts}
                 replies={topic.replies}
+                bookmarks={topic.bookmarks}
+                impressions={topic.impressions}
                 avgFollowers={topic.averageFollowerCount}
                 count={topic.count}
                 powerBadges={topic.priorityLikes}
@@ -126,6 +130,8 @@ const TopicSearchResults = ({ casts, notionResults }: TopicsProps) => {
                 name={topic.topic}
                 description={topic.topic}
                 likes={topic.likes}
+                bookmarks={topic.bookmarks}
+                impressions={topic.impressions}
                 recasts={topic.recasts}
                 replies={topic.replies}
                 avgFollowers={topic.averageFollowerCount}
@@ -147,6 +153,8 @@ const TopicSearchResults = ({ casts, notionResults }: TopicsProps) => {
                 likes={topic.likes}
                 recasts={topic.recasts}
                 replies={topic.replies}
+                bookmarks={topic.bookmarks}
+                impressions={topic.impressions}
                 avgFollowers={topic.averageFollowerCount}
                 count={topic.count}
                 powerBadges={topic.priorityLikes}
