@@ -35,7 +35,9 @@ const useFilterFeed = (posts: CastType[], topic = "") => {
 
   // Apply priority badge filter
   if (priorityBadgeFilter) {
-    filteredPosts = filteredPosts.filter((cast) => cast.author.power_badge)
+    filteredPosts = filteredPosts.filter(
+      (cast) => cast.author && cast.author.power_badge
+    )
   }
 
   // Apply liked filter

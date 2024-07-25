@@ -46,7 +46,7 @@ const CastFooter = ({
   const params = useParams()
   const isOnCastPage = params && params.hash ? params.hash === hash : false
   const handleRouteToTwitter = () => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && author) {
       window.open(
         `https://www.x.com/${author.username}/status/${hash}`,
         "_blank"

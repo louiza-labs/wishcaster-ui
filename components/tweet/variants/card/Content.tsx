@@ -36,7 +36,7 @@ const TweetContent = ({
     <div>
       <Link
         href={
-          routeToWarpcast
+          routeToWarpcast && author
             ? `https://x.com/${author.username}/status/${hash}`
             : `/tweet/${hash}`
         }

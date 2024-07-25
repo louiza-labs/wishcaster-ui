@@ -37,7 +37,7 @@ const CastAvatar = ({
           <div className="flex flex-col items-start gap-y-2 ">
             <CardTitle className="flex flex-row items-center gap-x-1.5 text-sm lg:w-40">
               <span>{isTweet ? author.name : author.display_name} </span>
-              {author.verified || author.power_badge ? (
+              {(author && author.verified) || author.power_badge ? (
                 <div className="flex flex-col items-center rounded-full  bg-purple-600 p-1">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
