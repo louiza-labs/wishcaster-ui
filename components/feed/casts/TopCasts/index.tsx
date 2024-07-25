@@ -1,24 +1,24 @@
 "use client"
 
-import { Cast as CastType } from "@/types"
 import Autoplay from "embla-carousel-autoplay"
 
-import { sortCastsByProperty } from "@/lib/helpers"
-import { useFetchCastsUntilCovered } from "@/hooks/farcaster/casts/useFetchCastsUntilCovered"
+import {
+  getTopUsersByMetric,
+  rankUsers,
+  sortCastsByProperty,
+} from "@/lib/helpers"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import useAddUsersToTweets from "@/hooks/twitter/tweets/useAddUsersToTweets"
-import { useFetchTweetsUntilCovered } from "@/hooks/twitter/tweets/useFetchTweetsUntilCovered"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel"
 import Cast from "@/components/cast/variants/SprintItem"
-import { CastSkeleton } from "@/components/loading/cast"
 import TweetCard from "@/components/tweet/variants/card"
 
 interface TopCastsProps {
-  casts: CastType[]
+  tweets: any[]
   cursor: string
   sortParam: string
   topic: string
@@ -26,23 +26,18 @@ interface TopCastsProps {
 }
 
 const TopCasts = ({
-  casts,
+  tweets,
   cursor,
   topic,
   sortParam,
   notionResults,
 }: TopCastsProps) => {
-  const { castsToShow: castsWithUserInfo, fetchingCasts } =
-    useFetchCastsUntilCovered(casts)
-  const { tweetsToShow, fetching: fetchingTweets } =
-    useFetchTweetsUntilCovered(casts)
-  const { tweetsWithUsers } = useAddUsersToTweets(tweetsToShow)
-  let { filteredPosts } = useFilterFeed(
-    [...castsWithUserInfo, ...tweetsWithUsers],
-    topic
-  )
+  const { tweetsWithUsers } = useAddUsersToTweets(tweets)
+  let { filteredPosts } = useFilterFeed(tweetsWithUsers, topic)
   const sortedPosts = sortCastsByProperty(filteredPosts, "likes_count")
-
+  const rankedUsers = rankUsers(filteredPosts, "")
+  const topLikedUsers = getTopUsersByMetric(rankedUsers, "likes_count", 5)
+  console.log("the topLikedUsers", topLikedUsers)
   return (
     <>
       <div className="flex flex-col overflow-y-auto xl:hidden">
@@ -75,15 +70,16 @@ const TopCasts = ({
                 category={postItem.category}
                 tweet={postItem}
                 notionResults={notionResults}
+                entities={postItem.entities}
+                referencedTweet={postItem.referencedTweet}
+                media={postItem.media}
               />
             )}
           </>
         ))}
       </div>
       <div className="hidden size-fit xl:block ">
-        {sortedPosts &&
-        sortedPosts.length &&
-        !(fetchingCasts || fetchingTweets) ? (
+        {sortedPosts && sortedPosts.length ? (
           <Carousel
             opts={{
               align: "start",
@@ -128,6 +124,9 @@ const TopCasts = ({
                           category={postItem.category}
                           tweet={postItem}
                           notionResults={notionResults}
+                          entities={postItem.entities}
+                          referencedTweet={postItem.referencedTweet}
+                          media={postItem.media}
                         />
                       )}
                     </>
@@ -136,16 +135,9 @@ const TopCasts = ({
               ))}
             </CarouselContent>
           </Carousel>
-        ) : fetchingCasts || fetchingTweets ? (
-          <div className="mt-4 flex size-full flex-row items-center justify-between gap-x-6">
-            <CastSkeleton size={"large"} />
-            <CastSkeleton size={"large"} />
-
-            <CastSkeleton size={"large"} />
-          </div>
         ) : (
           <div>
-            <p className="text-xl font-light">No casts found</p>
+            <p className="text-xl font-light">No Tweets found</p>
           </div>
         )}
       </div>

@@ -138,6 +138,18 @@ const Rankings = ({ casts, view, castsAndOrTweets }: RankingsProps) => {
     "recasts_count",
     view === "search" ? 100 : 10
   )
+  const rankedTopicsByImpressions = buildRankings(
+    castsWithCategories,
+    "category",
+    "impressions",
+    view === "search" ? 100 : 10
+  )
+  const rankedTopicsByBookmarks = buildRankings(
+    castsWithCategories,
+    "category",
+    "bookmarks",
+    view === "search" ? 100 : 10
+  )
 
   const hasResults = useMemo(() => {
     return (
@@ -206,24 +218,36 @@ const Rankings = ({ casts, view, castsAndOrTweets }: RankingsProps) => {
             defaultValue="likes"
             className="hidden w-full flex-col items-center gap-y-2 md:w-fit md:items-start xl:flex"
           >
-            <TabsList className="flex size-auto items-start md:h-full md:w-fit md:flex-col lg:flex-col xl:flex-row">
+            <TabsList className="flex size-auto items-start md:h-full md:w-fit md:flex-col lg:flex-col xl:flex-row xl:flex-wrap">
               <TabsTrigger
-                className="p-2 lg:w-fit lg:text-sm 2xl:text-base"
+                className="p-2 lg:w-fit lg:text-sm 2xl:text-sm"
                 value="likes"
               >
                 Likes
               </TabsTrigger>
               <TabsTrigger
-                className="p-2 lg:w-fit lg:text-sm 2xl:text-base"
+                className="p-2 lg:w-fit lg:text-sm 2xl:text-sm"
                 value="replies"
               >
                 Replies
               </TabsTrigger>
               <TabsTrigger
-                className="p-2 lg:w-fit lg:text-sm 2xl:text-base"
+                className="p-2 lg:w-fit lg:text-sm 2xl:text-sm"
                 value="recasts"
               >
-                Recasts
+                Retweets
+              </TabsTrigger>
+              <TabsTrigger
+                className="p-2 lg:w-fit lg:text-sm 2xl:text-sm"
+                value="impressions"
+              >
+                Impressions
+              </TabsTrigger>
+              <TabsTrigger
+                className="p-2 lg:w-fit lg:text-sm 2xl:text-sm"
+                value="bookmarks"
+              >
+                Bookmarks
               </TabsTrigger>
             </TabsList>
             <TabsContent value="likes">
@@ -234,6 +258,12 @@ const Rankings = ({ casts, view, castsAndOrTweets }: RankingsProps) => {
             </TabsContent>
             <TabsContent value="recasts">
               <RankedValues values={rankedTopicsByRecasts} />
+            </TabsContent>
+            <TabsContent value="bookmarks">
+              <RankedValues values={rankedTopicsByBookmarks} />
+            </TabsContent>
+            <TabsContent value="impressions">
+              <RankedValues values={rankedTopicsByImpressions} />
             </TabsContent>
           </Tabs>
           <div className="-mt-4 flex xl:hidden">

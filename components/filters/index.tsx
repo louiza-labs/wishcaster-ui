@@ -55,7 +55,7 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
     () => searchParams.getAll("filters"),
     [searchParams]
   )
-  const dateOptions = ["24-hours", "7-days", "30-days", "ytd"]
+  const dateOptions = ["24-hours", "7-days"]
 
   const createQueryString = useCallback(
     (name: string, value: string, addValue: boolean) => {
@@ -176,16 +176,16 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
       label: "Week",
       handleChange: handle7DayFilterChange,
     },
-    {
-      value: "30-days",
-      label: "Month",
-      handleChange: handle30DaysFilterChange,
-    },
-    {
-      value: "ytd",
-      label: "YTD",
-      handleChange: handleYTDFilterChange,
-    },
+    // {
+    //   value: "30-days",
+    //   label: "Month",
+    //   handleChange: handle30DaysFilterChange,
+    // },
+    // {
+    //   value: "ytd",
+    //   label: "YTD",
+    //   handleChange: handleYTDFilterChange,
+    // },
   ]
 
   const getSelectedFilterValues = () => {

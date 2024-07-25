@@ -15,9 +15,7 @@ import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
 import Topics from "@/components/topics"
 import {
-  fetchCastsUntilCovered,
-  fetchChannelCasts,
-  fetchTweets,
+  fetchTweetsUntilCovered,
   getUsersNotionAccessCode,
   searchNotion,
 } from "@/app/actions"
@@ -54,14 +52,9 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
-  const { casts: initialCasts, nextCursor: cursorToUse } = !timeFilterParam
-    ? await fetchChannelCasts("someone-build")
-    : await fetchCastsUntilCovered(
-        "someone-build",
-        timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
-      )
-  const tweets = await fetchTweets()
-  let filteredPosts = [...initialCasts, ...(tweets?.data ? tweets.data : [])]
+
+  const tweets = await fetchTweetsUntilCovered()
+  let filteredPosts: any = [...(tweets?.tweets ? tweets.tweets : [])]
   const categories = categorizeArrayOfCasts(filteredPosts) as Category[]
 
   filteredPosts = addCategoryFieldsToCasts(
@@ -81,7 +74,7 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
   return (
     <>
       <div className="top-66 sticky z-10">
-        <FilterBar initialCasts={initialCasts} />
+        <FilterBar initialCasts={filteredPosts} />
       </div>
 
       <section className="relative mx-auto p-6 md:container sm:px-6 lg:px-20">
@@ -90,7 +83,7 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
         <main className="relative grid grid-cols-1 gap-4 py-10 lg:grid-cols-12 ">
           <article className="no-scrollbar lg:col-span-12 lg:px-2  ">
             <Topics
-              casts={filteredPosts}
+              posts={filteredPosts}
               mobileView={mobileViewParam}
               notionResults={notionResults}
             />
@@ -100,7 +93,7 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
       <div className="flex flex-col items-start lg:hidden">
         <BottomMobileNav
           filteredPosts={filteredPosts}
-          initialCasts={initialCasts}
+          initialCasts={filteredPosts}
           page={"topics"}
         />
       </div>

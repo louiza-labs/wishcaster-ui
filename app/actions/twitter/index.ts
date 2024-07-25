@@ -14,7 +14,7 @@ export async function fetchTweets(nextCursor = "") {
     let domainEntities = `(context:67.1158813612409929728 OR context:66.847869481888096256 OR context:131.1491481998862348291 OR context:131.913142676819648512 OR context:30.781974596794716162 OR context:46.1557697333571112960 OR context:30.781974596752842752)`
     const response = await client.tweets.tweetsRecentSearch({
       query:
-        'lang:en is:verified -military -army ("drone show" OR "drone art")',
+        'lang:en  -military -army ("drone show" OR "drone art" OR "drone light show")',
       "tweet.fields": [
         "attachments",
         "author_id",
@@ -256,6 +256,62 @@ export async function fetchTweetByIds(tweetId: string) {
   }
 }
 
+export async function fetchTweetsByIds(tweetIds: string[]) {
+  try {
+    const client = new Client(process.env.TWITTER_BEARER_TOKEN as string)
+
+    const response = await client.tweets.findTweetsById({
+      ids: tweetIds,
+      "tweet.fields": [
+        "attachments",
+        "author_id",
+        "created_at",
+        "entities",
+        "id",
+        "text",
+        "public_metrics",
+        "referenced_tweets",
+        "source",
+      ],
+      expansions: [
+        "author_id",
+        "entities.mentions.username",
+        "attachments.media_keys",
+        "referenced_tweets.id",
+      ],
+      "media.fields": [
+        "public_metrics",
+        "type",
+        "url",
+        "alt_text",
+        "duration_ms",
+        "variants",
+        "width",
+        "height",
+        "preview_image_url",
+        "media_key",
+      ],
+      "user.fields": [
+        "created_at",
+        "description",
+        "entities",
+        "id",
+        "location",
+        "name",
+        "profile_image_url",
+        "public_metrics",
+        "url",
+        "username",
+        "verified",
+      ],
+    })
+    const { data, errors, includes } = response
+    return { data, errors, includes }
+  } catch (e) {
+    return { data: {}, errors: e }
+  }
+}
+
 export async function fetchLikesForTweet(tweetId: string) {
   try {
     const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000
@@ -292,21 +348,43 @@ export async function fetchLikesForTweet(tweetId: string) {
   }
 }
 
+async function fetchInChunks<T>(
+  ids: string[],
+  fetchFunction: (ids: string[]) => Promise<{ data: T[] }>,
+  chunkSize = 100
+): Promise<T[]> {
+  const chunks = []
+  for (let i = 0; i < ids.length; i += chunkSize) {
+    const chunk = ids.slice(i, i + chunkSize)
+    chunks.push(chunk)
+  }
+
+  const promises = chunks.map((chunk) => fetchFunction(chunk))
+  const responses = await Promise.all(promises)
+
+  // Flatten the array of arrays into a single array
+  const results = responses.flatMap((response) => response.data || [])
+
+  return results
+}
+
 export async function getAndAddReferencedTweets(tweets: any) {
   try {
     if (!Array.isArray(tweets)) {
       throw new TypeError("Expected tweets to be an array")
     }
+
     let referenceIds: any = []
     // Step 1: Build an object of reference tweet IDs
     const objectOfReferencedTweetIds = tweets.reduce(
       (objectOfReferenceTweetIdsToBuild: any, tweet: any) => {
         if (!objectOfReferenceTweetIdsToBuild[tweet.id]) {
           if (tweet.referenced_tweets && tweet.referenced_tweets.length) {
+            const referenceTweetId = tweet.referenced_tweets[0].id
+
             referenceIds.push(tweet.referenced_tweets[0].id)
+            objectOfReferenceTweetIdsToBuild[tweet.id] = referenceTweetId
           }
-          const referenceTweetId = tweet.referenced_tweets[0].id
-          objectOfReferenceTweetIdsToBuild[tweet.id] = referenceTweetId
         }
         return objectOfReferenceTweetIdsToBuild
       },
@@ -318,22 +396,22 @@ export async function getAndAddReferencedTweets(tweets: any) {
     }
 
     // Step 2: Fetch tweets based on reference IDs
-    const fetchTweetPromises = referenceIds.map((id: string) =>
-      fetchTweetByIds(id)
+    const fetchedTweets: any = await fetchInChunks(
+      referenceIds,
+      fetchTweetsByIds as any
     )
-    const tweetResponses = await Promise.all(fetchTweetPromises)
+    if (!fetchedTweets || fetchedTweets.length === 0) return tweets
 
-    const fetchedTweets = tweetResponses.map((response) => response.data)
     const userIds = extractUserIdsFromTweets(fetchedTweets)
 
     // Step 3: Fetch users based on user IDs
-    const usersResponse = await fetchTwitterUsers(userIds)
-    const users = usersResponse.data
+    const users = await fetchInChunks(userIds, fetchTwitterUsers as any)
+    if (!users || users.length === 0) return tweets
 
     // Step 4: Add media to fetched tweets
     const tweetsWithMedia = addMediaToTweets(
       fetchedTweets,
-      tweetResponses.map((response) => response.includes)
+      fetchedTweets.map((tweet: any) => tweet.includes)
     )
 
     // Step 5: Add user info to fetched tweets

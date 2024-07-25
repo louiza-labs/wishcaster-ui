@@ -27,7 +27,10 @@ const TopicsTable = ({
 
     { accessorKey: "likes", title: "Likes" },
     // { accessorKey: "priority-likes", title: "Priority Likes" },
-    { accessorKey: "recasts", title: "Recasts" },
+    { accessorKey: "recasts", title: "Retweets" },
+    { accessorKey: "impressions", title: "Impressions" },
+    { accessorKey: "bookmarks", title: "Bookmarks" },
+
     { accessorKey: "replies", title: "Replies" },
     // { accessorKey: "averageFollowerCount", title: "Avg. Followers" },
     // { accessorKey: "powerBadgeCount", title: "Power Badges" },

@@ -21,9 +21,11 @@ interface CastFooterProps {
   likes: number
   replies: number
   retweets: number
+  impressions: number
   reactions: {
     likes_count: number
     recasts_count: number
+    bookmark_count: number
   }
 }
 
@@ -39,12 +41,16 @@ const CastFooter = ({
   replies,
   retweets,
   hideActions,
+  impressions,
   cast,
   notionResults,
 }: CastFooterProps) => {
   const router = useRouter()
   const params = useParams()
-  const isOnCastPage = params && params.hash ? params.hash === hash : false
+  const isOnCastPage =
+    (params && params.hash) || (params && params.id)
+      ? (params.hash || params.id) === hash
+      : false
   const handleRouteToTwitter = () => {
     if (typeof window !== "undefined") {
       window.open(
@@ -67,11 +73,19 @@ const CastFooter = ({
           {/* <!-- Interaction Stats (Likes, Recasts, Replies) --> */}
           <div className="flex flex-col gap-y-2">
             {[
+              {
+                icon: Icons.bookmark,
+                count: reactions.bookmark_count,
+                noun: "Bookmark",
+              },
+
+              { icon: Icons.activity, count: impressions, noun: "Impression" },
+
               { icon: Icons.likes, count: likes, noun: "Like" },
               {
                 icon: Icons.recasts,
                 count: retweets,
-                noun: "Recast",
+                noun: "Retweet",
               },
               {
                 icon: Icons.replies,
@@ -124,7 +138,7 @@ const CastFooter = ({
               onClick={handleRouteToTweetPage}
               variant="default"
             >
-              Build
+              Explore
             </Button>
           )}
           {hideActions || isEmbedded || isReply ? null : (

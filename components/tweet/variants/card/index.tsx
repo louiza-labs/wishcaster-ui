@@ -94,6 +94,7 @@ const SprintItemCast = ({
           retweets={retweets}
           hideMetrics={false}
           hash={tweet.hash}
+          impressions={tweet.public_metrics.impression_count}
           author={user}
           cast={tweet}
           isReply={false}

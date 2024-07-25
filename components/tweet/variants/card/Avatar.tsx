@@ -38,16 +38,12 @@ const CastAvatar = ({
             <CardTitle className="flex flex-row items-center gap-x-1.5 text-sm lg:w-40">
               <span>{isTweet ? author.name : author.display_name} </span>
               {author.verified || author.power_badge ? (
-                <div className="flex flex-col items-center rounded-full  bg-purple-600 p-1">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="white"
-                    className="size-3"
-                  >
-                    <path d="M11.983 1.907a.75.75 0 0 0-1.292-.657l-8.5 9.5A.75.75 0 0 0 2.75 12h6.572l-1.305 6.093a.75.75 0 0 0 1.292.657l8.5-9.5A.75.75 0 0 0 17.25 8h-6.572l1.305-6.093Z" />
-                  </svg>
-                </div>
+                <Avatar className="size-6">
+                  <AvatarImage
+                    src={"/social-account-logos/Twitter_Verified_Badge.png"}
+                    alt={author.verified}
+                  />
+                </Avatar>
               ) : null}
             </CardTitle>
           </div>

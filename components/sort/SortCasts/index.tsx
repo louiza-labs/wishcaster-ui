@@ -82,6 +82,12 @@ const SortCasts = ({ asFilterBar }: SortCastsProps) => {
   const handleSortByRecastsChange = () => {
     handleToggleSortClick("recasts_count")
   }
+  const handleSortByImpressionsChange = () => {
+    handleToggleSortClick("impressions")
+  }
+  const handleSortByBookmarksChange = () => {
+    handleToggleSortClick("bookmarks")
+  }
   const handleSortByChange = (value: string) => {
     handleToggleSortClick(value)
   }
@@ -90,6 +96,16 @@ const SortCasts = ({ asFilterBar }: SortCastsProps) => {
     {
       label: "Recent",
       value: "recent",
+      handleChange: handleSortByRecentChange,
+    },
+    {
+      label: "Impressions",
+      value: "impressions",
+      handleChange: handleSortByRecentChange,
+    },
+    {
+      label: "Bookmarks",
+      value: "bookmarks",
       handleChange: handleSortByRecentChange,
     },
     {
@@ -103,7 +119,7 @@ const SortCasts = ({ asFilterBar }: SortCastsProps) => {
       handleChange: handleSortByRepliesChange,
     },
     {
-      label: "Recasts",
+      label: "Retweets",
       value: "recasts_count",
       handleChange: handleSortByRecastsChange,
     },

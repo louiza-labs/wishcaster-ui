@@ -11,12 +11,6 @@ interface Column {
 }
 
 // Example usage with an array of columns
-const columnsConfig: Column[] = [
-  { accessorKey: "id", title: "ID" },
-  { accessorKey: "name", title: "Name" },
-  { accessorKey: "age", title: "Age" },
-  { accessorKey: "email", title: "Email" },
-]
 
 // Function to generate column definitions
 export const generateColumns = (columns: Column[]): ColumnDef<any, any>[] => {

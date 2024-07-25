@@ -88,6 +88,7 @@ const TweetContent = ({
                             style={{
                               width: "100%",
                               minHeight: "20rem",
+                              // maxHeight: "30rem",
                             }}
                             className=" "
                           />

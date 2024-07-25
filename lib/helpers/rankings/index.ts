@@ -3,7 +3,13 @@ import { Cast as CastType } from "@/types"
 export const buildRankings = (
   casts: CastType[],
   focus: keyof CastType,
-  metric: "likes_count" | "replies_count" | "recasts_count" | "count",
+  metric:
+    | "likes_count"
+    | "replies_count"
+    | "recasts_count"
+    | "count"
+    | "impressions"
+    | "bookmarks",
   limit: number
 ): { name: string; value: number }[] => {
   if (!casts || casts.length === 0 || !Array.isArray(casts)) {
@@ -37,7 +43,13 @@ export const buildRankings = (
         cast.object === "cast"
           ? cast["reactions"][metric] || 0
           : cast.public_metrics[
-              metric === "likes_count" ? "like_count" : "retweet_count"
+              metric === "likes_count"
+                ? "like_count"
+                : metric === "bookmarks"
+                ? "bookmark_count"
+                : metric === "impressions"
+                ? "impression_count"
+                : "retweet_count"
             ] || 0
 
       metricsMap.set(
@@ -62,7 +74,7 @@ export const buildRankings = (
 export function getRanking(
   target: CastType,
   items: CastType[],
-  metric: "likes" | "recasts" | "replies",
+  metric: "likes" | "recasts" | "replies" | "impressions" | "bookmarks",
   filterField?: keyof CastType
 ): number | null {
   // Apply filtering only if filterField is provided and the target has this property defined
@@ -88,6 +100,12 @@ export function getRanking(
     if (metric === "replies") {
       return objectToGetValueFrom.replies
     }
+    if (metric === "impressions") {
+      return objectToGetValueFrom.public_metrics.impression_count
+    }
+    if (metric === "bookmarks") {
+      return objectToGetValueFrom.public_metrics.bookmark_count
+    }
     return 0
   }
 
@@ -108,7 +126,7 @@ export function getRanking(
 export function getTweetRanking(
   target: CastType,
   items: CastType[],
-  metric: "likes" | "retweets" | "replies",
+  metric: "likes" | "retweets" | "replies" | "impressions" | "bookmarks",
   filterField?: keyof CastType
 ): number | null {
   console.log(
@@ -147,6 +165,18 @@ export function getTweetRanking(
       }
       return objectToGetValueFrom.public_metrics.reply_count
     }
+    if (metric === "impressions") {
+      if (objectToGetValueFrom.object === "cast") {
+        return objectToGetValueFrom.replies
+      }
+      return objectToGetValueFrom.public_metrics.impression_count
+    }
+    if (metric === "bookmarks") {
+      if (objectToGetValueFrom.object === "cast") {
+        return objectToGetValueFrom.replies
+      }
+      return objectToGetValueFrom.public_metrics.bookmark_count
+    }
     return 0
   }
 
@@ -183,6 +213,8 @@ export function rankTopics(
       likes_count: number
       recasts_count: number
       replies_count: number
+      impression_count: number
+      bookmark_count: number
       count: number
     }
   } = {}
@@ -196,6 +228,8 @@ export function rankTopics(
         likes_count: 0,
         recasts_count: 0,
         replies_count: 0,
+        impression_count: 0,
+        bookmark_count: 0,
         count: 0,
       }
     }
@@ -211,6 +245,14 @@ export function rankTopics(
       cast.object === "cast"
         ? cast.replies.count
         : cast.public_metrics.reply_count
+    metrics[category].impression_count +=
+      cast.object === "cast"
+        ? cast.replies.count
+        : cast.public_metrics.impression_count
+    metrics[category].bookmark_count +=
+      cast.object === "cast"
+        ? cast.replies.count
+        : cast.public_metrics.bookmark_count
     metrics[category].count += 1
   })
 
@@ -225,6 +267,8 @@ export function rankTopics(
     "likes_count",
     "recasts_count",
     "replies_count",
+    "impression_count",
+    "bookmark_count",
     "count",
   ]
   sortableMetrics.forEach((metric) => {
@@ -247,4 +291,88 @@ export function rankTopics(
   }
 
   return categories
+}
+
+export const rankUsers = (tweetsWithUsers: any, metricToRankBy: string) => {
+  const metrics: {
+    [key: string]: {
+      likes_count: number
+      recasts_count: number
+      replies_count: number
+      impression_count: number
+      bookmark_count: number
+      count: number
+      userDetails: null | any
+    }
+  } = {}
+
+  // Aggregate metrics for each user
+  tweetsWithUsers.forEach((tweet: any) => {
+    if (!(tweet.user && tweet.user.id)) return
+    const userId = tweet.user.id
+    const userObj = tweet.user
+    if (!metrics[userId]) {
+      metrics[userId] = {
+        likes_count: 0,
+        recasts_count: 0,
+        replies_count: 0,
+        impression_count: 0,
+        bookmark_count: 0,
+        count: 0,
+        userDetails: null,
+      }
+    }
+    if (!metrics[userId].userDetails) {
+      metrics[userId].userDetails = userObj
+    }
+    metrics[userId].likes_count +=
+      tweet.object === "cast"
+        ? tweet.reactions.likes_count
+        : tweet.public_metrics.like_count
+    metrics[userId].recasts_count +=
+      tweet.object === "cast"
+        ? tweet.reactions.recasts_count
+        : tweet.public_metrics.retweet_count
+    metrics[userId].replies_count +=
+      tweet.object === "cast"
+        ? tweet.replies.count
+        : tweet.public_metrics.reply_count
+    metrics[userId].impression_count +=
+      tweet.object === "cast"
+        ? tweet.replies.count
+        : tweet.public_metrics.impression_count
+    metrics[userId].bookmark_count +=
+      tweet.object === "cast"
+        ? tweet.replies.count
+        : tweet.public_metrics.bookmark_count
+    metrics[userId].count += 1
+  })
+
+  // Convert the metrics object to an array
+  const users = Object.entries(metrics).map(([user, data]) => ({
+    user,
+    rankings: { ...data },
+    userDetails: data.userDetails,
+  }))
+
+  // Calculate rankings for each metric, including count
+  const sortableMetrics = [
+    "likes_count",
+    "recasts_count",
+    "replies_count",
+    "impression_count",
+    "bookmark_count",
+    "count",
+  ]
+  sortableMetrics.forEach((metric) => {
+    const sorted = [...users].sort(
+      (a: any, b: any) => b.rankings[metric] - a.rankings[metric]
+    )
+    sorted.forEach((cat, index) => {
+      const categoryToUpdate: any = users.find((c) => c.user === cat.user)
+      categoryToUpdate.rankings[metric] = index + 1
+    })
+  })
+
+  return users
 }

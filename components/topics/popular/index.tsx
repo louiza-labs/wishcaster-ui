@@ -20,6 +20,8 @@ interface PopularTopicCardProps {
   id: string
   powerBadges: number
   handleClick: (topic: string) => void
+  bookmarks: number
+  impressions: number
 }
 
 const PopularTopicCard = ({
@@ -32,29 +34,33 @@ const PopularTopicCard = ({
   avgFollowers,
   count,
   handleClick,
+  bookmarks,
+  impressions,
   id,
   powerBadges,
 }: PopularTopicCardProps) => {
   return (
-    <Card className="hover:brightness-80 relative mb-4 flex h-fit  cursor-pointer flex-col rounded-lg bg-background/50 p-2 backdrop-blur-lg md:mb-0 md:w-60">
+    <Card className="hover:brightness-80 relative mb-4 flex h-fit  cursor-pointer flex-col rounded-lg bg-background/50 p-2 backdrop-blur-lg md:mb-0  md:w-full xl:w-full">
       <CardHeader className="flex h-28 flex-col items-start gap-2">
         <CardTitle className="text-2xl font-bold">{rank}</CardTitle>
         <p className="text-2xl font-bold">{name}</p>
       </CardHeader>
-      <CardContent className="mt-10 h-28 grow">
+      <CardContent className="mt-10 h-36 grow">
         <div className="grid w-full grid-cols-2 gap-4">
           {[
             { icon: Icons.likes, count: likes, noun: "like" },
-            { icon: Icons.recasts, count: recasts, noun: "repost" },
+            { icon: Icons.recasts, count: recasts, noun: "retweet" },
             { icon: Icons.replies, count: replies, noun: "reply" },
             { icon: Icons.boxes, count: count, noun: "count" },
+            { icon: Icons.activity, count: impressions, noun: "impression" },
+            { icon: Icons.bookmark, count: bookmarks, noun: "bookmark" },
           ].map(({ icon: Icon, count, noun }) => (
             <div
               key={noun}
               className="col-span-1 flex items-center gap-x-2 text-sm"
             >
               <Icon className="size-4 text-gray-700" />
-              <div className="flex flex-col items-start">
+              <div className="flex flex-col items-start break-all text-xs">
                 <p className="font-medium">{count.toLocaleString()}</p>
                 <p>
                   {count !== 1 && noun !== "count"

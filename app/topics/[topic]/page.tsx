@@ -18,13 +18,12 @@ import TopCasts from "@/components/feed/casts/TopCasts"
 import CastsAndTweetsFeed from "@/components/feed/castsAndTweets"
 import FilterBar from "@/components/filters/FilterBar"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
+import RankedUsers from "@/components/rankings/users"
 import RedirectButton from "@/components/redirect/Button"
 import TopicStats from "@/components/topics/stats"
 import {
-  fetchCastsUntilCovered,
-  fetchChannelCasts,
-  fetchTweets,
-  fetchTwitterUsers,
+  fetchTweetsUntilCovered,
+  fetchTwitterUsersUntilCovered,
   getUsersNotionAccessCode,
   searchNotion,
 } from "@/app/actions"
@@ -69,34 +68,24 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
 
-  const { casts: initialCasts, nextCursor: cursorToUse } = !timeFilterParam
-    ? await fetchChannelCasts("someone-build")
-    : await fetchCastsUntilCovered(
-        "someone-build",
-        timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
-      )
-
-  const { data: tweets } = await fetchTweets()
+  const { tweets } = await fetchTweetsUntilCovered()
   let tweetsWithoutDuplicates = removeDuplicateTweets(tweets)
 
-  const users = await fetchTwitterUsers(
+  const users = await fetchTwitterUsersUntilCovered(
     extractUserIdsFromTweets(tweetsWithoutDuplicates)
   )
 
   const tweetsWithUsers = addUserInfoToTweets(
     tweetsWithoutDuplicates,
-    users?.data
+    users?.tweets
   )
 
-  let filteredPosts = initialCasts
-  const categories = categorizeArrayOfCasts([
-    ...filteredPosts,
-    ...tweetsWithUsers,
-  ]) as Category[]
+  let filteredPosts = tweetsWithUsers
+  const categories = categorizeArrayOfCasts(tweetsWithUsers) as Category[]
   const mobileViewParam = parseQueryParam(searchParams.view)
 
   filteredPosts = addCategoryFieldsToCasts(
-    [...filteredPosts, ...tweetsWithUsers],
+    filteredPosts,
     categories
   ) as CastType[]
 
@@ -117,7 +106,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   return (
     <>
       <div className="top-66 sticky z-10">
-        <FilterBar initialCasts={initialCasts} />
+        <FilterBar initialCasts={filteredPosts} />
       </div>
       <section className="mx-auto h-fit py-6 md:container sm:px-6 lg:h-auto lg:px-20">
         <div className="px-6 md:px-0">
@@ -148,9 +137,9 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
           </div>
 
           <TopicStats
-            casts={sortedCasts}
-            cursor={cursorToUse}
+            tweets={filteredPosts}
             topic={params.topic}
+            cursor=""
             mobileView={mobileViewParam}
           />
         </div>
@@ -158,11 +147,19 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
           <article
             className={`${
               mobileViewParam.length && mobileViewParam !== "popular"
-                ? "hidden lg:flex"
-                : "flex"
-            } overflow-y-auto lg:col-span-12`}
+                ? "hidden lg:flex "
+                : "flex flex-col"
+            } gap-y-6 overflow-y-auto lg:col-span-12`}
           >
-            <div className="gap-y-4  overflow-y-auto pb-0 lg:pb-2">
+            <div className="flex flex-col flex-wrap gap-y-4 overflow-auto ">
+              <h2 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
+                Top Users
+              </h2>
+              <div className="flex size-fit flex-row items-start xl:h-fit">
+                <RankedUsers tweets={filteredPosts} />
+              </div>
+            </div>
+            <div className="flex flex-col gap-y-4 overflow-y-auto pb-0 lg:flex-row lg:gap-x-6 lg:pb-2">
               {topCast ? (
                 <div className="flex flex-col flex-wrap gap-y-4 overflow-auto bg-background">
                   <h2 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
@@ -170,9 +167,9 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                   </h2>
                   <div className="flex size-fit flex-row items-start lg:h-[70vh] xl:h-fit">
                     <TopCasts
-                      casts={initialCasts}
-                      cursor={cursorToUse}
+                      tweets={filteredPosts}
                       topic={params.topic}
+                      cursor=""
                       notionResults={notionResults}
                       sortParam={sortParam}
                     />
@@ -209,7 +206,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
             <CastsAndTweetsFeed
               casts={[]}
               timeFilterParam={timeFilterParam}
-              nextCursor={cursorToUse}
+              nextCursor={""}
               columns={3}
               topic={params.topic}
               tweets={tweetsWithUsers}

@@ -59,9 +59,8 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
     ? await fetchTweets()
     : { data: [], includes: {} }
 
-  let tweetsWithoutDuplicates = !shouldHideTweets
-    ? removeDuplicateTweets(tweets?.data)
-    : []
+  let tweetsWithoutDuplicates = removeDuplicateTweets(tweets?.data)
+
   const tweetsWithMediaAdded = addMediaToTweets(
     tweetsWithoutDuplicates,
     tweets.includes

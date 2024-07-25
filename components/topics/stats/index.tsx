@@ -10,8 +10,6 @@ import {
   rankTopics,
   summarizeByCategory,
 } from "@/lib/helpers"
-import { useFetchCastsUntilCovered } from "@/hooks/farcaster/casts/useFetchCastsUntilCovered"
-import { useFetchTweetsUntilCovered } from "@/hooks/twitter/tweets/useFetchTweetsUntilCovered"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -49,28 +47,23 @@ const CardStat: React.FC<CardStatProp> = ({ title, value, rank }) => {
 }
 
 interface CastStatProps {
-  casts: CastType[]
+  tweets: any[]
   cursor: string
   topic: string
   mobileView: string
 }
 
-const TopicStats: React.FC<CastStatProps> = ({ casts, topic }) => {
-  const { castsToShow: castsWithUserInfo } = useFetchCastsUntilCovered(casts)
-  const { tweetsToShow: tweets } = useFetchTweetsUntilCovered(casts)
-  const categories = categorizeArrayOfCasts([
-    ...castsWithUserInfo,
-    ...tweets,
-  ]) as Category[]
+const TopicStats: React.FC<CastStatProps> = ({ tweets, topic }) => {
+  const categories = categorizeArrayOfCasts(tweets) as Category[]
 
-  const castsAndTweetsWithCategories = addCategoryFieldsToCasts(
-    [...castsWithUserInfo, ...tweets],
+  const tweetsWithCategories = addCategoryFieldsToCasts(
+    tweets,
     categories
   ) as CastType[]
-  const topicRank = rankTopics(castsAndTweetsWithCategories, topic)
 
+  const topicRank = rankTopics(tweetsWithCategories, topic)
   const filteredPostsAndTweets = filterCastsForCategory(
-    castsAndTweetsWithCategories,
+    tweetsWithCategories,
     topic
   )
   const topicStats = summarizeByCategory(filteredPostsAndTweets, "likes")[0]
@@ -81,7 +74,7 @@ const TopicStats: React.FC<CastStatProps> = ({ casts, topic }) => {
 
   return (
     <div className="w-full overflow-x-auto px-4 sm:px-0">
-      <div className="flex snap-x snap-mandatory flex-row flex-nowrap gap-4 overflow-x-auto pl-8 md:pl-0">
+      <div className="flex snap-x snap-mandatory flex-row flex-wrap gap-4 overflow-x-auto pl-8 md:pl-0">
         {generatedStats && Object.keys(generatedStats).length
           ? Object.keys(generatedStats).map((stat) => (
               <CardStat

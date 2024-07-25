@@ -125,7 +125,7 @@ export function categorizeText(
   return { label: categories[bestCategory].label, id: bestCategory }
 }
 
-export function categorizeArrayOfCasts(casts: CastType[]) {
+export function categorizeArrayOfCasts(casts: any[]) {
   if (!casts || !Array.isArray(casts) || !casts[0]) return []
 
   let categorizedArray = casts.map((cast: CastType) => {

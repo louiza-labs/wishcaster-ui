@@ -31,15 +31,13 @@ const CastAndTweetsFeed = ({
   tweets,
 }: CastFeedProps) => {
   const searchParams = useSearchParams()
-  let castsToShow = [...tweets, ...casts]
   // const { castsToShow, ref, fetchingCasts } = useLoadMoreCasts(
   //   [...tweets, ...casts],
   //   nextCursor,
   //   timeFilterParam
   // )
   const [castCardStyleToShow, setCastCardStyleToShow] = useState("product")
-  let { filteredPosts } = useFilterFeed(castsToShow, topic)
-
+  let { filteredPosts } = useFilterFeed(tweets, topic)
   const router = useRouter()
   const categoriesFromParams = searchParams.getAll("topics").join(",")
   const cardLayoutFromParams = searchParams.getAll("card-layout").join(",")

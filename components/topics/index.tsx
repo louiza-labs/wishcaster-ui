@@ -2,11 +2,9 @@
 
 import { Suspense, useCallback, useMemo } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { Cast as CastType } from "@/types"
 
 import { buildRankings, summarizeByCategory } from "@/lib/helpers"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
-import { Button } from "@/components/ui/button"
 import PopularTopicCard from "@/components/topics/popular"
 import TopicsTable from "@/components/topics/table"
 
@@ -16,13 +14,13 @@ type RankedValueType = {
 }
 
 interface TopicsProps {
-  casts: CastType[]
+  posts: any[]
   mobileView: string | undefined
   notionResults: any
 }
 
-const Topics = ({ casts, mobileView, notionResults }: TopicsProps) => {
-  let { filteredPosts } = useFilterFeed(casts)
+const Topics = ({ posts, mobileView, notionResults }: TopicsProps) => {
+  let { filteredPosts } = useFilterFeed(posts)
   const sortedTopics = summarizeByCategory(filteredPosts, "likes")
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -101,6 +99,18 @@ const Topics = ({ casts, mobileView, notionResults }: TopicsProps) => {
     "recasts_count",
     3
   )
+  const rankedTopicsByImpressions = buildRankings(
+    filteredPosts,
+    "category",
+    "impressions",
+    3
+  )
+  const rankedTopicsByBookmarks = buildRankings(
+    filteredPosts,
+    "category",
+    "bookmarks",
+    3
+  )
   const hasResults = useMemo(() => {
     return (
       // (rankedTopicsByCount && rankedTopicsByCount.length) ||
@@ -121,9 +131,9 @@ const Topics = ({ casts, mobileView, notionResults }: TopicsProps) => {
         <div className="  flex flex-col items-center gap-y-6 lg:items-start">
           <div className="flex flex-col lg:flex-row lg:gap-x-2">
             <h3 className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:block md:text-3xl">
-              Most popular product topics 🔥
+              Most popular drone show topics 🔥
             </h3>
-            <div className="flex flex-row items-center gap-x-2">
+            {/* <div className="flex flex-row items-center gap-x-2">
               <Button
                 variant={
                   !isSourceFilterSelected("hide-farcaster")
@@ -155,7 +165,7 @@ const Topics = ({ casts, mobileView, notionResults }: TopicsProps) => {
               >
                 Twitter
               </Button>
-            </div>
+            </div> */}
           </div>
 
           {mobileView !== "table" ? (
@@ -173,6 +183,8 @@ const Topics = ({ casts, mobileView, notionResults }: TopicsProps) => {
                     count={topic.count}
                     powerBadges={topic.priorityLikes}
                     handleClick={handleToggleCategoryClick}
+                    impressions={topic.impressions}
+                    bookmarks={topic.bookmarks}
                     key={topic.topic}
                     rank={index + 1}
                   />
@@ -180,7 +192,7 @@ const Topics = ({ casts, mobileView, notionResults }: TopicsProps) => {
                 {/*  */}
               </div>
               <div className="hidden w-full flex-col items-center justify-around gap-y-2 xl:flex xl:flex-row xl:gap-x-2 xl:gap-y-0">
-                {sortedTopics.slice(0, 5).map((topic, index) => (
+                {sortedTopics.slice(0, 4).map((topic, index) => (
                   <PopularTopicCard
                     name={topic.topic}
                     description={topic.topic}
@@ -192,6 +204,8 @@ const Topics = ({ casts, mobileView, notionResults }: TopicsProps) => {
                     count={topic.count}
                     powerBadges={topic.priorityLikes}
                     handleClick={handleToggleCategoryClick}
+                    impressions={topic.impressions}
+                    bookmarks={topic.bookmarks}
                     key={topic.topic}
                     rank={index + 1}
                   />
@@ -199,7 +213,7 @@ const Topics = ({ casts, mobileView, notionResults }: TopicsProps) => {
                 {/*  */}
               </div>
               <div className="hidden flex-row items-center justify-around gap-x-2 lg:flex xl:hidden">
-                {sortedTopics.slice(0, 4).map((topic, index) => (
+                {sortedTopics.slice(0, 3).map((topic, index) => (
                   <PopularTopicCard
                     name={topic.topic}
                     description={topic.topic}
@@ -210,6 +224,8 @@ const Topics = ({ casts, mobileView, notionResults }: TopicsProps) => {
                     count={topic.count}
                     powerBadges={topic.priorityLikes}
                     handleClick={handleToggleCategoryClick}
+                    bookmarks={topic.bookmarks}
+                    impressions={topic.impressions}
                     key={topic.topic}
                     id={topic.id}
                     rank={index + 1}
@@ -230,6 +246,8 @@ const Topics = ({ casts, mobileView, notionResults }: TopicsProps) => {
                     powerBadges={topic.priorityLikes}
                     handleClick={handleToggleCategoryClick}
                     key={topic.topic}
+                    impressions={topic.impressions}
+                    bookmarks={topic.bookmarks}
                     id={topic.id}
                     rank={index + 1}
                   />

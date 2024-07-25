@@ -13,6 +13,7 @@ import {
 
 const useFilterFeed = (posts: any[], topic = "") => {
   const searchParams = useSearchParams()
+  const dateOptions = ["24-hours", "7-days", "30-days", "ytd"]
 
   // Extract search parameters
   const searchTermFromParams = searchParams.getAll("search").join(",")
@@ -24,7 +25,9 @@ const useFilterFeed = (posts: any[], topic = "") => {
   const likedFilter = filtersFromParams.includes("liked")
   const followingFilter = filtersFromParams.includes("following")
   const recastedFilter = filtersFromParams.includes("recasted")
-
+  const timeFilters = dateOptions.find((option) =>
+    filtersFromParams.includes(option)
+  )
   const params = useParams()
   const path = usePathname()
 
@@ -41,6 +44,33 @@ const useFilterFeed = (posts: any[], topic = "") => {
     filteredPosts = filteredPosts.filter(
       (cast) => cast.viewer_context && cast.viewer_context.liked
     )
+  }
+
+  if (timeFilters) {
+    const now = new Date()
+    let filterDate = now
+
+    switch (timeFilters) {
+      case "24-hours":
+        filterDate = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+        break
+      case "7-days":
+        filterDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+        break
+      case "30-days":
+        filterDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+        break
+      case "ytd":
+        filterDate = new Date(now.getFullYear(), 0, 1)
+        break
+      default:
+        filterDate = now
+    }
+
+    filteredPosts = filteredPosts.filter((post) => {
+      const createdAt = new Date(post.created_at)
+      return createdAt <= filterDate
+    })
   }
 
   // Apply following filter
