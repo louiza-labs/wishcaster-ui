@@ -19,7 +19,7 @@ export const addUserInfoToTweets = (tweets: any, users: any) => {
 
 export const addMediaToTweets = (tweets: any, includesObject: any) => {
   if (!includesObject || !(includesObject && includesObject.media)) {
-    return tweets.map((tweet) => {
+    return tweets.map((tweet: any) => {
       return {
         ...tweet,
         media: [],

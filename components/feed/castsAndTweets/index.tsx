@@ -178,6 +178,7 @@ const CastAndTweetsFeed = ({
                         attachments={tweetOrCast.attachments}
                         media={tweetOrCast.media}
                         entities={tweetOrCast.entities}
+                        referencedTweet={tweetOrCast.referenced_tweet}
                       />
                     ) : null
                   ) : hidePhotosFilter ? (
@@ -195,6 +196,7 @@ const CastAndTweetsFeed = ({
                         attachments={tweetOrCast.attachments}
                         media={tweetOrCast.media}
                         entities={tweetOrCast.entities}
+                        referencedTweet={tweetOrCast.referenced_tweet}
                       />
                     ) : null
                   ) : hideVideoFilter ? (
@@ -212,6 +214,7 @@ const CastAndTweetsFeed = ({
                         attachments={tweetOrCast.attachments}
                         media={tweetOrCast.media}
                         entities={tweetOrCast.entities}
+                        referencedTweet={tweetOrCast.referenced_tweet}
                       />
                     ) : null
                   ) : (
@@ -228,6 +231,7 @@ const CastAndTweetsFeed = ({
                       attachments={tweetOrCast.attachments}
                       media={tweetOrCast.media}
                       entities={tweetOrCast.entities}
+                      referencedTweet={tweetOrCast.referenced_tweet}
                     />
                   )}
                 </>

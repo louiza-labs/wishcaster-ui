@@ -364,8 +364,7 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
             <>
               <div className={"flex  flex-col"}>
                 <Categories
-                  cat
-                  egories={filteredCategories}
+                  categories={filteredCategories}
                   asFilterBar={asFilterBar}
                 />
               </div>

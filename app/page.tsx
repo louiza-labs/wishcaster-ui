@@ -24,6 +24,7 @@ import SortCasts from "@/components/sort/SortCasts"
 import {
   fetchTweets,
   fetchTwitterUsers,
+  getAndAddReferencedTweets,
   getUsersNotionAccessCode,
   searchNotion,
 } from "@/app/actions"
@@ -71,6 +72,9 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const tweetsWithUsers = !shouldHideTweets
     ? addUserInfoToTweets(tweetsWithMediaAdded, users?.data)
     : []
+  const tweetsWithReferenceTweetsAdded = await getAndAddReferencedTweets(
+    tweetsWithUsers
+  )
   const notionAccessCode = await getUsersNotionAccessCode()
   const notionSearch = notionAccessCode
     ? await searchNotion(notionAccessCode)
@@ -104,7 +108,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
     categories
   ) as Array<CastType>
   let tweetsWithCategories = addCategoryFieldsToTweets(
-    tweetsWithUsers,
+    tweetsWithReferenceTweetsAdded,
     categories
   )
 
@@ -130,7 +134,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   return (
     <>
       <div className="top-66 sticky z-10 lg:hidden">
-        <FilterBar initialCasts={initialCasts} />
+        <FilterBar initialCasts={tweetsWithCategories} />
       </div>{" "}
       <section className="mx-auto py-6 md:container sm:px-6 lg:px-6">
         <Header />
@@ -138,7 +142,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
           <aside className="no-scrollbar sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:flex">
             {/* <CardLayoutToggle /> */}
             <SortCasts />
-            <Filters initialCasts={initialCasts} />
+            <Filters initialCasts={tweetsWithCategories} />
           </aside>
           <article className="no-scrollbar lg:col-span-8 lg:px-2  ">
             {isError ? (
@@ -168,7 +172,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
       <div className="flex flex-col items-start lg:hidden">
         <BottomMobileNav
           filteredPosts={filteredPosts}
-          initialCasts={initialCasts}
+          initialCasts={tweetsWithCategories}
         />
       </div>
     </>

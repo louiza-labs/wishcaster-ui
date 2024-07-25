@@ -22,6 +22,7 @@ interface TweetProps {
   entities?: any
   category: any
   media?: any
+  referencedTweet?: any
 }
 
 const SprintItemCast = ({
@@ -37,13 +38,14 @@ const SprintItemCast = ({
   entities,
   media,
   attachments,
+  referencedTweet,
 }: TweetProps) => {
-  console.log("the tweet", tweet)
   const { castWithTagline } = useAddTaglineToHash(tweet)
   const categoryLabel =
     category && category.id
       ? PRODUCT_CATEGORIES_AS_MAP[category.id].label
       : null
+
   return (
     <Card className="md:border-auto md:shadow-auto relative flex w-full flex-col justify-between   lg:h-fit">
       <div className="-mb-4 mt-2 flex flex-col items-center">
@@ -80,6 +82,7 @@ const SprintItemCast = ({
           renderEmbeds={true}
           mentions={entities ? entities.mentions : []}
           media={media}
+          referencedTweet={referencedTweet}
         />
       </CardContent>
       <CardFooter>

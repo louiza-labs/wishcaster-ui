@@ -2,7 +2,11 @@
 
 import { Client, auth } from "twitter-api-sdk"
 
-import { addMediaToTweets } from "@/lib/helpers/enriching"
+import {
+  addMediaToTweets,
+  addUserInfoToTweets,
+  extractUserIdsFromTweets,
+} from "@/lib/helpers"
 
 export async function fetchTweets(nextCursor = "") {
   try {
@@ -19,6 +23,8 @@ export async function fetchTweets(nextCursor = "") {
         "id",
         "text",
         "public_metrics",
+        "referenced_tweets",
+        "source",
       ],
       sort_order: "relevancy",
       max_results: 100,
@@ -27,6 +33,7 @@ export async function fetchTweets(nextCursor = "") {
         "author_id",
         "entities.mentions.username",
         "attachments.media_keys",
+        "referenced_tweets.id",
       ],
       "media.fields": [
         "public_metrics",
@@ -207,11 +214,14 @@ export async function fetchTweetByIds(tweetId: string) {
         "id",
         "text",
         "public_metrics",
+        "referenced_tweets",
+        "source",
       ],
       expansions: [
         "author_id",
         "entities.mentions.username",
         "attachments.media_keys",
+        "referenced_tweets.id",
       ],
       "media.fields": [
         "public_metrics",
@@ -276,9 +286,79 @@ export async function fetchLikesForTweet(tweetId: string) {
         "tweet.fields": ["id"],
       }
     )
-    console.log("the res for getting likes", response)
     return response
   } catch (e) {
     console.log("the error getting likes", e)
+  }
+}
+
+export async function getAndAddReferencedTweets(tweets: any) {
+  try {
+    if (!Array.isArray(tweets)) {
+      throw new TypeError("Expected tweets to be an array")
+    }
+    let referenceIds: any = []
+    // Step 1: Build an object of reference tweet IDs
+    const objectOfReferencedTweetIds = tweets.reduce(
+      (objectOfReferenceTweetIdsToBuild: any, tweet: any) => {
+        if (!objectOfReferenceTweetIdsToBuild[tweet.id]) {
+          if (tweet.referenced_tweets && tweet.referenced_tweets.length) {
+            referenceIds.push(tweet.referenced_tweets[0].id)
+          }
+          const referenceTweetId = tweet.referenced_tweets[0].id
+          objectOfReferenceTweetIdsToBuild[tweet.id] = referenceTweetId
+        }
+        return objectOfReferenceTweetIdsToBuild
+      },
+      {}
+    )
+
+    if (referenceIds.length === 0) {
+      return tweets
+    }
+
+    // Step 2: Fetch tweets based on reference IDs
+    const fetchTweetPromises = referenceIds.map((id: string) =>
+      fetchTweetByIds(id)
+    )
+    const tweetResponses = await Promise.all(fetchTweetPromises)
+
+    const fetchedTweets = tweetResponses.map((response) => response.data)
+    const userIds = extractUserIdsFromTweets(fetchedTweets)
+
+    // Step 3: Fetch users based on user IDs
+    const usersResponse = await fetchTwitterUsers(userIds)
+    const users = usersResponse.data
+
+    // Step 4: Add media to fetched tweets
+    const tweetsWithMedia = addMediaToTweets(
+      fetchedTweets,
+      tweetResponses.map((response) => response.includes)
+    )
+
+    // Step 5: Add user info to fetched tweets
+    const tweetsWithUsers = addUserInfoToTweets(tweetsWithMedia, users)
+
+    // Step 6: Merge fetched tweets with users into the original tweets array
+    const updatedTweets = tweets.map((tweet: any) => {
+      const referenceTweetId = objectOfReferencedTweetIds[tweet.id]
+      if (referenceTweetId) {
+        const referencedTweet = tweetsWithUsers.find(
+          (t: any) => t.id === referenceTweetId
+        )
+        if (referencedTweet) {
+          return {
+            ...tweet,
+            referenced_tweet: referencedTweet,
+          }
+        }
+      }
+      return tweet
+    })
+
+    return updatedTweets
+  } catch (e) {
+    console.error("Error in getAndAddReferencedTweets:", e)
+    return tweets
   }
 }

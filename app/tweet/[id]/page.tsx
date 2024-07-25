@@ -83,7 +83,7 @@ const TweetPage: FC<TweetPageProps> = async ({ searchParams, params }) => {
   //       "someone-build",
   //       timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
   //     )
-  let initialCasts = []
+  let initialCasts: any = []
   let nextCursor = ""
   // const { reactionsObject } =
   //   enrichedTweet && enrichedTweet.hash
