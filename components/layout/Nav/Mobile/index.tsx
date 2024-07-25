@@ -6,7 +6,6 @@ import { useNeynarContext } from "@neynar/react"
 
 import useGetUser from "@/hooks/auth/useGetUser"
 import useSubscribeToSessionChanges from "@/hooks/auth/useSubscribeToSessionChanges"
-import useLoadAllCastsToStore from "@/hooks/farcaster/casts/useLoadAllCastsToStore"
 import useLoadAllTweetsToStore from "@/hooks/twitter/tweets/useLoadAllTweetsToStore"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -29,7 +28,6 @@ interface MobileNavProps {
 export function MobileNav({ notionResults }: MobileNavProps) {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
   const { userFromAuth } = useGetUser()
-  useLoadAllCastsToStore()
   useLoadAllTweetsToStore()
   const { isConnectedToNotion, isConnectedToLinear, isConnectedToTwitter } =
     useBoundStore((state: any) => state)

@@ -7,7 +7,6 @@ import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 import useSubscribeToSessionChanges from "@/hooks/auth/useSubscribeToSessionChanges"
-import useLoadAllCastsToStore from "@/hooks/farcaster/casts/useLoadAllCastsToStore"
 import useLoadAllTweetsToStore from "@/hooks/twitter/tweets/useLoadAllTweetsToStore"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -32,7 +31,6 @@ interface MainNavProps {
 export function DesktopNav({ items, notionResults }: MainNavProps) {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
   useSubscribeToSessionChanges()
-  useLoadAllCastsToStore()
   useLoadAllTweetsToStore()
 
   return (

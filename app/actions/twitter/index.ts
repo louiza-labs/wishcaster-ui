@@ -197,6 +197,7 @@ export async function fetchTwitterUsers(user_ids: string[]) {
     const { data, errors } = response
     return { data, errors }
   } catch (e) {
+    console.log("the error fetching users", e)
     return { data: [], errors: e }
   }
 }
@@ -406,7 +407,10 @@ export async function getAndAddReferencedTweets(tweets: any) {
 
     // Step 3: Fetch users based on user IDs
     const users = await fetchInChunks(userIds, fetchTwitterUsers as any)
-    if (!users || users.length === 0) return tweets
+    if (!users || users.length === 0) {
+    }
+
+    return tweets
 
     // Step 4: Add media to fetched tweets
     const tweetsWithMedia = addMediaToTweets(

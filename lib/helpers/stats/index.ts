@@ -21,7 +21,6 @@ const formatNumber = (num: number): string => {
 export const generateStatsObjectForTopic = (
   topicStatsAndRankings: any | null
 ): StatsObject => {
-  console.log("the topic stats and rankings", topicStatsAndRankings)
   if (!topicStatsAndRankings) return {}
 
   const {

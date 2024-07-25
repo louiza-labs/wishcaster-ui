@@ -65,12 +65,12 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
     tweetsWithoutDuplicates,
     tweets.includes
   )
-  const users = !shouldHideTweets
-    ? await fetchTwitterUsers(extractUserIdsFromTweets(tweetsWithMediaAdded))
-    : { data: [] }
-  const tweetsWithUsers = !shouldHideTweets
-    ? addUserInfoToTweets(tweetsWithMediaAdded, users?.data)
-    : []
+  const users = await fetchTwitterUsers(
+    extractUserIdsFromTweets(tweetsWithMediaAdded)
+  )
+
+  const tweetsWithUsers = addUserInfoToTweets(tweetsWithMediaAdded, users?.data)
+
   const tweetsWithReferenceTweetsAdded = await getAndAddReferencedTweets(
     tweetsWithUsers
   )

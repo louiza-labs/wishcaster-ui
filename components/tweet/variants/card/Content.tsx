@@ -49,12 +49,13 @@ const TweetContent = ({
   const mentionsUserNames = mentions
     ? mentions.map((mention: any) => mention.username)
     : []
+  // if (!author) return <div />
 
   return (
     <div>
       <Link
         href={
-          routeToWarpcast
+          routeToWarpcast && author
             ? `https://x.com/${author.username}/status/${hash}`
             : `/tweet/${hash}`
         }
