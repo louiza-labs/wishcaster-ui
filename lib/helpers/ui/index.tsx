@@ -24,14 +24,19 @@ interface RenderTextWithLinksProps {
 export const renderTextWithLinks = (
   text: string,
   mentionedProfiles: any[],
-  embeds: any[]
+  embeds: any[],
+  isTwitter = false
 ) => {
   if (!text) return <span>{text}</span>
 
   // Maps for quick access
   const profileMap = new Map<string, UserProfile>()
   mentionedProfiles.forEach((profile) => {
-    profileMap.set(`@${profile.username}`, profile)
+    if (isTwitter) {
+      profileMap.set(`@${profile}`, profile)
+    } else {
+      profileMap.set(`@${profile.username}`, profile)
+    }
   })
 
   const embedMap = new Map<string, Embed>()
@@ -81,15 +86,16 @@ export const renderTextWithLinks = (
           if (profileMap.has(part)) {
             const profile = profileMap.get(part)
             if (!profile) return
+            const profileUrlOnTwitter = `https://x.com/${profile}`
             return (
               <a
                 key={index}
-                href={profile.profile_url}
+                href={isTwitter ? profileUrlOnTwitter : profile.profile_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-semibold text-blue-600"
               >
-                @{profile.username}
+                {isTwitter ? `@${profile}` : `@${profile.username}`}
               </a>
             )
           }

@@ -6,8 +6,8 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import AuthorAvatar from "@/components/tweet/variants/card/Avatar"
-import CastContent from "@/components/tweet/variants/card/Content"
-import CastFooter from "@/components/tweet/variants/card/Footer"
+import TweetContent from "@/components/tweet/variants/card/Content"
+import TweetFooter from "@/components/tweet/variants/card/Footer"
 
 interface TweetProps {
   text: string
@@ -18,7 +18,11 @@ interface TweetProps {
   user: any
   notionResults: any
   tweet: any
+  attachments?: any
+  entities?: any
   category: any
+  media?: any
+  referencedTweet?: any
 }
 
 const SprintItemCast = ({
@@ -31,12 +35,17 @@ const SprintItemCast = ({
   notionResults,
   tweet,
   category,
+  entities,
+  media,
+  attachments,
+  referencedTweet,
 }: TweetProps) => {
   const { castWithTagline } = useAddTaglineToHash(tweet)
   const categoryLabel =
     category && category.id
       ? PRODUCT_CATEGORIES_AS_MAP[category.id].label
       : null
+
   return (
     <Card className="md:border-auto md:shadow-auto relative flex w-full flex-col justify-between   lg:h-fit">
       <div className="-mb-4 mt-2 flex flex-col items-center">
@@ -60,7 +69,7 @@ const SprintItemCast = ({
       </CardHeader>
 
       <CardContent>
-        <CastContent
+        <TweetContent
           text={text}
           embeds={[]}
           hash={tweet.hash}
@@ -71,11 +80,13 @@ const SprintItemCast = ({
           maxCharacters={150}
           routeToWarpcast={() => {}}
           renderEmbeds={true}
-          mentionedProfiles={[]}
+          mentions={entities ? entities.mentions : []}
+          media={media}
+          referencedTweet={referencedTweet}
         />
       </CardContent>
       <CardFooter>
-        <CastFooter
+        <TweetFooter
           timestamp={tweet.created_at}
           reactions={tweet.public_metrics}
           replies={replies}
@@ -83,6 +94,7 @@ const SprintItemCast = ({
           retweets={retweets}
           hideMetrics={false}
           hash={tweet.hash}
+          impressions={tweet.public_metrics.impression_count}
           author={user}
           cast={tweet}
           isReply={false}

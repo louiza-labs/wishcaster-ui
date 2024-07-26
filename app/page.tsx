@@ -5,6 +5,7 @@ import { dateOptions } from "@/lib/constants"
 import {
   addCategoryFieldsToCasts,
   addCategoryFieldsToTweets,
+  addMediaToTweets,
   addUserInfoToTweets,
   categorizeArrayOfCasts,
   extractUserIdsFromTweets,
@@ -54,12 +55,18 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const shouldHideCasts =
     filtersParam && filtersParam.includes("hide-farcaster")
   const shouldHideTweets = filtersParam && filtersParam.includes("hide-twitter")
-  const tweets = !shouldHideTweets ? await fetchTweets() : { data: [] }
+  const tweets = !shouldHideTweets
+    ? await fetchTweets()
+    : { data: [], includes: [] }
   let tweetsWithoutDuplicates = !shouldHideTweets
     ? removeDuplicateTweets(tweets?.data)
     : []
+  const tweetsWithMediaAdded = addMediaToTweets(
+    tweetsWithoutDuplicates,
+    tweets.includes
+  )
   const users = !shouldHideTweets
-    ? await fetchTwitterUsers(extractUserIdsFromTweets(tweetsWithoutDuplicates))
+    ? await fetchTwitterUsers(extractUserIdsFromTweets(tweetsWithMediaAdded))
     : { data: [] }
   const tweetsWithUsers = !shouldHideTweets
     ? addUserInfoToTweets(tweetsWithoutDuplicates, users?.data)

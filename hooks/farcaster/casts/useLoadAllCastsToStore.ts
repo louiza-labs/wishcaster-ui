@@ -8,6 +8,7 @@ import { fetchCastsUntilCovered } from "@/app/actions"
 
 export const useLoadAllCastsToStore = () => {
   const loadCastsToStore = useBoundStore((state: any) => state.setCasts)
+  const castsFromStore = useBoundStore((state: any) => state.casts)
 
   const { user, isAuthenticated } = useNeynarContext()
   const loggedInUserFID = Number(user?.fid) ?? 0
@@ -27,8 +28,10 @@ export const useLoadAllCastsToStore = () => {
   }, [loggedInUserFID, loadCastsToStore])
 
   useEffect(() => {
-    loadCasts()
-  }, [loggedInUserFID, loadCasts])
+    if (!(castsFromStore && castsFromStore.length)) {
+      loadCasts()
+    }
+  }, [loggedInUserFID])
 
   return {}
 }

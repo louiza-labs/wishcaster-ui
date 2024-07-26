@@ -169,6 +169,10 @@ const CastAndTweetsFeed = ({
                   category={tweetOrCast.category}
                   tweet={tweetOrCast}
                   notionResults={notionResults}
+                  attachments={tweetOrCast.attachments}
+                  media={tweetOrCast.media}
+                  entities={tweetOrCast.entities}
+                  referencedTweet={tweetOrCast.referenced_tweet}
                 />
               ) : (
                 <CastCardToUse
