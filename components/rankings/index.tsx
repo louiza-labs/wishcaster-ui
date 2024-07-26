@@ -223,7 +223,7 @@ const Rankings = ({ casts, view, castsAndOrTweets }: RankingsProps) => {
                 className="p-2 lg:w-fit lg:text-sm 2xl:text-base"
                 value="recasts"
               >
-                Recasts
+                Reposts
               </TabsTrigger>
             </TabsList>
             <TabsContent value="likes">

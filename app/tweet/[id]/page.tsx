@@ -5,6 +5,7 @@ import { dateOptions } from "@/lib/constants"
 import {
   addCategoryFieldsToCasts,
   addCategoryFieldsToTweets,
+  addMediaToTweets,
   addTaglinesToCasts,
   addUserInfoToTweets,
   categorizeArrayOfCasts,
@@ -104,8 +105,9 @@ const TweetPage: FC<TweetPageProps> = async ({ searchParams, params }) => {
   ]) as Category[]
 
   const users = await fetchTwitterUsers(extractUserIdsFromTweets([tweet?.data]))
+  const tweetWithMedia = addMediaToTweets([tweet.data], tweet.includes)
 
-  const tweetsWithUsers = addUserInfoToTweets([tweet?.data], users?.data)
+  const tweetsWithUsers = addUserInfoToTweets(tweetWithMedia, users?.data)
 
   let singleArrayCast = tweetsWithUsers
     ? addCategoryFieldsToCasts(tweetsWithUsers, categories)
@@ -172,6 +174,9 @@ const TweetPage: FC<TweetPageProps> = async ({ searchParams, params }) => {
                           category={tweetWithCategory.category}
                           tweet={tweetWithCategory}
                           notionResults={notionResults}
+                          attachments={tweetWithCategory.attachments}
+                          entities={tweetWithCategory.entities}
+                          media={tweetWithCategory.media}
                         />
                       </div>
                       <div className="block xl:hidden">
@@ -187,6 +192,9 @@ const TweetPage: FC<TweetPageProps> = async ({ searchParams, params }) => {
                           category={tweetWithCategory.category}
                           tweet={tweetWithCategory}
                           notionResults={notionResults}
+                          attachments={tweetWithCategory.attachments}
+                          entities={tweetWithCategory.entities}
+                          media={tweetWithCategory.media}
                         />
                       </div>
                     </div>

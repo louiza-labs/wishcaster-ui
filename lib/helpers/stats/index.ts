@@ -28,11 +28,13 @@ export const generateStatsObjectForTopic = (
     likes_count: likesRank = 0,
     recasts_count: recastsRank = 0,
     replies_count: repliesRank = 0,
+    impression_count: impressionRank = 0,
+    bookmark_count: bookmarkRank = 0,
   } = topicStatsAndRankings.rankings || {}
 
   const statsObject: StatsObject = {
     casts: {
-      label: "Casts",
+      label: "Tweets",
       value: formatNumber(topicStatsAndRankings.count || 0),
       rank: countRank,
     },
@@ -46,10 +48,20 @@ export const generateStatsObjectForTopic = (
       value: formatNumber(topicStatsAndRankings.replies || 0),
       rank: repliesRank,
     },
-    recasts: {
-      label: "Recasts",
+    retweets: {
+      label: "Retweets",
       value: formatNumber(topicStatsAndRankings.recasts || 0),
       rank: recastsRank,
+    },
+    impressions: {
+      label: "Impressions",
+      value: formatNumber(topicStatsAndRankings.impressions || 0),
+      rank: impressionRank,
+    },
+    bookmarks: {
+      label: "Bookmarks",
+      value: formatNumber(topicStatsAndRankings.bookmarks || 0),
+      rank: bookmarkRank,
     },
   }
 
@@ -66,6 +78,8 @@ interface CategorySummary {
   count: number
   totalFollowers: number
   averageFollowerCount: number
+  bookmarks: number
+  impressions: number
   // powerBadgeCount: number
 }
 
@@ -87,6 +101,8 @@ export function summarizeByCategory(
         recasts: 0,
         replies: 0,
         count: 0,
+        impressions: 0,
+        bookmarks: 0,
         averageFollowerCount: 0,
         totalFollowers: 0,
         // powerBadgeCount: 0
@@ -104,6 +120,11 @@ export function summarizeByCategory(
         : post.public_metrics.retweet_count
     summary.replies +=
       post.object === "cast" ? replies.count : post.public_metrics.reply_count
+    summary.bookmarks +=
+      post.object === "cast" ? 0 : post.public_metrics.bookmark_count
+    summary.impressions +=
+      post.object === "cast" ? 0 : post.public_metrics.impression_count
+
     summary.count += 1
     summary.totalFollowers += post.object === "cast" ? author.follower_count : 0
     summary.averageFollowerCount = Math.floor(
@@ -186,6 +207,14 @@ export const generateStatsObjectForTweet = (
 
     replies: { label: "Replies", value: tweet.public_metrics.reply_count },
     recasts: { label: "Retweets", value: tweet.public_metrics.retweet_count },
+    impressions: {
+      label: "Impressions",
+      value: tweet.public_metrics.impression_count,
+    },
+    bookmarks: {
+      label: "Bookmarks",
+      value: tweet.public_metrics.bookmark_count,
+    },
   }
   return statsObject
 }

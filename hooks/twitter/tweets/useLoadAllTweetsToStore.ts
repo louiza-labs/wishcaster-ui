@@ -11,6 +11,7 @@ import {
 
 export const useLoadAllTweetsToStore = () => {
   const loadTweetsToStore = useBoundStore((state: any) => state.setTweets)
+  const tweetsFromStore = useBoundStore((state: any) => state.tweets)
 
   const { user, isAuthenticated } = useNeynarContext()
 
@@ -43,8 +44,10 @@ export const useLoadAllTweetsToStore = () => {
   }
 
   useEffect(() => {
-    loadTweets()
-  }, [user])
+    if (!(tweetsFromStore && tweetsFromStore.length)) {
+      loadTweets()
+    }
+  }, [])
 
   return {}
 }
