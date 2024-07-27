@@ -3,9 +3,12 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/clients/supabase/server"
 
-export async function connectTwitterAccount() {
+export async function connectTwitterAccount(farcaster_custody_address: string) {
   const supabase = createClient()
-
+  const userIsAuthed = await checkIfUserIsAuthed()
+  if (!userIsAuthed) {
+    const resultFromReAuthing = await reAuthUser(farcaster_custody_address)
+  }
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "twitter",
     options: {

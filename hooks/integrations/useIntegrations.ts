@@ -8,6 +8,7 @@ import { signIn, signOut } from "next-auth/react"
 import {
   connectGithubAccount,
   connectNotionAccount,
+  connectTwitterAccount,
   disconnectUsersSocialAccountFromDB,
   getUserFromSessionsTable,
 } from "@/app/actions"
@@ -45,6 +46,7 @@ const useIntegrations = () => {
   const updateIdentities = async () => {
     try {
       const sessionRes = await getUserFromSessionsTable()
+      console.log("the session res", sessionRes)
       if (sessionRes.notion_access_token) {
         setIsConnectedToNotion(true)
       }
@@ -74,6 +76,17 @@ const useIntegrations = () => {
     if (farcasterUser && farcasterUser.custody_address) {
       try {
         const signInRes = await connectGithubAccount(
+          farcasterUser?.custody_address
+        )
+      } catch (e) {}
+    } else {
+    }
+  }
+
+  const handleSignIntoTwitter = async () => {
+    if (farcasterUser && farcasterUser.custody_address) {
+      try {
+        const signInRes = await connectTwitterAccount(
           farcasterUser?.custody_address
         )
       } catch (e) {}
@@ -235,6 +248,21 @@ const useIntegrations = () => {
           { label: "Create a project for posts", status: "pending" },
         ],
       },
+      //   {
+      //     label: "Twitter",
+      //     image: "/social-account-logos/github-mark.png",
+
+      //     onClick: handleSignIntoTwitter,
+      //     description: "Connect your Twitter account",
+      //     isConnected:
+      //       // userFromAuth &&
+      //       // userFromAuth.role === "authenticated" &&
+      //       isConnectedToGithub,
+      //     features: [
+      //       { label: "Create a repo for a post", status: "pending" },
+      //       { label: "Create a project for posts", status: "pending" },
+      //     ],
+      //   },
     ]
   }, [
     isConnectedToLinear,

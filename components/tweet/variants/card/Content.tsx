@@ -49,6 +49,7 @@ const TweetContent = ({
   const mentionsUserNames = mentions
     ? mentions.map((mention: any) => mention.username)
     : []
+
   // if (!author) return <div />
 
   return (
