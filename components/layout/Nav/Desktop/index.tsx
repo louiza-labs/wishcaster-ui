@@ -46,6 +46,11 @@ export function DesktopNav({ items, notionResults }: MainNavProps) {
           <Link href="/topics" className="flex items-center space-x-2">
             <span className="inline-block font-normal">Topics</span>
           </Link>
+          <Link href="/validate" className="flex items-center space-x-2">
+            <span className="keep-all inline-block whitespace-nowrap font-normal">
+              Research Idea
+            </span>
+          </Link>
           <div></div>
 
           {items?.length ? (
