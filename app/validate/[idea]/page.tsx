@@ -12,10 +12,10 @@ import {
   sortCastsByProperty,
 } from "@/lib/helpers"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import CastsAndTweetsFeed from "@/components/feed/castsAndTweets"
 import FilterBar from "@/components/filters/FilterBar"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
+import ValidateTabs from "@/components/validate/tabs"
 import {
   fetchCastsUntilCovered,
   fetchChannelCasts,
@@ -141,9 +141,6 @@ const ValidateIdeaPage: FC<CastPageProps> = async ({
               {searchIdea}
             </h1>
             <div className="hidden flex-row items-center gap-x-2 md:flex">
-              <p className="text-sm font-semibold md:block">
-                Based on relevant posts that mention:
-              </p>
               {/* <div className="flex flex-wrap gap-1">
                 {Array.from(selectedTopic?.keywords || []).map((keyword) => (
                   <Badge
@@ -159,31 +156,9 @@ const ValidateIdeaPage: FC<CastPageProps> = async ({
           </div>
         </div>
         <main className="relative grid min-h-screen grid-cols-1 gap-4 lg:mt-10 lg:grid-cols-12 lg:gap-x-10">
-          <article
-            className={`${
-              mobileViewParam.length && mobileViewParam !== "popular"
-                ? "hidden lg:flex"
-                : "flex"
-            } overflow-y-auto lg:col-span-12`}
-          >
-            <div
-              className={`${
-                mobileViewParam !== "feed" ? "hidden lg:flex" : "flex"
-              } h-fit flex-col items-center gap-y-4 lg:col-span-12`}
-            >
-              <h3 className="text-center text-2xl  font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
-                Relevant requests
-              </h3>
-              <CastsAndTweetsFeed
-                casts={[]}
-                timeFilterParam={timeFilterParam}
-                nextCursor={cursorToUse}
-                columns={3}
-                topic={""}
-                tweets={searchResults}
-              />
-            </div>
-          </article>
+          <div className="col-span-12 flex w-full flex-col items-center px-20">
+            <ValidateTabs tweetsAndCasts={searchResults} />
+          </div>
         </main>
       </section>
       <div className="flex flex-col items-start lg:hidden">

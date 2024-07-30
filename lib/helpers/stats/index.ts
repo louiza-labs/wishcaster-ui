@@ -298,3 +298,111 @@ export function aggregateCastMetricsByUser(
 
   return results
 }
+
+interface PostSummary {
+  likes: number
+  priorityLikes: number
+  recasts: number
+  replies: number
+  count: number
+  impressions: number
+  bookmarks: number
+  totalFollowers: number
+  averageFollowerCount: number
+}
+
+export function summarizePosts(posts: any[]): PostSummary {
+  const summary: PostSummary = {
+    likes: 0,
+    priorityLikes: 0,
+    recasts: 0,
+    replies: 0,
+    count: 0,
+    impressions: 0,
+    bookmarks: 0,
+    totalFollowers: 0,
+    averageFollowerCount: 0,
+  }
+
+  posts.forEach((post) => {
+    summary.likes +=
+      post.object === "cast"
+        ? post.reactions.likes_count
+        : post.public_metrics.like_count
+    summary.recasts +=
+      post.object === "cast"
+        ? post.reactions.recasts_count
+        : post.public_metrics.retweet_count
+    summary.replies +=
+      post.object === "cast"
+        ? post.replies.count
+        : post.public_metrics.reply_count
+    summary.bookmarks +=
+      post.object === "cast" ? 0 : post.public_metrics.bookmark_count
+    summary.impressions +=
+      post.object === "cast" ? 0 : post.public_metrics.impression_count
+
+    summary.count += 1
+    summary.totalFollowers +=
+      post.object === "cast" ? post.author.follower_count : 0
+  })
+
+  // Calculate the average follower count only if there are posts
+  if (summary.count > 0) {
+    summary.averageFollowerCount = Math.floor(
+      summary.totalFollowers / summary.count
+    )
+  }
+
+  return summary
+}
+
+interface AuthorSummary {
+  user: any // More specific type can be defined based on the structure of 'author'
+  likes: number
+  recasts: number
+  replies: number
+  impressions: number
+  bookmarks: number
+  totalPosts: number
+}
+
+export function summarizeByAuthor(posts: any[]): AuthorSummary[] {
+  const summaries = new Map<string, AuthorSummary>()
+
+  posts.forEach((post) => {
+    const isCast = post.object === "cast"
+    const userId = isCast ? post.author.fid : post.author_id
+    const user = isCast ? post.author : post.user
+
+    if (!userId || !user) return // Skip if no valid author identifier
+
+    if (!summaries.has(userId)) {
+      summaries.set(userId, {
+        user: user,
+        likes: 0,
+        recasts: 0,
+        replies: 0,
+        impressions: 0,
+        bookmarks: 0,
+        totalPosts: 0,
+      })
+    }
+
+    const summary = summaries.get(userId)!
+    summary.likes += isCast
+      ? post.reactions.likes_count
+      : post.public_metrics.like_count
+    summary.recasts += isCast
+      ? post.reactions.recasts_count
+      : post.public_metrics.retweet_count
+    summary.replies += isCast
+      ? post.replies.count
+      : post.public_metrics.reply_count
+    summary.impressions += isCast ? 0 : post.public_metrics.impression_count
+    summary.bookmarks += isCast ? 0 : post.public_metrics.bookmark_count
+    summary.totalPosts += 1
+  })
+
+  return Array.from(summaries.values())
+}
