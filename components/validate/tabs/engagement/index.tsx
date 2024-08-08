@@ -12,10 +12,27 @@ import {
 interface EngagementStatsProps {
   rawStats: any
 }
+
+const engagementStatReference = {
+  likes: "Likes",
+  priorityLikes: "Priority Likes",
+  recasts: "Reposts",
+  replies: "Replies",
+  count: "Post Count",
+  impressions: "X Impressions",
+  bookmarks: "X Bookmarks",
+  totalFollowers: "Followers of Users",
+  averageFollowerCount: "Avg Followers of Users",
+}
+
 const Engagement = ({ rawStats }: EngagementStatsProps) => {
+  // Statistical Cards: Display total counts for likes, recasts, replies, bookmarks, impressions.
+  // Pie Chart: Show the distribution of interaction types (likes, priority likes, recasts, replies, bookmarks).
+  // Bar Chart: Depict the average follower count per post to gauge the influence level associated with each interaction.
+
   const CardStat: React.FC<any> = ({ title, value }) => {
     return (
-      <Card className="w-50 flex snap-start flex-col items-center md:w-32">
+      <Card className="w-50 col-span-1 flex snap-start flex-col items-center md:w-32">
         {/* <Badge
           variant={"secondary"}
           className="m-2 mb-0 flex flex-row items-center justify-center gap-x-1"
@@ -33,13 +50,21 @@ const Engagement = ({ rawStats }: EngagementStatsProps) => {
     )
   }
   return (
-    <div className="container mx-auto px-4">
-      {/* <Header title={ideaTitle} subtitle={ideaSubtitle} /> */}
-      <div className="flex flex-wrap gap-4">
-        {Object.keys(rawStats).map((stat) => (
-          <CardStat title={stat} value={rawStats[stat]} key={stat} />
+    <div className="flex w-full flex-wrap justify-around gap-2">
+      {Object.keys(rawStats)
+        .filter(
+          (stat) =>
+            stat !== "averageFollowerCount" &&
+            stat !== "totalFollowers" &&
+            stat !== "bookmarks"
+        )
+        .map((stat) => (
+          <CardStat
+            title={engagementStatReference[stat] ?? stat}
+            value={rawStats[stat]}
+            key={stat}
+          />
         ))}
-      </div>
     </div>
   )
 }

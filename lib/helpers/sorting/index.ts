@@ -24,7 +24,7 @@ export function sortCastsByProperty(
         valueB =
           b.object === "cast" ? b.replies.count : b.public_metrics.reply_count
         break
-      case "c":
+      case "likes_count":
         valueA =
           a.object === "cast" ? a.reactions.likes : a.public_metrics.like_count
         valueB =

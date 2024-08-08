@@ -57,3 +57,15 @@ export const createGithubRepoForUser = async (
     }
   }
 }
+
+export const fetchGithubReposBySearch = async (searchTerm: string) => {
+  const octokit = new Octokit({
+    auth: process.env.GITHUB_ACCESS_TOKEN,
+  })
+
+  await octokit.request("GET /search/repositories", {
+    headers: {
+      "X-GitHub-Api-Version": "2022-11-28",
+    },
+  })
+}

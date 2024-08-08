@@ -20,11 +20,8 @@ const ValidateTabs = ({ tweetsAndCasts }: ValidateTabsProps) => {
       <Tabs defaultValue="engagement" className="  w-full">
         <TabsList className="flex w-full flex-row bg-transparent ">
           <TabsTrigger value="engagement">Engagement</TabsTrigger>
-
           <TabsTrigger value="users">Who&apos;s asking? </TabsTrigger>
           <TabsTrigger value="posts">Top Posts</TabsTrigger>
-          {/* <TabsTrigger value="demographics">Demographics</TabsTrigger> */}
-          <TabsTrigger value="comparison">Comparison</TabsTrigger>
         </TabsList>
         <TabsContent value="engagement">
           <Engagement rawStats={rawStatsMetricsForPosts} />
@@ -37,14 +34,13 @@ const ValidateTabs = ({ tweetsAndCasts }: ValidateTabsProps) => {
           <CastsAndTweetsFeed
             timeFilterParam={""}
             nextCursor={""}
-            columns={3}
+            columns={"grid-cols-1"}
             topic={""}
             casts={[]}
             tweets={sortedPosts.slice(0, 10)}
           />
         </TabsContent>
         {/* <TabsContent value="demographics"></TabsContent> */}
-        <TabsContent value="comparison"></TabsContent>
       </Tabs>
     </div>
   )

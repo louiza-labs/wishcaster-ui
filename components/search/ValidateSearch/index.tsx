@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import IndustrySelectionMenu from "@/components/search/ValidateSearch/IndustrySelection"
 
 const ValidateSearch = ({}) => {
   const router = useRouter()
+  const [selectedIndustry, setSelectedIndustry] = useState("")
   const [searching, setSearching] = useState<boolean>(false)
 
   const [searchTerm, setSearchTerm] = useState("")
@@ -15,19 +17,31 @@ const ValidateSearch = ({}) => {
     setSearchTerm(e.target.value)
   }
   const handleSearchClick = () => {
-    if (searchTerm && searchTerm.length) {
+    if (
+      searchTerm &&
+      searchTerm.length &&
+      selectedIndustry &&
+      selectedIndustry.length
+    ) {
       setSearching(true)
-      router.push(`/validate/${searchTerm}`)
+      router.push(`/validate/${searchTerm}?industry=${selectedIndustry}`)
     }
+  }
+
+  const handleIndustrySelectChange = (val: string) => {
+    setSelectedIndustry(val)
   }
 
   return (
     <div className="flex w-full flex-col items-center justify-center">
-      <div className="r w-full max-w-3xl px-4 py-8">
-        <div className="mt-8 flex justify-center">
+      <div className=" flex w-full max-w-3xl flex-col items-center gap-y-2 px-4 py-8">
+        <p className="text-center text-lg font-medium">
+          Choose an idea and industry{" "}
+        </p>
+        <div className="relative mt-8 flex w-full flex-row justify-center gap-x-4">
           <Input
             type="text"
-            placeholder="Search..."
+            placeholder="Search an idea..."
             value={searchTerm}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -36,23 +50,25 @@ const ValidateSearch = ({}) => {
             }}
             onChange={handleSearch}
             className="focus:ring-primary-500 relative w-full max-w-md rounded-md px-4 py-2 shadow-md focus:outline-none focus:ring-2"
-          >
-            {" "}
-            {searching ? (
-              <div className="absolute right-2 top-2 flex items-center">
-                <div className="size-5 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-              </div>
-            ) : null}
-          </Input>
-
-          <Button
-            onClick={handleSearchClick}
-            className="hover:bg-primary-600 focus:ring-primary-500 ml-2 rounded-md bg-primary px-4 py-2 text-white focus:outline-none focus:ring-2"
-          >
-            Search
-          </Button>
+          />{" "}
+          <IndustrySelectionMenu
+            value={selectedIndustry}
+            handleChange={handleIndustrySelectChange}
+          />
         </div>
       </div>
+      <div className="flex flex-col items-center gap-y-3 lg:flex-col"></div>
+      <Button
+        onClick={handleSearchClick}
+        size={"lg"}
+        disabled={searching}
+        variant={searching ? "outline" : "default"}
+        className={`${
+          searching ? "animate:ping" : ""
+        } hover:bg-primary-600 focus:ring-primary-500  ml-2  rounded-md bg-primary px-4 py-2 text-white focus:outline-none focus:ring-2`}
+      >
+        Search
+      </Button>
     </div>
   )
 }

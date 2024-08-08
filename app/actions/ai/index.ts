@@ -129,3 +129,115 @@ export const generateTaglinesForCasts = async (
 
   return await processBatchesWithConcurrency()
 }
+
+export const generateProblemsAndSentimentScores = async (
+  startupIdea: string,
+  industryDescription: string,
+  posts: { text: string; hash: string }[],
+  batchSize = 10,
+  delay = 1000,
+  concurrencyLimit = 3
+) => {
+  const batchedResults = []
+  const batches: any = []
+
+  // Split posts into smaller batches
+  for (let i = 0; i < posts.length; i += batchSize) {
+    const batch = posts.slice(i, i + batchSize)
+    const prompt = `Based on the startup idea and industry description, identify the top 5 most relevant related problems along with a 1 sentence description of them. For each post, list the problems that could be addressed by the startup idea and give a sentiment score (positive, neutral, or negative). Also, return the respective relevant hashes for the corresponding posts that share this problem for reference. The startup idea and industry description are:\n\nStartup Idea: ${startupIdea}\nIndustry Description: ${industryDescription}\n\nThe user feedback is as follows:\n\n${batch
+      .map(
+        ({ text, hash }: { text: string; hash?: string }, index: number) =>
+          `Feedback ${index + i}:\n${text}\nHash: ${hash}`
+      )
+      .join("\n\n")}`
+
+    batches.push({ prompt, startIndex: i })
+  }
+
+  const delayExecution = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms))
+
+  const processBatch = async (batch: any) => {
+    const { prompt, startIndex } = batch
+    let retries = 3
+    let currentDelay = delay
+
+    while (retries > 0) {
+      try {
+        const result = await generateObject({
+          model: openai("gpt-4o"),
+          prompt,
+          maxRetries: 3,
+          maxTokens: 1200,
+          schema: z.object({
+            problems: z.array(
+              z.object({
+                hashes: z.array(z.string()),
+                problem: z.string(),
+                description: z.string(),
+                sentiment: z.enum(["positive", "neutral", "negative"]),
+              })
+            ),
+          }),
+        })
+        return result.object.problems
+      } catch (error) {
+        console.log(
+          `Error in generating problems for batch starting at ${startIndex}:`,
+          error
+        )
+        if (retries === 1) throw error
+        await delayExecution(currentDelay)
+        currentDelay *= 2 // Exponential backoff
+        retries--
+      }
+    }
+  }
+  const processBatchesWithConcurrency = async () => {
+    const results = []
+    for (let i = 0; i < batches.length; i += concurrencyLimit) {
+      const batchSlice = batches.slice(i, i + concurrencyLimit)
+      const promises = batchSlice.map((batch: any) => processBatch(batch))
+
+      const settledResults = await Promise.allSettled(promises)
+      for (const settled of settledResults) {
+        if (settled.status === "fulfilled") {
+          results.push(...settled.value)
+        } else {
+          // console.log("Failed batch processing:", settled.reason)
+        }
+      }
+
+      if (i + concurrencyLimit < batches.length) {
+        await delayExecution(delay)
+      }
+    }
+    return results
+  }
+
+  return await processBatchesWithConcurrency()
+}
+
+export async function generateSimilarIdeas(
+  startupIdea: string,
+  industryDescription: string
+) {
+  const prompt = `Generate a list of 5 startup ideas or product features that are as related as possible to the following startup idea and industry description. Please ensure that each idea is specific and limited to at most one sentence. These will be used in order to compare the provided idea against similar other ideas.\n\nStartup Idea: ${startupIdea}\nIndustry Description: ${industryDescription}`
+
+  const result = await generateObject({
+    model: openai("gpt-4o"),
+    prompt,
+    maxRetries: 3,
+    maxTokens: 1000,
+    schema: z.object({
+      ideas: z.array(
+        z.object({
+          name: z.string(),
+          description: z.string(),
+        })
+      ),
+    }),
+  })
+
+  return result.object.ideas
+}

@@ -64,7 +64,7 @@ const Users = ({ usersStats }: UsersProps) => {
     platform,
   }: any) {
     return (
-      <Card className="relative w-full max-w-sm overflow-hidden rounded-2xl">
+      <Card className="relative w-full max-w-xs overflow-hidden rounded-2xl">
         <div className="absolute left-2 top-2 z-50 -mb-4 mt-2 flex flex-col items-center">
           <Avatar className="border-1 flex size-5 flex-col items-center rounded-full border  p-1 shadow">
             {platform === "twitter" ? (
@@ -90,7 +90,7 @@ const Users = ({ usersStats }: UsersProps) => {
             </Avatar>
           </div>
         </div>
-        <CardContent className="relative flex h-60 flex-col justify-between px-5 py-10 text-center">
+        <CardContent className="relative flex h-fit flex-col justify-between px-5 py-10 text-center">
           <div>
             <div className="space-y-1">
               <h3 className="text-lg font-semibold">{userName}</h3>
@@ -106,7 +106,7 @@ const Users = ({ usersStats }: UsersProps) => {
               {userDescription}
             </div>
           </div>
-          <div className="absolute bottom-4 mt-4 flex flex-wrap gap-x-3 gap-y-2 px-3">
+          <div className=" mt-4 flex h-fit flex-wrap gap-x-3 gap-y-2 px-3">
             {Object.entries(userStats).map(
               ([key, { icon: Icon, count, label }]: any) => (
                 <div
@@ -127,7 +127,7 @@ const Users = ({ usersStats }: UsersProps) => {
   }
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex  flex-wrap justify-center gap-4">
       {formattedUserStats.map((user) => (
         <UserCard
           key={user.handle}

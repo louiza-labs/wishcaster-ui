@@ -58,7 +58,8 @@ export const addCategoryFieldsToTweets = (
   if (
     !categories ||
     (Array.isArray(categories) && !categories.length) ||
-    !Array.isArray(categories)
+    !Array.isArray(categories) ||
+    !Array.isArray(tweets)
   ) {
     return []
   }
@@ -150,4 +151,81 @@ export const filterCastsForCategory = (
     return []
   }
   return castsArray.filter((cast: CastType) => cast.category?.id === category)
+}
+
+const segmentKeywords = {
+  Investors: ["investor", "investing", "portfolio", "finance", "trader"],
+  Developers: [
+    "developer",
+    "software",
+    "programmer",
+    "blockchain",
+    "engineer",
+    "coder",
+  ],
+  Enthusiasts: ["enthusiast", "fan", "lover", "aficionado", "buff"],
+  ContentCreators: [
+    "content",
+    "creator",
+    "artist",
+    "youtuber",
+    "influencer",
+    "blogger",
+  ],
+  Entrepreneurs: ["entrepreneur", "startup", "founder", "business owner"],
+  Educators: ["educator", "teacher", "professor", "instructor", "trainer"],
+  Marketers: ["marketer", "marketing", "advertising", "brand", "seo"],
+  Analysts: ["analyst", "data", "research", "insight", "trend"],
+  Designers: ["designer", "ux", "ui", "graphic", "creative"],
+  General: [], // Default segment for uncategorized users
+}
+
+// Function to determine the audience segment from bio
+function determineSegment(bio: string): string {
+  for (const [segment, keywords] of Object.entries(segmentKeywords)) {
+    if (keywords.some((keyword) => bio.toLowerCase().includes(keyword))) {
+      return segment
+    }
+  }
+  return "General"
+}
+
+// Function to process posts and generate audience segments
+export function generateAudienceSegments(posts: any[]): any[] {
+  const segmentsMap: Record<string, any> = {}
+
+  posts.forEach((post) => {
+    // Extract bio from either the author or user field
+    const bio = post.author?.bio || post.user?.description || ""
+    const segment = determineSegment(bio)
+    const segmentData = segmentsMap[segment] || {
+      segmentName: segment,
+      engagementStats: {
+        totalLikes: 0,
+        totalRecasts: 0,
+        totalReplies: 0,
+      },
+      userCount: 0,
+      postCount: 0,
+    }
+
+    // Aggregate engagement stats
+    if (post.reactions) {
+      segmentData.engagementStats.totalLikes += post.reactions.likes_count
+      segmentData.engagementStats.totalRecasts += post.reactions.recasts_count
+      segmentData.engagementStats.totalReplies += post.replies?.count || 0
+    } else if (post.public_metrics) {
+      segmentData.engagementStats.totalLikes += post.public_metrics.like_count
+      segmentData.engagementStats.totalRecasts +=
+        post.public_metrics.retweet_count
+      segmentData.engagementStats.totalReplies +=
+        post.public_metrics.reply_count
+    }
+
+    segmentData.userCount += 1
+    segmentData.postCount += 1
+    segmentsMap[segment] = segmentData
+  })
+
+  return Object.values(segmentsMap)
 }

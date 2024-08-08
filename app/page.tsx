@@ -55,9 +55,10 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const shouldHideCasts =
     filtersParam && filtersParam.includes("hide-farcaster")
   const shouldHideTweets = filtersParam && filtersParam.includes("hide-twitter")
-  const tweets = !shouldHideTweets
+  let tweets = !shouldHideTweets
     ? await fetchTweets()
     : { data: [], includes: [] }
+  tweets = tweets && tweets.data ? tweets : { data: [], includes: [] }
   let tweetsWithoutDuplicates = !shouldHideTweets
     ? removeDuplicateTweets(tweets?.data)
     : []
@@ -92,7 +93,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   let filteredPosts = initialCasts
   const categories = categorizeArrayOfCasts([
     ...filteredPosts,
-    ...tweetsWithUsers,
+    ...(tweetsWithUsers && tweetsWithUsers.length ? tweetsWithUsers : []),
   ]) as Category[]
   // let taglinedCasts = await fetchTaglines(filteredPosts)
   filteredPosts = addCategoryFieldsToCasts(

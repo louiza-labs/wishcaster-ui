@@ -12,3 +12,5 @@ export * from "@/app/actions/reactions"
 export * from "@/app/actions/search"
 export * from "@/app/actions/searchWithNLP"
 export * from "@/app/actions/twitter"
+
+export * from "@/app/actions/googleTrends"

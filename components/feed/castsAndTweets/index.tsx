@@ -16,7 +16,7 @@ interface CastFeedProps {
   casts: CastType[]
   nextCursor: string
   timeFilterParam: any
-  columns?: number
+  columns?: string
   notionResults?: any[]
   topic?: string
   tweets: any
@@ -131,13 +131,13 @@ const CastAndTweetsFeed = ({
   return (
     <Suspense fallback={<CastFeedSkeleton count={5} />}>
       <div
-        className={`mt-8 grid grid-cols-1  overflow-x-hidden px-2 md:px-4 lg:col-span-6 lg:col-start-4 lg:mt-0 ${
+        className={`mt-8 grid grid-cols-1  overflow-x-hidden lg:col-span-6 lg:col-start-4 lg:mt-0 ${
           layoutValueIsSelected("compact")
             ? "gap-y-1 lg:grid-cols-1"
             : columns
-            ? `gap-4 lg:grid-cols-2`
-            : "gap-4 lg:grid-cols-2"
-        } lg:px-10`}
+            ? `gap-4 lg:grid-cols-1`
+            : "gap-4 px-2 md:px-4 lg:grid-cols-2 lg:px-10"
+        } `}
       >
         {fetchingCasts && !(filteredPosts && filteredPosts.length) ? (
           <div

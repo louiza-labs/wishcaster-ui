@@ -75,10 +75,11 @@ export async function fetchTweetsWithSearch(
 ) {
   try {
     const client = new Client(process.env.TWITTER_BEARER_TOKEN as string)
+    console.log("the tweets with search keywords", searchKeywordsOrPhrases)
     let domainEntities = `(context:67.1158813612409929728 OR context:66.847869481888096256 OR context:131.1491481998862348291 OR context:131.913142676819648512 OR context:30.781974596794716162 OR context:46.1557697333571112960 OR context:30.781974596752842752)`
     let productRequestKeywords = `("product-request" OR "who\'s building" OR "someone should build" OR "will pay money for:" OR "someone build" OR "someone should make" OR "feature request" OR "please add")`
     const response = await client.tweets.tweetsRecentSearch({
-      query: `lang:en is:verified ${searchKeywordsOrPhrases} (context:131.1491481998862348291 OR context:131.913142676819648512 OR context:46.1557697333571112960)`,
+      query: `lang:en is:verified ${searchKeywordsOrPhrases}`,
       "tweet.fields": [
         "attachments",
         "author_id",
@@ -126,9 +127,12 @@ export async function fetchTweetsWithSearch(
         "withheld",
       ],
     })
+    console.log("the response fetching tweets with search", response)
     const { data, errors, meta, includes } = response
+    console.log("the data fetching tweets with search", data)
     return { data, errors, meta, includes }
   } catch (e) {
+    console.log("the error fetching tweets with search", e)
     return { data: [], errors: e }
   }
 }
