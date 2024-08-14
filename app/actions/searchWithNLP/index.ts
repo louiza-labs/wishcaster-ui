@@ -26,6 +26,7 @@ export async function searchPostsWithKeywordV2(
   const filteredPosts: any[] = []
 
   for (const post of posts) {
+    console.log("the post", post)
     const postText = post.text.toLowerCase()
 
     // Tokenize and stem the post text

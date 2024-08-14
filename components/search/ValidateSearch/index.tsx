@@ -24,7 +24,7 @@ const ValidateSearch = ({}) => {
       selectedIndustry.length
     ) {
       setSearching(true)
-      router.push(`/validate/${searchTerm}?industry=${selectedIndustry}`)
+      router.push(`/research/${searchTerm}?industry=${selectedIndustry}`)
     }
   }
 
@@ -35,14 +35,15 @@ const ValidateSearch = ({}) => {
   return (
     <div className="flex w-full flex-col items-center justify-center">
       <div className=" flex w-full max-w-3xl flex-col items-center gap-y-2 px-4 py-8">
-        <p className="text-center text-lg font-medium">
-          Choose an idea and industry{" "}
+        <p className="text-center  text-lg font-medium">
+          Look up an idea and a corresponding industry{" "}
         </p>
         <div className="relative mt-8 flex w-full flex-row justify-center gap-x-4">
           <Input
             type="text"
             placeholder="Search an idea..."
             value={searchTerm}
+            disabled={searching}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 handleSearchClick()
@@ -65,7 +66,7 @@ const ValidateSearch = ({}) => {
         variant={searching ? "outline" : "default"}
         className={`${
           searching ? "animate:ping" : ""
-        } hover:bg-primary-600 focus:ring-primary-500  ml-2  rounded-md bg-primary px-4 py-2 text-white focus:outline-none focus:ring-2`}
+        } hover:bg-primary-600 focus:ring-primary-500  ml-2 w-1/3 rounded-md bg-primary px-4 py-2 text-white focus:outline-none focus:ring-2`}
       >
         Search
       </Button>

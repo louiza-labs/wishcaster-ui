@@ -4,8 +4,8 @@ import { sortCastsByProperty } from "@/lib/helpers"
 import useValidate from "@/hooks/validate/useValidate"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import CastsAndTweetsFeed from "@/components/feed/castsAndTweets"
-import Engagement from "@/components/validate/tabs/engagement"
-import Users from "@/components/validate/tabs/users"
+import Engagement from "@/components/research/tabs/engagement"
+import Users from "@/components/research/tabs/users"
 
 interface ValidateTabsProps {
   tweetsAndCasts: any

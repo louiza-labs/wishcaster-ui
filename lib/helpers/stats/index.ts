@@ -546,6 +546,7 @@ interface ProblemObject {
   description: string
   sentiment: string
   metrics?: Metrics
+  posts?: any
 }
 
 interface MetricsSource {
@@ -643,6 +644,7 @@ export function addMetricsToProblems(
     problem.hashes.forEach((hash) => {
       metricsSources.forEach((source) => {
         if (source.hash === hash) {
+          problem.posts = [...(problem.posts ? problem.posts : []), source]
           // Aggregate metrics based on object type
           if (source.object === "cast") {
             aggregatedMetrics.totalLikes += source.reactions?.likes_count || 0
@@ -669,6 +671,7 @@ export function addMetricsToProblems(
 
     return {
       ...problem,
+
       metrics: aggregatedMetrics,
     }
   })

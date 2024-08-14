@@ -154,7 +154,24 @@ export const filterCastsForCategory = (
 }
 
 const segmentKeywords = {
-  Investors: ["investor", "investing", "portfolio", "finance", "trader"],
+  Investors: [
+    "investor",
+    "investing",
+    "portfolio",
+    "finance",
+    "trader",
+    "equity",
+    "stocks",
+    "bonds",
+    "venture capital",
+    "angel investor",
+    "hedge fund",
+    "mutual funds",
+    "cryptocurrency",
+    "wealth management",
+    "financial advisor",
+    "investment banking",
+  ],
   Developers: [
     "developer",
     "software",
@@ -162,8 +179,44 @@ const segmentKeywords = {
     "blockchain",
     "engineer",
     "coder",
+    "dev",
+    "frontend",
+    "backend",
+    "fullstack",
+    "web developer",
+    "app developer",
+    "java",
+    "python",
+    "javascript",
+    "c++",
+    "ruby",
+    "software architect",
+    "machine learning",
+    "AI",
+    "devops",
+    "cybersecurity",
   ],
-  Enthusiasts: ["enthusiast", "fan", "lover", "aficionado", "buff"],
+  Enthusiasts: [
+    "enthusiast",
+    "fan",
+    "lover",
+    "aficionado",
+    "buff",
+    "hobbyist",
+    "follower",
+    "geek",
+    "nerd",
+    "amateur",
+    "admirer",
+    "supporter",
+    "collector",
+    "connoisseur",
+    "devotee",
+    "enthusiasm",
+    "enthusiastic",
+    "fanatic",
+    "passion",
+  ],
   ContentCreators: [
     "content",
     "creator",
@@ -171,13 +224,152 @@ const segmentKeywords = {
     "youtuber",
     "influencer",
     "blogger",
+    "vlogger",
+    "streamer",
+    "podcaster",
+    "photographer",
+    "videographer",
+    "editor",
+    "content producer",
+    "social media",
+    "storyteller",
+    "brand ambassador",
+    "creative director",
+    "copywriter",
   ],
-  Entrepreneurs: ["entrepreneur", "startup", "founder", "business owner"],
-  Educators: ["educator", "teacher", "professor", "instructor", "trainer"],
-  Marketers: ["marketer", "marketing", "advertising", "brand", "seo"],
-  Analysts: ["analyst", "data", "research", "insight", "trend"],
-  Designers: ["designer", "ux", "ui", "graphic", "creative"],
-  General: [], // Default segment for uncategorized users
+  Founder: [
+    "entrepreneur",
+    "startup",
+    "founder",
+    "business owner",
+    "builder",
+    "building",
+    "co-founder",
+    "CEO",
+    "CFO",
+    "COO",
+    "venture",
+    "startup founder",
+    "small business",
+    "innovator",
+    "business leader",
+    "business strategy",
+    "self-employed",
+    "company",
+    "enterprise",
+    "business development",
+  ],
+  Educators: [
+    "educator",
+    "teacher",
+    "professor",
+    "instructor",
+    "trainer",
+    "lecturer",
+    "mentor",
+    "tutor",
+    "coach",
+    "educational",
+    "teaching",
+    "faculty",
+    "academic",
+    "school",
+    "university",
+    "classroom",
+    "curriculum",
+    "education",
+    "pedagogy",
+    "learning",
+    "educational consultant",
+    "instructional designer",
+  ],
+  Marketers: [
+    "marketer",
+    "marketing",
+    "advertising",
+    "brand",
+    "seo",
+    "digital marketing",
+    "social media marketing",
+    "content marketing",
+    "email marketing",
+    "affiliate marketing",
+    "market research",
+    "public relations",
+    "campaign",
+    "marketing strategy",
+    "advertiser",
+    "branding",
+    "product marketing",
+    "customer engagement",
+    "growth hacking",
+  ],
+  Analysts: [
+    "analyst",
+    "data",
+    "research",
+    "insight",
+    "trend",
+    "business analyst",
+    "data analyst",
+    "market analyst",
+    "financial analyst",
+    "data science",
+    "quantitative analysis",
+    "big data",
+    "analytics",
+    "forecasting",
+    "data visualization",
+    "data mining",
+    "statistics",
+    "researcher",
+    "evaluation",
+    "business intelligence",
+  ],
+  Designers: [
+    "designer",
+    "ux",
+    "ui",
+    "graphic",
+    "creative",
+    "web design",
+    "product design",
+    "interaction design",
+    "visual design",
+    "illustrator",
+    "design thinking",
+    "industrial design",
+    "branding",
+    "typography",
+    "animation",
+    "motion design",
+    "creative director",
+    "digital design",
+    "user experience",
+    "user interface",
+  ],
+  General: [
+    "general",
+    "audience",
+    "viewer",
+    "user",
+    "participant",
+    "community",
+    "people",
+    "customer",
+    "client",
+    "public",
+    "visitor",
+    "network",
+    "subscriber",
+    "supporter",
+    "member",
+    "guest",
+    "follower",
+    "consumer",
+    "patron",
+    "contributor",
+  ], // Default segment for uncategorized users
 }
 
 // Function to determine the audience segment from bio
@@ -190,14 +382,26 @@ function determineSegment(bio: string): string {
   return "General"
 }
 
+function getBio(post: any) {
+  if (post.object === "cast") {
+    return post.author.profile.bio.text ?? ""
+  } else {
+    return post && post.user ? post.user.description : ""
+  }
+}
+
 // Function to process posts and generate audience segments
 export function generateAudienceSegments(posts: any[]): any[] {
   const segmentsMap: Record<string, any> = {}
 
   posts.forEach((post) => {
     // Extract bio from either the author or user field
-    const bio = post.author?.bio || post.user?.description || ""
+    const bio = getBio(post)
     const segment = determineSegment(bio)
+    if (segment === "General") {
+      return // Skip the post if the segment is "General"
+    }
+
     const segmentData = segmentsMap[segment] || {
       segmentName: segment,
       engagementStats: {
@@ -227,5 +431,41 @@ export function generateAudienceSegments(posts: any[]): any[] {
     segmentsMap[segment] = segmentData
   })
 
+  return Object.values(segmentsMap)
+}
+
+export function categorizeAudienceByChannel(posts: any[]) {
+  const segmentsMap: Record<string, any> = {}
+  posts.forEach((post) => {
+    const segment = post.object && post.object === "cast" ? "Farcaster" : "X"
+
+    const segmentData = segmentsMap[segment] || {
+      segmentName: segment,
+      engagementStats: {
+        totalLikes: 0,
+        totalRecasts: 0,
+        totalReplies: 0,
+      },
+      userCount: 0,
+      postCount: 0,
+    }
+
+    // Aggregate engagement stats
+    if (post.reactions) {
+      segmentData.engagementStats.totalLikes += post.reactions.likes_count
+      segmentData.engagementStats.totalRecasts += post.reactions.recasts_count
+      segmentData.engagementStats.totalReplies += post.replies?.count || 0
+    } else if (post.public_metrics) {
+      segmentData.engagementStats.totalLikes += post.public_metrics.like_count
+      segmentData.engagementStats.totalRecasts +=
+        post.public_metrics.retweet_count
+      segmentData.engagementStats.totalReplies +=
+        post.public_metrics.reply_count
+    }
+
+    segmentData.userCount += 1
+    segmentData.postCount += 1
+    segmentsMap[segment] = segmentData
+  })
   return Object.values(segmentsMap)
 }

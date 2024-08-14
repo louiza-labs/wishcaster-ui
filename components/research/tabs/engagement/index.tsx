@@ -13,7 +13,7 @@ interface EngagementStatsProps {
   rawStats: any
 }
 
-const engagementStatReference = {
+const engagementStatReference: any = {
   likes: "Likes",
   priorityLikes: "Priority Likes",
   recasts: "Reposts",
@@ -50,13 +50,15 @@ const Engagement = ({ rawStats }: EngagementStatsProps) => {
     )
   }
   return (
-    <div className="flex w-full flex-wrap justify-around gap-2">
+    <div className="grid grid-cols-2 gap-4">
       {Object.keys(rawStats)
         .filter(
           (stat) =>
             stat !== "averageFollowerCount" &&
             stat !== "totalFollowers" &&
-            stat !== "bookmarks"
+            stat !== "bookmarks" &&
+            stat !== "priorityLikes" &&
+            stat !== "impressions"
         )
         .map((stat) => (
           <CardStat

@@ -2,9 +2,7 @@
 
 import { Fragment, Suspense, useCallback, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Cast as CastType } from "@/types"
 
-import { useLoadMoreCasts } from "@/hooks/farcaster/casts/useLoadMoreCasts"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import SpringItemCast from "@/components/cast/variants/SprintItem"
 import CastAsTableRow from "@/components/cast/variants/TableRow"
@@ -13,32 +11,26 @@ import TweetAsCard from "@/components/tweet/variants/card"
 import TweetAsRow from "@/components/tweet/variants/row"
 
 interface CastFeedProps {
-  casts: CastType[]
   nextCursor: string
   timeFilterParam: any
   columns?: string
   notionResults?: any[]
   topic?: string
-  tweets: any
+  posts: any
 }
 
 const CastAndTweetsFeed = ({
-  casts,
   nextCursor,
   timeFilterParam,
   columns,
   notionResults,
   topic,
-  tweets,
+  posts,
 }: CastFeedProps) => {
   const searchParams = useSearchParams()
-  const { castsToShow, ref, fetchingCasts } = useLoadMoreCasts(
-    [...tweets, ...casts],
-    nextCursor,
-    timeFilterParam
-  )
+
   const [castCardStyleToShow, setCastCardStyleToShow] = useState("product")
-  const { filteredPosts } = useFilterFeed(castsToShow, topic)
+  const { filteredPosts } = useFilterFeed(posts, topic)
 
   const router = useRouter()
   const categoriesFromParams = searchParams.getAll("topics").join(",")
@@ -124,10 +116,6 @@ const CastAndTweetsFeed = ({
     return !layoutValueIsSelected("compact") ? TweetAsCard : TweetAsRow
   }, [layoutValueIsSelected])
 
-  const tweetsAndCasts = useMemo(() => {
-    return [...filteredPosts]
-  }, [filteredPosts])
-
   return (
     <Suspense fallback={<CastFeedSkeleton count={5} />}>
       <div
@@ -139,7 +127,7 @@ const CastAndTweetsFeed = ({
             : "gap-4 px-2 md:px-4 lg:grid-cols-2 lg:px-10"
         } `}
       >
-        {fetchingCasts && !(filteredPosts && filteredPosts.length) ? (
+        {!(filteredPosts && filteredPosts.length) ? (
           <div
             className={
               columns
@@ -155,8 +143,8 @@ const CastAndTweetsFeed = ({
             ) : null}
             <CastFeedSkeleton count={4} />
           </div>
-        ) : tweetsAndCasts && tweetsAndCasts.length ? (
-          tweetsAndCasts.map((tweetOrCast: any, index) => (
+        ) : filteredPosts && filteredPosts.length ? (
+          filteredPosts.map((tweetOrCast: any, index) => (
             <Fragment key={tweetOrCast.hash || tweetOrCast.id || index}>
               {tweetOrCast.type === "tweet" ? (
                 <TweetCardToUse
@@ -207,7 +195,6 @@ const CastAndTweetsFeed = ({
         ) : (
           <EmptyStateFallBack />
         )}
-        <div ref={ref}></div>
       </div>
     </Suspense>
   )

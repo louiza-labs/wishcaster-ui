@@ -1,33 +1,10 @@
 import { FC } from "react"
-import { Cast as CastType, Category } from "@/types"
 
 import { dateOptions } from "@/lib/constants"
-import {
-  addCategoryFieldsToCasts,
-  addCategoryFieldsToTweets,
-  addMediaToTweets,
-  addUserInfoToTweets,
-  categorizeArrayOfCasts,
-  extractUserIdsFromTweets,
-  generateWhimsicalErrorMessages,
-  removeDuplicateTweets,
-  searchCastsForCategories,
-  sortCastsByProperty,
-} from "@/lib/helpers"
-import CastAndTweetsFeed from "@/components/feed/castsAndTweets"
-import Filters from "@/components/filters"
-import FilterBar from "@/components/filters/FilterBar"
-import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
-import Rankings from "@/components/rankings"
+import { generateWhimsicalErrorMessages } from "@/lib/helpers"
 import RedirectButton from "@/components/redirect/Button"
-import SortCasts from "@/components/sort/SortCasts"
-import {
-  fetchCastsUntilCovered,
-  fetchTweets,
-  fetchTwitterUsers,
-  getUsersNotionAccessCode,
-  searchNotion,
-} from "@/app/actions"
+import ValidateSearch from "@/components/search/ValidateSearch"
+import { getUsersNotionAccessCode, searchNotion } from "@/app/actions"
 
 interface IndexPageProps {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -47,126 +24,26 @@ function extractTimeFilterParam(params: undefined | string | string[]) {
   }
 }
 
-const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
-  const searchTerm = parseQueryParam(searchParams.search)
-  const categoryParam = parseQueryParam(searchParams.categories)
-  const filtersParam = parseQueryParam(searchParams.filters)
-  const sortParam = parseQueryParam(searchParams.sort)
-  const shouldHideCasts =
-    filtersParam && filtersParam.includes("hide-farcaster")
-  const shouldHideTweets = filtersParam && filtersParam.includes("hide-twitter")
-  let tweets = !shouldHideTweets
-    ? await fetchTweets()
-    : { data: [], includes: [] }
-  tweets = tweets && tweets.data ? tweets : { data: [], includes: [] }
-  let tweetsWithoutDuplicates = !shouldHideTweets
-    ? removeDuplicateTweets(tweets?.data)
-    : []
-  const tweetsWithMediaAdded = addMediaToTweets(
-    tweetsWithoutDuplicates,
-    tweets.includes
-  )
-  const users = !shouldHideTweets
-    ? await fetchTwitterUsers(extractUserIdsFromTweets(tweetsWithMediaAdded))
-    : { data: [] }
-  const tweetsWithUsers = !shouldHideTweets
-    ? addUserInfoToTweets(tweetsWithoutDuplicates, users?.data)
-    : []
+const ValidatePage: FC<IndexPageProps> = async ({ searchParams }) => {
   const notionAccessCode = await getUsersNotionAccessCode()
-  const notionSearch = notionAccessCode
-    ? await searchNotion(notionAccessCode)
-    : { results: [] }
-  const notionResults = notionSearch.results
-
-  const timeFilterParam = searchParams.filters
-    ? extractTimeFilterParam(searchParams.filters)
-    : undefined
-  const { casts: initialCasts, nextCursor: cursorToUse } = !shouldHideCasts
-    ? !timeFilterParam
-      ? await fetchCastsUntilCovered("someone-build", "7-days")
-      : await fetchCastsUntilCovered(
-          "someone-build",
-          timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
-        )
-    : { casts: [], nextCursor: "" }
-
-  let filteredPosts = initialCasts
-  const categories = categorizeArrayOfCasts([
-    ...filteredPosts,
-    ...(tweetsWithUsers && tweetsWithUsers.length ? tweetsWithUsers : []),
-  ]) as Category[]
-  // let taglinedCasts = await fetchTaglines(filteredPosts)
-  filteredPosts = addCategoryFieldsToCasts(
-    filteredPosts,
-    categories
-  ) as Array<CastType>
-  let tweetsWithCategories = addCategoryFieldsToTweets(
-    tweetsWithUsers,
-    categories
-  )
-
-  // if (filteredPosts.length) {
-  //   filteredPosts = addTaglinesToCasts(filteredPosts, taglinedCasts)
-  // }
-  if (categoryParam.length) {
-    filteredPosts = searchCastsForCategories(filteredPosts, categoryParam)
-    tweetsWithCategories = searchCastsForCategories(
-      tweetsWithoutDuplicates,
-      categoryParam
-    )
-  }
-  if (sortParam) {
-    filteredPosts = sortCastsByProperty(
-      [...filteredPosts, ...tweetsWithCategories],
-      sortParam
-    )
-  }
-
-  const isError = ![...tweetsWithCategories, ...filteredPosts].length
+  const notionSearch = await searchNotion(notionAccessCode)
 
   return (
     <>
-      <div className="top-66 sticky z-10 lg:hidden">
-        <FilterBar initialCasts={initialCasts} />
-      </div>{" "}
-      <section className="mx-auto py-6 md:container sm:px-6 lg:px-6">
-        <Header />
-        <main className="relative grid grid-cols-1 gap-4 lg:grid-cols-12 ">
-          <aside className="no-scrollbar sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:flex">
-            {/* <CardLayoutToggle /> */}
-            <SortCasts />
-            <Filters initialCasts={initialCasts} />
-          </aside>
-          <article className="no-scrollbar lg:col-span-8 lg:px-2  ">
-            {isError ? (
-              <ErrorDisplay
-                searchTerm={searchTerm}
-                filtersParam={filtersParam}
-                categoryParam={categoryParam}
-              />
-            ) : (
-              <CastAndTweetsFeed
-                casts={filteredPosts}
-                timeFilterParam={timeFilterParam}
-                nextCursor={cursorToUse}
-                notionResults={notionResults}
-                tweets={tweetsWithCategories}
-              />
-            )}
+      <section className="relative mx-auto p-6 md:container sm:px-6 lg:px-20">
+        <main className="relative grid grid-cols-1 gap-4 py-10 lg:grid-cols-12 ">
+          <article className="no-scrollbar flex flex-col items-center lg:col-span-12 lg:px-2  ">
+            <Header />
+            <ValidateSearch />
           </article>
-          <aside className="no-scrollbar sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky lg:col-span-2 lg:flex lg:flex-col">
-            <Rankings
-              casts={initialCasts}
-              castsAndOrTweets={[...filteredPosts, ...tweetsWithCategories]}
-            />
-          </aside>
         </main>
       </section>
       <div className="flex flex-col items-start lg:hidden">
-        <BottomMobileNav
+        {/* <BottomMobileNav
           filteredPosts={filteredPosts}
           initialCasts={initialCasts}
-        />
+          page={"topics"}
+        /> */}
       </div>
     </>
   )
@@ -176,13 +53,14 @@ interface HeaderProps {}
 
 const Header: FC<HeaderProps> = () => {
   return (
-    <div className="flex flex-col items-center gap-2 md:items-start md:pb-10">
-      <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
-        What people want! <br className="hidden sm:inline" />
+    <div className="flex flex-col items-center gap-2 md:items-start">
+      <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-center md:text-4xl">
+        See the demand for your idea
       </h1>
-      <p className="text-center text-xs sm:text-lg md:text-left lg:max-w-[700px]">
-        Sourced from <span className="font-semibold">Farcaster and X </span>
-      </p>
+      {/* <p className="text-center text-xs sm:text-lg md:text-left lg:max-w-[700px]">
+        Sourced from Farcaster&apos;s{" "}
+        <span className="font-bold">someone-build channel</span>
+      </p> */}
     </div>
   )
 }
@@ -216,4 +94,4 @@ const ErrorDisplay: FC<ErrorDisplayProps> = ({
   )
 }
 
-export default IndexPage
+export default ValidatePage

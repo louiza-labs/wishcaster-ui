@@ -64,7 +64,7 @@ const Users = ({ usersStats }: UsersProps) => {
     platform,
   }: any) {
     return (
-      <Card className="relative w-full max-w-xs overflow-hidden rounded-2xl">
+      <Card className="relative w-full max-w-md overflow-hidden rounded-2xl">
         <div className="absolute left-2 top-2 z-50 -mb-4 mt-2 flex flex-col items-center">
           <Avatar className="border-1 flex size-5 flex-col items-center rounded-full border  p-1 shadow">
             {platform === "twitter" ? (
@@ -127,8 +127,8 @@ const Users = ({ usersStats }: UsersProps) => {
   }
 
   return (
-    <div className="flex  flex-wrap justify-center gap-4">
-      {formattedUserStats.map((user) => (
+    <div className="flex w-full flex-col  gap-4">
+      {formattedUserStats.slice(0, 5).map((user) => (
         <UserCard
           key={user.handle}
           userName={user.name}

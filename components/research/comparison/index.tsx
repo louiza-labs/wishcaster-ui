@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import useValidate from "@/hooks/validate/useValidate"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import ValidateTabs from "@/components/validate/tabs"
+import ValidateTabs from "@/components/research/tabs"
 
 interface ComparisonProps {
   tweetsAndCasts: any[]

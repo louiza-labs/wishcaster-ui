@@ -58,14 +58,42 @@ export const createGithubRepoForUser = async (
   }
 }
 
-export const fetchGithubReposBySearch = async (searchTerm: string) => {
-  const octokit = new Octokit({
-    auth: process.env.GITHUB_ACCESS_TOKEN,
-  })
+export const fetchGithubReposBySearch = async (
+  searchTerm: string,
+  maxResults: number = 20
+) => {
+  const octokit = new Octokit()
+  const splitSearchTerm = searchTerm.split(" ")
+  try {
+    const query = `${searchTerm}`
+    console.log("the search term for github", searchTerm)
+    const queryString = `q=${encodeURIComponent(
+      searchTerm
+    )}&sort=stars&order=desc&per_page=${maxResults}`
 
-  await octokit.request("GET /search/repositories", {
-    headers: {
-      "X-GitHub-Api-Version": "2022-11-28",
-    },
-  })
+    const response = await octokit.request(
+      `GET /search/repositories?${queryString}`,
+      {
+        headers: {
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+      }
+    )
+
+    console.log("the search res for github", response)
+    // Extracting repository data
+    const repositories = response.data.items.map((repo) => ({
+      name: repo.name,
+      fullName: repo.full_name,
+      description: repo.description,
+      stars: repo.stargazers_count,
+      url: repo.html_url,
+      owner: repo.owner.login,
+    }))
+
+    return repositories
+  } catch (error) {
+    console.error("Error fetching top repositories:", error)
+    throw error
+  }
 }

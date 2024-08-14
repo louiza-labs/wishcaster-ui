@@ -70,9 +70,6 @@ export function PieChart({
                 fontSize={12}
                 formatter={
                   (value: keyof typeof config) => {
-                    console.log("the value", value)
-                    console.log("the config", config)
-
                     return config[value]?.label || value
                   } // Ensure fallback to value
                 }

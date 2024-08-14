@@ -57,7 +57,6 @@ export const transformSummaryForPieChart = (
   config: Record<string, { label: string; color: string }>,
   fieldsToExclude = []
 ) => {
-  console.log("the summary", summary)
   return (
     Object.keys(summary)
       // .filter((key) => !fieldsToExclude.includes(key))

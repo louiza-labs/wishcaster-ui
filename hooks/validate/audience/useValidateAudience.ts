@@ -2,7 +2,10 @@
 
 import { useMemo } from "react"
 
-import { generateAudienceSegments } from "@/lib/helpers"
+import {
+  categorizeAudienceByChannel,
+  generateAudienceSegments,
+} from "@/lib/helpers"
 import {
   formatChartData,
   generateChartConfig,
@@ -14,10 +17,25 @@ const useValidateAudience = (posts: any[]) => {
     return generateAudienceSegments(posts)
   }, [posts])
 
+  const audienceChannelData = useMemo(() => {
+    return categorizeAudienceByChannel(posts)
+  }, [posts])
+
   const postsCountChartsData = useMemo(() => {
     return formatChartData(audienceSegmentData, "postCount")
   }, [audienceSegmentData])
   const postsCountChartConfig = useMemo(() => {
+    return generateChartConfig(
+      "Post Count",
+      "var(--chart-1)",
+      "var(--background)"
+    )
+  }, [])
+
+  const postsByChannelCountChartsData = useMemo(() => {
+    return formatChartData(audienceChannelData, "postCount")
+  }, [audienceChannelData])
+  const postsByChannelCountChartConfig = useMemo(() => {
     return generateChartConfig(
       "Post Count",
       "var(--chart-1)",
@@ -63,6 +81,8 @@ const useValidateAudience = (posts: any[]) => {
     postsCountChartConfig,
     postsCountChartsData,
     totalLikesChartConfig,
+    postsByChannelCountChartsData,
+    postsByChannelCountChartConfig,
     totalLikesData,
     totalRecastsConfig,
     totalRecastsData,

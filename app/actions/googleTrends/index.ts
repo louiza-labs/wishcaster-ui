@@ -3,7 +3,6 @@ import googleTrends from "google-trends-api"
 export async function fetchGoogleTrendsInfo(searchTerm: string) {
   const thirtyDaysAgo = new Date()
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-  console.log("the search term", searchTerm)
   const result = googleTrends
     .interestOverTime({ keyword: "Valentines Day" })
     .then((res) => {

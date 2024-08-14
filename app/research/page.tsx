@@ -25,15 +25,8 @@ function extractTimeFilterParam(params: undefined | string | string[]) {
 }
 
 const ValidatePage: FC<IndexPageProps> = async ({ searchParams }) => {
-  const searchTerm = parseQueryParam(searchParams.search)
-  const categoryParam = parseQueryParam(searchParams.categories)
-  const filtersParam = parseQueryParam(searchParams.filters)
-  const sortParam = parseQueryParam(searchParams.sort)
-  const mobileViewParam = parseQueryParam(searchParams.view)
-
   const notionAccessCode = await getUsersNotionAccessCode()
   const notionSearch = await searchNotion(notionAccessCode)
-  const notionResults = notionSearch.results
 
   return (
     <>

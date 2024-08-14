@@ -1,8 +1,14 @@
 // Function to format audience segment data for charting
 export function formatChartData(audienceSegments: any, metricKey: any) {
-  return audienceSegments.map((segment) => ({
+  const metricHasDepth = metricKey.includes(".")
+  const splitMetricKeyArr = metricKey.split(".")
+  const metricKey1 = splitMetricKeyArr[0]
+  const metricKey2 = splitMetricKeyArr[1]
+  return audienceSegments.map((segment: any) => ({
     segmentName: segment.segmentName,
-    value: segment[metricKey],
+    value: metricHasDepth
+      ? segment[metricKey1][metricKey2]
+      : segment[metricKey],
   }))
 }
 
@@ -16,7 +22,11 @@ export function getChartDataForLikes(audienceSegments: any) {
   return formatChartData(audienceSegments, "engagementStats.totalLikes")
 }
 
-export function generateChartConfig(metricLabel, color, labelColor) {
+export function generateChartConfig(
+  metricLabel: string,
+  color: string,
+  labelColor: string
+) {
   return {
     metric: {
       label: metricLabel,

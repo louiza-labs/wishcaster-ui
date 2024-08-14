@@ -1,5 +1,4 @@
-import BenchmarkChart from "@/components/validate/demand/benchmarks"
-import DemandGauge from "@/components/validate/demand/gauge"
+import DemandGauge from "@/components/research/demand/gauge"
 
 import { prepareVisualizationData } from "../../../lib/helpers/scoring"
 
@@ -7,12 +6,16 @@ interface DemandProps {
   tweetsAndCastsForSimilarIdeas: any
   tweetsAndCastsForCurrentIdea: any
   currentIdea: string
+  showOnlyGauge?: boolean
+  showOnlyRadial?: boolean
 }
 
 const Demand = ({
   tweetsAndCastsForCurrentIdea,
   tweetsAndCastsForSimilarIdeas,
   currentIdea,
+  showOnlyGauge,
+  showOnlyRadial,
 }: DemandProps) => {
   const tweetsAndCastsForCurrentIdeaWithIdeaAdded =
     tweetsAndCastsForCurrentIdea.map((posts: any) => {
@@ -35,9 +38,9 @@ const Demand = ({
   )
 
   return (
-    <div className="flex flex-col gap-y-4">
+    <div className="flex  flex-col items-center gap-y-2">
+      <p className="text-xl  font-bold">What is the demand?</p>
       <DemandGauge score={userDemandScore} />
-      <BenchmarkChart benchmarkData={benchmarkData} />
     </div>
   )
 }

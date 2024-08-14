@@ -42,11 +42,13 @@ const CastContent = ({
 }: CastContentProps) => {
   const [aspectRatio, setAspectRatio] = useState("56.25%")
 
-  const hasUrl = embeds.find((embed: any) => embed.url) !== undefined
-  const hasCast = embeds.find((embed: any) => embed.cast_id) !== undefined
-  const embeddedCastHash = hasCast
-    ? embeds.find((embed: any) => embed.cast_id).cast_id.hash
-    : undefined
+  const hasUrl = embeds && embeds.find((embed: any) => embed.url) !== undefined
+  const hasCast =
+    embeds && embeds.find((embed: any) => embed.cast_id) !== undefined
+  const embeddedCastHash =
+    hasCast && embeds
+      ? embeds.find((embed: any) => embed.cast_id).cast_id.hash
+      : undefined
   const { fetchedCast: embeddedCast } = useGetCast(embeddedCastHash)
 
   const potentialUrl = hasUrl
@@ -79,7 +81,7 @@ const CastContent = ({
         rel={routeToWarpcast ? "noReferrer" : undefined}
       >
         <div className=" flex flex-col gap-y-4  break-words [overflow-wrap:anywhere]">
-          {tagline ? <h3 className="font-bold text-lg">{tagline}</h3> : null}
+          {tagline ? <h3 className="text-lg font-bold">{tagline}</h3> : null}
 
           <div className="text-sm text-gray-500 dark:text-gray-400">
             {renderTextWithLinks(text, mentionedProfiles, embeds)}
