@@ -3,6 +3,7 @@
 import { Cast } from "@/types"
 import { openai } from "@ai-sdk/openai"
 import { generateObject } from "ai"
+import axios from "axios"
 import { z } from "zod"
 
 // import { google } from "googleapis"
@@ -240,4 +241,86 @@ export async function generateSimilarIdeas(
   })
 
   return result.object.ideas
+}
+
+export async function fetchGeneratedSummary(
+  timePeriod: string,
+  channelId: string,
+  userFID: number,
+  idea: string,
+  industry: string,
+  relevantProblems: any
+) {
+  try {
+    const response = await axios.post(
+      `${process.env.API_SERVICE_URL}/ai/generate_idea_summary`,
+      {
+        timePeriod,
+        channelId,
+        userFID,
+        idea,
+        industry,
+        relevantProblems,
+      }
+    )
+
+    return response.data
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+interface generateSummaryArgs {
+  idea: string
+  industry: string
+  demandScore: number
+  statsForIdea: any
+  benchmarkStats: any
+  relevantAudience: any
+  relevantProblems: any
+}
+
+export async function generateSummaryForIdea({
+  idea,
+  industry,
+  demandScore,
+  statsForIdea,
+  benchmarkStats,
+  relevantAudience,
+  relevantProblems,
+}: generateSummaryArgs) {
+  const prompt = `
+You are an AI model tasked with generating a brief but helpful summary for the current demand of an idea for someone researching it. The goal is to provide a succinct, distilled overview of the current demand and landscape for the idea, targeting someone looking to understand its potential and challenges. The following information you will be provided is sourced directly from social media posts that mention or request this idea. Consider the following elements:
+
+1. **Idea**: ${idea}
+2. **Industry**: ${industry}
+3. **Aggregated Social Media Stats for Idea**: ${Object.keys(statsForIdea).map(
+    (b) => `stat: ${b}: value: ${statsForIdea[b]}`
+  )}
+4. **Demand Score**: The current demand score for this idea is ${
+    demandScore * 100
+  }%. Compare this with similar ideas such as ${benchmarkStats
+    .map((b: any) => `${b.name} (${b.demandScore * 100}%)`)
+    .join(", ")}.
+5. **User Segments**: The users who posted or requested this idea were to found to match these segments based on their social media bio's, with the following number of posts for eah:
+   - ${relevantAudience
+     .map((s: any) => `segment: ${s.segmentName} posts count: ${s.value} }`)
+     .join("\n   - ")}
+6. **Relevant Problems**: The idea addresses the following problems:
+   - ${relevantProblems
+     .map((p: any) => `name: ${p.problem}, description: ${p.description}`)
+     .join("\n   - ")}
+
+Generate a 2 sentence summary that integrates these elements, providing a clear and concise overview of the idea's current demand, competitive landscape, potential user base, and key problems it aims to solve. Please avoid using overly complex jargon in your summary and communicate with brevity and the utmost clarity. Do not start off with "The idea of", just go straight into the summary, also do not explicitly mention the Demand Score, but rather describe the demand relative to the benchmarks provided.`
+  const result = await generateObject({
+    model: openai("gpt-4o"),
+    prompt,
+    maxRetries: 3,
+    maxTokens: 1000,
+    schema: z.object({
+      summary: z.string(),
+    }),
+  })
+
+  return result.object.summary
 }

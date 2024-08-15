@@ -127,7 +127,7 @@ const Users = ({ usersStats }: UsersProps) => {
   }
 
   return (
-    <div className="flex w-full flex-col  gap-4">
+    <div className="grid w-full grid-cols-2   gap-4">
       {formattedUserStats.slice(0, 5).map((user) => (
         <UserCard
           key={user.handle}

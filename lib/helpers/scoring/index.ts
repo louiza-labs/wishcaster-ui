@@ -75,7 +75,6 @@ export function prepareVisualizationData(
   benchmarkData: { name: string; demandScore: number }[]
 } {
   const summaries = summarizePostsByIdea(posts)
-  console.log("Visualization Data - Summaries:", summaries)
 
   const allPosts = Object.values(summaries).flat()
   const maxValues = getMaxEngagementValues(allPosts)
@@ -83,8 +82,6 @@ export function prepareVisualizationData(
   const benchmarkData: { name: string; demandScore: number }[] = []
 
   for (const [ideaName, summary] of Object.entries(summaries)) {
-    console.log("Summary for Idea:", ideaName, summary)
-
     const demandScore = calculateDemandScore(summary, maxValues)
     benchmarkData.push({ name: ideaName, demandScore })
 
@@ -94,16 +91,12 @@ export function prepareVisualizationData(
     }
   }
 
-  console.log("Visualization Benchmark Data:", benchmarkData)
-
   // Get the user's demand score
   const userDemandScore =
     benchmarkData.find((data) => data.name === userIdeaName)?.demandScore || 0
 
   // Sort the benchmark data for better visualization
   benchmarkData.sort((a, b) => b.demandScore - a.demandScore)
-
-  console.log("Sorted Benchmark Data:", benchmarkData)
 
   return { userDemandScore, benchmarkData }
 }

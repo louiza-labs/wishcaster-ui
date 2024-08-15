@@ -9,6 +9,12 @@ import {
   matchIdeasToPosts,
   sortCastsByProperty,
 } from "@/lib/helpers"
+import {
+  formatAudienceData,
+  generateAudienceSegments,
+  generateDemandScoreAndBenchmarkData,
+  generateStatsForPosts,
+} from "@/lib/helpers/summary"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import FilterBar from "@/components/filters/FilterBar"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
@@ -19,6 +25,7 @@ import {
   fetchTweetsWithSearch,
   generateProblemsAndSentimentScores,
   generateSimilarIdeas,
+  generateSummaryForIdea,
   getUsersNotionAccessCode,
   searchNotion,
   searchPostsWithKeywordsV2,
@@ -78,6 +85,46 @@ const extractTimeFilterParam = (params?: string | string[]) => {
   }
 }
 
+const getSummary = async (
+  idea: string,
+  industry: string,
+  posts: any,
+  similarPosts: any,
+  relevantProblems: any
+) => {
+  try {
+    const metricsForPosts = generateStatsForPosts(posts)
+    const postsWithIdeasAdded = posts.map((posts: any) => {
+      return {
+        ...posts,
+        idea: idea,
+      }
+    })
+    const { userDemandScore: demandScore, benchmarkData: benchmarkStats } =
+      generateDemandScoreAndBenchmarkData(
+        [...similarPosts, ...postsWithIdeasAdded],
+        idea
+      )
+
+    const statsForIdea = metricsForPosts.overall
+    const audienceSegmentData = generateAudienceSegments(posts)
+    const relevantAudience = formatAudienceData(
+      audienceSegmentData,
+      "postCount"
+    )
+    const summary = await generateSummaryForIdea({
+      idea,
+      industry,
+      demandScore,
+      statsForIdea,
+      benchmarkStats,
+      relevantAudience,
+      relevantProblems,
+    })
+    return summary
+  } catch (e) {}
+}
+
 const ValidateIdeaPage: FC<ResearchPageProps> = async ({
   searchParams,
   params,
@@ -100,8 +147,6 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
     channelId: "someone-build",
     searchTerm: searchIdea,
   })
-
-  console.log("the posts", posts)
 
   const categories = categorizeArrayOfCasts(posts) as Category[]
   const mobileViewParam = parseQueryParam(searchParams.view)
@@ -146,6 +191,14 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
   const searchResultsForSimilarIdeas = await searchPostsWithKeywordsV2(
     postsWithSimilarIdeasWithIdeasAdded,
     keywordsFromSimilarIdeas
+  )
+
+  const generatedSummary = await getSummary(
+    searchIdea,
+    industry,
+    posts,
+    postsWithSimilarIdeasWithIdeasAdded,
+    problemsResponse
   )
 
   // use initial casts pull and new tweets and filter again
@@ -193,6 +246,7 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
                   tweetsAndCasts={posts}
                   problems={problemsWithMetrics}
                   currentIdea={searchIdea}
+                  ideaSummary={generatedSummary ?? ""}
                   tweetsAndCastsForSimilarIdeas={searchResultsForSimilarIdeas}
                 />
               </div>
