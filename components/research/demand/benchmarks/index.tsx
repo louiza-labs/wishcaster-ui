@@ -34,7 +34,7 @@ export default function BenchmarkComparison({
   const chartData = generateChartData(benchmarkData)
 
   return (
-    <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+    <ChartContainer config={chartConfig} className="w-full lg:min-h-[200px]">
       <RadarChart
         cx="50%"
         cy="50%"

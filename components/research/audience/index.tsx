@@ -14,7 +14,7 @@ const ValidateAudience = ({ posts }: any) => {
   } = useValidateAudience(posts)
 
   return (
-    <div className="flex w-full flex-row items-center gap-x-4">
+    <div className="flex w-full flex-col items-center gap-y-4 lg:flex-row lg:gap-x-4">
       <div className="size-full rounded-xl border border-input bg-background px-6 py-8 shadow-lg ">
         <AudienceSegmentPostsBreakdown
           data={postsCountChartsData}

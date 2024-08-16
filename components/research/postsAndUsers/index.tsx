@@ -15,7 +15,7 @@ const PostAndUsersTabs = ({
   return (
     <Tabs
       defaultValue="posts"
-      className="mt-4 flex h-fit items-center justify-start  md:items-start  lg:flex-col lg:gap-x-20"
+      className="mt-4 flex h-fit w-full flex-col items-center justify-start  md:items-start  lg:flex-col lg:gap-x-20"
     >
       <TabsList className="flex w-full flex-row  items-center justify-center  gap-y-6 bg-transparent  text-lg font-semibold  sm:h-full">
         {/* <TabsTrigger value="count">Count</TabsTrigger> */}
@@ -37,7 +37,7 @@ const PostAndUsersTabs = ({
           Top Users
         </TabsTrigger>
       </TabsList>
-      <TabsContent className=" h-fit   " value="posts">
+      <TabsContent className=" h-fit  w-full " value="posts">
         <CastAndTweetsFeed
           timeFilterParam={"ytd"}
           nextCursor={""}

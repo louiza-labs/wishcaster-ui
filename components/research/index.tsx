@@ -51,14 +51,16 @@ const Research = ({
 
   return (
     <div className="my-4 grid w-full grid-cols-12  gap-y-10 ">
-      <section className="col-span-12 my-2 mb-10 flex w-full flex-row items-center justify-between">
-        <div className=" flex w-6/12 flex-col items-start justify-start gap-y-2 md:mt-4 md:flex-col">
-          <div className=" flex w-full flex-row gap-x-2 px-6 md:mb-0 md:flex-col md:gap-x-0 md:gap-y-2 md:px-0">
+      <section className="col-span-12 my-2 mb-10 flex w-full flex-col  items-center justify-between gap-y-6 lg:flex-row lg:gap-y-0">
+        <div className=" flex w-full flex-col  items-center justify-start gap-y-2 md:mt-4 md:flex-col lg:items-start xl:w-6/12">
+          <div className=" flex w-full gap-x-2 px-6 md:mb-0 md:flex-col md:gap-x-0 md:gap-y-2 md:px-0 lg:flex-row">
             <h1 className="text-center text-xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
               {currentIdea}
             </h1>
           </div>
-          <p className="text-sm font-light">{ideaSummary} </p>
+          <p className="text-center text-sm font-light lg:text-left">
+            {ideaSummary}{" "}
+          </p>
         </div>
 
         <Demand
@@ -69,8 +71,8 @@ const Research = ({
         <EngagementStats rawStats={rawStatsMetricsForPosts} />
       </section>
 
-      <section className="col-span-12 grid grid-cols-12 gap-x-6 md:flex-1">
-        <div className="col-span-8 flex w-full flex-col gap-y-6">
+      <section className="col-span-12 grid grid-cols-12 gap-x-6 px-4 md:flex-1 lg:px-0">
+        <div className="col-span-12 flex w-full flex-col gap-y-6 lg:col-span-8">
           <div className="flex flex-col items-center gap-y-4">
             <ValidateAudience posts={tweetsAndCasts} />
           </div>
@@ -86,9 +88,9 @@ const Research = ({
             </div>
           </div>
         </div>
-        <div className="col-span-4 flex flex-col gap-y-4">
-          <div className="flex flex-col items-center gap-y-4">
-            <div className="g flex flex-col gap-y-4 rounded-xl border border-input bg-background px-6 py-8 shadow-lg">
+        <div className="col-span-12 mt-4 flex flex-col gap-y-4 px-4 lg:col-span-4 lg:mt-0 lg:px-0">
+          <div className="flex flex-col items-center gap-y-4  lg:px-0">
+            <div className=" flex flex-col gap-y-4 rounded-xl border border-input bg-background px-6 py-8 shadow-lg">
               <p className="text-xl  font-bold">
                 How does this compare to other ideas?
               </p>
