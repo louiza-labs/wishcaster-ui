@@ -25,7 +25,7 @@ function tokenizeAndClean(text: string): string[] {
   return doc
     .terms()
     .out("array")
-    .filter((word) => !stopWords.has(word) && word.length > 1)
+    .filter((word: any) => !stopWords.has(word) && word.length > 1)
 }
 
 class TfIdf {

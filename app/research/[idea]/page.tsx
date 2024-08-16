@@ -211,10 +211,10 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
 
   const isError = !posts.length || !searchIdea
   const breadCrumbPages = [
-    { name: "Validate", link: "/validate" },
+    { name: "Research", link: "/research" },
     {
       name: searchIdea ? searchIdea : params.idea,
-      link: `/validate/${params.idea}`,
+      link: `/research/${params.idea}`,
     },
   ]
   const problemsWithMetrics = addMetricsToProblems(problemsResponse, posts)

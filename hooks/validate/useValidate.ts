@@ -198,13 +198,12 @@ const useValidate = (castsAndTweets: any[], searchTerm = "") => {
       )
 
       const combinedPosts = [...initialCasts, ...tweetsWithUsers]
-      const categories = categorizeArrayOfCasts(combinedPosts)
+      const categories: any = categorizeArrayOfCasts(combinedPosts)
       const filteredPosts = addCategoryFieldsToCasts(combinedPosts, categories)
 
-      const searchResults = await searchPostsWithKeywordsV2(
-        filteredPosts,
-        cleanedTerm
-      )
+      const searchResults = await searchPostsWithKeywordsV2(filteredPosts, [
+        cleanedTerm,
+      ])
       setCastAndTweetsSearchResults(searchResults)
     } catch (error) {
       console.error("Error in fetching and formatting search results:", error)

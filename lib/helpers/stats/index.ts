@@ -725,7 +725,7 @@ interface PostSummary {
 export function summarizePostsByIdea(
   posts: Post[]
 ): Record<string, PostSummary> {
-  const summaries: Record<string, PostSummary> = {}
+  const summaries: Record<string, PostSummary> | any = {}
 
   posts.forEach((post) => {
     if (post.idea) {
@@ -782,7 +782,7 @@ export function summarizePostsByIdea(
   })
 
   // Calculate the average follower count for each idea
-  Object.values(summaries).forEach((summary) => {
+  Object.values(summaries).forEach((summary: any) => {
     if (summary.count > 0) {
       summary.averageFollowerCount = Math.floor(
         summary.totalFollowers / summary.count

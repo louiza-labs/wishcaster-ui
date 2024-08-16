@@ -45,10 +45,10 @@ export function DesktopNav({ items, notionResults }: MainNavProps) {
             <Icons.logo className="size-6" />
             <span className="inline-block font-bold">{siteConfig.name}</span>
           </Link>
-          <Link href="/discover" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2">
             <span
               className={`${
-                pathname.includes("discover") ? "font-semibold" : ""
+                pathname === "" ? "font-semibold" : ""
               } inline-block`}
             >
               Discover
@@ -66,7 +66,7 @@ export function DesktopNav({ items, notionResults }: MainNavProps) {
           <Link href="/research" className="flex items-center space-x-2">
             <span
               className={`${
-                pathname === "/" || pathname.includes("resarch")
+                pathname === "/research" || pathname.includes("resarch")
                   ? "font-semibold"
                   : ""
               } keep-all inline-block whitespace-nowrap font-normal`}

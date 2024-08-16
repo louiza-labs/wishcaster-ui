@@ -6,9 +6,9 @@ import useValidate from "@/hooks/validate/useValidate"
 import ValidateAudience from "@/components/research/audience"
 import Demand from "@/components/research/demand"
 import BenchmarkChart from "@/components/research/demand/benchmarks"
+import EngagementStats from "@/components/research/engagementStats"
+import PostAndUsersTabs from "@/components/research/postsAndUsers"
 import ProblemsFeed from "@/components/research/problems"
-import EngagementStats from "@/components/research/tabs/engagement"
-import PostAndUsersTabs from "@/components/research/tabs/postsAndUsers"
 
 interface ResearchProps {
   tweetsAndCasts: any

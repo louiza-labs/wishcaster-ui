@@ -2,7 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import CastAndTweetsFeed from "@/components/feed/castsAndTweets"
-import UsersFeed from "@/components/research/tabs/users"
+import UsersFeed from "@/components/research/users"
 
 interface PostAndUsersTabsProps {
   tweetsAndCasts: any

@@ -55,7 +55,7 @@ export const buildConfigForChart = (chartKeysAndLabels: any) => {
 export const transformSummaryForPieChart = (
   summary: any,
   config: Record<string, { label: string; color: string }>,
-  fieldsToExclude = []
+  fieldsToExclude: any = []
 ) => {
   return (
     Object.keys(summary)
@@ -86,9 +86,9 @@ type ChartConfig = {
   color: string
 }
 
-export const generateAverageFollowerData = (posts) => {
+export const generateAverageFollowerData = (posts: any) => {
   let totalFollowers = 0
-  posts.forEach((post) => {
+  posts.forEach((post: any) => {
     totalFollowers += post.totalFollowers
   })
   const averageFollowers =
@@ -97,8 +97,8 @@ export const generateAverageFollowerData = (posts) => {
   return [{ name: "Average Followers", followers: averageFollowers }]
 }
 
-export const formatTrendsData = (trends) => {
-  return trends.map((trend) => ({
+export const formatTrendsData = (trends: any) => {
+  return trends.map((trend: any) => ({
     time: trend.date, // assuming 'date' is a field in your trend data
     interest: trend.interestLevel, // assuming 'interestLevel' is a measure of search interest
   }))

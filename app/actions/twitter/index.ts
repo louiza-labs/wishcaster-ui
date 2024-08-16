@@ -11,7 +11,6 @@ import {
 export async function fetchTweets(nextCursor = "") {
   try {
     const client = new Client(process.env.TWITTER_BEARER_TOKEN as string)
-    let domainEntities = `(context:67.1158813612409929728 OR context:66.847869481888096256 OR context:131.1491481998862348291 OR context:131.913142676819648512 OR context:30.781974596794716162 OR context:46.1557697333571112960 OR context:30.781974596752842752)`
     const response = await client.tweets.tweetsRecentSearch({
       query:
         'lang:en is:verified (context:131.1491481998862348291 OR context:131.913142676819648512 OR context:46.1557697333571112960) ("product-request" OR "who\'s building" OR "someone should build" OR "will pay money for:" OR "someone build" OR "someone should make" OR "feature request" OR "please add")',
@@ -75,8 +74,7 @@ export async function fetchTweetsWithSearch(
 ) {
   try {
     const client = new Client(process.env.TWITTER_BEARER_TOKEN as string)
-    let domainEntities = `(context:67.1158813612409929728 OR context:66.847869481888096256 OR context:131.1491481998862348291 OR context:131.913142676819648512 OR context:30.781974596794716162 OR context:46.1557697333571112960 OR context:30.781974596752842752)`
-    let productRequestKeywords = `("product-request" OR "who\'s building" OR "someone should build" OR "will pay money for:" OR "someone build" OR "someone should make" OR "feature request" OR "please add")`
+
     const response = await client.tweets.tweetsRecentSearch({
       query: `lang:en  ${searchKeywordsOrPhrases}`,
       "tweet.fields": [
@@ -158,7 +156,7 @@ export async function fetchTweetsWithSearchUntilCovered(
   nextCursor = ""
 ) {
   let allTweets = [] as any[]
-  let cursor = nextCursor
+  let cursor: any = nextCursor
 
   do {
     try {
@@ -217,7 +215,7 @@ export async function fetchTweetsWithSearchUntilCovered(
       allTweets = allTweets.concat(data)
 
       // Update cursor for the next iteration
-      cursor = meta ? meta.next_token : null
+      cursor = meta && meta.next_token ? meta.next_token : null
     } catch (e) {
       console.error("Error fetching tweets with search:", e)
       break // Exit the loop if there is an error
@@ -433,7 +431,6 @@ export async function fetchLikesForTweet(tweetId: string) {
         "tweet.fields": ["id"],
       }
     )
-    console.log("the res for getting likes", response)
     return response
   } catch (e) {
     console.log("the error getting likes", e)

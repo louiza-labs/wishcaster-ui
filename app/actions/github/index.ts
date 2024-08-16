@@ -66,7 +66,6 @@ export const fetchGithubReposBySearch = async (
   const splitSearchTerm = searchTerm.split(" ")
   try {
     const query = `${searchTerm}`
-    console.log("the search term for github", searchTerm)
     const queryString = `q=${encodeURIComponent(
       searchTerm
     )}&sort=stars&order=desc&per_page=${maxResults}`
@@ -80,9 +79,8 @@ export const fetchGithubReposBySearch = async (
       }
     )
 
-    console.log("the search res for github", response)
     // Extracting repository data
-    const repositories = response.data.items.map((repo) => ({
+    const repositories = response.data.items.map((repo: any) => ({
       name: repo.name,
       fullName: repo.full_name,
       description: repo.description,

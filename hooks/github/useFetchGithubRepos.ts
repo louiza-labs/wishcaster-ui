@@ -22,7 +22,7 @@ const useFetchGithubRepos = (searchTerm: string[]) => {
         )
 
         const batchResults = await Promise.all(fetchPromises)
-        batchResults.forEach((result) => {
+        batchResults.forEach((result: any) => {
           repos.push(...result)
         })
       }
