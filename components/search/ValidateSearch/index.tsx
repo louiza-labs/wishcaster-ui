@@ -54,7 +54,7 @@ const ValidateSearch = ({}) => {
               <p className="text-center  text-lg font-medium">
                 Look up an idea and a corresponding industry{" "}
               </p>
-              <div className="relative mt-8 flex w-full flex-row justify-center gap-x-4">
+              <div className="relative mt-8 flex w-full flex-col items-center justify-center gap-x-4 gap-y-6 lg:flex-row lg:items-start lg:gap-y-0">
                 <Input
                   type="text"
                   placeholder="Search an idea..."
