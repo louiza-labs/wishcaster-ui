@@ -27,7 +27,7 @@ const useValidateAudience = (posts: any[]) => {
   const postsCountChartConfig = useMemo(() => {
     return generateChartConfig(
       "Post Count",
-      "var(--chart-1)",
+      "gradient1", // This is the gradient id we defined in the chart
       "var(--background)"
     )
   }, [])
@@ -38,7 +38,7 @@ const useValidateAudience = (posts: any[]) => {
   const postsByChannelCountChartConfig = useMemo(() => {
     return generateChartConfig(
       "Post Count",
-      "var(--chart-1)",
+      "gradient2", // This is the gradient id we defined in the chart
       "var(--background)"
     )
   }, [])

@@ -24,13 +24,13 @@ export function getChartDataForLikes(audienceSegments: any) {
 
 export function generateChartConfig(
   metricLabel: string,
-  color: string,
+  gradientId: string,
   labelColor: string
 ) {
   return {
     metric: {
       label: metricLabel,
-      color: `hsl(${color})`,
+      color: `url(#${gradientId})`, // Reference the gradient
     },
     label: {
       color: `hsl(${labelColor})`,

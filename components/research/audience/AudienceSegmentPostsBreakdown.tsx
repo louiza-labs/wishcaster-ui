@@ -40,8 +40,36 @@ const AudienceSegmentPostsBreakdown = ({
           layout="vertical"
           margin={{
             right: 16,
+            left: 10,
           }}
         >
+          <defs>
+            <linearGradient id="gradient1" x1="0" y1="0" x2="0" y2="1">
+              <stop
+                offset="0%"
+                stopColor="hsl(var(--chart-1))"
+                stopOpacity={1}
+              />
+              <stop
+                offset="100%"
+                stopColor="hsl(var(--chart-1))"
+                stopOpacity={0.5}
+              />
+            </linearGradient>
+            <linearGradient id="gradient2" x1="0" y1="0" x2="0" y2="1">
+              <stop
+                offset="0%"
+                stopColor="hsl(var(--chart-2))"
+                stopOpacity={1}
+              />
+              <stop
+                offset="100%"
+                stopColor="hsl(var(--chart-2))"
+                stopOpacity={0.5}
+              />
+            </linearGradient>
+            {/* Add more gradients as needed */}
+          </defs>
           {/* <CartesianGrid horizontal={false} /> */}
           <YAxis
             dataKey="segmentName"
@@ -49,7 +77,8 @@ const AudienceSegmentPostsBreakdown = ({
             tickLine={false}
             tickMargin={10}
             axisLine={false}
-            fontSize={8}
+            fontSize={9}
+            className=" font-semibold"
           />
           <XAxis type="number" hide />
           <ChartTooltip
@@ -66,14 +95,14 @@ const AudienceSegmentPostsBreakdown = ({
               dataKey="segmentName"
               position="insideLeft"
               offset={8}
-              className="fill-[--color-label]"
-              fontSize={10}
+              className="fill-[--color-label] font-bold"
+              fontSize={12}
             />
             <LabelList
               dataKey={dataKey}
               position="right"
               offset={8}
-              className="fill-foreground"
+              className="fill-foreground  font-semibold"
               fontSize={12}
             />
           </Bar>

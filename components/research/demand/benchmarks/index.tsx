@@ -39,15 +39,25 @@ export default function BenchmarkComparison({
         cx="50%"
         cy="50%"
         // className="size-full"
-        outerRadius="65%"
+        outerRadius="55%"
         data={chartData}
       >
+        <defs>
+          <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="hsl(var(--chart-1))" stopOpacity={1} />
+            <stop
+              offset="100%"
+              stopColor="hsl(var(--chart-2))"
+              stopOpacity={0.6}
+            />
+          </linearGradient>
+        </defs>
         <PolarGrid gridType="circle" radialLines={false} />
         <PolarAngleAxis dataKey="name" fontSize={8} />
         <Radar
           name="Demand Score"
           dataKey="demandScore"
-          fill="var(--color-demand)"
+          fill="url(#gradient)"
           fillOpacity={0.6}
         />
         <Tooltip content={<ChartTooltipContent />} />

@@ -71,25 +71,30 @@ const Research = ({
 
       <section className="col-span-12 grid grid-cols-12 gap-x-6 md:flex-1">
         <div className="col-span-8 flex w-full flex-col gap-y-6">
-          <ValidateAudience posts={tweetsAndCasts} />
-          <div className="rounded-lg border-2 border-blue-200  px-4  shadow-xl sm:p-4 ">
-            <p className="text-center text-xl font-bold">
-              Where is this coming from?
-            </p>
-
-            <PostAndUsersTabs
-              rawStatsByUsers={rawStatsbyUsers}
-              tweetsAndCasts={tweetsAndCasts}
-            />
+          <div className="flex flex-col items-center gap-y-4">
+            <ValidateAudience posts={tweetsAndCasts} />
+          </div>
+          <div className="flex flex-col items-center gap-y-4">
+            <div className="rounded-lg border border-input bg-background px-6 py-8 shadow-lg  sm:p-4 ">
+              <p className="p-4 text-xl font-bold">
+                Where is this sourced from?
+              </p>
+              <PostAndUsersTabs
+                rawStatsByUsers={rawStatsbyUsers}
+                tweetsAndCasts={tweetsAndCasts}
+              />
+            </div>
           </div>
         </div>
         <div className="col-span-4 flex flex-col gap-y-4">
-          <div className="flex flex-col gap-y-4 rounded-xl border-2 border-blue-200 p-4 shadow-lg">
-            <p className="text-xl  font-bold">
-              How does this compare to other ideas?
-            </p>
+          <div className="flex flex-col items-center gap-y-4">
+            <div className="g flex flex-col gap-y-4 rounded-xl border border-input bg-background px-6 py-8 shadow-lg">
+              <p className="text-xl  font-bold">
+                How does this compare to other ideas?
+              </p>
 
-            <BenchmarkChart benchmarkData={benchmarkData} />
+              <BenchmarkChart benchmarkData={benchmarkData} />
+            </div>
           </div>
 
           <ProblemsFeed problemsData={problems} />

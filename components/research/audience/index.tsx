@@ -15,7 +15,7 @@ const ValidateAudience = ({ posts }: any) => {
 
   return (
     <div className="flex w-full flex-row items-center gap-x-4">
-      <div className="size-full rounded-xl border-2 border-blue-200 p-4 shadow-lg">
+      <div className="size-full rounded-xl border border-input bg-background px-6 py-8 shadow-lg ">
         <AudienceSegmentPostsBreakdown
           data={postsCountChartsData}
           dataKey="value"
@@ -25,7 +25,7 @@ const ValidateAudience = ({ posts }: any) => {
           chartConfig={postsCountChartConfig}
         />
       </div>
-      <div className="size-full rounded-xl border-2 border-blue-200 p-4 shadow-lg">
+      <div className="size-full rounded-xl border border-input bg-background px-6 py-8 shadow-lg ">
         <AudienceSegmentPostsBreakdown
           data={postsByChannelCountChartsData}
           dataKey="value"

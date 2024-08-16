@@ -27,7 +27,7 @@ const chartConfig = {
   },
   idea: {
     label: "Your Idea",
-    color: "hsl(var(--chart-2))",
+    color: "url(#radialGradient)", // Reference to the gradient defined in the chart
   },
 } satisfies ChartConfig
 
@@ -44,13 +44,28 @@ export default function DemandScoreGauge({ score }: { score: number }) {
         innerRadius={65}
         outerRadius={91}
       >
+        <defs>
+          <linearGradient id="radialGradient" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="hsl(var(--chart-1))" stopOpacity={1} />
+            <stop
+              offset="100%"
+              stopColor="hsl(var(--chart-2))"
+              stopOpacity={0.7}
+            />
+          </linearGradient>
+        </defs>
         <PolarGrid
           gridType="circle"
           radialLines={false}
           stroke="none"
           polarRadius={[60, 50]}
         />
-        <RadialBar dataKey="demandScore" background cornerRadius={10} />
+        <RadialBar
+          dataKey="demandScore"
+          background
+          cornerRadius={10}
+          fill="url(#radialGradient)"
+        />
         <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
           <Label
             content={({ viewBox }) => {
