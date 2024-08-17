@@ -27,7 +27,7 @@ export const renderTextWithLinks = (
   embeds: any[],
   isTwitter = false
 ) => {
-  if (!text) return <span>{text}</span>
+  if (!text || !embeds) return <span>{text}</span>
 
   // Maps for quick access
   const profileMap = new Map<string, UserProfile>()

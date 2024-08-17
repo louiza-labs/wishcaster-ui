@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
 
 import { NavItem } from "@/types/nav"
@@ -30,6 +31,7 @@ interface MainNavProps {
 }
 
 export function DesktopNav({ items, notionResults }: MainNavProps) {
+  const pathname = usePathname()
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
   useSubscribeToSessionChanges()
   useLoadAllCastsToStore()
@@ -43,8 +45,34 @@ export function DesktopNav({ items, notionResults }: MainNavProps) {
             <Icons.logo className="size-6" />
             <span className="inline-block font-bold">{siteConfig.name}</span>
           </Link>
+          <Link href="/" className="flex items-center space-x-2">
+            <span
+              className={`${
+                pathname === "" ? "font-semibold" : ""
+              } inline-block`}
+            >
+              Discover
+            </span>
+          </Link>
           <Link href="/topics" className="flex items-center space-x-2">
-            <span className="inline-block font-normal">Topics</span>
+            <span
+              className={`${
+                pathname.includes("topic") ? "font-semibold" : ""
+              } inline-block`}
+            >
+              Topics
+            </span>
+          </Link>
+          <Link href="/research" className="flex items-center space-x-2">
+            <span
+              className={`${
+                pathname === "/research" || pathname.includes("resarch")
+                  ? "font-semibold"
+                  : ""
+              } keep-all inline-block whitespace-nowrap font-normal`}
+            >
+              Research Idea
+            </span>
           </Link>
           <div></div>
 
@@ -68,9 +96,11 @@ export function DesktopNav({ items, notionResults }: MainNavProps) {
             </nav>
           ) : null}
         </div>
-        <div className="mx-10 hidden w-full lg:block">
-          <Search notionResults={notionResults} />
-        </div>
+        {pathname.includes("research") || pathname === "/" ? null : (
+          <div className="mx-10 hidden w-full lg:block">
+            <Search notionResults={notionResults} />
+          </div>
+        )}
         <div className="flex w-full flex-1 items-center justify-end space-x-4">
           <nav className="xl:min-w-200 flex w-fit items-center space-x-4 ">
             <ThemeToggle />

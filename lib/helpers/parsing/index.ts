@@ -1,5 +1,5 @@
 export const extractUserIdsFromTweets = (tweets: any) => {
-  if (!tweets) return []
+  if (!tweets || !Array.isArray(tweets)) return []
   return tweets.map((tweet: any) => tweet.author_id)
 }
 

@@ -1,16 +1,10 @@
 import { FC } from "react"
-import { Cast as CastType, Category } from "@/types"
+import { Category } from "@/types"
 
 import { dateOptions } from "@/lib/constants"
 import {
-  addCategoryFieldsToCasts,
-  addCategoryFieldsToTweets,
-  addMediaToTweets,
-  addUserInfoToTweets,
   categorizeArrayOfCasts,
-  extractUserIdsFromTweets,
   generateWhimsicalErrorMessages,
-  removeDuplicateTweets,
   searchCastsForCategories,
   sortCastsByProperty,
 } from "@/lib/helpers"
@@ -22,9 +16,7 @@ import Rankings from "@/components/rankings"
 import RedirectButton from "@/components/redirect/Button"
 import SortCasts from "@/components/sort/SortCasts"
 import {
-  fetchCastsUntilCovered,
-  fetchTweets,
-  fetchTwitterUsers,
+  fetchPosts,
   getUsersNotionAccessCode,
   searchNotion,
 } from "@/app/actions"
@@ -47,6 +39,15 @@ function extractTimeFilterParam(params: undefined | string | string[]) {
   }
 }
 
+function filterForOnlyCastsOrTweets(filter: "cast" | "tweet", posts: any[]) {
+  if (!(posts && Array.isArray(posts))) return []
+  if (filter === "cast") {
+    return posts.filter((post) => post.object === "cast")
+  } else {
+    return posts.filter((post) => !(post.object === "cast"))
+  }
+}
+
 const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const searchTerm = parseQueryParam(searchParams.search)
   const categoryParam = parseQueryParam(searchParams.categories)
@@ -55,22 +56,9 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const shouldHideCasts =
     filtersParam && filtersParam.includes("hide-farcaster")
   const shouldHideTweets = filtersParam && filtersParam.includes("hide-twitter")
-  const tweets = !shouldHideTweets
-    ? await fetchTweets()
-    : { data: [], includes: [] }
-  let tweetsWithoutDuplicates = !shouldHideTweets
-    ? removeDuplicateTweets(tweets?.data)
-    : []
-  const tweetsWithMediaAdded = addMediaToTweets(
-    tweetsWithoutDuplicates,
-    tweets.includes
-  )
-  const users = !shouldHideTweets
-    ? await fetchTwitterUsers(extractUserIdsFromTweets(tweetsWithMediaAdded))
-    : { data: [] }
-  const tweetsWithUsers = !shouldHideTweets
-    ? addUserInfoToTweets(tweetsWithoutDuplicates, users?.data)
-    : []
+
+  // fetch both tweets and posts and can seperate
+
   const notionAccessCode = await getUsersNotionAccessCode()
   const notionSearch = notionAccessCode
     ? await searchNotion(notionAccessCode)
@@ -80,53 +68,28 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
-  const { casts: initialCasts, nextCursor: cursorToUse } = !shouldHideCasts
-    ? !timeFilterParam
-      ? await fetchCastsUntilCovered("someone-build", "7-days")
-      : await fetchCastsUntilCovered(
-          "someone-build",
-          timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
-        )
-    : { casts: [], nextCursor: "" }
 
-  let filteredPosts = initialCasts
-  const categories = categorizeArrayOfCasts([
-    ...filteredPosts,
-    ...tweetsWithUsers,
-  ]) as Category[]
-  // let taglinedCasts = await fetchTaglines(filteredPosts)
-  filteredPosts = addCategoryFieldsToCasts(
-    filteredPosts,
-    categories
-  ) as Array<CastType>
-  let tweetsWithCategories = addCategoryFieldsToTweets(
-    tweetsWithUsers,
-    categories
-  )
+  let castsAndTweets = await fetchPosts({
+    timePeriod: timeFilterParam ?? "ytd",
+    channelId: "someone-build",
+  })
 
-  // if (filteredPosts.length) {
-  //   filteredPosts = addTaglinesToCasts(filteredPosts, taglinedCasts)
-  // }
+  const categories = categorizeArrayOfCasts(castsAndTweets) as Category[]
   if (categoryParam.length) {
-    filteredPosts = searchCastsForCategories(filteredPosts, categoryParam)
-    tweetsWithCategories = searchCastsForCategories(
-      tweetsWithoutDuplicates,
-      categoryParam
-    )
+    castsAndTweets = searchCastsForCategories(castsAndTweets, categoryParam)
   }
   if (sortParam) {
-    filteredPosts = sortCastsByProperty(
-      [...filteredPosts, ...tweetsWithCategories],
-      sortParam
-    )
+    castsAndTweets = sortCastsByProperty(castsAndTweets, sortParam)
   }
 
-  const isError = ![...tweetsWithCategories, ...filteredPosts].length
+  const isError = !castsAndTweets && castsAndTweets.length
+  const onlyCasts = filterForOnlyCastsOrTweets("cast", castsAndTweets)
+  const onlyTweets = filterForOnlyCastsOrTweets("tweet", castsAndTweets)
 
   return (
     <>
       <div className="top-66 sticky z-10 lg:hidden">
-        <FilterBar initialCasts={initialCasts} />
+        <FilterBar initialCasts={onlyCasts} />
       </div>{" "}
       <section className="mx-auto py-6 md:container sm:px-6 lg:px-6">
         <Header />
@@ -134,7 +97,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
           <aside className="no-scrollbar sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:flex">
             {/* <CardLayoutToggle /> */}
             <SortCasts />
-            <Filters initialCasts={initialCasts} />
+            <Filters initialCasts={onlyCasts} />
           </aside>
           <article className="no-scrollbar lg:col-span-8 lg:px-2  ">
             {isError ? (
@@ -145,26 +108,22 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
               />
             ) : (
               <CastAndTweetsFeed
-                casts={filteredPosts}
                 timeFilterParam={timeFilterParam}
-                nextCursor={cursorToUse}
+                nextCursor={""}
                 notionResults={notionResults}
-                tweets={tweetsWithCategories}
+                posts={castsAndTweets}
               />
             )}
           </article>
           <aside className="no-scrollbar sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky lg:col-span-2 lg:flex lg:flex-col">
-            <Rankings
-              casts={initialCasts}
-              castsAndOrTweets={[...filteredPosts, ...tweetsWithCategories]}
-            />
+            <Rankings casts={onlyCasts} castsAndOrTweets={castsAndTweets} />
           </aside>
         </main>
       </section>
       <div className="flex flex-col items-start lg:hidden">
         <BottomMobileNav
-          filteredPosts={filteredPosts}
-          initialCasts={initialCasts}
+          filteredPosts={castsAndTweets}
+          initialCasts={onlyCasts}
         />
       </div>
     </>

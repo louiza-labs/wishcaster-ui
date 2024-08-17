@@ -111,10 +111,6 @@ export function getTweetRanking(
   metric: "likes" | "retweets" | "replies",
   filterField?: keyof CastType
 ): number | null {
-  console.log(
-    "the ranking items",
-    items.map((item) => item.category)
-  )
   // Apply filtering only if filterField is provided and the target has this property defined
   const filteredItems =
     filterField && target[filterField] !== undefined

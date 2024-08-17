@@ -1,3 +1,5 @@
+"use server"
+
 import { Cast as CastType, Category } from "@/types"
 
 export const filterDuplicateCategory = (categories: Category[]) => {

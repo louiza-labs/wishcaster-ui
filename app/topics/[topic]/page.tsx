@@ -207,12 +207,11 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
               Feed
             </h3>
             <CastsAndTweetsFeed
-              casts={[]}
+              posts={filteredPosts}
               timeFilterParam={timeFilterParam}
               nextCursor={cursorToUse}
-              columns={3}
+              columns={"grid-cols-3"}
               topic={params.topic}
-              tweets={tweetsWithUsers}
             />
           </div>
         </main>

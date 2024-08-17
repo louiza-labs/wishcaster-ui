@@ -11,7 +11,6 @@ import {
 export async function fetchTweets(nextCursor = "") {
   try {
     const client = new Client(process.env.TWITTER_BEARER_TOKEN as string)
-    let domainEntities = `(context:67.1158813612409929728 OR context:66.847869481888096256 OR context:131.1491481998862348291 OR context:131.913142676819648512 OR context:30.781974596794716162 OR context:46.1557697333571112960 OR context:30.781974596752842752)`
     const response = await client.tweets.tweetsRecentSearch({
       query:
         'lang:en is:verified (context:131.1491481998862348291 OR context:131.913142676819648512 OR context:46.1557697333571112960) ("product-request" OR "who\'s building" OR "someone should build" OR "will pay money for:" OR "someone build" OR "someone should make" OR "feature request" OR "please add")',
@@ -69,6 +68,71 @@ export async function fetchTweets(nextCursor = "") {
   }
 }
 
+export async function fetchTweetsWithSearch(
+  searchKeywordsOrPhrases: string,
+  nextCursor = ""
+) {
+  try {
+    const client = new Client(process.env.TWITTER_BEARER_TOKEN as string)
+
+    const response = await client.tweets.tweetsRecentSearch({
+      query: `lang:en  ${searchKeywordsOrPhrases}`,
+      "tweet.fields": [
+        "attachments",
+        "author_id",
+        "created_at",
+        "entities",
+        "id",
+        "text",
+        "public_metrics",
+        "referenced_tweets",
+        "source",
+      ],
+      sort_order: "relevancy",
+      max_results: 100,
+      next_token: nextCursor && nextCursor.length ? nextCursor : undefined,
+      expansions: [
+        "author_id",
+        "entities.mentions.username",
+        "attachments.media_keys",
+        "referenced_tweets.id",
+      ],
+      "media.fields": [
+        "public_metrics",
+        "type",
+        "url",
+        "alt_text",
+        "duration_ms",
+        "variants",
+        "width",
+        "height",
+        "preview_image_url",
+        "media_key",
+      ],
+      "user.fields": [
+        "created_at",
+        "description",
+        "entities",
+        "id",
+        "location",
+        "name",
+        "profile_image_url",
+        "public_metrics",
+        "url",
+        "username",
+        "verified",
+        "withheld",
+      ],
+    })
+    const { data, errors, meta, includes } = response
+
+    return { data, errors, meta, includes }
+  } catch (e) {
+    console.log("the error fetching tweets with search", e)
+    return { data: [], errors: e }
+  }
+}
+
 export async function fetchTweetsUntilCovered() {
   let allTweets = [] as any[]
   let cursor = null
@@ -86,6 +150,84 @@ export async function fetchTweetsUntilCovered() {
     nextCursor: cursor,
   }
 }
+
+export async function fetchTweetsWithSearchUntilCovered(
+  searchKeywordsOrPhrases: string,
+  nextCursor = ""
+) {
+  let allTweets = [] as any[]
+  let cursor: any = nextCursor
+
+  do {
+    try {
+      const client = new Client(process.env.TWITTER_BEARER_TOKEN as string)
+      const response = await client.tweets.tweetsRecentSearch({
+        query: `lang:en ${searchKeywordsOrPhrases}`,
+        "tweet.fields": [
+          "attachments",
+          "author_id",
+          "created_at",
+          "entities",
+          "id",
+          "text",
+          "public_metrics",
+          "referenced_tweets",
+          "source",
+        ],
+        sort_order: "relevancy",
+        max_results: 100,
+        next_token: cursor && cursor.length ? cursor : undefined,
+        expansions: [
+          "author_id",
+          "entities.mentions.username",
+          "attachments.media_keys",
+          "referenced_tweets.id",
+        ],
+        "media.fields": [
+          "public_metrics",
+          "type",
+          "url",
+          "alt_text",
+          "duration_ms",
+          "variants",
+          "width",
+          "height",
+          "preview_image_url",
+          "media_key",
+        ],
+        "user.fields": [
+          "created_at",
+          "description",
+          "entities",
+          "id",
+          "location",
+          "name",
+          "profile_image_url",
+          "public_metrics",
+          "url",
+          "username",
+          "verified",
+          "withheld",
+        ],
+      })
+
+      const { data, meta, includes } = response
+      allTweets = allTweets.concat(data)
+
+      // Update cursor for the next iteration
+      cursor = meta && meta.next_token ? meta.next_token : null
+    } catch (e) {
+      console.error("Error fetching tweets with search:", e)
+      break // Exit the loop if there is an error
+    }
+  } while (cursor) // Continue fetching until no more pages are available
+
+  return {
+    tweets: allTweets,
+    nextCursor: cursor,
+  }
+}
+
 async function fetchChunk(chunk: string) {
   const { data } = await fetchTwitterUsers(chunk.split(","))
   return data
@@ -289,7 +431,6 @@ export async function fetchLikesForTweet(tweetId: string) {
         "tweet.fields": ["id"],
       }
     )
-    console.log("the res for getting likes", response)
     return response
   } catch (e) {
     console.log("the error getting likes", e)
