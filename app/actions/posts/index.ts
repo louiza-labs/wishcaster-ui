@@ -28,6 +28,6 @@ export async function fetchPosts({
     return response.data
   } catch (error) {
     console.error("Error fetching posts:", error)
-    throw new Error("Failed to fetch posts")
+    return []
   }
 }
