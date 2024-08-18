@@ -143,7 +143,7 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
     : undefined
 
   const posts = await fetchPosts({
-    timePeriod: "ytd",
+    timePeriod: timeFilterParam ? timeFilterParam : "ytd",
     channelId: "someone-build",
     searchTerm: searchIdea,
   })
