@@ -13,9 +13,8 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel"
-import Cast from "@/components/cast/variants/SprintItem"
 import { CastSkeleton } from "@/components/loading/cast"
-import TweetCard from "@/components/tweet/variants/card"
+import PostCard from "@/components/post"
 
 interface TopCastsProps {
   casts: CastType[]
@@ -48,35 +47,48 @@ const TopCasts = ({
       <div className="flex flex-col overflow-y-auto xl:hidden">
         {sortedPosts.slice(0, 10).map((postItem: any, index: number) => (
           <>
-            {postItem.reactions ? (
-              <div
-                key={postItem.hash + postItem.timestamp}
-                className="size-full max-h-fit "
-              >
-                <Cast
-                  {...postItem}
-                  tagline={postItem.tagline}
-                  hideMetrics={false}
-                  badgeIsToggled={false}
-                  routeToWarpcast={true}
-                  cast={postItem}
-                  notionResults={notionResults}
-                  mentionedProfiles={postItem.mentioned_profiles}
-                />
-              </div>
-            ) : (
-              <TweetCard
-                text={postItem.text}
-                likes={postItem.public_metrics.like_count}
-                replies={postItem.public_metrics.reply_count}
-                retweets={postItem.public_metrics.retweet_count}
-                username={postItem.username}
-                user={postItem.user}
-                category={postItem.category}
-                tweet={postItem}
-                notionResults={notionResults}
-              />
-            )}
+            <PostCard
+              source={postItem.object === "cast" ? "farcaster" : "twitter"}
+              text={postItem.text}
+              user={
+                postItem.object === "cast" ? postItem.author : postItem.user
+              }
+              category={postItem.category}
+              tagline={postItem.tagline}
+              embeds={postItem.embeds ?? []}
+              media={postItem.media ?? []}
+              postId={postItem.hash}
+              referencedPost={postItem.referenced_tweet}
+              mentionedProfiles={postItem.mentioned_profiles ?? []}
+              renderEmbeds={true}
+              post={postItem}
+              timestamp={
+                postItem.object === "cast"
+                  ? postItem.timestamp
+                  : postItem.created_at
+              }
+              likes={
+                postItem.public_metrics
+                  ? postItem.public_metrics.like_count
+                  : undefined
+              }
+              retweets={
+                postItem.public_metrics
+                  ? postItem.public_metrics.retweet_count
+                  : undefined
+              }
+              impressions={
+                postItem.public_metrics
+                  ? postItem.public_metrics.impression_count
+                  : undefined
+              }
+              replies={
+                postItem.public_metrics
+                  ? postItem.public_metrics.reply_count
+                  : undefined
+              }
+              reactions={postItem.reactions}
+            />
           </>
         ))}
       </div>
@@ -106,30 +118,52 @@ const TopCasts = ({
                 >
                   <div className="grid size-fit max-w-[90vw] grid-cols-1 md:basis-1/2 lg:max-h-screen lg:overflow-y-scroll xl:h-[70vh]">
                     <>
-                      {postItem.reactions ? (
-                        <Cast
-                          {...postItem}
-                          hideMetrics={false}
-                          tagline={postItem.tagline}
-                          badgeIsToggled={false}
-                          routeToWarpcast={true}
-                          notionResults={notionResults}
-                          cast={postItem}
-                          mentionedProfiles={postItem.mentioned_profiles}
-                        />
-                      ) : (
-                        <TweetCard
-                          text={postItem.text}
-                          likes={postItem.public_metrics.like_count}
-                          replies={postItem.public_metrics.reply_count}
-                          retweets={postItem.public_metrics.retweet_count}
-                          username={postItem.username}
-                          user={postItem.user}
-                          category={postItem.category}
-                          tweet={postItem}
-                          notionResults={notionResults}
-                        />
-                      )}
+                      <PostCard
+                        source={
+                          postItem.object === "cast" ? "farcaster" : "twitter"
+                        }
+                        text={postItem.text}
+                        user={
+                          postItem.object === "cast"
+                            ? postItem.author
+                            : postItem.user
+                        }
+                        category={postItem.category}
+                        tagline={postItem.tagline}
+                        embeds={postItem.embeds ?? []}
+                        media={postItem.media ?? []}
+                        postId={postItem.hash}
+                        referencedPost={postItem.referenced_tweet}
+                        mentionedProfiles={postItem.mentioned_profiles ?? []}
+                        renderEmbeds={true}
+                        timestamp={
+                          postItem.object === "cast"
+                            ? postItem.timestamp
+                            : postItem.created_at
+                        }
+                        post={postItem}
+                        likes={
+                          postItem.public_metrics
+                            ? postItem.public_metrics.like_count
+                            : undefined
+                        }
+                        retweets={
+                          postItem.public_metrics
+                            ? postItem.public_metrics.retweet_count
+                            : undefined
+                        }
+                        impressions={
+                          postItem.public_metrics
+                            ? postItem.public_metrics.impression_count
+                            : undefined
+                        }
+                        replies={
+                          postItem.public_metrics
+                            ? postItem.public_metrics.reply_count
+                            : undefined
+                        }
+                        reactions={postItem.reactions}
+                      />
                     </>
                   </div>
                 </CarouselItem>

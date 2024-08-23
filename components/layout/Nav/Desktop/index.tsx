@@ -37,6 +37,8 @@ export function DesktopNav({ items, notionResults }: MainNavProps) {
   useLoadAllCastsToStore()
   useLoadAllTweetsToStore()
 
+  console.log("the pathname", pathname)
+
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="container hidden h-16 w-full items-center justify-between space-x-4 sm:space-x-0 md:flex">
@@ -48,7 +50,7 @@ export function DesktopNav({ items, notionResults }: MainNavProps) {
           <Link href="/" className="flex items-center space-x-2">
             <span
               className={`${
-                pathname === "" ? "font-semibold" : ""
+                pathname === "/" ? "font-semibold" : ""
               } inline-block`}
             >
               Discover

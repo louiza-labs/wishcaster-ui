@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { FixedSizeList as List } from "react-window"
 
 import { Button } from "@/components/ui/button"
@@ -28,6 +28,19 @@ const UserFeed = ({
   const [visibleStartIndex, setVisibleStartIndex] = useState(0)
 
   const gutter = 10
+
+  const filteredUsers = useMemo(() => {
+    return relevantUsers
+      ? relevantUsers.reduce((users, currentUser) => {
+          if (
+            !users.find((user: any) => user.username === currentUser.username)
+          ) {
+            users.push(currentUser)
+          }
+          return users
+        }, [])
+      : []
+  }, [relevantUsers])
 
   useEffect(() => {
     const updateSize = () => {
@@ -103,13 +116,13 @@ const UserFeed = ({
 
   return (
     <>
-      {relevantUsers && relevantUsers.length && !loadingUsers ? (
+      {filteredUsers && filteredUsers.length && !loadingUsers ? (
         <List
           height={listHeight}
-          width={"100%"}
+          width={"99.9%"}
           itemSize={70}
-          itemCount={relevantUsers.length}
-          itemData={relevantUsers}
+          itemCount={filteredUsers.length}
+          itemData={filteredUsers}
           useIsScrolling
           onItemsRendered={({ visibleStartIndex }: any) =>
             setVisibleStartIndex(visibleStartIndex)

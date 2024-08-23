@@ -66,6 +66,7 @@ const PostPage: FC<PostPageProps> = async ({ searchParams, params }) => {
       ? await fetchFarcasterCast(params.id)
       : await fetchTweetByIds(params.id)
 
+  console.log("the post", post)
   if (source === "twitter") {
     let typedPost: any = post
     const users = await fetchTwitterUsers(
@@ -94,7 +95,7 @@ const PostPage: FC<PostPageProps> = async ({ searchParams, params }) => {
     ? await searchNotion(notionAccessCode)
     : { results: [] }
   const notionResults = notionSearch.results
-
+  console.log("the enriched post", enrichedPost)
   const { reactionsObject } =
     source === "farcaster" && enrichedPost && enrichedPost.hash
       ? await fetchCastsReactionsUntilCovered(
@@ -108,6 +109,7 @@ const PostPage: FC<PostPageProps> = async ({ searchParams, params }) => {
             recasts: [],
           },
         }
+  console.log("the reactionsObject", reactionsObject)
   const categories = categorizeArrayOfCasts(overallPosts) as Category[]
 
   let singleArrayPost = enrichedPost
@@ -215,6 +217,7 @@ const PostPage: FC<PostPageProps> = async ({ searchParams, params }) => {
                             cast={postWithCategory}
                             notionResults={notionResults}
                             hideActions={false}
+                            is={true}
                             mentionedProfiles={
                               postWithCategory.mentioned_profiles
                             }
@@ -249,14 +252,7 @@ const PostPage: FC<PostPageProps> = async ({ searchParams, params }) => {
                         )}
                       </div>
                     </div>
-                    {!isError && source === "farcaster" ? (
-                      <div className="hidden lg:col-span-12 lg:block">
-                        <SaveCast
-                          notionResults={notionResults}
-                          cast={postWithCategory}
-                        />
-                      </div>
-                    ) : null}
+
                     <TopReplies
                       castHash={postWithCategory.hash ?? ""}
                       notionResults={notionResults}
@@ -304,19 +300,19 @@ const PostPage: FC<PostPageProps> = async ({ searchParams, params }) => {
               <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
                 Let&apos;s build
               </h1>
+              <div className="hidden lg:col-span-12 lg:block">
+                <SaveCast
+                  notionResults={notionResults}
+                  cast={postWithCategory}
+                />
+              </div>
               {source === "farcaster" ? (
                 <Build
                   cast={postWithCategory}
                   hash={postWithCategory ? postWithCategory.hash ?? "" : ""}
                   reactions={reactionsObject}
                 />
-              ) : (
-                <SaveCast
-                  notionResults={notionResults}
-                  cast={postWithCategory}
-                  isOnTweetsPage={true}
-                />
-              )}
+              ) : null}
             </div>
           </div>
         </main>

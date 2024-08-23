@@ -74,7 +74,7 @@ const SaveCastDropdown = ({
         asChild
       >
         <Button
-          variant={"ghost"}
+          variant={"default"}
           disabled={!(isConnectedToLinear || isConnectedToNotion)}
           className="relative h-fit"
         >

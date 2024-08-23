@@ -80,13 +80,17 @@ export function getRanking(
 
   const getValueByMetric = (objectToGetValueFrom: any) => {
     if (metric === "likes") {
-      return objectToGetValueFrom.reactions.likes_count
+      return objectToGetValueFrom.reactions
+        ? objectToGetValueFrom.reactions.likes_count
+        : 0
     }
     if (metric === "recasts") {
-      return objectToGetValueFrom.reactions.recasts_count
+      return objectToGetValueFrom.reactions
+        ? objectToGetValueFrom.reactions.recasts_count
+        : 0
     }
     if (metric === "replies") {
-      return objectToGetValueFrom.replies
+      return objectToGetValueFrom.reactions ? objectToGetValueFrom.replies : 0
     }
     return 0
   }

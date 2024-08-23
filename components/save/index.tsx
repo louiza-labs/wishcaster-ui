@@ -66,7 +66,7 @@ const SaveCast = ({
         handleClose={() => {}}
         cast={cast}
         inputFields={fieldsForGithub}
-        buttonText="Create Github Repo"
+        buttonText="Create Repo"
         formTitle="Create Github Repository"
         buttonImage={"/social-account-logos/github-mark.png"}
         onClose={handleCloseGithub}
