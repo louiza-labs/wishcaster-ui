@@ -89,7 +89,7 @@ const CastFooter = ({
 
   const handleRouteToCastPage = () => {
     if (hash) {
-      router.push(`/cast/${hash}`)
+      router.push(`/post/${hash}?source=farcaster`)
     }
   }
 

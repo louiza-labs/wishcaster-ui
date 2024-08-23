@@ -1,15 +1,11 @@
 import { FC } from "react"
-import { Cast as CastType, Category } from "@/types"
+import { Category } from "@/types"
 
 import { PRODUCT_CATEGORIES_AS_MAP, dateOptions } from "@/lib/constants"
 import {
-  addCategoryFieldsToCasts,
-  addUserInfoToTweets,
   categorizeArrayOfCasts,
-  extractUserIdsFromTweets,
   filterCastsForCategory,
   generateWhimsicalErrorMessages,
-  removeDuplicateTweets,
   sortCastsByProperty,
 } from "@/lib/helpers"
 import { Badge } from "@/components/ui/badge"
@@ -21,10 +17,7 @@ import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
 import TopicStats from "@/components/topics/stats"
 import {
-  fetchCastsUntilCovered,
-  fetchChannelCasts,
-  fetchTweets,
-  fetchTwitterUsers,
+  fetchPosts,
   getUsersNotionAccessCode,
   searchNotion,
 } from "@/app/actions"
@@ -68,44 +61,20 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
+  let castsAndTweets = await fetchPosts({
+    timePeriod: timeFilterParam ?? "ytd",
+    channelId: "someone-build",
+  })
 
-  const { casts: initialCasts, nextCursor: cursorToUse } = !timeFilterParam
-    ? await fetchChannelCasts("someone-build")
-    : await fetchCastsUntilCovered(
-        "someone-build",
-        timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
-      )
-
-  const { data: tweets } = await fetchTweets()
-  let tweetsWithoutDuplicates = removeDuplicateTweets(tweets)
-
-  const users = await fetchTwitterUsers(
-    extractUserIdsFromTweets(tweetsWithoutDuplicates)
-  )
-
-  const tweetsWithUsers = addUserInfoToTweets(
-    tweetsWithoutDuplicates,
-    users?.data
-  )
-
-  let filteredPosts = initialCasts
-  const categories = categorizeArrayOfCasts([
-    ...filteredPosts,
-    ...tweetsWithUsers,
-  ]) as Category[]
+  const categories = categorizeArrayOfCasts(castsAndTweets) as Category[]
   const mobileViewParam = parseQueryParam(searchParams.view)
 
-  filteredPosts = addCategoryFieldsToCasts(
-    [...filteredPosts, ...tweetsWithUsers],
-    categories
-  ) as CastType[]
-
-  filteredPosts = filterCastsForCategory(filteredPosts, params.topic)
-  let topCast = filteredPosts.length === 1 ? filteredPosts[0] : undefined
-  const sortedCasts = sortCastsByProperty(filteredPosts, "likes_count")
+  castsAndTweets = filterCastsForCategory(castsAndTweets, params.topic)
+  let topCast = castsAndTweets.length === 1 ? castsAndTweets[0] : undefined
+  const sortedCasts = sortCastsByProperty(castsAndTweets, "likes_count")
   topCast = topCast ? topCast : sortedCasts[0]
 
-  const isError = !filteredPosts.length || !selectedTopic
+  const isError = !castsAndTweets.length || !selectedTopic
   const breadCrumbPages = [
     { name: "Topics", link: "/topics" },
     {
@@ -117,7 +86,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   return (
     <>
       <div className="top-66 sticky z-10">
-        <FilterBar initialCasts={initialCasts} />
+        <FilterBar initialCasts={castsAndTweets} />
       </div>
       <section className="mx-auto h-fit py-6 md:container sm:px-6 lg:h-auto lg:px-20">
         <div className="px-6 md:px-0">
@@ -148,8 +117,9 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
           </div>
 
           <TopicStats
-            casts={sortedCasts}
-            cursor={cursorToUse}
+            posts={castsAndTweets}
+            categories={categories}
+            cursor={""}
             topic={params.topic}
             mobileView={mobileViewParam}
           />
@@ -170,8 +140,8 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                   </h2>
                   <div className="flex size-fit flex-row items-start lg:h-[70vh] xl:h-fit">
                     <TopCasts
-                      casts={initialCasts}
-                      cursor={cursorToUse}
+                      casts={castsAndTweets}
+                      cursor={""}
                       topic={params.topic}
                       notionResults={notionResults}
                       sortParam={sortParam}
@@ -186,18 +156,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
             className={`${
               mobileViewParam !== "build" ? "hidden lg:block" : "block"
             } col-span-12  overflow-y-auto sm:col-span-4`}
-          >
-            {/* <div className="flex flex-col items-end gap-y-8">
-              <h1 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl lg:block">
-                Let&apos;s build
-              </h1>
-              <BuildComponent
-                casts={initialCasts}
-                cursor={cursorToUse}
-                topic={params.topic}
-              />
-            </div> */}
-          </div>
+          ></div>
           <div
             className={`${
               mobileViewParam !== "feed" ? "hidden lg:flex" : "flex"
@@ -207,9 +166,9 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
               Feed
             </h3>
             <CastsAndTweetsFeed
-              posts={filteredPosts}
+              posts={castsAndTweets}
               timeFilterParam={timeFilterParam}
-              nextCursor={cursorToUse}
+              nextCursor={""}
               columns={"grid-cols-3"}
               topic={params.topic}
             />

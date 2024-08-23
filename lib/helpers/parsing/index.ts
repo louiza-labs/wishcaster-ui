@@ -5,6 +5,7 @@ export const extractUserIdsFromTweets = (tweets: any) => {
 
 export function normalizeTweetText(text: string): string {
   // Remove leading/trailing whitespace
+  if (typeof text !== "string" || !text) return ""
   text = text.trim()
 
   // Replace newline characters with spaces

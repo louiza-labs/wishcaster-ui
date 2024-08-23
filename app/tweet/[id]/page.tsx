@@ -100,7 +100,9 @@ const TweetPage: FC<TweetPageProps> = async ({ searchParams, params }) => {
   let overallChannelCasts = initialCasts
   const categories = categorizeArrayOfCasts([
     ...overallChannelCasts,
-    ...tweetsWithoutDuplicates,
+    ...(tweetsWithoutDuplicates && Array.isArray(tweetsWithoutDuplicates)
+      ? tweetsWithoutDuplicates
+      : []),
     tweet?.data,
   ]) as Category[]
 

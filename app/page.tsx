@@ -89,7 +89,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   return (
     <>
       <div className="top-66 sticky z-10 lg:hidden">
-        <FilterBar initialCasts={onlyCasts} />
+        <FilterBar initialCasts={castsAndTweets} />
       </div>{" "}
       <section className="mx-auto py-6 md:container sm:px-6 lg:px-6">
         <Header />

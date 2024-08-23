@@ -57,7 +57,7 @@ const TweetContent = ({
         href={
           routeToWarpcast && author
             ? `https://x.com/${author.username}/status/${hash}`
-            : `/tweet/${hash}`
+            : `/post/${hash}?source=twitter`
         }
         target={routeToWarpcast ? "_blank" : undefined}
         rel={routeToWarpcast ? "noReferrer" : undefined}

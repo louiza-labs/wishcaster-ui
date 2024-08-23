@@ -1,17 +1,13 @@
 "use client"
 
-import { Cast as CastType, Category } from "@/types"
+import { Cast as CastType } from "@/types"
 
 import {
-  addCategoryFieldsToCasts,
-  categorizeArrayOfCasts,
   filterCastsForCategory,
   generateStatsObjectForTopic,
   rankTopics,
   summarizeByCategory,
 } from "@/lib/helpers"
-import { useFetchCastsUntilCovered } from "@/hooks/farcaster/casts/useFetchCastsUntilCovered"
-import { useFetchTweetsUntilCovered } from "@/hooks/twitter/tweets/useFetchTweetsUntilCovered"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -49,30 +45,17 @@ const CardStat: React.FC<CardStatProp> = ({ title, value, rank }) => {
 }
 
 interface CastStatProps {
-  casts: CastType[]
+  posts: CastType[]
+  categories: any[]
   cursor: string
   topic: string
   mobileView: string
 }
 
-const TopicStats: React.FC<CastStatProps> = ({ casts, topic }) => {
-  const { castsToShow: castsWithUserInfo } = useFetchCastsUntilCovered(casts)
-  const { tweetsToShow: tweets } = useFetchTweetsUntilCovered(casts)
-  const categories = categorizeArrayOfCasts([
-    ...castsWithUserInfo,
-    ...tweets,
-  ]) as Category[]
+const TopicStats: React.FC<CastStatProps> = ({ posts, topic, categories }) => {
+  const topicRank = rankTopics(posts, topic)
 
-  const castsAndTweetsWithCategories = addCategoryFieldsToCasts(
-    [...castsWithUserInfo, ...tweets],
-    categories
-  ) as CastType[]
-  const topicRank = rankTopics(castsAndTweetsWithCategories, topic)
-
-  const filteredPostsAndTweets = filterCastsForCategory(
-    castsAndTweetsWithCategories,
-    topic
-  )
+  const filteredPostsAndTweets = filterCastsForCategory(posts, topic)
   const topicStats = summarizeByCategory(filteredPostsAndTweets, "likes")[0]
   const statsAndRankingsForTopic = { ...topicStats, ...topicRank }
   const generatedStats: any = generateStatsObjectForTopic(

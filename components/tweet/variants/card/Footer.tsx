@@ -62,7 +62,7 @@ const TweetFooter = ({
 
   const handleRouteToTweetPage = () => {
     if (hash) {
-      router.push(`/tweet/${hash}`)
+      router.push(`/post/${hash}?source=twitter`)
     }
   }
 
