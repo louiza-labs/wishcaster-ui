@@ -222,7 +222,7 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
   return (
     <>
       <div className="top-66 sticky z-10">
-        <FilterBar initialCasts={posts} />
+        <FilterBar initialCasts={posts} posts={posts} />
       </div>
       <section className="mx-auto h-fit py-6 md:container sm:px-6 lg:h-auto lg:px-10 xl:flex xl:flex-row">
         <div className="flex flex-col">

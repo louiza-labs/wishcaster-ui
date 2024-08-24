@@ -86,7 +86,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   return (
     <>
       <div className="top-66 sticky z-10">
-        <FilterBar initialCasts={castsAndTweets} />
+        <FilterBar initialCasts={castsAndTweets} posts={castsAndTweets} />
       </div>
       <section className="mx-auto h-fit py-6 md:container sm:px-6 lg:h-auto lg:px-20">
         <div className="px-6 md:px-0">
@@ -140,7 +140,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
                   </h2>
                   <div className="flex size-fit flex-row items-start lg:h-[70vh] xl:h-fit">
                     <TopCasts
-                      casts={castsAndTweets}
+                      posts={castsAndTweets}
                       cursor={""}
                       topic={params.topic}
                       notionResults={notionResults}

@@ -38,6 +38,7 @@ interface Category {
 interface FiltersProps {
   initialCasts: any[]
   asFilterBar?: boolean
+  categories?: any[]
 }
 
 const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
@@ -215,7 +216,7 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
             Filters
           </p>
         )}
-        <div className=" flex flex-col items-start">
+        <div className=" hidden flex-col items-start">
           {asFilterBar ? null : (
             <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
               Sources
@@ -233,7 +234,7 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="mr-4 w-fit whitespace-nowrap rounded-full font-semibold"
+                    className="lg-w-full mr-4 w-fit whitespace-nowrap rounded-full font-semibold"
                   >
                     {getSelectedFilterValues()
                       ? `${getSelectedFilterValues()}`

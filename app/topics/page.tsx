@@ -83,7 +83,7 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
   return (
     <>
       <div className="top-66 sticky z-10">
-        <FilterBar initialCasts={onlyCasts} />
+        <FilterBar initialCasts={onlyCasts} posts={castsAndTweets} />
       </div>
 
       <section className="relative mx-auto p-6 md:container sm:px-6 lg:px-20">

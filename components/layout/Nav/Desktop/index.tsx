@@ -8,8 +8,6 @@ import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 import useSubscribeToSessionChanges from "@/hooks/auth/useSubscribeToSessionChanges"
-import useLoadAllCastsToStore from "@/hooks/farcaster/casts/useLoadAllCastsToStore"
-import useLoadAllTweetsToStore from "@/hooks/twitter/tweets/useLoadAllTweetsToStore"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -34,10 +32,6 @@ export function DesktopNav({ items, notionResults }: MainNavProps) {
   const pathname = usePathname()
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
   useSubscribeToSessionChanges()
-  useLoadAllCastsToStore()
-  useLoadAllTweetsToStore()
-
-  console.log("the pathname", pathname)
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
@@ -98,7 +92,7 @@ export function DesktopNav({ items, notionResults }: MainNavProps) {
             </nav>
           ) : null}
         </div>
-        {pathname.includes("research") || pathname === "/" ? null : (
+        {pathname.includes("/research") ? null : (
           <div className="mx-10 hidden w-full lg:block">
             <Search notionResults={notionResults} />
           </div>

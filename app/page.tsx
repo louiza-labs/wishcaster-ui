@@ -9,7 +9,6 @@ import {
   sortCastsByProperty,
 } from "@/lib/helpers"
 import CastAndTweetsFeed from "@/components/feed/castsAndTweets"
-import Filters from "@/components/filters"
 import FilterBar from "@/components/filters/FilterBar"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import Rankings from "@/components/rankings"
@@ -88,16 +87,17 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
 
   return (
     <>
-      <div className="top-66 sticky z-10 lg:hidden">
-        <FilterBar initialCasts={castsAndTweets} />
+      <div className="top-66 sticky z-10">
+        <FilterBar initialCasts={castsAndTweets} posts={castsAndTweets} />
       </div>{" "}
       <section className="mx-auto py-6 md:container sm:px-6 lg:px-6">
-        <Header />
+        <div className="flex w-full flex-col items-center justify-between">
+          <Header />
+        </div>
         <main className="relative grid grid-cols-1 gap-4 lg:grid-cols-12 ">
           <aside className="no-scrollbar sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:flex">
             {/* <CardLayoutToggle /> */}
             <SortCasts />
-            <Filters initialCasts={onlyCasts} />
           </aside>
           <article className="no-scrollbar lg:col-span-8 lg:px-2  ">
             {isError ? (
@@ -134,7 +134,7 @@ interface HeaderProps {}
 
 const Header: FC<HeaderProps> = () => {
   return (
-    <div className="flex flex-col items-center gap-2 md:items-start md:pb-10">
+    <div className="flex flex-col items-center gap-2 md:pb-10  lg:hidden">
       <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
         What people want! <br className="hidden sm:inline" />
       </h1>

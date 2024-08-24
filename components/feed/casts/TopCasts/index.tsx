@@ -1,23 +1,18 @@
 "use client"
 
-import { Cast as CastType } from "@/types"
 import Autoplay from "embla-carousel-autoplay"
 
 import { sortCastsByProperty } from "@/lib/helpers"
-import { useFetchCastsUntilCovered } from "@/hooks/farcaster/casts/useFetchCastsUntilCovered"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
-import useAddUsersToTweets from "@/hooks/twitter/tweets/useAddUsersToTweets"
-import { useFetchTweetsUntilCovered } from "@/hooks/twitter/tweets/useFetchTweetsUntilCovered"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel"
-import { CastSkeleton } from "@/components/loading/cast"
 import PostCard from "@/components/post"
 
 interface TopCastsProps {
-  casts: CastType[]
+  posts: any[]
   cursor: string
   sortParam: string
   topic: string
@@ -25,21 +20,13 @@ interface TopCastsProps {
 }
 
 const TopCasts = ({
-  casts,
+  posts,
   cursor,
   topic,
   sortParam,
   notionResults,
 }: TopCastsProps) => {
-  const { castsToShow: castsWithUserInfo, fetchingCasts } =
-    useFetchCastsUntilCovered(casts)
-  const { tweetsToShow, fetching: fetchingTweets } =
-    useFetchTweetsUntilCovered(casts)
-  const { tweetsWithUsers } = useAddUsersToTweets(tweetsToShow)
-  let { filteredPosts } = useFilterFeed(
-    [...castsWithUserInfo, ...tweetsWithUsers],
-    topic
-  )
+  let { filteredPosts } = useFilterFeed(posts, topic)
   const sortedPosts = sortCastsByProperty(filteredPosts, "likes_count")
 
   return (
@@ -93,9 +80,7 @@ const TopCasts = ({
         ))}
       </div>
       <div className="hidden size-fit xl:block ">
-        {sortedPosts &&
-        sortedPosts.length &&
-        !(fetchingCasts || fetchingTweets) ? (
+        {sortedPosts && sortedPosts.length ? (
           <Carousel
             opts={{
               align: "start",
@@ -170,18 +155,7 @@ const TopCasts = ({
               ))}
             </CarouselContent>
           </Carousel>
-        ) : fetchingCasts || fetchingTweets ? (
-          <div className="mt-4 flex size-full flex-row items-center justify-between gap-x-6">
-            <CastSkeleton size={"large"} />
-            <CastSkeleton size={"large"} />
-
-            <CastSkeleton size={"large"} />
-          </div>
-        ) : (
-          <div>
-            <p className="text-xl font-light">No casts found</p>
-          </div>
-        )}
+        ) : null}
       </div>
     </>
   )
