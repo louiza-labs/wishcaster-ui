@@ -16,7 +16,7 @@ import {
   generateStatsForPosts,
 } from "@/lib/helpers/summary"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import FilterBar from "@/components/filters/FilterBar"
+import FilterBar from "@/components/filters/FilterBar/new"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import ValidateRows from "@/components/research"
 import ValidateSearch from "@/components/search/ValidateSearch"
@@ -222,7 +222,7 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
   return (
     <>
       <div className="top-66 sticky z-10">
-        <FilterBar initialCasts={posts} posts={posts} />
+        <FilterBar categories={categories} posts={posts} />
       </div>
       <section className="mx-auto h-fit py-6 md:container sm:px-6 lg:h-auto lg:px-10 xl:flex xl:flex-row">
         <div className="flex flex-col">

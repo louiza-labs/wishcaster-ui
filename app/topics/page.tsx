@@ -9,7 +9,7 @@ import {
   sortCastsByProperty,
 } from "@/lib/helpers"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import FilterBar from "@/components/filters/FilterBar"
+import FilterBar from "@/components/filters/FilterBar/new"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
 import Topics from "@/components/topics"
@@ -83,7 +83,7 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
   return (
     <>
       <div className="top-66 sticky z-10">
-        <FilterBar initialCasts={onlyCasts} posts={castsAndTweets} />
+        <FilterBar categories={categories} posts={castsAndTweets} />
       </div>
 
       <section className="relative mx-auto p-6 md:container sm:px-6 lg:px-20">

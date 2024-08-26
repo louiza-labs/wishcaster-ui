@@ -1,11 +1,6 @@
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardFooter } from "@/components/ui/card"
 import { Icons } from "@/components/icons"
 
 interface PopularTopicCardProps {
@@ -22,63 +17,85 @@ interface PopularTopicCardProps {
   handleClick: (topic: string) => void
 }
 
-const PopularTopicCard = ({
+export default function PopularTopicCard({
   name,
-  description,
   likes,
   replies,
   recasts,
   rank,
-  avgFollowers,
   count,
   handleClick,
   id,
-  powerBadges,
-}: PopularTopicCardProps) => {
+}: PopularTopicCardProps) {
+  function formatNumber(value: number): string {
+    if (value >= 1_000_000_000) {
+      return (value / 1_000_000_000).toFixed(1) + "B"
+    } else if (value >= 1_000_000) {
+      return (value / 1_000_000).toFixed(1) + "M"
+    } else if (value >= 1_000) {
+      return (value / 1_000).toFixed(1) + "K"
+    } else {
+      return value.toString()
+    }
+  }
+
   return (
-    <Card className="hover:brightness-80 relative mb-4 flex h-fit  cursor-pointer flex-col rounded-lg bg-background/50 p-2 backdrop-blur-lg md:mb-0 md:w-60">
-      <CardHeader className="flex h-28 flex-col items-start gap-2">
-        <CardTitle className="text-2xl font-bold">{rank}</CardTitle>
-        <p className="text-2xl font-bold">{name}</p>
-      </CardHeader>
-      <CardContent className="mt-10 h-28 grow">
-        <div className="grid w-full grid-cols-2 gap-4">
-          {[
-            { icon: Icons.likes, count: likes, noun: "like" },
-            { icon: Icons.recasts, count: recasts, noun: "repost" },
-            { icon: Icons.replies, count: replies, noun: "reply" },
-            { icon: Icons.boxes, count: count, noun: "count" },
-          ].map(({ icon: Icon, count, noun }) => (
-            <div
-              key={noun}
-              className="col-span-1 flex items-center gap-x-2 text-sm"
-            >
-              <Icon className="size-4 text-gray-700" />
-              <div className="flex flex-col items-start">
-                <p className="font-medium">{count.toLocaleString()}</p>
-                <p>
-                  {count !== 1 && noun !== "count"
-                    ? noun === "reply"
-                      ? `replies`
-                      : `${noun}s`
-                    : noun}
-                </p>
-              </div>
-            </div>
-          ))}
+    <Card className="mx-auto w-full max-w-md overflow-hidden border shadow-lg">
+      <div className="relative flex h-full flex-col p-6">
+        <Badge className="absolute right-4 top-4 bg-primary px-2 py-1 text-primary-foreground">
+          Rank #{rank}
+        </Badge>
+        <h2 className="mb-6 text-lg font-bold text-primary">{name}</h2>
+        <div className="mb-6 grid grid-cols-2 gap-6">
+          <Stat
+            icon={<Icons.likes className="size-2 text-primary" />}
+            value={formatNumber(likes)}
+            label={likes === 1 ? "Like" : "Likes"}
+          />
+          <Stat
+            icon={<Icons.recasts className="size-2 text-primary" />}
+            value={formatNumber(recasts)}
+            label={recasts === 1 ? "Repost" : "Reposts"}
+          />
+          <Stat
+            icon={<Icons.replies className="size-2 text-primary" />}
+            value={formatNumber(replies)}
+            label={replies === 1 ? "Reply" : "Replies"}
+          />
+          <Stat
+            icon={<Icons.boxes className="size-2 text-primary" />}
+            value={formatNumber(count)}
+            label={"Count"}
+          />
         </div>
-      </CardContent>
-      <CardFooter className="mb-4 mt-10 flex w-full flex-col items-start">
-        <Button
-          variant={"default"}
-          onClick={() => handleClick(id)}
-          className=" self-end"
-        >
-          Explore {"-->"}
-        </Button>
-      </CardFooter>
+        <CardFooter className="mt-auto p-0">
+          <Button
+            className="w-full bg-primary text-primary-foreground transition-colors hover:bg-primary/90"
+            onClick={() => handleClick(id)}
+          >
+            Explore {"-->"}
+          </Button>
+        </CardFooter>
+      </div>
     </Card>
   )
 }
 
-export default PopularTopicCard
+interface StatProps {
+  icon: any
+
+  value: string
+  label: string
+}
+
+function Stat({ icon, value, label }: StatProps) {
+  return (
+    <div className="flex items-center space-x-4 rounded-lg border bg-background/40 p-3 shadow-sm backdrop-blur-sm">
+      <div className="rounded-full bg-primary/10 p-2 text-primary">{icon}</div>
+      <div>
+        <div className="text-sm font-bold text-foreground">{value}</div>
+        {/* <div className="text-xs text-muted-foreground">{label}</div> */}
+      </div>
+    </div>
+  )
+}

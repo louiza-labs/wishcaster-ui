@@ -2,7 +2,7 @@
 
 import { useNeynarContext } from "@neynar/react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { Suspense, useCallback, useMemo, useState } from "react"
+import { Suspense, useCallback, useMemo } from "react"
 
 import Categories from "@/components/feed/categories"
 import DateFilters from "@/components/filters/Date"
@@ -31,26 +31,21 @@ interface Category {
 }
 
 interface FiltersProps {
-  initialCasts: any[]
+  posts: any[]
   asFilterBar?: boolean
 }
 
-const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
+const Filters = ({ posts, asFilterBar }: FiltersProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { user, isAuthenticated } = useNeynarContext()
   const path = usePathname()
   const isOnTopicsPage = path === "topics"
-  const [
-    shouldShowTwitterFilterSelectedOnLoad,
-    setShouldShowTwitterFilterSelectedOnLoad,
-  ] = useState(true)
-  const [
-    shouldShowFarcasterFilterSelectedOnLoad,
-    setShouldShowFarcasterFilterSelectedOnLoad,
-  ] = useState(true)
+  
 
-  const categories = categorizeArrayOfCasts(initialCasts) as Category[]
+  console.log('the posts in the filters', posts)
+
+  const categories = categorizeArrayOfCasts(posts) as Category[]
 
   const filteredCategories = filterDuplicateCategories(categories)
 
@@ -210,7 +205,7 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
             Filters
           </p>
         )}
-        <div className="flex flex-row items-center">
+        <div className="flex flex-col items-center">
           <div className=" flex flex-col items-start">
             
               <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
@@ -240,7 +235,7 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
           </div>
           <div
             className={
-             "flex flex-row items-center gap-y-6"
+             "flex flex-col items-center gap-y-6"
             }
           >
             <div className=" flex flex-col items-start">

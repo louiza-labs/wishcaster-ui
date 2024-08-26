@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import TopCasts from "@/components/feed/casts/TopCasts"
 import CastsAndTweetsFeed from "@/components/feed/castsAndTweets"
-import FilterBar from "@/components/filters/FilterBar"
+import FilterBar from "@/components/filters/FilterBar/new"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
 import TopicStats from "@/components/topics/stats"
@@ -86,7 +86,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   return (
     <>
       <div className="top-66 sticky z-10">
-        <FilterBar initialCasts={castsAndTweets} posts={castsAndTweets} />
+        <FilterBar categories={categories} posts={castsAndTweets} />
       </div>
       <section className="mx-auto h-fit py-6 md:container sm:px-6 lg:h-auto lg:px-20">
         <div className="px-6 md:px-0">

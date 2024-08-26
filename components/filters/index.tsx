@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useCallback, useMemo, useState } from "react"
+import { useCallback, useMemo } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useNeynarContext } from "@neynar/react"
 
@@ -47,14 +47,6 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
   const { user, isAuthenticated } = useNeynarContext()
   const path = usePathname()
   const isOnTopicsPage = path === "topics"
-  const [
-    shouldShowTwitterFilterSelectedOnLoad,
-    setShouldShowTwitterFilterSelectedOnLoad,
-  ] = useState(true)
-  const [
-    shouldShowFarcasterFilterSelectedOnLoad,
-    setShouldShowFarcasterFilterSelectedOnLoad,
-  ] = useState(true)
 
   const categories = categorizeArrayOfCasts(initialCasts) as Category[]
 
@@ -205,172 +197,141 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
   }
 
   return (
-    <Suspense>
-      <div
-        className={` flex h-fit ${
-          asFilterBar ? "flex-row overflow-auto overflow-x-scroll" : "flex-col"
-        } gap-y-6 lg:col-span-12`}
-      >
+    <div
+      className={` flex h-fit ${
+        asFilterBar ? "flex-row overflow-auto overflow-x-scroll" : "flex-col"
+      } gap-y-6 lg:col-span-12`}
+    >
+      {asFilterBar ? null : (
+        <p className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl lg:block">
+          Filters
+        </p>
+      )}
+      <div className=" hidden flex-col items-start">
         {asFilterBar ? null : (
-          <p className="hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-3xl lg:block">
-            Filters
+          <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
+            Sources
           </p>
         )}
-        <div className=" hidden flex-col items-start">
-          {asFilterBar ? null : (
-            <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
-              Sources
-            </p>
-          )}
-          <div
-            className={`${
-              asFilterBar
-                ? "flex flex-row items-center gap-x-2"
-                : "md:gap-x-auto grid grid-cols-2 gap-x-10 md:flex md:flex-wrap md:gap-4 xl:grid xl:gap-x-10 xl:gap-y-0"
-            }`}
-          >
-            {asFilterBar ? (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="lg-w-full mr-4 w-fit whitespace-nowrap rounded-full font-semibold"
-                  >
-                    {getSelectedFilterValues()
-                      ? `${getSelectedFilterValues()}`
-                      : "🍿 Feeds"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="flex w-fit flex-col gap-y-4 p-4">
-                  <InteractionsCheckbox
-                    handleChange={handleHideXSourceFilterChange}
-                    value={!filterIsSelected("hide-twitter")}
-                    text={"X"}
-                    id={"hide-twitter"}
-                  />
-                  <InteractionsCheckbox
-                    handleChange={handleHideFarcasterSourceFilterChange}
-                    value={!filterIsSelected("hide-farcaster")}
-                    text={"Farcaster"}
-                    id={"hide-farcaster"}
-                  />
-                </PopoverContent>
-              </Popover>
-            ) : (
-              <>
+        <div
+          className={`${
+            asFilterBar
+              ? "flex flex-row items-center gap-x-2"
+              : "md:gap-x-auto grid grid-cols-2 gap-x-10 md:flex md:flex-wrap md:gap-4 xl:grid xl:gap-x-10 xl:gap-y-0"
+          }`}
+        >
+          {asFilterBar ? (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="lg-w-full mr-4 w-fit whitespace-nowrap rounded-full font-semibold"
+                >
+                  {getSelectedFilterValues()
+                    ? `${getSelectedFilterValues()}`
+                    : "🍿 Feeds"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="flex w-fit flex-col gap-y-4 p-4">
                 <InteractionsCheckbox
                   handleChange={handleHideXSourceFilterChange}
                   value={!filterIsSelected("hide-twitter")}
                   text={"X"}
-                  id={"twitter"}
+                  id={"hide-twitter"}
                 />
                 <InteractionsCheckbox
                   handleChange={handleHideFarcasterSourceFilterChange}
                   value={!filterIsSelected("hide-farcaster")}
                   text={"Farcaster"}
-                  id={"farcaster"}
+                  id={"hide-farcaster"}
                 />
-              </>
-            )}
-          </div>
-        </div>
-        <div
-          className={`${
-            asFilterBar
-              ? "flex flex-row items-center gap-x-4"
-              : "grid grid-cols-1 gap-y-6"
-          }`}
-        >
-          <div className=" flex flex-col items-start">
-            {asFilterBar ? null : (
-              <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
-                Date
-              </p>
-            )}
+              </PopoverContent>
+            </Popover>
+          ) : (
             <>
-              <DateFilters
-                value={selectedDateFilter}
-                datesArray={dateFiltersArray}
-                asFilterBar={asFilterBar}
-                handleChangeForSelect={handleSelectDateValueChange}
+              <InteractionsCheckbox
+                handleChange={handleHideXSourceFilterChange}
+                value={!filterIsSelected("hide-twitter")}
+                text={"X"}
+                id={"twitter"}
+              />
+              <InteractionsCheckbox
+                handleChange={handleHideFarcasterSourceFilterChange}
+                value={!filterIsSelected("hide-farcaster")}
+                text={"Farcaster"}
+                id={"farcaster"}
               />
             </>
-          </div>
-          {asFilterBar ? null : <Separator />}
-          {isOnTopicsPage ? null : (
-            <>
-              <div className={"flex  flex-col"}>
-                <Categories
-                  categories={filteredCategories}
-                  asFilterBar={asFilterBar}
-                />
-              </div>
-              {asFilterBar ? null : <Separator />}
-              <div className=" flex flex-col items-start">
-                {asFilterBar ? null : (
-                  <div className="gap-x flex flex-row items-center gap-x-2 pb-4">
-                    <p className=" text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
-                      User
-                    </p>
-                    <Avatar className="relative size-4">
-                      <AvatarImage
-                        src={"/social-account-logos/farcaster-purple-white.png"}
-                        alt={"farcaster"}
-                        className="rounded-lg"
-                      />
-                    </Avatar>
-                  </div>
-                )}
-                <div
-                  className={`${
-                    asFilterBar
-                      ? "flex flex-row items-center gap-x-2"
-                      : "md:gap-x-auto grid grid-cols-2 gap-x-10 md:flex md:flex-wrap md:gap-4 xl:grid xl:gap-x-10 xl:gap-y-0"
-                  }`}
-                >
-                  {asFilterBar ? (
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-fit whitespace-nowrap rounded-full font-semibold"
-                        >
-                          {getSelectedFilterValues()
-                            ? `${getSelectedFilterValues()}`
-                            : "👥 FC User Filters"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="flex w-fit flex-col gap-y-4 p-4">
-                        <InteractionsCheckbox
-                          handleChange={handlePriorityBadgeFilterChange}
-                          value={filterIsSelected("priority-badge")}
-                          text={"Power Badge"}
-                          id={"priority"}
-                        />
-                        <InteractionsCheckbox
-                          handleChange={handleFollowingFilterChange}
-                          value={filterIsSelected("following")}
-                          text={"Following"}
-                          id={"following"}
-                        />
-                        <InteractionsCheckbox
-                          handleChange={handleLikesFilterChange}
-                          value={filterIsSelected("liked")}
-                          text={"Liked"}
-                          id={"liked"}
-                          isDisabled={!isAuthenticated}
-                        />
-                        <InteractionsCheckbox
-                          handleChange={handleRecastedFilterChange}
-                          value={filterIsSelected("recasted")}
-                          text={"Recasted"}
-                          id={"recasted"}
-                          isDisabled={!isAuthenticated}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  ) : (
-                    <>
+          )}
+        </div>
+      </div>
+      <div
+        className={`${
+          asFilterBar
+            ? "flex flex-row items-center gap-x-4"
+            : "grid grid-cols-1 gap-y-6"
+        }`}
+      >
+        <div className=" flex flex-col items-start">
+          {asFilterBar ? null : (
+            <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
+              Date
+            </p>
+          )}
+          <>
+            <DateFilters
+              value={selectedDateFilter}
+              datesArray={dateFiltersArray}
+              asFilterBar={asFilterBar}
+              handleChangeForSelect={handleSelectDateValueChange}
+            />
+          </>
+        </div>
+        {asFilterBar ? null : <Separator />}
+        {isOnTopicsPage ? null : (
+          <>
+            <div className={"flex  flex-col"}>
+              <Categories
+                categories={filteredCategories}
+                asFilterBar={asFilterBar}
+              />
+            </div>
+            {asFilterBar ? null : <Separator />}
+            <div className=" flex flex-col items-start">
+              {asFilterBar ? null : (
+                <div className="gap-x flex flex-row items-center gap-x-2 pb-4">
+                  <p className=" text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
+                    User
+                  </p>
+                  <Avatar className="relative size-4">
+                    <AvatarImage
+                      src={"/social-account-logos/farcaster-purple-white.png"}
+                      alt={"farcaster"}
+                      className="rounded-lg"
+                    />
+                  </Avatar>
+                </div>
+              )}
+              <div
+                className={`${
+                  asFilterBar
+                    ? "flex flex-row items-center gap-x-2"
+                    : "md:gap-x-auto grid grid-cols-2 gap-x-10 md:flex md:flex-wrap md:gap-4 xl:grid xl:gap-x-10 xl:gap-y-0"
+                }`}
+              >
+                {asFilterBar ? (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-fit whitespace-nowrap rounded-full font-semibold"
+                      >
+                        {getSelectedFilterValues()
+                          ? `${getSelectedFilterValues()}`
+                          : "👥 FC User Filters"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="flex w-fit flex-col gap-y-4 p-4">
                       <InteractionsCheckbox
                         handleChange={handlePriorityBadgeFilterChange}
                         value={filterIsSelected("priority-badge")}
@@ -383,80 +344,109 @@ const Filters = ({ initialCasts, asFilterBar }: FiltersProps) => {
                         text={"Following"}
                         id={"following"}
                       />
-                    </>
-                  )}
-                </div>
-              </div>
-              {asFilterBar ? null : <Separator />}
-            </>
-          )}
-          {asFilterBar ? null : (
-            <div className=" flex flex-col items-start">
-              {!isAuthenticated && !asFilterBar ? (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <p
-                        className={cn(
-                          !isAuthenticated ? "opacity-80" : "",
-                          "pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left  md:text-xl"
-                        )}
-                      >
-                        For You
-                      </p>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Sign into FC above to use these</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              ) : !asFilterBar ? (
-                <div className="flex flex-row items-center gap-x-2 pb-4">
-                  <p
-                    className={cn(
-                      !isAuthenticated ? "opacity-80" : "",
-                      "text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left  md:text-xl"
-                    )}
-                  >
-                    For You
-                  </p>
-                  <Avatar className="relative size-4">
-                    <AvatarImage
-                      src={"/social-account-logos/farcaster-purple-white.png"}
-                      alt={"farcaster"}
-                      className="rounded-lg"
+                      <InteractionsCheckbox
+                        handleChange={handleLikesFilterChange}
+                        value={filterIsSelected("liked")}
+                        text={"Liked"}
+                        id={"liked"}
+                        isDisabled={!isAuthenticated}
+                      />
+                      <InteractionsCheckbox
+                        handleChange={handleRecastedFilterChange}
+                        value={filterIsSelected("recasted")}
+                        text={"Recasted"}
+                        id={"recasted"}
+                        isDisabled={!isAuthenticated}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                ) : (
+                  <>
+                    <InteractionsCheckbox
+                      handleChange={handlePriorityBadgeFilterChange}
+                      value={filterIsSelected("priority-badge")}
+                      text={"Power Badge"}
+                      id={"priority"}
                     />
-                  </Avatar>
-                </div>
-              ) : null}
-
-              <div
-                className={`${
-                  asFilterBar
-                    ? "flex flex-row items-center gap-x-2"
-                    : "md:gap-x-auto grid grid-cols-2 gap-x-10 md:flex md:flex-wrap md:gap-4 xl:grid xl:gap-x-10 xl:gap-y-0"
-                }`}
-              >
-                <InteractionsCheckbox
-                  handleChange={handleLikesFilterChange}
-                  value={filterIsSelected("liked")}
-                  text={"Liked"}
-                  id={"liked"}
-                  isDisabled={!isAuthenticated}
-                />
-                <InteractionsCheckbox
-                  handleChange={handleRecastedFilterChange}
-                  value={filterIsSelected("recasted")}
-                  text={"Recasted"}
-                  id={"recasted"}
-                  isDisabled={!isAuthenticated}
-                />
+                    <InteractionsCheckbox
+                      handleChange={handleFollowingFilterChange}
+                      value={filterIsSelected("following")}
+                      text={"Following"}
+                      id={"following"}
+                    />
+                  </>
+                )}
               </div>
             </div>
-          )}
-        </div>
+            {asFilterBar ? null : <Separator />}
+          </>
+        )}
+        {asFilterBar ? null : (
+          <div className=" flex flex-col items-start">
+            {!isAuthenticated && !asFilterBar ? (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <p
+                      className={cn(
+                        !isAuthenticated ? "opacity-80" : "",
+                        "pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left  md:text-xl"
+                      )}
+                    >
+                      For You
+                    </p>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Sign into FC above to use these</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : !asFilterBar ? (
+              <div className="flex flex-row items-center gap-x-2 pb-4">
+                <p
+                  className={cn(
+                    !isAuthenticated ? "opacity-80" : "",
+                    "text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left  md:text-xl"
+                  )}
+                >
+                  For You
+                </p>
+                <Avatar className="relative size-4">
+                  <AvatarImage
+                    src={"/social-account-logos/farcaster-purple-white.png"}
+                    alt={"farcaster"}
+                    className="rounded-lg"
+                  />
+                </Avatar>
+              </div>
+            ) : null}
+
+            <div
+              className={`${
+                asFilterBar
+                  ? "flex flex-row items-center gap-x-2"
+                  : "md:gap-x-auto grid grid-cols-2 gap-x-10 md:flex md:flex-wrap md:gap-4 xl:grid xl:gap-x-10 xl:gap-y-0"
+              }`}
+            >
+              <InteractionsCheckbox
+                handleChange={handleLikesFilterChange}
+                value={filterIsSelected("liked")}
+                text={"Liked"}
+                id={"liked"}
+                isDisabled={!isAuthenticated}
+              />
+              <InteractionsCheckbox
+                handleChange={handleRecastedFilterChange}
+                value={filterIsSelected("recasted")}
+                text={"Recasted"}
+                id={"recasted"}
+                isDisabled={!isAuthenticated}
+              />
+            </div>
+          </div>
+        )}
       </div>
-    </Suspense>
+    </div>
   )
 }
 

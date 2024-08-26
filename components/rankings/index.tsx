@@ -196,7 +196,7 @@ const Rankings = ({ casts, view, castsAndOrTweets }: RankingsProps) => {
           <h3
             className={`${
               view === "search" ? "md:hidden" : "md:block"
-            } hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter  md:text-3xl`}
+            } hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter  md:text-2xl`}
           >
             Trending Topics
           </h3>
@@ -242,7 +242,6 @@ const Rankings = ({ casts, view, castsAndOrTweets }: RankingsProps) => {
         </div>
       ) : (
         <div className="flex flex-col  gap-y-2">
-          {JSON.stringify(castsAndOrTweets)}
           <p className="gap-x-2 text-center text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
             Unable to generate topics
           </p>

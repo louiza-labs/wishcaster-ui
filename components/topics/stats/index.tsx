@@ -16,32 +16,43 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-interface CardStatProp {
+interface CardStatProps {
   title: string
   value: number
   rank: number
 }
 
-const CardStat: React.FC<CardStatProp> = ({ title, value, rank }) => {
+const CardStat: React.FC<CardStatProps> = ({ title, value, rank }) => {
   return (
-    <Card className="w-50 flex snap-start flex-col items-center md:w-32">
+    <Card className="flex w-52 max-w-xs flex-col items-center border-none bg-gradient-to-br from-primary/10 to-secondary/10 p-4 shadow-lg">
       <Badge
-        variant={"secondary"}
-        className="m-2 mb-0 flex flex-row items-center justify-center gap-x-1"
+        variant="default"
+        className="mb-2 bg-primary px-2 py-1 text-primary-foreground"
       >
-        <span className=""> Rank:</span>
-        <span className="font-bold">{rank}</span>
+        Rank #{rank}
       </Badge>
-      <CardHeader className="flex w-full flex-col items-center justify-center p-4">
-        <CardDescription className="text-3xl font-bold text-black dark:text-white">
-          {value}
+      <CardHeader className="text-center">
+        <CardDescription className="text-4xl font-bold text-primary">
+          {formatNumber(value)}
         </CardDescription>
-        <CardTitle className="mt-2 text-center text-xs text-gray-500 dark:text-gray-400">
+        <CardTitle className="mt-2 text-sm text-muted-foreground">
           {title}
         </CardTitle>
       </CardHeader>
     </Card>
   )
+}
+
+function formatNumber(value: number): string {
+  if (value >= 1_000_000_000) {
+    return (value / 1_000_000_000).toFixed(1) + "B"
+  } else if (value >= 1_000_000) {
+    return (value / 1_000_000).toFixed(1) + "M"
+  } else if (value >= 1_000) {
+    return (value / 1_000).toFixed(1) + "K"
+  } else {
+    return value.toString()
+  }
 }
 
 interface CastStatProps {

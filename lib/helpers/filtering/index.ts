@@ -12,6 +12,7 @@ export const filterDuplicateCategory = (categories: Category[]) => {
   }
 }
 export const filterDuplicateCategories = (categories: Category[]) => {
+  console.log("the categories", categories)
   if (
     !categories ||
     (Array.isArray(categories) && !categories.length) ||
@@ -19,11 +20,17 @@ export const filterDuplicateCategories = (categories: Category[]) => {
   ) {
     return []
   }
-  const uniqueCategories = categories.filter(
-    (category, index, self) =>
-      index === self.findIndex((c) => c.category.id === category.category.id)
+  const categoriesIndex = categories.reduce(
+    (categoriesObj: any, category: any) => {
+      if (!categoriesObj[category.category.id]) {
+        categoriesObj[category.category.id] = category.category
+      }
+      return categoriesObj
+    },
+    {}
   )
-  return uniqueCategories.filter((category: Category) => category.category.id)
+
+  return Object.values(categoriesIndex)
 }
 
 export const searchCastsForTerm = (
