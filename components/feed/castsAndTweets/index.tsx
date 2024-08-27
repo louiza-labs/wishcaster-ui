@@ -7,7 +7,7 @@ import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import SpringItemCast from "@/components/cast/variants/SprintItem"
 import CastAsTableRow from "@/components/cast/variants/TableRow"
 import CastFeedSkeleton from "@/components/loading/feed/casts"
-import DummyPost from "@/components/post"
+import PostCard from "@/components/post"
 import TweetAsCard from "@/components/tweet/variants/card"
 import TweetAsRow from "@/components/tweet/variants/row"
 
@@ -147,7 +147,7 @@ const CastAndTweetsFeed = ({
         ) : filteredPosts && filteredPosts.length ? (
           filteredPosts.map((tweetOrCast: any, index) => (
             <Fragment key={tweetOrCast.hash || tweetOrCast.id}>
-              <DummyPost
+              <PostCard
                 source={tweetOrCast.object === "cast" ? "farcaster" : "twitter"}
                 text={tweetOrCast.text}
                 user={

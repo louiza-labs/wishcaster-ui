@@ -24,17 +24,17 @@ export const generateStatsObjectForTopic = (
   if (!topicStatsAndRankings) return {}
 
   const {
-    count: countRank = 0,
-    likes_count: likesRank = 0,
-    recasts_count: recastsRank = 0,
-    replies_count: repliesRank = 0,
+    count_rank: countRank = 0,
+    likes_count_rank: likesRank = 0,
+    recasts_count_rank: recastsRank = 0,
+    replies_count_rank: repliesRank = 0,
     impression_count: impressionRank = 0,
     bookmark_count: bookmarkRank = 0,
-  } = topicStatsAndRankings.rankings || {}
+  } = topicStatsAndRankings || {}
 
   const statsObject: StatsObject = {
     casts: {
-      label: "Tweets",
+      label: "Posts",
       value: formatNumber(topicStatsAndRankings.count || 0),
       rank: countRank,
     },
@@ -49,20 +49,20 @@ export const generateStatsObjectForTopic = (
       rank: repliesRank,
     },
     retweets: {
-      label: "Retweets",
+      label: "Reposts",
       value: formatNumber(topicStatsAndRankings.recasts || 0),
       rank: recastsRank,
     },
-    impressions: {
-      label: "Impressions",
-      value: formatNumber(topicStatsAndRankings.impressions || 0),
-      rank: impressionRank,
-    },
-    bookmarks: {
-      label: "Bookmarks",
-      value: formatNumber(topicStatsAndRankings.bookmarks || 0),
-      rank: bookmarkRank,
-    },
+    // impressions: {
+    //   label: "Impressions",
+    //   value: formatNumber(topicStatsAndRankings.impressions || 0),
+    //   rank: impressionRank,
+    // },
+    // bookmarks: {
+    //   label: "Bookmarks",
+    //   value: formatNumber(topicStatsAndRankings.bookmarks || 0),
+    //   rank: bookmarkRank,
+    // },
   }
 
   return statsObject

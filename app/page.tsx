@@ -102,8 +102,8 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
             posts={castsAndTweets}
           /> */}
         </div>
-        <main className="relative col-span-12 grid grid-cols-1 gap-4 lg:grid-cols-12 ">
-          <aside className="no-scrollbar sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:flex">
+        <main className="relative col-span-12 grid grid-cols-1 gap-4 lg:grid-cols-12">
+          <aside className="no-scrollbar sticky top-0 hidden h-screen w-2/12 flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:flex">
             {/* <CardLayoutToggle /> */}
             {/* <SortCasts /> */}
 

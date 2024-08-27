@@ -24,18 +24,18 @@ interface CardStatProps {
 
 const CardStat: React.FC<CardStatProps> = ({ title, value, rank }) => {
   return (
-    <Card className="flex w-52 max-w-xs flex-col items-center border-none bg-gradient-to-br from-primary/10 to-secondary/10 p-4 shadow-lg">
+    <Card className="lg:w-30 col-span-1 flex w-24 flex-col items-center justify-center border p-4 px-2 shadow-lg">
       <Badge
         variant="default"
-        className="mb-2 bg-primary px-2 py-1 text-primary-foreground"
+        className="text-xxs mb-2 bg-primary px-2 py-1 text-primary-foreground lg:text-sm"
       >
         Rank #{rank}
       </Badge>
-      <CardHeader className="text-center">
-        <CardDescription className="text-4xl font-bold text-primary">
+      <CardHeader className="py-2 text-center">
+        <CardDescription className="text-xl font-bold text-primary">
           {formatNumber(value)}
         </CardDescription>
-        <CardTitle className="mt-2 text-sm text-muted-foreground">
+        <CardTitle className="mt-2 text-xs text-muted-foreground">
           {title}
         </CardTitle>
       </CardHeader>
@@ -61,21 +61,40 @@ interface CastStatProps {
   cursor: string
   topic: string
   mobileView: string
+  overallPosts: any[]
 }
 
-const TopicStats: React.FC<CastStatProps> = ({ posts, topic, categories }) => {
-  const topicRank = rankTopics(posts, topic)
+const TopicStats: React.FC<CastStatProps> = ({
+  posts,
+  topic,
+  categories,
+  overallPosts,
+}) => {
+  const topicRank = rankTopics(overallPosts, undefined, topic)
 
   const filteredPostsAndTweets = filterCastsForCategory(posts, topic)
   const topicStats = summarizeByCategory(filteredPostsAndTweets, "likes")[0]
   const statsAndRankingsForTopic = { ...topicStats, ...topicRank }
+
   const generatedStats: any = generateStatsObjectForTopic(
     statsAndRankingsForTopic
   )
 
   return (
-    <div className="w-full overflow-x-auto px-4 sm:px-0">
-      <div className="flex snap-x snap-mandatory flex-row flex-nowrap gap-4 overflow-x-auto pl-8 md:pl-0">
+    <div className="relative  w-full  px-4 sm:px-0">
+      {/* <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:hidden xl:grid-cols-3">
+        {generatedStats && Object.keys(generatedStats).length
+          ? Object.keys(generatedStats).map((stat) => (
+              <CardStat
+                key={stat}
+                title={generatedStats[stat].label}
+                value={generatedStats[stat].value}
+                rank={generatedStats[stat].rank}
+              />
+            ))
+          : null}
+      </div> */}
+      <div className="flex w-full flex-row  items-center justify-between gap-2 overflow-x-scroll  lg:flex">
         {generatedStats && Object.keys(generatedStats).length
           ? Object.keys(generatedStats).map((stat) => (
               <CardStat

@@ -31,7 +31,7 @@ const TopCasts = ({
 
   return (
     <>
-      <div className="flex flex-col overflow-y-auto xl:hidden">
+      <div className="flex flex-col gap-y-2 overflow-y-auto xl:hidden">
         {sortedPosts.slice(0, 10).map((postItem: any, index: number) => (
           <>
             <PostCard
@@ -98,10 +98,10 @@ const TopCasts = ({
             <CarouselContent className="-ml-1 size-fit">
               {sortedPosts.map((postItem: any) => (
                 <CarouselItem
-                  className=" basis:1 w-fit pl-1  md:basis-1/2"
+                  className=" basis:1 w-full pl-1  md:basis-1/2"
                   key={postItem.hash}
                 >
-                  <div className="grid size-fit max-w-[90vw] grid-cols-1 md:basis-1/2 lg:max-h-screen lg:overflow-y-scroll xl:h-[70vh]">
+                  <div className="grid size-fit max-w-[90vw] grid-cols-1 py-2 md:basis-1/2 lg:max-h-screen lg:overflow-y-scroll">
                     <>
                       <PostCard
                         source={

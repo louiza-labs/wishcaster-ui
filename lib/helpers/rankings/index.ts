@@ -174,12 +174,13 @@ type TopicRanking = {
   }
 }
 export function rankTopics(
-  casts: any[],
-  topic = ""
-): TopicRanking[] | TopicRanking | null {
+  posts: any[],
+  metrics = ["likes_count", "recasts_count", "replies_count", "count"],
+  specificCategoryId?: string
+): { [categoryId: string]: any } | any | null {
   // Initialize storage for metrics per category
-  const metrics: {
-    [key: string]: {
+  const categoryMetrics: {
+    [categoryId: string]: {
       likes_count: number
       recasts_count: number
       replies_count: number
@@ -188,63 +189,54 @@ export function rankTopics(
   } = {}
 
   // Aggregate metrics for each category
-  casts.forEach((cast) => {
-    if (!(cast.category && cast.category.id)) return
-    const category = cast.category.id
-    if (!metrics[category]) {
-      metrics[category] = {
+  posts.forEach((post) => {
+    const categoryId = post.category?.id
+    if (!categoryId) return
+
+    if (!categoryMetrics[categoryId]) {
+      categoryMetrics[categoryId] = {
         likes_count: 0,
         recasts_count: 0,
         replies_count: 0,
         count: 0,
       }
     }
-    metrics[category].likes_count +=
-      cast.object === "cast"
-        ? cast.reactions.likes_count
-        : cast.public_metrics.like_count
-    metrics[category].recasts_count +=
-      cast.object === "cast"
-        ? cast.reactions.recasts_count
-        : cast.public_metrics.retweet_count
-    metrics[category].replies_count +=
-      cast.object === "cast"
-        ? cast.replies.count
-        : cast.public_metrics.reply_count
-    metrics[category].count += 1
+
+    categoryMetrics[categoryId].likes_count +=
+      post.object === "cast"
+        ? post.reactions.likes_count
+        : post.public_metrics.like_count
+
+    categoryMetrics[categoryId].recasts_count +=
+      post.object === "cast"
+        ? post.reactions.recasts_count
+        : post.public_metrics.retweet_count
+
+    categoryMetrics[categoryId].replies_count +=
+      post.object === "cast"
+        ? post.replies.count
+        : post.public_metrics.reply_count
+
+    categoryMetrics[categoryId].count += 1
   })
 
-  // Convert the metrics object to an array
-  const categories = Object.entries(metrics).map(([category, data]) => ({
-    category,
-    rankings: { ...data },
-  }))
-
-  // Calculate rankings for each metric, including count
-  const sortableMetrics = [
-    "likes_count",
-    "recasts_count",
-    "replies_count",
-    "count",
-  ]
-  sortableMetrics.forEach((metric) => {
-    const sorted = [...categories].sort(
-      (a: any, b: any) => b.rankings[metric] - a.rankings[metric]
+  // Create a sorted list of categories for each metric
+  metrics.forEach((metric) => {
+    const sortedCategories = Object.entries(categoryMetrics).sort(
+      ([, a]: any, [, b]: any) => b[metric] - a[metric]
     )
-    sorted.forEach((cat, index) => {
-      const categoryToUpdate: any = categories.find(
-        (c) => c.category === cat.category
-      )
-      categoryToUpdate.rankings[metric] = index + 1
+
+    // Assign ranking based on the sorted order
+    sortedCategories.forEach(([categoryId], index) => {
+      const categoryToUpdate: any = categoryMetrics[categoryId]
+      categoryToUpdate[`${metric}_rank`] = index + 1
     })
   })
 
-  if (topic && topic.length) {
-    const selectedTopic = categories.find(
-      (category) => category.category === topic
-    )
-    return selectedTopic || null // Return null if no topic matches
+  // If specificCategoryId is provided, return its metrics and rankings
+  if (specificCategoryId) {
+    return categoryMetrics[specificCategoryId] || null
   }
 
-  return categories
+  return categoryMetrics
 }
