@@ -4,7 +4,6 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { BarChart2, ChevronDown, ChevronUp, HeartIcon } from "lucide-react"
 
-import { PRODUCT_CATEGORIES_AS_MAP } from "@/lib/constants"
 import { renderTextWithLinks } from "@/lib/helpers"
 import { capitalizeFirstLetter, formatDateForCastTimestamp } from "@/lib/utils"
 import useAddTaglineToHash from "@/hooks/farcaster/casts/useAddTaglineToHash"
@@ -22,29 +21,9 @@ import RenderContent from "@/components/post/content"
 import PostMetrics from "@/components/post/metrics"
 
 interface PostProps {
-  user: any
-  text: string
   post: any
-  category: any
-  source: "farcaster" | "twitter"
-  embeds: any[]
-  media: any
-  postId: string
-  referencedPost: any
-  mentionedProfiles: any
   renderEmbeds: boolean
-  tagline: string
-  likes?: number
-  retweets?: number
-  replies?: number
-  impressions?: number
-  timestamp: string
   notionResults?: any
-  reactions?: {
-    likes_count: number
-    recasts_count: number
-    bookmark_count?: number
-  }
 }
 interface NormalizedUser {
   profileImage: string
@@ -54,100 +33,54 @@ interface NormalizedUser {
   powerBadge?: boolean
 }
 
-function normalizeUserData(
-  author: any,
-  source: "farcaster" | "twitter"
-): NormalizedUser {
-  if (source === "twitter") {
-    return {
-      profileImage: author.profile_image_url,
-      displayName: author.name,
-      username: author.username,
-      verified: author.verified,
-    }
-  } else if (source === "farcaster") {
-    return {
-      profileImage: author.pfp_url,
-      displayName: author.display_name,
-      username: author.username,
-      verified: author.power_badge ? true : false,
-      powerBadge: author.power_badge,
-    }
-  } else {
-    throw new Error("Unsupported source type")
-  }
-}
 export default function Component({
   post,
-  user,
-  text,
-  source,
-  category,
-  embeds,
-  tagline,
-  media,
-  postId,
-  likes,
-  retweets,
-  replies,
-  impressions,
-  reactions,
-  referencedPost,
-  mentionedProfiles,
   notionResults,
-  timestamp,
   renderEmbeds,
 }: PostProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [showMetrics, setShowMetrics] = useState(false)
   const router = useRouter()
   const { castWithTagline: postWithTagline } = useAddTaglineToHash(post)
-  const categoryLabel =
-    category && category.id
-      ? PRODUCT_CATEGORIES_AS_MAP[category.id].label
-      : null
 
-  const likesCount =
-    likes && source === "twitter" ? likes : reactions?.likes_count
-
-  const normalizedUser = normalizeUserData(user, source)
-
-  const fullText = text
-  const needsShortening = text.length >= 100 || media.length || embeds.length
-  const abridgedText = text.slice(0, 100) + (text.length > 100 ? "..." : "")
+  const fullText = post.text
+  const needsShortening =
+    post.text.length >= 100 || post.mediaUrls.length || post.embeds
+  const abridgedText =
+    post.text.slice(0, 100) + (post.text.length > 100 ? "..." : "")
 
   const handleVisitPage = (e: React.SyntheticEvent) => {
     e.preventDefault()
-    router.push(`/post/${postId}?source=${source}`)
+    router.push(`/post/${post.id}?source=${post.platform}`)
   }
 
   return (
-    <Card className="w-full relative flex flex-col justify-between max-w-md border border-gray-200 h-full shadow-sm">
-      <CardContent className="p-4 flex flex-col border justify-between h-full">
+    <Card className="relative flex size-full max-w-md flex-col justify-between border border-gray-200 shadow-sm">
+      <CardContent className="flex h-full flex-col justify-between border p-4">
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Avatar className="size-8 border border-gray-200">
               <AvatarImage
-                src={normalizedUser.profileImage}
-                alt={normalizedUser.username}
+                src={post.author.profileImageUrl}
+                alt={post.author.username}
               />
-              <AvatarFallback>{normalizedUser.username}</AvatarFallback>
+              <AvatarFallback>{post.author.username}</AvatarFallback>
             </Avatar>
             <div>
               <h4 className="text-sm font-semibold text-gray-700">
-                {normalizedUser.displayName}{" "}
+                {post.author.displayName}{" "}
               </h4>
               <p className="text-xs text-gray-500">
-                {formatDateForCastTimestamp(timestamp)}
+                {formatDateForCastTimestamp(post.createdAt)}
               </p>
             </div>
           </div>
-          {categoryLabel ? (
+          {post.category.label ? (
             <Badge
               variant="secondary"
               className="bg-indigo-100 text-xs text-indigo-800"
             >
-              {categoryLabel}
+              {post.category.label}
             </Badge>
           ) : null}
         </div>
@@ -156,7 +89,7 @@ export default function Component({
           onClick={handleVisitPage}
           className="mb-2 text-base font-bold text-gray-800"
         >
-          {tagline ?? postWithTagline.tagline}
+          {post.tagline ?? postWithTagline.tagline}
         </h3>
         {needsShortening ? (
           <Collapsible
@@ -167,29 +100,29 @@ export default function Component({
             <p className="mb-1 text-sm text-gray-600">
               {isExpanded
                 ? renderTextWithLinks(
-                    text,
-                    mentionedProfiles,
-                    embeds,
-                    source === "twitter"
+                    post.text,
+                    post.mentionedProfiles,
+                    post.embeds,
+                    post.platform === "twitter"
                   )
                 : renderTextWithLinks(
                     abridgedText,
-                    mentionedProfiles,
-                    embeds,
-                    source === "twitter"
+                    post.mentionedProfiles,
+                    post.embeds,
+                    post.platform === "twitter"
                   )}
             </p>
             <CollapsibleContent className="mb-2 text-sm text-gray-600">
               <RenderContent
-                text={text}
+                text={post.text}
                 tagline={postWithTagline.tagline}
-                embeds={embeds}
-                media={media}
-                referencedPost={referencedPost}
-                source={source}
-                hash={postId}
-                author={user}
-                mentionedProfiles={mentionedProfiles}
+                embeds={post.embeds}
+                media={post.mediaUrls}
+                referencedPost={post.referencedPost}
+                source={post.platform}
+                // hash={post.id}
+                author={post.author}
+                mentionedProfiles={post.mentionedProfiles}
                 renderEmbeds={renderEmbeds}
               />
             </CollapsibleContent>
@@ -215,9 +148,9 @@ export default function Component({
           <p onClick={handleVisitPage} className="mb-1 text-sm text-gray-600">
             {renderTextWithLinks(
               fullText,
-              mentionedProfiles,
-              embeds,
-              source === "twitter"
+              post.mentionedProfiles,
+              post.embeds,
+              post.platform === "twitter"
             )}
           </p>
         )}
@@ -231,15 +164,17 @@ export default function Component({
               <Avatar className="flex size-4 flex-col items-center rounded-full border  shadow-sm">
                 <AvatarImage
                   src={
-                    source === "farcaster"
+                    post.platform === "farcaster"
                       ? "/social-account-logos/farcaster-purple-white.png"
                       : "/social-account-logos/twitter-logo-black.png"
                   }
-                  alt={source}
+                  alt={post.platform}
                   className="rounded-full"
                 />
               </Avatar>
-              <span className="ml-2">{capitalizeFirstLetter(source)}</span>
+              <span className="ml-2">
+                {capitalizeFirstLetter(post.platform)}
+              </span>
             </Badge>
             {/* <Badge
               variant="outline"
@@ -263,16 +198,16 @@ export default function Component({
           <SavePost
             cast={post}
             notionResults={notionResults}
-            isOnTweetsPage={source === "twitter"}
+            isOnTweetsPage={post.platform === "twitter"}
           />
         </div>
       </CardContent>
 
-      <CardFooter className="flex w-full flex-col p-0  items-center justify-between bg-gray-50 ">
-        <div className="flex flex-row w-full justify-between px-6 py-3">
+      <CardFooter className="flex w-full flex-col items-center  justify-between bg-gray-50 p-0 ">
+        <div className="flex w-full flex-row justify-between px-6 py-3">
           <div className="flex items-center space-x-2 text-sm text-gray-600">
             <HeartIcon className="size-4" />
-            <span>{likesCount ? likesCount : "0"}</span>
+            <span>{post.likesCount ? post.likesCount : "0"}</span>
           </div>
           <Button
             variant="ghost"
@@ -285,13 +220,16 @@ export default function Component({
           </Button>
         </div>
         <Collapsible className="w-full" open={showMetrics}>
-          <CollapsibleContent className="bg-gray-100 w-full py-2 text-sm">
+          <CollapsibleContent className="w-full bg-gray-100 py-2 text-sm">
             <PostMetrics
-              likes={likes}
-              retweets={retweets}
-              replies={replies}
-              impressions={impressions}
-              reactions={reactions}
+              likes={post.likesCount}
+              retweets={post.sharesCount}
+              replies={post.commentsCount}
+              impressions={
+                post.additionalMetrics
+                  ? post.additionalMetrics.impressionCount
+                  : 0
+              }
             />
           </CollapsibleContent>
         </Collapsible>

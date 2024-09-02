@@ -2,7 +2,7 @@
 
 import { Suspense, useCallback, useMemo } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { Cast as CastType } from "@/types"
+import { NormalizedPostType } from "@/types"
 
 import { buildRankings, summarizeByCategory } from "@/lib/helpers"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
@@ -15,13 +15,13 @@ type RankedValueType = {
 }
 
 interface TopicsProps {
-  casts: CastType[]
+  posts: NormalizedPostType[]
   mobileView: string | undefined
   notionResults: any
 }
 
-const Topics = ({ casts, mobileView, notionResults }: TopicsProps) => {
-  let { filteredPosts } = useFilterFeed(casts)
+const Topics = ({ posts, mobileView, notionResults }: TopicsProps) => {
+  let { filteredPosts } = useFilterFeed(posts)
   const sortedTopics = summarizeByCategory(filteredPosts, "likes")
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -85,19 +85,19 @@ const Topics = ({ casts, mobileView, notionResults }: TopicsProps) => {
   const rankedTopicsByLikes = buildRankings(
     filteredPosts,
     "category",
-    "likes_count",
+    "likesCount",
     5
   )
   const rankedTopicsByReplies = buildRankings(
     filteredPosts,
     "category",
-    "replies_count",
+    "commentsCount",
     3
   )
   const rankedTopicsByRecasts = buildRankings(
     filteredPosts,
     "category",
-    "recasts_count",
+    "sharesCount",
     3
   )
   const hasResults = useMemo(() => {

@@ -3,12 +3,12 @@ import { Category } from "@/types"
 
 import { dateOptions } from "@/lib/constants"
 import {
-  categorizeArrayOfCasts,
+  categorizeArrayOfPosts,
   generateWhimsicalErrorMessages,
-  searchCastsForCategories,
-  sortCastsByProperty,
+  searchPostsForCategories,
+  sortPostsByProperty,
 } from "@/lib/helpers"
-import CastAndTweetsFeed from "@/components/feed/castsAndTweets"
+import PostsFeed from "@/components/feed/castsAndTweets"
 import CategoriesFeed from "@/components/feed/categories"
 import DateFilters from "@/components/filters/Date/new"
 import FilterBar from "@/components/filters/FilterBar/new"
@@ -77,12 +77,12 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
     channelId: "someone-build",
   })
 
-  const categories = categorizeArrayOfCasts(castsAndTweets) as Category[]
+  const categories = categorizeArrayOfPosts(castsAndTweets) as Category[]
   if (categoryParam.length) {
-    castsAndTweets = searchCastsForCategories(castsAndTweets, categoryParam)
+    castsAndTweets = searchPostsForCategories(castsAndTweets, categoryParam)
   }
-  if (sortParam) {
-    castsAndTweets = sortCastsByProperty(castsAndTweets, sortParam)
+  if (sortParam && sortParam.length) {
+    castsAndTweets = sortPostsByProperty(castsAndTweets, sortParam)
   }
 
   const isError = !castsAndTweets && castsAndTweets.length
@@ -103,7 +103,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
           /> */}
         </div>
         <main className="relative col-span-12 grid grid-cols-1 gap-4 lg:grid-cols-12">
-          <aside className="no-scrollbar sticky top-0 hidden h-screen w-2/12 flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:flex">
+          <aside className="no-scrollbar col-span- sticky top-0 hidden h-screen flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:flex">
             {/* <CardLayoutToggle /> */}
             {/* <SortCasts /> */}
 
@@ -125,7 +125,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
                   <SortCasts />
                 </div>
 
-                <CastAndTweetsFeed
+                <PostsFeed
                   timeFilterParam={timeFilterParam}
                   nextCursor={""}
                   notionResults={notionResults}
@@ -135,7 +135,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
             )}
           </article>
           <aside className="no-scrollbar sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky lg:col-span-2 lg:flex lg:flex-col">
-            <Rankings casts={onlyCasts} castsAndOrTweets={castsAndTweets} />
+            <Rankings casts={onlyCasts} posts={castsAndTweets} />
           </aside>
         </main>
       </section>

@@ -5,9 +5,9 @@ import { dateOptions } from "@/lib/constants"
 import {
   addCategoryFieldsToCasts,
   addMetricsToProblems,
-  categorizeArrayOfCasts,
+  categorizeArrayOfPosts,
   matchIdeasToPosts,
-  sortCastsByProperty,
+  sortPostsByProperty,
 } from "@/lib/helpers"
 import {
   formatAudienceData,
@@ -148,7 +148,7 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
     searchTerm: searchIdea,
   })
 
-  const categories = categorizeArrayOfCasts(posts) as Category[]
+  const categories = categorizeArrayOfPosts(posts) as Category[]
   const mobileViewParam = parseQueryParam(searchParams.view)
 
   const problemsResponse = await generateProblemsAndSentimentScores(
@@ -164,7 +164,7 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
   const { data: tweetsForSimilarIdeas } = await fetchTweetsWithSearch(
     stringOfSimilarIdeasForTweetsSearch
   )
-  const categoriesForSimilarIdeas = categorizeArrayOfCasts([
+  const categoriesForSimilarIdeas = categorizeArrayOfPosts([
     ...posts,
     ...(tweetsForSimilarIdeas && tweetsForSimilarIdeas.length
       ? tweetsForSimilarIdeas
@@ -206,7 +206,7 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
   // const searchResultsFromAlgolia = await searchPostsData(searchIdea)
   // console.log("the search res from alg", searchResultsFromAlgolia)
   let topCast = posts.length === 1 ? posts[0] : undefined
-  const sortedCasts = sortCastsByProperty(posts, "likes_count")
+  const sortedCasts = sortPostsByProperty(posts, "likesCount")
   topCast = topCast ? topCast : sortedCasts[0]
 
   const isError = !posts.length || !searchIdea

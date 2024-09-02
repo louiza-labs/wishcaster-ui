@@ -3,15 +3,15 @@ import { Category } from "@/types"
 
 import { PRODUCT_CATEGORIES_AS_MAP, dateOptions } from "@/lib/constants"
 import {
-  categorizeArrayOfCasts,
+  categorizeArrayOfPosts,
   filterCastsForCategory,
   generateWhimsicalErrorMessages,
-  sortCastsByProperty,
+  sortPostsByProperty,
 } from "@/lib/helpers"
 import { Badge } from "@/components/ui/badge"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import TopCasts from "@/components/feed/casts/TopCasts"
-import CastsAndTweetsFeed from "@/components/feed/castsAndTweets"
+import PostsFeed from "@/components/feed/castsAndTweets"
 import DateFilters from "@/components/filters/Date/new"
 import FilterBar from "@/components/filters/FilterBar/new"
 import SourceFilters from "@/components/filters/Sources/new"
@@ -71,12 +71,12 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
 
   let overallPosts = castsAndTweets
 
-  const categories = categorizeArrayOfCasts(castsAndTweets) as Category[]
+  const categories = categorizeArrayOfPosts(castsAndTweets) as Category[]
   const mobileViewParam = parseQueryParam(searchParams.view)
 
   castsAndTweets = filterCastsForCategory(castsAndTweets, params.topic)
   let topCast = castsAndTweets.length === 1 ? castsAndTweets[0] : undefined
-  const sortedCasts = sortCastsByProperty(castsAndTweets, "likes_count")
+  const sortedCasts = sortPostsByProperty(castsAndTweets, "likes_count")
   topCast = topCast ? topCast : sortedCasts[0]
 
   const isError = !castsAndTweets.length || !selectedTopic
@@ -97,7 +97,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
         <div className="col-span-1 px-6 md:px-0 lg:col-span-12">
           <Breadcrumbs pages={breadCrumbPages} />
         </div>
-        <div className="col-span-1 mt-2 flex w-full flex-row justify-center gap-x-2 px-6  md:mb-0 md:flex-col md:gap-x-0 md:gap-y-2 md:px-0 lg:col-span-5 lg:mb-4 lg:mt-0">
+        <div className="col-span-1 mt-2 flex w-full flex-row justify-center gap-x-2 px-6  md:mb-0 md:flex-col md:gap-x-0 md:gap-y-4 md:px-0 lg:col-span-5 lg:mb-4 lg:mt-0">
           <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
             {selectedTopic?.label}
           </h1>
@@ -118,7 +118,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
             </div>
           </div>
         </div>
-        <div className="my-4 flex flex-col items-center justify-between gap-x-4 md:mt-0 lg:col-span-7 lg:grid lg:grid-cols-12">
+        <div className="my-4 flex flex-col items-center justify-between gap-x-4  md:mt-0 lg:col-span-7 lg:grid lg:grid-cols-12">
           <TopicStats
             posts={castsAndTweets}
             overallPosts={overallPosts}
@@ -180,7 +180,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
             <h3 className="text-center text-2xl  font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
               Feed
             </h3>
-            <CastsAndTweetsFeed
+            <PostsFeed
               posts={castsAndTweets}
               timeFilterParam={timeFilterParam}
               nextCursor={""}

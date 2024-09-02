@@ -1,6 +1,8 @@
 export const extractUserIdsFromTweets = (tweets: any) => {
   if (!tweets || !Array.isArray(tweets)) return []
-  return tweets.map((tweet: any) => tweet.author_id)
+  return tweets.map((tweet: any) =>
+    tweet && tweet.author ? tweet.author.id : ""
+  )
 }
 
 export function normalizeTweetText(text: string): string {

@@ -1,6 +1,6 @@
 "use server"
 
-import { Cast as CastType, Category } from "@/types"
+import { Category, NormalizedPostType } from "@/types"
 
 export const filterDuplicateCategory = (categories: Category[]) => {
   if (
@@ -11,8 +11,9 @@ export const filterDuplicateCategory = (categories: Category[]) => {
     return []
   }
 }
-export const filterDuplicateCategories = (categories: Category[]) => {
-  console.log("the categories", categories)
+export const filterDuplicateCategories = (
+  categories: Category[]
+): Category[] => {
   if (
     !categories ||
     (Array.isArray(categories) && !categories.length) ||
@@ -33,12 +34,12 @@ export const filterDuplicateCategories = (categories: Category[]) => {
   return Object.values(categoriesIndex)
 }
 
-export const searchCastsForTerm = (
-  casts: CastType[],
+export const searchPostsForTerm = (
+  posts: NormalizedPostType[],
   searchTerm: string
-): CastType[] => {
+): NormalizedPostType[] => {
   const lowerCaseSearchTerm = searchTerm.toLowerCase().trim()
-  return casts.filter((cast) =>
+  return posts.filter((cast) =>
     cast.text.toLowerCase().includes(lowerCaseSearchTerm)
   )
 }

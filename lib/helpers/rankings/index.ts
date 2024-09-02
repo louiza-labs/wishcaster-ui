@@ -1,71 +1,49 @@
-import { Cast as CastType } from "@/types"
+import { Cast as CastType, NormalizedPostType } from "@/types"
 
 export const buildRankings = (
-  casts: CastType[],
-  focus: keyof CastType,
-  metric: "likes_count" | "replies_count" | "recasts_count" | "count",
+  posts: NormalizedPostType[],
+  focus: keyof NormalizedPostType,
+  metric: "likesCount" | "commentsCount" | "sharesCount" | "count",
   limit: number
 ): { name: string; value: number }[] => {
-  if (!casts || casts.length === 0 || !Array.isArray(casts)) {
+  if (!posts || posts.length === 0 || !Array.isArray(posts)) {
     return []
   }
 
-  // Create an object to accumulate metrics
   const metricsMap = new Map<string, number>()
 
-  casts.forEach((cast: any) => {
+  posts.forEach((post) => {
     const focusValue =
-      focus === "category" && cast[focus]
-        ? cast[focus].id
-        : focus === "category" && !cast[focus]
-        ? ""
-        : (cast[focus] as string) // Ensuring the value is treated as a string
+      focus === "category" && post[focus]
+        ? post[focus]?.id || ""
+        : (post[focus] as string)
+
     if (metric === "count") {
-      // Count occurrences of each focus value
       metricsMap.set(focusValue, (metricsMap.get(focusValue) || 0) + 1)
-    } else if (metric === "replies_count") {
-      const metricValue =
-        cast.object === "cast"
-          ? cast["replies"]["count"] || 0
-          : cast.public_metrics.reply_count || 0
-      metricsMap.set(
-        focusValue,
-        (metricsMap.get(focusValue) || 0) + metricValue
-      )
     } else {
-      const metricValue =
-        cast.object === "cast"
-          ? cast["reactions"][metric] || 0
-          : cast.public_metrics[
-              metric === "likes_count" ? "like_count" : "retweet_count"
-            ] || 0
-
+      const metricValue = post[metric] || 0
       metricsMap.set(
         focusValue,
         (metricsMap.get(focusValue) || 0) + metricValue
       )
-
-      // Sum the metric values for each focus value
     }
   })
 
-  // Convert the map into an array, sort it, and slice it to the limit
   const sorted = Array.from(metricsMap)
     .map(([name, value]) => ({ name, value }))
     .filter((metric) => metric.name && metric.name.length > 0)
-    .sort((a, b) => b.value - a.value) // Sort in descending order by value
+    .sort((a, b) => b.value - a.value)
     .slice(0, limit)
 
   return sorted
 }
 
 export function getRanking(
-  target: CastType,
-  items: CastType[],
-  metric: "likes" | "recasts" | "replies",
-  filterField?: keyof CastType
+  target: NormalizedPostType,
+  items: NormalizedPostType[],
+  metric: "likesCount" | "sharesCount" | "commentsCount",
+  filterField?: keyof NormalizedPostType
 ): number | null {
-  // Apply filtering only if filterField is provided and the target has this property defined
   const filteredItems =
     filterField && target[filterField] !== undefined
       ? filterField === "category"
@@ -78,34 +56,27 @@ export function getRanking(
         : items.filter((item) => item[filterField] === target[filterField])
       : items
 
-  const getValueByMetric = (objectToGetValueFrom: any) => {
-    if (metric === "likes") {
-      return objectToGetValueFrom.reactions
-        ? objectToGetValueFrom.reactions.likes_count
-        : 0
+  const getValueByMetric = (objectToGetValueFrom: NormalizedPostType) => {
+    if (metric === "likesCount") {
+      return objectToGetValueFrom.likesCount || 0
     }
-    if (metric === "recasts") {
-      return objectToGetValueFrom.reactions
-        ? objectToGetValueFrom.reactions.recasts_count
-        : 0
+    if (metric === "sharesCount") {
+      return objectToGetValueFrom.sharesCount || 0
     }
-    if (metric === "replies") {
-      return objectToGetValueFrom.reactions ? objectToGetValueFrom.replies : 0
+    if (metric === "commentsCount") {
+      return objectToGetValueFrom.commentsCount || 0
     }
     return 0
   }
 
-  // Sort the filtered items by value in descending order
   filteredItems.sort((a, b) => getValueByMetric(b) - getValueByMetric(a))
 
-  // Find the rank of the target item by comparing values
   for (let rank = 0; rank < filteredItems.length; rank++) {
     if (getValueByMetric(filteredItems[rank]) === getValueByMetric(target)) {
-      return rank + 1 // Return rank starting from 1 (more human-readable)
+      return rank + 1
     }
   }
 
-  // If no matching value is found, return null
   return null
 }
 
@@ -202,21 +173,11 @@ export function rankTopics(
       }
     }
 
-    categoryMetrics[categoryId].likes_count +=
-      post.object === "cast"
-        ? post.reactions.likes_count
-        : post.public_metrics.like_count
+    categoryMetrics[categoryId].likes_count += post.likesCount
 
-    categoryMetrics[categoryId].recasts_count +=
-      post.object === "cast"
-        ? post.reactions.recasts_count
-        : post.public_metrics.retweet_count
+    categoryMetrics[categoryId].recasts_count += post.sharesCount
 
-    categoryMetrics[categoryId].replies_count +=
-      post.object === "cast"
-        ? post.replies.count
-        : post.public_metrics.reply_count
-
+    categoryMetrics[categoryId].replies_count += post.commentsCount
     categoryMetrics[categoryId].count += 1
   })
 

@@ -3,30 +3,22 @@ import { Category } from "@/types"
 
 import { dateOptions } from "@/lib/constants"
 import {
-  addCategoryFieldsToCasts,
-  addMediaToTweets,
-  addTaglinesToCasts,
-  addUserInfoToTweets,
-  categorizeArrayOfCasts,
-  extractUserIdsFromTweets,
+  categorizeArrayOfPosts,
   generateWhimsicalErrorMessages,
 } from "@/lib/helpers"
-import { fetchTaglines } from "@/lib/requests"
 import Build from "@/components/buildComponent"
 import CastStats from "@/components/cast/stats"
-import Cast from "@/components/cast/variants/Classic"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
+import PostCard from "@/components/post"
 import RedirectButton from "@/components/redirect/Button"
 import TopReplies from "@/components/replies/TopReplies"
 import SaveCast from "@/components/save"
 import TweetStats from "@/components/tweet/stats"
-import TweetCard from "@/components/tweet/variants/card"
 import {
   fetchCastsReactionsUntilCovered,
-  fetchFarcasterCast,
+  fetchNormalizedCast,
+  fetchNormalizedTweet,
   fetchPosts,
-  fetchTweetByIds,
-  fetchTwitterUsers,
   getUsersNotionAccessCode,
   searchNotion,
 } from "@/app/actions"
@@ -61,47 +53,27 @@ const PostPage: FC<PostPageProps> = async ({ searchParams, params }) => {
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
-  let post =
+  let { data: post } =
     source === "farcaster"
-      ? await fetchFarcasterCast(params.id)
-      : await fetchTweetByIds(params.id)
-
+      ? await fetchNormalizedCast(params.id)
+      : await fetchNormalizedTweet(params.id)
   console.log("the post", post)
-  if (source === "twitter") {
-    let typedPost: any = post
-    const users = await fetchTwitterUsers(
-      extractUserIdsFromTweets([typedPost?.data])
-    )
-    const tweetWithMedia = addMediaToTweets(
-      [typedPost.data],
-      typedPost.includes
-    )
-
-    const tweetsWithUsers = addUserInfoToTweets(tweetWithMedia, users.data)
-    post = tweetsWithUsers ? tweetsWithUsers[0] : post
-  }
   const overallPosts = await fetchPosts({
     timePeriod: timeFilterParam ?? "7-days",
     channelId: "someone-build",
   })
-  const taglineWithHash = post ? await fetchTaglines([post]) : []
-  const postWithTagline = post
-    ? addTaglinesToCasts([post], taglineWithHash)
-    : post
-  let enrichedPost = post && postWithTagline ? postWithTagline[0] : post
 
   const notionAccessCode = await getUsersNotionAccessCode()
   const notionSearch = notionAccessCode
     ? await searchNotion(notionAccessCode)
     : { results: [] }
   const notionResults = notionSearch.results
-  console.log("the enriched post", enrichedPost)
   const { reactionsObject } =
-    source === "farcaster" && enrichedPost && enrichedPost.hash
+    source === "farcaster" && post && post.id
       ? await fetchCastsReactionsUntilCovered(
-          enrichedPost?.hash,
-          enrichedPost?.reactions.likes_count,
-          enrichedPost?.reactions.recasts_count
+          post?.id,
+          post?.likesCount,
+          post?.sharesCount
         )
       : {
           reactionsObject: {
@@ -109,20 +81,7 @@ const PostPage: FC<PostPageProps> = async ({ searchParams, params }) => {
             recasts: [],
           },
         }
-  console.log("the reactionsObject", reactionsObject)
-  const categories = categorizeArrayOfCasts(overallPosts) as Category[]
-
-  let singleArrayPost = enrichedPost
-    ? addCategoryFieldsToCasts(
-        [enrichedPost.data ? enrichedPost.data : enrichedPost],
-        categories
-      )
-    : [enrichedPost]
-  let postWithCategory = singleArrayPost[0]
-  postWithCategory =
-    postWithCategory && postWithCategory.data
-      ? postWithCategory.data
-      : postWithCategory
+  const categories = categorizeArrayOfPosts(overallPosts) as Category[]
 
   const searchTerm = parseQueryParam(searchParams.search)
   const categoryParam = parseQueryParam(searchParams.categories)
@@ -130,7 +89,7 @@ const PostPage: FC<PostPageProps> = async ({ searchParams, params }) => {
   const sortParam = parseQueryParam(searchParams.sort)
   const mobileViewParam = parseQueryParam(searchParams.view)
 
-  let filteredPosts = [enrichedPost]
+  let filteredPosts = [post]
 
   const isError = !filteredPosts.length
 
@@ -156,105 +115,22 @@ const PostPage: FC<PostPageProps> = async ({ searchParams, params }) => {
               />
             ) : (
               <div className="gap-y-4 overflow-y-auto pb-14 lg:pb-0">
-                {postWithCategory ? (
+                {post ? (
                   <>
                     <div className="flex flex-col gap-y-4 bg-background">
                       <h1 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
                         {source === "farcaster" ? "Cast" : "Tweet"}
                       </h1>
-                      <div className="hidden xl:block">
-                        {source === "farcaster" ? (
-                          <Cast
-                            {...postWithCategory}
-                            tagline={postWithCategory.tagline}
-                            hideMetrics={true}
-                            badgeIsToggled={false}
-                            routeToWarpcast={true}
-                            cast={postWithCategory}
-                            notionResults={notionResults}
-                            hideActions={true}
-                            mentionedProfiles={
-                              postWithCategory.mentioned_profiles
-                            }
-                          />
-                        ) : (
-                          <TweetCard
-                            text={postWithCategory.text}
-                            likes={
-                              postWithCategory.public_metrics
-                                ? postWithCategory.public_metrics.like_count
-                                : 0
-                            }
-                            replies={
-                              postWithCategory.public_metrics
-                                ? postWithCategory.public_metrics.reply_count
-                                : 0
-                            }
-                            retweets={
-                              postWithCategory.public_metrics
-                                ? postWithCategory.public_metrics.retweet_count
-                                : 0
-                            }
-                            username={postWithCategory.username}
-                            user={postWithCategory.user}
-                            category={postWithCategory.category}
-                            tweet={postWithCategory}
-                            notionResults={notionResults}
-                            attachments={postWithCategory.attachments}
-                            entities={postWithCategory.entities}
-                            media={postWithCategory.media}
-                          />
-                        )}
-                      </div>
-                      <div className="block xl:hidden">
-                        {source === "farcaster" ? (
-                          <Cast
-                            {...postWithCategory}
-                            tagline={postWithCategory.tagline}
-                            hideMetrics={true}
-                            badgeIsToggled={false}
-                            routeToWarpcast={true}
-                            cast={postWithCategory}
-                            notionResults={notionResults}
-                            hideActions={false}
-                            is={true}
-                            mentionedProfiles={
-                              postWithCategory.mentioned_profiles
-                            }
-                          />
-                        ) : (
-                          <TweetCard
-                            text={postWithCategory.text}
-                            likes={
-                              postWithCategory.public_metrics
-                                ? postWithCategory.public_metrics.like_count
-                                : 0
-                            }
-                            replies={
-                              postWithCategory.public_metrics
-                                ? postWithCategory.public_metrics.reply_count
-                                : 0
-                            }
-                            retweets={
-                              postWithCategory.public_metrics
-                                ? postWithCategory.public_metrics.retweet_count
-                                : 0
-                            }
-                            username={postWithCategory.username}
-                            user={postWithCategory.user}
-                            category={postWithCategory.category}
-                            tweet={postWithCategory}
-                            notionResults={notionResults}
-                            attachments={postWithCategory.attachments}
-                            entities={postWithCategory.entities}
-                            media={postWithCategory.media}
-                          />
-                        )}
-                      </div>
+
+                      <PostCard
+                        renderEmbeds={true}
+                        post={post}
+                        notionResults={notionResults}
+                      />
                     </div>
 
                     <TopReplies
-                      castHash={postWithCategory.hash ?? ""}
+                      castHash={post.id ?? ""}
                       notionResults={notionResults}
                     />
                   </>
@@ -273,18 +149,14 @@ const PostPage: FC<PostPageProps> = async ({ searchParams, params }) => {
               </h1>
               {source === "farcaster" ? (
                 <CastStats
-                  cast={postWithCategory}
+                  cast={post}
                   reactions={reactionsObject}
                   overallChannelCasts={overallPosts}
                 />
               ) : (
                 <TweetStats
-                  tweet={postWithCategory}
-                  likes={
-                    postWithCategory.public_metrics
-                      ? postWithCategory.public_metrics.like_count
-                      : 0
-                  }
+                  tweet={post}
+                  likes={post.likesCount}
                   overallTweets={overallPosts}
                   overallCasts={overallPosts}
                 />
@@ -301,15 +173,12 @@ const PostPage: FC<PostPageProps> = async ({ searchParams, params }) => {
                 Let&apos;s build
               </h1>
               <div className="hidden lg:col-span-12 lg:block">
-                <SaveCast
-                  notionResults={notionResults}
-                  cast={postWithCategory}
-                />
+                <SaveCast notionResults={notionResults} cast={post} />
               </div>
               {source === "farcaster" ? (
                 <Build
-                  cast={postWithCategory}
-                  hash={postWithCategory ? postWithCategory.hash ?? "" : ""}
+                  cast={post}
+                  hash={post ? post.id ?? "" : ""}
                   reactions={reactionsObject}
                 />
               ) : null}
@@ -319,8 +188,8 @@ const PostPage: FC<PostPageProps> = async ({ searchParams, params }) => {
       </section>
       <div className="flex flex-col items-start lg:hidden">
         <BottomMobileNav
-          filteredPosts={[postWithCategory]}
-          initialCasts={[postWithCategory]}
+          filteredPosts={[post]}
+          initialCasts={[post]}
           page="cast"
         />
       </div>

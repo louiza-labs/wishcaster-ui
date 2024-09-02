@@ -23,6 +23,37 @@ export const fetchFarcasterCast = async (hash: string) => {
     }
   }
 }
+export const fetchNormalizedCast = async (hash: string, viewerFID = 0) => {
+  try {
+    const buildUrl = () => {
+      let baseUrl = `${process.env.API_SERVICE_URL}/farcaster/get_normlized_cast?castHash=${hash}`
+
+      if (viewerFID) {
+        baseUrl += `&viewer_fid=${viewerFID}`
+      }
+      return baseUrl
+    }
+    const url = buildUrl()
+    const config = {
+      headers: {
+        accept: "application/json",
+      },
+    }
+
+    const response = await axios.get(url, config)
+
+    const data = response.data // Axios wraps the response data in a `data` property
+    // Assuming the API returns an object with casts and cursor for the next batch
+    const returnObject = {
+      data,
+    }
+
+    return returnObject
+  } catch (error) {
+    console.error("Error fetching normalized cast:", error)
+    return { data: {}, nextCursor: "", error: error }
+  }
+}
 
 export const fetchFarcasterCastForUsers = async (
   userFID: number,

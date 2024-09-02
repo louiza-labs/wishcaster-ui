@@ -3,10 +3,10 @@ import { Category } from "@/types"
 
 import { dateOptions } from "@/lib/constants"
 import {
-  categorizeArrayOfCasts,
+  categorizeArrayOfPosts,
   generateWhimsicalErrorMessages,
-  searchCastsForCategories,
-  sortCastsByProperty,
+  searchPostsForCategories,
+  sortPostsByProperty,
 } from "@/lib/helpers"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import FilterBar from "@/components/filters/FilterBar/new"
@@ -66,13 +66,13 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
     channelId: "someone-build",
   })
 
-  const categories = categorizeArrayOfCasts(castsAndTweets) as Category[]
+  const categories = categorizeArrayOfPosts(castsAndTweets) as Category[]
 
   if (categoryParam.length) {
-    castsAndTweets = searchCastsForCategories(castsAndTweets, categoryParam)
+    castsAndTweets = searchPostsForCategories(castsAndTweets, categoryParam)
   }
   if (sortParam) {
-    castsAndTweets = sortCastsByProperty(castsAndTweets, sortParam)
+    castsAndTweets = sortPostsByProperty(castsAndTweets, sortParam)
   }
 
   const isError = !castsAndTweets.length
@@ -92,7 +92,7 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
         <main className="relative grid grid-cols-1 gap-4 py-10 lg:grid-cols-12 ">
           <article className="no-scrollbar lg:col-span-12 lg:px-2  ">
             <Topics
-              casts={castsAndTweets}
+              posts={castsAndTweets}
               mobileView={mobileViewParam}
               notionResults={notionResults}
             />

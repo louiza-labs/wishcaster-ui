@@ -148,48 +148,9 @@ const CastAndTweetsFeed = ({
           filteredPosts.map((tweetOrCast: any, index) => (
             <Fragment key={tweetOrCast.hash || tweetOrCast.id}>
               <PostCard
-                source={tweetOrCast.object === "cast" ? "farcaster" : "twitter"}
-                text={tweetOrCast.text}
-                user={
-                  tweetOrCast.object === "cast"
-                    ? tweetOrCast.author
-                    : tweetOrCast.user
-                }
-                category={tweetOrCast.category}
-                tagline={tweetOrCast.tagline}
-                embeds={tweetOrCast.embeds ?? []}
-                media={tweetOrCast.media ?? []}
-                postId={tweetOrCast.hash}
-                referencedPost={tweetOrCast.referenced_tweet}
-                mentionedProfiles={tweetOrCast.mentioned_profiles ?? []}
                 renderEmbeds={true}
                 post={tweetOrCast}
-                timestamp={
-                  tweetOrCast.object === "cast"
-                    ? tweetOrCast.timestamp
-                    : tweetOrCast.created_at
-                }
-                likes={
-                  tweetOrCast.public_metrics
-                    ? tweetOrCast.public_metrics.like_count
-                    : undefined
-                }
-                retweets={
-                  tweetOrCast.public_metrics
-                    ? tweetOrCast.public_metrics.retweet_count
-                    : undefined
-                }
-                impressions={
-                  tweetOrCast.public_metrics
-                    ? tweetOrCast.public_metrics.impression_count
-                    : undefined
-                }
-                replies={
-                  tweetOrCast.public_metrics
-                    ? tweetOrCast.public_metrics.reply_count
-                    : undefined
-                }
-                reactions={tweetOrCast.reactions}
+                notionResults={notionResults}
               />
             </Fragment>
           ))

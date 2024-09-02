@@ -110,23 +110,18 @@ export function summarizeByCategory(
     }
 
     const summary = summaries.get(category.id)!
-    summary.likes +=
-      post.object === "cast"
-        ? reactions.likes_count
-        : post.public_metrics.like_count
-    summary.recasts +=
-      post.object === "cast"
-        ? reactions.recasts_count
-        : post.public_metrics.retweet_count
-    summary.replies +=
-      post.object === "cast" ? replies.count : post.public_metrics.reply_count
-    summary.bookmarks +=
-      post.object === "cast" ? 0 : post.public_metrics.bookmark_count
-    summary.impressions +=
-      post.object === "cast" ? 0 : post.public_metrics.impression_count
+    summary.likes += post.likesCount
+
+    summary.replies += post.commentsCount
+    summary.bookmarks += post.additionalMetrics
+      ? post.additionalMetrics.bookmarkCount
+      : 0
+    summary.impressions += post.additionalMetrics
+      ? post.additionalMetrics.impressionCount
+      : 0
 
     summary.count += 1
-    summary.totalFollowers += post.object === "cast" ? author.follower_count : 0
+    summary.totalFollowers += post.author.followerCount ?? 0
     summary.averageFollowerCount = Math.floor(
       summary.totalFollowers / summary.count
     )
@@ -338,50 +333,36 @@ export function summarizePosts(posts: any[]): {
     const targetSummary =
       post.object === "cast" ? summary.farcaster : summary.twitter
 
-    summary.overall.likes +=
-      post.object === "cast"
-        ? post.reactions.likes_count
-        : post.public_metrics.like_count
-    targetSummary.likes +=
-      post.object === "cast"
-        ? post.reactions.likes_count
-        : post.public_metrics.like_count
+    summary.overall.likes += post.likesCount
+    targetSummary.likes += post.likesCount
 
-    summary.overall.recasts +=
-      post.object === "cast"
-        ? post.reactions.recasts_count
-        : post.public_metrics.retweet_count
-    targetSummary.recasts +=
-      post.object === "cast"
-        ? post.reactions.recasts_count
-        : post.public_metrics.retweet_count
+    summary.overall.recasts += post.sharesCount
+    targetSummary.recasts += post.sharesCount
 
-    summary.overall.replies +=
-      post.object === "cast"
-        ? post.replies.count
-        : post.public_metrics.reply_count
-    targetSummary.replies +=
-      post.object === "cast"
-        ? post.replies.count
-        : post.public_metrics.reply_count
-
+    summary.overall.replies += post.commentsCount
+    targetSummary.replies += post.commentsCount
     summary.overall.bookmarks +=
-      post.object === "cast" ? 0 : post.public_metrics.bookmark_count
+      post.platform === "twitter" && post.additionalMetrics
+        ? post.additionalMetrics.bookmarkCount
+        : 0
     targetSummary.bookmarks +=
-      post.object === "cast" ? 0 : post.public_metrics.bookmark_count
-
+      post.platform === "twitter" && post.additionalMetrics
+        ? post.additionalMetrics.bookmarkCount
+        : 0
     summary.overall.impressions +=
-      post.object === "cast" ? 0 : post.public_metrics.impression_count
+      post.platform === "twitter" && post.additionalMetrics
+        ? post.additionalMetrics.impressionCount
+        : 0
     targetSummary.impressions +=
-      post.object === "cast" ? 0 : post.public_metrics.impression_count
+      post.platform === "twitter" && post.additionalMetrics
+        ? post.additionalMetrics.impressionCount
+        : 0
 
     summary.overall.count += 1
     targetSummary.count += 1
 
-    summary.overall.totalFollowers +=
-      post.object === "cast" ? post.author.follower_count : 0
-    targetSummary.totalFollowers +=
-      post.object === "cast" ? post.author.follower_count : 0
+    summary.overall.totalFollowers += post.author.followerCount ?? 0
+    targetSummary.totalFollowers += post.author.followerCount ?? 0
   })
 
   // Calculate the average follower count only if there are posts
@@ -420,9 +401,9 @@ export function summarizeByAuthor(posts: any[]): AuthorSummary[] {
   const summaries = new Map<string, AuthorSummary>()
 
   posts.forEach((post) => {
-    const isCast = post.object === "cast"
-    const userId = isCast ? post.author.fid : post.author_id
-    const user = isCast ? post.author : post.user
+    const isCast = post.platform === "farcaster"
+    const userId = post.author.id
+    const user = post.author
 
     if (!userId || !user) return // Skip if no valid author identifier
 
@@ -439,17 +420,17 @@ export function summarizeByAuthor(posts: any[]): AuthorSummary[] {
     }
 
     const summary = summaries.get(userId)!
-    summary.likes += isCast
-      ? post.reactions.likes_count
-      : post.public_metrics.like_count
-    summary.recasts += isCast
-      ? post.reactions.recasts_count
-      : post.public_metrics.retweet_count
-    summary.replies += isCast
-      ? post.replies.count
-      : post.public_metrics.reply_count
-    summary.impressions += isCast ? 0 : post.public_metrics.impression_count
-    summary.bookmarks += isCast ? 0 : post.public_metrics.bookmark_count
+    summary.likes += post.likesCount
+    summary.recasts += post.sharesCount
+    summary.replies += post.commentsCount
+    summary.impressions +=
+      isCast || !post.additionalMetrics
+        ? 0
+        : post.additionalMetrics.impressionCount
+    summary.bookmarks +=
+      isCast || !post.additionalMetrics
+        ? 0
+        : post.additionalMetrics.bookmarkCount
     summary.totalPosts += 1
   })
 
@@ -491,9 +472,9 @@ export function summarizeByAuthorAndPlatform(
   }
 
   posts.forEach((post) => {
-    const isCast = post.object === "cast"
-    const userId = isCast ? post.author.fid : post.author_id
-    const user = isCast ? post.author : post.user
+    const isCast = post.platform === "farcaster"
+    const userId = post.author.id
+    const user = post.author
 
     if (!userId || !user) return // Skip if no valid author identifier
 
@@ -506,17 +487,17 @@ export function summarizeByAuthorAndPlatform(
         })
       }
       const summary = summaryMap.get(userId)!
-      summary.likes += isCast
-        ? post.reactions.likes_count
-        : post.public_metrics.like_count
-      summary.recasts += isCast
-        ? post.reactions.recasts_count
-        : post.public_metrics.retweet_count
-      summary.replies += isCast
-        ? post.replies.count
-        : post.public_metrics.reply_count
-      summary.impressions += isCast ? 0 : post.public_metrics.impression_count
-      summary.bookmarks += isCast ? 0 : post.public_metrics.bookmark_count
+      summary.likes += post.likesCount
+      summary.recasts += post.sharesCount
+      summary.replies += post.commentsCount
+      summary.impressions +=
+        isCast || !post.additionalMetrics
+          ? 0
+          : post.additionalMetrics.impressionCount
+      summary.bookmarks +=
+        isCast || !post.additionalMetrics
+          ? 0
+          : post.additionalMetrics.bookmarkCount
       summary.totalPosts += 1
     }
 
@@ -646,6 +627,7 @@ export function addMetricsToProblems(
         if (source.hash === hash) {
           problem.posts = [...(problem.posts ? problem.posts : []), source]
           // Aggregate metrics based on object type
+
           if (source.object === "cast") {
             aggregatedMetrics.totalLikes += source.reactions?.likes_count || 0
             aggregatedMetrics.totalRecasts +=

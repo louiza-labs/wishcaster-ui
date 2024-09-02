@@ -24,7 +24,7 @@ interface CardStatProps {
 
 const CardStat: React.FC<CardStatProps> = ({ title, value, rank }) => {
   return (
-    <Card className="lg:w-30 col-span-1 flex w-24 flex-col items-center justify-center border p-4 px-2 shadow-lg">
+    <Card className="col-span-1 flex w-24 flex-col items-center justify-center border p-4 px-2 shadow-lg lg:w-36">
       <Badge
         variant="default"
         className="text-xxs mb-2 bg-primary px-2 py-1 text-primary-foreground lg:text-sm"
@@ -81,7 +81,7 @@ const TopicStats: React.FC<CastStatProps> = ({
   )
 
   return (
-    <div className="relative  w-full  px-4 sm:px-0">
+    <div className="relative col-span-12  w-full  px-4 sm:px-0">
       {/* <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:hidden xl:grid-cols-3">
         {generatedStats && Object.keys(generatedStats).length
           ? Object.keys(generatedStats).map((stat) => (

@@ -94,3 +94,48 @@ export interface Category {
 export type Categories = {
   [category: string]: Set<string>
 }
+
+export interface NormalizedPostType {
+  id: string | number
+  author: {
+    id: string | number
+    username: string
+    displayName: string
+    profileImageUrl: string
+    bio?: string
+    verified?: boolean
+    followerCount?: number
+    followingCount?: number
+  }
+  idea?: string
+  text: string
+  createdAt: string
+  likesCount: number
+  commentsCount: number
+  sharesCount: number
+  mediaUrls: {
+    url: string
+    type: "photo" | "video"
+    alt?: string
+  }[]
+  category: {
+    label: string | null
+    id: string | null
+  }
+  platform: "farcaster" | "twitter"
+  additionalMetrics?: {
+    retweetCount?: number
+    quoteCount?: number
+    bookmarkCount?: number
+    impressionCount?: number
+  }
+  threadInfo?: {
+    parentPostId?: string | number
+    rootPostId?: string | number
+  }
+  mentionedProfiles: {
+    username: string
+    displayName: string
+    profileUrl: string
+  }[]
+}

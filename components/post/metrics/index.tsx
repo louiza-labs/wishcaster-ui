@@ -8,7 +8,6 @@ function normalizeMetrics({
   retweets,
   replies,
   impressions,
-  reactions,
   priorityScore,
   engagementRate,
 }: {
@@ -16,11 +15,7 @@ function normalizeMetrics({
   retweets?: number
   replies?: number
   impressions?: number
-  reactions?: {
-    likes_count: number
-    recasts_count: number
-    bookmark_count?: number
-  }
+
   priorityScore?: number | string
   engagementRate?: number | string
 }): NormalizedMetric[] {
@@ -30,7 +25,7 @@ function normalizeMetrics({
     metrics.push({ label: "Likes", value: likes })
   }
   if (retweets !== undefined) {
-    metrics.push({ label: "Retweets", value: retweets })
+    metrics.push({ label: "Reposts", value: retweets })
   }
   if (replies !== undefined) {
     metrics.push({ label: "Replies", value: replies })
@@ -38,15 +33,7 @@ function normalizeMetrics({
   if (impressions !== undefined) {
     metrics.push({ label: "Impressions", value: impressions })
   }
-  if (reactions !== undefined) {
-    metrics.push(
-      { label: "Likes", value: reactions.likes_count },
-      { label: "Recasts", value: reactions.recasts_count },
-      ...(reactions.bookmark_count !== undefined
-        ? [{ label: "Bookmarks", value: reactions.bookmark_count }]
-        : [])
-    )
-  }
+
   // if (priorityScore !== undefined) {
   //   metrics.push({ label: "Priority Score", value: priorityScore })
   // }
@@ -77,7 +64,6 @@ const PostMetrics = ({
   retweets,
   replies,
   impressions,
-  reactions,
   priorityScore,
   engagementRate,
 }: MetricsProps) => {
@@ -86,7 +72,6 @@ const PostMetrics = ({
     retweets,
     replies,
     impressions,
-    reactions,
     priorityScore,
     engagementRate,
   })

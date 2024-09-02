@@ -2,7 +2,7 @@
 
 import Autoplay from "embla-carousel-autoplay"
 
-import { sortCastsByProperty } from "@/lib/helpers"
+import { sortPostsByProperty } from "@/lib/helpers"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import {
   Carousel,
@@ -27,7 +27,7 @@ const TopCasts = ({
   notionResults,
 }: TopCastsProps) => {
   let { filteredPosts } = useFilterFeed(posts, topic)
-  const sortedPosts = sortCastsByProperty(filteredPosts, "likes_count")
+  const sortedPosts = sortPostsByProperty(filteredPosts, "likesCount")
 
   return (
     <>
@@ -35,46 +35,9 @@ const TopCasts = ({
         {sortedPosts.slice(0, 10).map((postItem: any, index: number) => (
           <>
             <PostCard
-              source={postItem.object === "cast" ? "farcaster" : "twitter"}
-              text={postItem.text}
-              user={
-                postItem.object === "cast" ? postItem.author : postItem.user
-              }
-              category={postItem.category}
-              tagline={postItem.tagline}
-              embeds={postItem.embeds ?? []}
-              media={postItem.media ?? []}
-              postId={postItem.hash}
-              referencedPost={postItem.referenced_tweet}
-              mentionedProfiles={postItem.mentioned_profiles ?? []}
               renderEmbeds={true}
               post={postItem}
-              timestamp={
-                postItem.object === "cast"
-                  ? postItem.timestamp
-                  : postItem.created_at
-              }
-              likes={
-                postItem.public_metrics
-                  ? postItem.public_metrics.like_count
-                  : undefined
-              }
-              retweets={
-                postItem.public_metrics
-                  ? postItem.public_metrics.retweet_count
-                  : undefined
-              }
-              impressions={
-                postItem.public_metrics
-                  ? postItem.public_metrics.impression_count
-                  : undefined
-              }
-              replies={
-                postItem.public_metrics
-                  ? postItem.public_metrics.reply_count
-                  : undefined
-              }
-              reactions={postItem.reactions}
+              notionResults={notionResults}
             />
           </>
         ))}
@@ -104,50 +67,9 @@ const TopCasts = ({
                   <div className="grid size-fit max-w-[90vw] grid-cols-1 py-2 md:basis-1/2 lg:max-h-screen lg:overflow-y-scroll">
                     <>
                       <PostCard
-                        source={
-                          postItem.object === "cast" ? "farcaster" : "twitter"
-                        }
-                        text={postItem.text}
-                        user={
-                          postItem.object === "cast"
-                            ? postItem.author
-                            : postItem.user
-                        }
-                        category={postItem.category}
-                        tagline={postItem.tagline}
-                        embeds={postItem.embeds ?? []}
-                        media={postItem.media ?? []}
-                        postId={postItem.hash}
-                        referencedPost={postItem.referenced_tweet}
-                        mentionedProfiles={postItem.mentioned_profiles ?? []}
                         renderEmbeds={true}
-                        timestamp={
-                          postItem.object === "cast"
-                            ? postItem.timestamp
-                            : postItem.created_at
-                        }
                         post={postItem}
-                        likes={
-                          postItem.public_metrics
-                            ? postItem.public_metrics.like_count
-                            : undefined
-                        }
-                        retweets={
-                          postItem.public_metrics
-                            ? postItem.public_metrics.retweet_count
-                            : undefined
-                        }
-                        impressions={
-                          postItem.public_metrics
-                            ? postItem.public_metrics.impression_count
-                            : undefined
-                        }
-                        replies={
-                          postItem.public_metrics
-                            ? postItem.public_metrics.reply_count
-                            : undefined
-                        }
-                        reactions={postItem.reactions}
+                        notionResults={notionResults}
                       />
                     </>
                   </div>
