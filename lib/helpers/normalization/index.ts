@@ -24,10 +24,10 @@ function normalizeFarcasterPost(farcasterPost: any): NormalizedPostType {
           type: "photo",
         }))
       : [] || [],
-    // category: {
-    //   label: farcasterPost.category.label,
-    //   id: farcasterPost.category.id,
-    // },
+    category: {
+      label: farcasterPost.category.label,
+      id: farcasterPost.category.id,
+    },
     platform: "farcaster",
     threadInfo: {
       parentPostId: farcasterPost.parent_hash,
@@ -67,10 +67,10 @@ export function normalizeTwitterPost(twitterPost: any): NormalizedPostType {
         }))
       : [],
 
-    // category: {
-    //   label: twitterPost.category?.label || null,
-    //   id: twitterPost.category?.id || null,
-    // },
+    category: {
+      label: twitterPost.category?.label || null,
+      id: twitterPost.category?.id || null,
+    },
     platform: "twitter",
     threadInfo: {
       parentPostId: twitterPost.referenced_tweets?.[0]?.id || null,
