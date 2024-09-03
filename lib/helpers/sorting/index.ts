@@ -1,9 +1,26 @@
 import { NormalizedPostType } from "@/types"
 
+const convertSortParamToField = (sortParam: string) => {
+  switch (sortParam) {
+    case "likes_count":
+      return "likesCount"
+    case "recent":
+      return "createdAt"
+    case "replies":
+      return "commentsCount"
+    case "recasts_count":
+      return "sharesCount"
+
+    default:
+      return sortParam
+  }
+}
+
 export function sortPostsByProperty(
   posts: NormalizedPostType[],
   sortField: "recent" | "commentsCount" | "likesCount" | "sharesCount" | string
 ): NormalizedPostType[] {
+  const convertedSortField = convertSortParamToField(sortField)
   // Create a shallow copy of the array to sort, to avoid modifying the original array
   const sortedPosts = [...posts]
 
@@ -12,7 +29,7 @@ export function sortPostsByProperty(
     let valueA: number | string
     let valueB: number | string
 
-    switch (sortField) {
+    switch (convertedSortField) {
       case "recent":
         // Sort by timestamp in descending order
         valueA = new Date(a.createdAt).getTime()

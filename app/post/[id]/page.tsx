@@ -85,7 +85,6 @@ const PostPage: FC<PostPageProps> = async ({ searchParams, params }) => {
   const searchTerm = parseQueryParam(searchParams.search)
   const categoryParam = parseQueryParam(searchParams.categories)
   const filtersParam = parseQueryParam(searchParams.filters)
-  const sortParam = parseQueryParam(searchParams.sort)
   const mobileViewParam = parseQueryParam(searchParams.view)
 
   let filteredPosts = [post]
