@@ -59,6 +59,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   const selectedTopic = params.topic
     ? PRODUCT_CATEGORIES_AS_MAP[params.topic]
     : null
+  const userFilterParam = parseQueryParam(searchParams.connected)
 
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
@@ -67,6 +68,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   let castsAndTweets = await fetchPosts({
     timePeriod: timeFilterParam ?? "ytd",
     channelId: "someone-build",
+    userFID: userFilterParam,
   })
 
   let overallPosts = castsAndTweets

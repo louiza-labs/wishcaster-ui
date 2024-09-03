@@ -1,6 +1,7 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { useCallback } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useBoundStore } from "@/store"
 import { useNeynarContext } from "@neynar/react"
 
@@ -27,10 +28,26 @@ interface MobileNavProps {
 export function MobileNav({ notionResults }: MobileNavProps) {
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
   const { userFromAuth } = useGetUser()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const userFilterParam = searchParams.get("connected")
+  const addUserFIDToParams = useCallback((fid: Number) => {
+    if (fid && userFilterParam && userFilterParam.length) {
+      return
+    } else if (fid) {
+      const params = new URLSearchParams(window.location.search)
+      console.log("the params", params)
+
+      params.set("connected", fid.toString()) // Add connected-account param
+      router.push("?" + params.toString()) // Update the URL with new params
+    } else {
+      console.log(userFilterParam)
+    }
+  }, [])
 
   const { isConnectedToNotion, isConnectedToLinear, isConnectedToTwitter } =
     useBoundStore((state: any) => state)
-  const router = useRouter()
   useSubscribeToSessionChanges()
   const handleRouteHome = () => {
     router.push("/")

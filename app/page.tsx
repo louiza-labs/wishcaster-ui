@@ -55,6 +55,8 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const categoryParam = parseQueryParam(searchParams.categories)
   const filtersParam = parseQueryParam(searchParams.filters)
   const sortParam = parseQueryParam(searchParams.sort)
+  const userFilterParam = parseQueryParam(searchParams.connected)
+
   const shouldHideCasts =
     filtersParam && filtersParam.includes("hide-farcaster")
   const shouldHideTweets = filtersParam && filtersParam.includes("hide-twitter")
@@ -74,6 +76,8 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
   let castsAndTweets = await fetchPosts({
     timePeriod: timeFilterParam ?? "30-days",
     channelId: "someone-build",
+    sortField: sortParam as any,
+    userFID: userFilterParam,
   })
 
   const categories = categorizeArrayOfPosts(castsAndTweets) as Category[]

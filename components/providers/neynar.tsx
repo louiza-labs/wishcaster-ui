@@ -79,6 +79,7 @@ export default function NeynarProvider({
               const { user } = params
               // create a user session table row
               const userFID = user.fid
+
               const userCustodyAddress = user.custody_address
 
               const resForAuthingUser = await createAuthUser(
