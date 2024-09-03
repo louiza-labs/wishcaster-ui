@@ -6,12 +6,14 @@ interface FetchPostsParams {
   timePeriod: string
   channelId: string
   searchTerm?: string
+  sortField?: "recent" | "likes_count" | "replies" | "recasts_count"
 }
 
 export async function fetchPosts({
   timePeriod,
   channelId,
   searchTerm = "",
+  sortField,
 }: FetchPostsParams): Promise<any> {
   try {
     const response = await axios.get(
@@ -21,6 +23,7 @@ export async function fetchPosts({
           timePeriod,
           channelId,
           searchTerm,
+          sortField,
         },
       }
     )

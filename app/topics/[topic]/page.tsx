@@ -63,6 +63,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
+
   let castsAndTweets = await fetchPosts({
     timePeriod: timeFilterParam ?? "ytd",
     channelId: "someone-build",
