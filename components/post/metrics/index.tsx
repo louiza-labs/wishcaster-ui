@@ -57,6 +57,7 @@ interface MetricsProps {
   }
   priorityScore?: number | string
   engagementRate?: number | string
+  showImpressions: boolean
 }
 
 const PostMetrics = ({
@@ -66,6 +67,7 @@ const PostMetrics = ({
   impressions,
   priorityScore,
   engagementRate,
+  showImpressions,
 }: MetricsProps) => {
   const metrics = normalizeMetrics({
     likes,
@@ -76,9 +78,13 @@ const PostMetrics = ({
     engagementRate,
   })
 
+  const filteredMetrics = showImpressions
+    ? metrics
+    : metrics.filter((metrics) => metrics.label.toLowerCase() !== "impressions")
+
   return (
     <div className="grid grid-cols-3 gap-4 text-gray-600">
-      {metrics.map((metric, index) => (
+      {filteredMetrics.map((metric, index) => (
         <div key={index} className="flex flex-col items-center">
           <span className="text-lg font-semibold">{metric.value}</span>
           <span className="text-xs">{metric.label}</span>

@@ -55,7 +55,7 @@ export default function Component({
   }
 
   return (
-    <Card className="relative flex size-full max-w-md flex-col justify-between border border-gray-200 shadow-sm">
+    <Card className="relative flex h-auto w-full max-w-md flex-col justify-between border border-gray-200 shadow-sm">
       <CardContent className="flex h-full flex-col justify-between border p-4">
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -67,10 +67,10 @@ export default function Component({
               <AvatarFallback>{post.author.username}</AvatarFallback>
             </Avatar>
             <div>
-              <h4 className="text-sm font-semibold text-gray-700">
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
                 {post.author.displayName}{" "}
               </h4>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 dark:text-gray-100">
                 {formatDateForCastTimestamp(post.createdAt)}
               </p>
             </div>
@@ -87,7 +87,7 @@ export default function Component({
 
         <h3
           onClick={handleVisitPage}
-          className="mb-2 text-base font-bold text-gray-800"
+          className="mb-2 text-base font-bold text-gray-800 dark:text-gray-200"
         >
           {post.tagline ?? postWithTagline.tagline}
         </h3>
@@ -97,7 +97,7 @@ export default function Component({
             onClick={handleVisitPage}
             onOpenChange={setIsExpanded}
           >
-            <p className="mb-1 text-sm text-gray-600">
+            <p className="mb-1 text-sm text-gray-600 dark:text-gray-200">
               {isExpanded
                 ? renderTextWithLinks(
                     post.text,
@@ -112,7 +112,7 @@ export default function Component({
                     post.platform === "twitter"
                   )}
             </p>
-            <CollapsibleContent className="mb-2 text-sm text-gray-600">
+            <CollapsibleContent className="mb-2 text-sm text-gray-600 dark:text-gray-200">
               <RenderContent
                 text={post.text}
                 tagline={postWithTagline.tagline}
@@ -126,26 +126,31 @@ export default function Component({
                 renderEmbeds={renderEmbeds}
               />
             </CollapsibleContent>
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-auto p-0 font-normal text-indigo-600 hover:text-indigo-800"
-              >
-                {isExpanded ? (
-                  <>
-                    <ChevronUp className="mr-1 size-4" /> Show less
-                  </>
-                ) : (
-                  <>
-                    <ChevronDown className="mr-1 size-4" /> Read more
-                  </>
-                )}
-              </Button>
-            </CollapsibleTrigger>
+            <div className="mt-2 flex flex-col items-center">
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-auto p-0 font-normal text-indigo-600 hover:text-indigo-800"
+                >
+                  {isExpanded ? (
+                    <>
+                      <ChevronUp className="mr-1 size-4" /> Show less
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="mr-1 size-4" /> Read more
+                    </>
+                  )}
+                </Button>
+              </CollapsibleTrigger>
+            </div>
           </Collapsible>
         ) : (
-          <p onClick={handleVisitPage} className="mb-1 text-sm text-gray-600">
+          <p
+            onClick={handleVisitPage}
+            className="mb-1 text-sm text-gray-600 dark:text-gray-200"
+          >
             {renderTextWithLinks(
               fullText,
               post.mentionedProfiles,
@@ -203,9 +208,9 @@ export default function Component({
         </div>
       </CardContent>
 
-      <CardFooter className="flex w-full flex-col items-center  justify-between bg-gray-50 p-0 ">
+      <CardFooter className="flex w-full flex-col items-center  justify-between bg-gray-50 p-0 dark:bg-transparent ">
         <div className="flex w-full flex-row justify-between px-6 py-3">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-200">
             <HeartIcon className="size-4" />
             <span>{post.likesCount ? post.likesCount : "0"}</span>
           </div>
@@ -213,16 +218,17 @@ export default function Component({
             variant="ghost"
             size="sm"
             onClick={() => setShowMetrics(!showMetrics)}
-            className="text-indigo-600 hover:text-indigo-800"
+            className="text-indigo-600 hover:text-indigo-800 dark:hover:text-indigo-200"
           >
-            <BarChart2 className="mr-1 size-4" />
+            <BarChart2 className="mr-1 size-4 dark:hover:text-indigo-200" />
             {showMetrics ? "Hide Metrics" : "Show Metrics"}
           </Button>
         </div>
         <Collapsible className="w-full" open={showMetrics}>
-          <CollapsibleContent className="w-full bg-gray-100 py-2 text-sm">
+          <CollapsibleContent className="w-full bg-gray-100 py-2 text-sm dark:bg-indigo-100 dark:backdrop-blur-xl">
             <PostMetrics
               likes={post.likesCount}
+              showImpressions={post.platform === "twitter"}
               retweets={post.sharesCount}
               replies={post.commentsCount}
               impressions={

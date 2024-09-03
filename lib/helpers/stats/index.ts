@@ -176,7 +176,7 @@ export const generateStatsObjectForCast = (
       label: "Likes",
       value: cast.likesCount,
     },
-    priorityLikes: { label: "Power Badge Likes", value: priorityLikes },
+    priorityLikes: { label: "Power Likes", value: priorityLikes },
 
     replies: { label: "Replies", value: cast.commentsCount },
     recasts: { label: "Recasts", value: cast.sharesCount },
