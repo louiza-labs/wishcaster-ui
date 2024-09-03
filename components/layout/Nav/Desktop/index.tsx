@@ -1,7 +1,8 @@
 "use client"
 
+import { useCallback, useEffect } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
 
 import { NavItem } from "@/types/nav"
@@ -30,7 +31,29 @@ interface MainNavProps {
 
 export function DesktopNav({ items, notionResults }: MainNavProps) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const userFilterParam = searchParams.get("connected")
+  const addUserFIDToParams = useCallback((fid: Number) => {
+    if (fid && userFilterParam && userFilterParam.length) {
+      return
+    } else if (fid) {
+      const params = new URLSearchParams(window.location.search)
+      console.log("the params", params)
+
+      params.set("connected", fid.toString()) // Add connected-account param
+      router.push("?" + params.toString()) // Update the URL with new params
+    } else {
+      console.log(userFilterParam)
+    }
+  }, [])
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
+  useEffect(() => {
+    if (user && user.fid) {
+      const userFID = user.fid
+      addUserFIDToParams(userFID)
+    }
+  }, [user])
   useSubscribeToSessionChanges()
 
   return (

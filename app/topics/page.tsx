@@ -52,6 +52,7 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const filtersParam = parseQueryParam(searchParams.filters)
   const sortParam = parseQueryParam(searchParams.sort)
   const mobileViewParam = parseQueryParam(searchParams.view)
+  const userFilterParam = parseQueryParam(searchParams.connected)
 
   const notionAccessCode = await getUsersNotionAccessCode()
   const notionSearch = await searchNotion(notionAccessCode)
@@ -64,6 +65,7 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
   let castsAndTweets = await fetchPosts({
     timePeriod: timeFilterParam ?? "ytd",
     channelId: "someone-build",
+    userFID: userFilterParam,
   })
 
   const categories = categorizeArrayOfPosts(castsAndTweets) as Category[]

@@ -34,6 +34,7 @@ const CastAndTweetsFeed = ({
   const { filteredPosts } = useFilterFeed(posts, topic)
 
   const router = useRouter()
+  
   const categoriesFromParams = searchParams.getAll("topics").join(",")
   const cardLayoutFromParams = searchParams.getAll("card-layout").join(",")
 

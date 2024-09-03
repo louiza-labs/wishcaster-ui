@@ -50,16 +50,19 @@ interface User {
 
 const PostPage: FC<PostPageProps> = async ({ searchParams, params }) => {
   const source = parseQueryParam(searchParams.source)
+  const userFilterParam = parseQueryParam(searchParams.connected)
+
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
   let { data: post } =
     source === "farcaster"
-      ? await fetchNormalizedCast(params.id)
+      ? await fetchNormalizedCast(params.id, Number(userFilterParam))
       : await fetchNormalizedTweet(params.id)
   const overallPosts = await fetchPosts({
     timePeriod: timeFilterParam ?? "30-days",
     channelId: "someone-build",
+    userFID: userFilterParam,
   })
 
   const notionAccessCode = await getUsersNotionAccessCode()

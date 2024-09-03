@@ -50,12 +50,12 @@ export default function Component() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4 transition-colors duration-200 dark:bg-gray-900">
       <div className="w-full max-w-md space-y-4 rounded-lg bg-white p-6 shadow-lg transition-colors duration-200 dark:bg-gray-800">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col items-center justify-between">
           <Icons.logo />
         </div>
         <div className="flex items-center space-x-3">
           <Loader2 className="size-5 animate-spin text-blue-600 dark:text-blue-400" />
-          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <p className="text-base font-semibold text-gray-700 dark:text-gray-300">
             {tasks[currentTaskIndex]}
           </p>
         </div>
@@ -70,7 +70,7 @@ export default function Component() {
         <div className="flex items-start space-x-3 text-sm">
           <Lightbulb className="mt-0.5 size-5 shrink-0 text-yellow-500" />
           <p className="text-gray-600 dark:text-gray-400">
-            <span className="font-semibold">Fun Fact:</span>{" "}
+            <span className="font-semibold">Did you know:</span>{" "}
             {funFacts[currentFactIndex]}
           </p>
         </div>

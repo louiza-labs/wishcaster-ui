@@ -130,6 +130,8 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
 }) => {
   const industry = parseQueryParam(searchParams.industry)
 
+  const userFilterParam = parseQueryParam(searchParams.connected)
+
   const notionAccessCode = await getUsersNotionAccessCode()
   const notionSearch = notionAccessCode
     ? await searchNotion(notionAccessCode)
@@ -145,6 +147,7 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
     timePeriod: timeFilterParam ? timeFilterParam : "ytd",
     channelId: "someone-build",
     searchTerm: searchIdea,
+    userFID: userFilterParam,
   })
 
   const categories = categorizeArrayOfPosts(posts) as Category[]
