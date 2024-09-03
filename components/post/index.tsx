@@ -89,7 +89,9 @@ export default function Component({
           onClick={handleVisitPage}
           className="mb-2 text-base font-bold text-gray-800 dark:text-gray-200"
         >
-          {post.tagline ?? postWithTagline.tagline}
+          {post.tagline && post.tagline.length
+            ? post.tagline
+            : postWithTagline.tagline}
         </h3>
         {needsShortening ? (
           <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
