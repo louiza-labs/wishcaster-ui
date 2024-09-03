@@ -10,11 +10,10 @@ import {
 } from "@/lib/helpers"
 import { Badge } from "@/components/ui/badge"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import TopCasts from "@/components/feed/casts/TopCasts"
+import TopCasts from "@/components/feed/TopCasts"
 import PostsFeed from "@/components/feed/castsAndTweets"
 import DateFilters from "@/components/filters/Date/new"
 import FilterBar from "@/components/filters/FilterBar/new"
-import SourceFilters from "@/components/filters/Sources/new"
 import UserFilters from "@/components/filters/User/new"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
@@ -134,7 +133,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
         {/* <SortCasts /> */}
 
         <DateFilters />
-        <SourceFilters />
+        {/* <SourceFilters /> */}
         <UserFilters />
         {/* <CategoriesFeed categories={categories} /> */}
       </aside>

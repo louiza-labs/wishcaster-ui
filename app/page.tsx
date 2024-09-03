@@ -12,7 +12,6 @@ import PostsFeed from "@/components/feed/castsAndTweets"
 import CategoriesFeed from "@/components/feed/categories"
 import DateFilters from "@/components/filters/Date/new"
 import FilterBar from "@/components/filters/FilterBar/new"
-import SourceFilters from "@/components/filters/Sources/new"
 import UserFilters from "@/components/filters/User/new"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import Rankings from "@/components/rankings"
@@ -73,7 +72,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
     : undefined
 
   let castsAndTweets = await fetchPosts({
-    timePeriod: timeFilterParam ?? "ytd",
+    timePeriod: timeFilterParam ?? "30-days",
     channelId: "someone-build",
   })
 
@@ -108,7 +107,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
             {/* <SortCasts /> */}
 
             <DateFilters />
-            <SourceFilters />
+            {/* <SourceFilters /> */}
             <UserFilters />
             <CategoriesFeed categories={categories} />
           </aside>

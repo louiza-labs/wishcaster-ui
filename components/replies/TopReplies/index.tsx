@@ -1,6 +1,6 @@
 "use client"
 
-import { sortCastsByProperty } from "@/lib/helpers"
+import { sortPostsByProperty } from "@/lib/helpers"
 import useFetchCastConversation from "@/hooks/farcaster/conversations/useFetchCastConversation"
 import {
   Accordion,
@@ -16,7 +16,7 @@ interface TopRepliesProps {
 }
 const TopReplies = ({ castHash, notionResults }: TopRepliesProps) => {
   const { conversation } = useFetchCastConversation(castHash)
-  const sortedRepliesByLikes = sortCastsByProperty(conversation, "likes_count")
+  const sortedRepliesByLikes = sortPostsByProperty(conversation, "likesCount")
   const topFiveRepliesByLikes = sortedRepliesByLikes.slice(0, 5)
 
   return (

@@ -18,8 +18,8 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import IntegrationsDropdown from "@/components/account/integrations/IntegrationsDropdown"
 import { Icons } from "@/components/icons"
+import IntegrationsDropdown from "@/components/integrations/IntegrationsDropdown"
 import Search from "@/components/search"
 import { ThemeToggle } from "@/components/theme-toggle"
 
@@ -70,7 +70,6 @@ export function DesktopNav({ items, notionResults }: MainNavProps) {
               Research Idea
             </span>
           </Link>
-          <div></div>
 
           {items?.length ? (
             <nav className="flex gap-6">

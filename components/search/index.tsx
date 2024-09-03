@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useBoundStore } from "@/store"
 import { useInView } from "react-intersection-observer"
 
-import { addCategoryFieldsToCasts, categorizeArrayOfCasts } from "@/lib/helpers"
+import { addCategoryFieldsToCasts, categorizeArrayOfPosts } from "@/lib/helpers"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -106,7 +106,7 @@ const Search = ({ notionResults }: SearchProps) => {
     setSearchedCasts([]) // Clear previous search results
 
     try {
-      let categories: any = categorizeArrayOfCasts([...casts, ...tweets])
+      let categories: any = categorizeArrayOfPosts([...casts, ...tweets])
       let filteredPosts = addCategoryFieldsToCasts(
         [...casts, ...tweets],
         categories
@@ -257,7 +257,7 @@ const Search = ({ notionResults }: SearchProps) => {
           {searchType === "topics" ? (
             <TopicSearchResults
               notionResults={notionResults}
-              casts={searchedCasts}
+              posts={searchedCasts}
             />
           ) : (
             <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">

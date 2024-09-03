@@ -8,7 +8,7 @@ export function sortPostsByProperty(
   const sortedPosts = [...posts]
 
   // Sort the copied array
-  sortedPosts.sort((a, b) => {
+  sortedPosts.sort((a: any, b: any) => {
     let valueA: number | string
     let valueB: number | string
 

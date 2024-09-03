@@ -26,7 +26,7 @@ export const fetchFarcasterCast = async (hash: string) => {
 export const fetchNormalizedCast = async (hash: string, viewerFID = 0) => {
   try {
     const buildUrl = () => {
-      let baseUrl = `${process.env.API_SERVICE_URL}/farcaster/get_normlized_cast?castHash=${hash}`
+      let baseUrl = `${process.env.API_SERVICE_URL}/farcaster/get_normalized_cast?castHash=${hash}`
 
       if (viewerFID) {
         baseUrl += `&viewer_fid=${viewerFID}`

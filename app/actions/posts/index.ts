@@ -15,7 +15,7 @@ export async function fetchPosts({
 }: FetchPostsParams): Promise<any> {
   try {
     const response = await axios.get(
-      `${process.env.API_SERVICE_URL}/posts/get_posts_from_db`,
+      `${process.env.API_SERVICE_URL}/posts/get_normalized_posts`,
       {
         params: {
           timePeriod,

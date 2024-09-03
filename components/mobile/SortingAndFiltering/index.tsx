@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import Filters from "@/components/filters"
+import Filters from "@/components/filters/new"
 import { Icons } from "@/components/icons"
 import SortCasts from "@/components/sort/SortCasts"
 
@@ -39,7 +39,7 @@ function MobileSortingAndFiltering({ initialCasts, filteredPosts }: any) {
               <div className="flex flex-col space-y-3">
                 <aside className="relative  flex  flex-col gap-y-6 sm:col-span-3 sm:flex">
                   <SortCasts />
-                  <Filters initialCasts={initialCasts} />
+                  <Filters posts={initialCasts} />
                 </aside>
               </div>
             </ScrollArea>

@@ -1,4 +1,4 @@
-import { Cast as CastType } from "@/types"
+import { Cast as CastType, NormalizedPostType } from "@/types"
 
 type StatsObject = {
   [key: string]: {
@@ -170,16 +170,16 @@ export const generateStatsObjectForCast = (
 ) => {
   if (!cast) return {}
   const statsObject = {
-    channelRanking: { label: "Channel Rank", value: channelRank },
+    // channelRanking: { label: "Channel Rank", value: channelRank },
     categoryRanking: { label: "Topic Rank", value: categoryRank },
     likes: {
       label: "Likes",
-      value: cast.reactions.likes_count,
+      value: cast.likesCount,
     },
     priorityLikes: { label: "Power Badge Likes", value: priorityLikes },
 
-    replies: { label: "Replies", value: cast.replies.count },
-    recasts: { label: "Recasts", value: cast.reactions.recasts_count },
+    replies: { label: "Replies", value: cast.commentsCount },
+    recasts: { label: "Recasts", value: cast.sharesCount },
   }
   return statsObject
 }
@@ -228,9 +228,9 @@ interface CategorySummary {
 }
 
 interface ReactionMetrics {
-  likes_count: number
-  recasts_count: number
-  replies_count: number
+  likesCount: number
+  sharesCount: number
+  commentsCount: number
 }
 interface User {
   fid: number
@@ -253,23 +253,21 @@ interface AuthorReactions {
 }
 
 // Function to aggregate and sort reactions per authoer
-export function aggregateCastMetricsByUser(
-  posts: CastType[],
+export function aggregateMetricsByUser(
+  posts: NormalizedPostType[],
   sortBy?: keyof ReactionMetrics
 ): AuthorReactions[] {
   const reactionMap = new Map<number, AuthorReactions>()
 
   posts.forEach((post) => {
-    const authorId = post.author.fid
+    const authorId = Number(post.author.id)
     if (!reactionMap.has(authorId)) {
       // Initialize the reactions object if it doesn't exist
       reactionMap.set(authorId, {
         ...post.author,
-        reactions: {
-          likes_count: 0,
-          recasts_count: 0,
-          replies_count: 0,
-        },
+        likesCount: 0,
+        sharesCount: 0,
+        commentsCount: 0,
         postCount: 0,
       } as any)
     }
@@ -278,9 +276,9 @@ export function aggregateCastMetricsByUser(
     const authorReactions: any = reactionMap.get(authorId)
 
     // Update reactions and post count
-    authorReactions.reactions.likes_count += post.reactions.likes_count
-    authorReactions.reactions.recasts_count += post.reactions.recasts_count
-    authorReactions.reactions.replies_count += post.replies.count
+    authorReactions.likesCount += post.likesCount
+    authorReactions.sharesCount += post.sharesCount
+    authorReactions.commentsCount += post.commentsCount
     authorReactions.postCount += 1
   })
 
@@ -611,7 +609,7 @@ interface Metrics {
 
 export function addMetricsToProblems(
   problems: ProblemObject[],
-  metricsSources: MetricsSource[]
+  metricsSources: NormalizedPostType[]
 ): ProblemObject[] {
   return problems.map((problem) => {
     const aggregatedMetrics: Metrics = {
@@ -624,29 +622,18 @@ export function addMetricsToProblems(
 
     problem.hashes.forEach((hash) => {
       metricsSources.forEach((source) => {
-        if (source.hash === hash) {
+        if (source.id === hash) {
           problem.posts = [...(problem.posts ? problem.posts : []), source]
           // Aggregate metrics based on object type
-
-          if (source.object === "cast") {
-            aggregatedMetrics.totalLikes += source.reactions?.likes_count || 0
-            aggregatedMetrics.totalRecasts +=
-              source.reactions?.recasts_count || 0
-            aggregatedMetrics.totalReplies += source.replies?.count || 0
-            aggregatedMetrics.totalBookmarks += 0 // Cast doesn't have bookmarks
-            aggregatedMetrics.totalImpressions += 0 // Cast doesn't have impressions
-          } else if (source.public_metrics) {
-            aggregatedMetrics.totalLikes +=
-              source.public_metrics.like_count || 0
-            aggregatedMetrics.totalRecasts +=
-              source.public_metrics.retweet_count || 0
-            aggregatedMetrics.totalReplies +=
-              source.public_metrics.reply_count || 0
-            aggregatedMetrics.totalBookmarks +=
-              source.public_metrics.bookmark_count || 0
-            aggregatedMetrics.totalImpressions +=
-              source.public_metrics.impression_count || 0
-          }
+          aggregatedMetrics.totalLikes += source.likesCount
+          aggregatedMetrics.totalRecasts += source.sharesCount
+          aggregatedMetrics.totalReplies += source.commentsCount
+          aggregatedMetrics.totalBookmarks += source.additionalMetrics
+            ? source.additionalMetrics.bookmarkCount ?? 0
+            : 0
+          aggregatedMetrics.totalImpressions += source.additionalMetrics
+            ? source.additionalMetrics.impressionCount ?? 0
+            : 0 // Cast doesn't have impressions
         }
       })
     })
@@ -705,7 +692,7 @@ interface PostSummary {
  * @returns A map of idea names to their engagement summaries.
  */
 export function summarizePostsByIdea(
-  posts: Post[]
+  posts: NormalizedPostType[]
 ): Record<string, PostSummary> {
   const summaries: Record<string, PostSummary> | any = {}
 
@@ -727,37 +714,35 @@ export function summarizePostsByIdea(
         }
 
         const summary = summaries[idea]
-        const isFarcaster = post.object === "cast"
+        const isFarcaster = post.platform === "farcaster"
 
         // Accumulate likes
-        const likes = isFarcaster
-          ? post.reactions?.likes_count || 0
-          : post.public_metrics?.like_count || 0
+        const likes = post.likesCount
         summary.likes += likes
 
         // Accumulate recasts/retweets
-        const recasts = isFarcaster
-          ? post.reactions?.recasts_count || 0
-          : post.public_metrics?.retweet_count || 0
+        const recasts = post.sharesCount
         summary.recasts += recasts
 
         // Accumulate replies
-        const replies = isFarcaster
-          ? post.replies?.count || 0
-          : post.public_metrics?.reply_count || 0
+        const replies = post.commentsCount
         summary.replies += replies
 
         // Accumulate bookmarks and impressions (Twitter-specific)
         if (!isFarcaster) {
-          summary.bookmarks += post.public_metrics?.bookmark_count || 0
-          summary.impressions += post.public_metrics?.impression_count || 0
+          summary.bookmarks += post.additionalMetrics
+            ? post.additionalMetrics.bookmarkCount ?? 0
+            : 0
+          summary.impressions += post.additionalMetrics
+            ? post.additionalMetrics.impressionCount ?? 0
+            : 0
         }
 
         // Count the number of posts
         summary.count += 1
 
         // Accumulate total followers
-        const followers = isFarcaster ? post.author?.follower_count || 0 : 0
+        const followers = isFarcaster ? post.author?.followerCount || 0 : 0
         summary.totalFollowers += followers
       })
     }

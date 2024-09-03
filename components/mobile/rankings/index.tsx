@@ -18,7 +18,7 @@ function MobileRankings({ casts, castsAndOrTweets }: MobileRankingProps) {
   const rankedTopicsByLikes = buildRankings(
     filteredPosts,
     "category",
-    "likes_count",
+    "likesCount",
     10
   )
 

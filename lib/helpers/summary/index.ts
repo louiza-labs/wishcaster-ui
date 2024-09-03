@@ -323,7 +323,7 @@ export function generateStatsForPosts(posts: NormalizedPostType[]): {
 
   posts.forEach((post) => {
     const targetSummary =
-      post.object === "cast" ? summary.farcaster : summary.twitter
+      post.platform === "farcaster" ? summary.farcaster : summary.twitter
 
     summary.overall.likes += post.likesCount
     targetSummary.likes += post.likesCount
@@ -334,23 +334,25 @@ export function generateStatsForPosts(posts: NormalizedPostType[]): {
     summary.overall.replies += post.commentsCount
     targetSummary.replies += post.commentsCount
 
-    summary.overall.bookmarks +=
-      post.platform === "farcaster" ? 0 : post.additionalMetrics.bookmarkCount
-    targetSummary.bookmarks +=
-      post.platform === "farcaster" ? 0 : post.additionalMetrics.bookmarkCount
+    summary.overall.bookmarks += post?.additionalMetrics
+      ? post.additionalMetrics.bookmarkCount ?? 0
+      : 0
+    targetSummary.bookmarks += post.additionalMetrics
+      ? post.additionalMetrics.bookmarkCount ?? 0
+      : 0
 
-    summary.overall.impressions +=
-      post.platform === "farcaster" ? 0 : post.additionalMetrics.impressionCount
-    targetSummary.impressions +=
-      post.platform === "farcaster" ? 0 : post.additionalMetrics.impressionCount
+    summary.overall.impressions += post.additionalMetrics
+      ? post.additionalMetrics.impressionCount ?? 0
+      : 0
+    targetSummary.impressions += post.additionalMetrics
+      ? post.additionalMetrics.impressionCount ?? 0
+      : 0
 
     summary.overall.count += 1
     targetSummary.count += 1
 
-    summary.overall.totalFollowers +=
-      post.platform === "farcaster" ? post.author.followerCount : 0
-    targetSummary.totalFollowers +=
-      post.platform === "farcaster" ? post.author.followerCount : 0
+    summary.overall.totalFollowers += post.author.followerCount ?? 0
+    targetSummary.totalFollowers += post.author.followerCount ?? 0
   })
 
   // Calculate the average follower count only if there are posts

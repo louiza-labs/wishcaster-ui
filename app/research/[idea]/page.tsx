@@ -22,7 +22,6 @@ import ValidateRows from "@/components/research"
 import ValidateSearch from "@/components/search/ValidateSearch"
 import {
   fetchPosts,
-  fetchTweetsWithSearch,
   generateProblemsAndSentimentScores,
   generateSimilarIdeas,
   generateSummaryForIdea,
@@ -161,31 +160,32 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
   // fetch tweets with ideas
   const stringOfSimilarIdeasForTweetsSearch =
     formatNamesForQuery(similarIdeasResponse)
-  const { data: tweetsForSimilarIdeas } = await fetchTweetsWithSearch(
-    stringOfSimilarIdeasForTweetsSearch
-  )
+  // const { data: tweetsForSimilarIdeas } = await fetchTweetsWithSearch(
+  //   stringOfSimilarIdeasForTweetsSearch
+  // )
   const categoriesForSimilarIdeas = categorizeArrayOfPosts([
     ...posts,
-    ...(tweetsForSimilarIdeas && tweetsForSimilarIdeas.length
-      ? tweetsForSimilarIdeas
-      : []),
+    // ...(tweetsForSimilarIdeas && tweetsForSimilarIdeas.length
+    //   ? tweetsForSimilarIdeas
+    //   : []),
   ]) as Category[]
 
   let filteredPostsWithSimilarIdeas = addCategoryFieldsToCasts(
     [
       ...posts,
-      ...(tweetsForSimilarIdeas && tweetsForSimilarIdeas.length
-        ? tweetsForSimilarIdeas
-        : []),
+      // ...(tweetsForSimilarIdeas && tweetsForSimilarIdeas.length
+      //   ? tweetsForSimilarIdeas
+      //   : []),
     ],
     categoriesForSimilarIdeas
   ) as CastType[]
+
   const keywordsFromSimilarIdeas: any =
     extractKeywordsFromProjects(similarIdeasResponse)
 
   const postsWithSimilarIdeasWithIdeasAdded = matchIdeasToPosts(
     similarIdeasResponse,
-    filteredPostsWithSimilarIdeas
+    posts
   )
   // const res = true ? null : await uploadPostsDataToAlgolia(filteredPosts)
   const searchResultsForSimilarIdeas = await searchPostsWithKeywordsV2(
@@ -217,6 +217,7 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
       link: `/research/${params.idea}`,
     },
   ]
+  console.log("the problems resp", problemsResponse)
   const problemsWithMetrics = addMetricsToProblems(problemsResponse, posts)
 
   return (
@@ -231,7 +232,7 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
           </div>
 
           {!(posts && posts.length) ? (
-            <div className="flex w-full flex-col items-center">
+            <div className="ml-[20vw] flex w-full flex-col items-center">
               <div className="flex w-full flex-col items-center justify-center gap-y-3">
                 <p className="text-center text-2xl font-semibold">
                   No results found, try searching again

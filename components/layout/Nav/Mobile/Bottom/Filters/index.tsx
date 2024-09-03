@@ -7,7 +7,7 @@ import { Cast as CastType } from "@/types"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import Filters from "@/components/filters"
+import Filters from "@/components/filters/new"
 import { Icons } from "@/components/icons"
 
 function parseQueryParam(param?: string | string[]): string {
@@ -63,7 +63,7 @@ function MobileFiltering({ initialCasts }: MobileFilteringProps) {
           <ScrollArea className="mt-6 h-[120%] w-full sm:h-full ">
             <div className="flex w-full flex-col items-center space-y-3">
               <aside className="relative flex w-full flex-col items-center  gap-y-6 pb-2 sm:col-span-3 sm:flex">
-                <Filters initialCasts={initialCasts} />
+                <Filters posts={initialCasts} />
               </aside>
             </div>
           </ScrollArea>

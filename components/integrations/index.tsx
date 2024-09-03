@@ -1,7 +1,7 @@
 "use client"
 
 import useIntegrations from "@/hooks/integrations/useIntegrations"
-import IntegrationsCard from "@/components/account/integrations/IntegrationsCard"
+import IntegrationsCard from "@/components/integrations/IntegrationsCard"
 
 const Integrations = () => {
   const { integrationOptions, connectedIntegrationImages } = useIntegrations()

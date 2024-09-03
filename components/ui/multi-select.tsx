@@ -225,7 +225,7 @@ export const MultiSelect = React.forwardRef<
                         {option?.label}
                         <XCircle
                           className="ml-2 size-4 cursor-pointer"
-                          onClick={(event) => {
+                          onClick={(event: any) => {
                             event.stopPropagation()
                             toggleOption(value)
                           }}

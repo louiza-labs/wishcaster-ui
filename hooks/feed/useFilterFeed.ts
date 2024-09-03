@@ -31,7 +31,6 @@ const useFilterFeed = (posts: NormalizedPostType[], topic = "") => {
   let filteredPosts = [...posts]
 
   const postsWithUsers = useMemo(() => {
-    console.log("the posts", posts)
     return filteredPosts.filter(
       (posts) => posts.author && posts.author.username
     )

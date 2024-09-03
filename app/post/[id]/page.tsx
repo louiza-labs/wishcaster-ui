@@ -57,9 +57,8 @@ const PostPage: FC<PostPageProps> = async ({ searchParams, params }) => {
     source === "farcaster"
       ? await fetchNormalizedCast(params.id)
       : await fetchNormalizedTweet(params.id)
-  console.log("the post", post)
   const overallPosts = await fetchPosts({
-    timePeriod: timeFilterParam ?? "7-days",
+    timePeriod: timeFilterParam ?? "30-days",
     channelId: "someone-build",
   })
 

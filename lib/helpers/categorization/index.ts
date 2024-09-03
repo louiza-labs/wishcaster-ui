@@ -383,11 +383,7 @@ function determineSegment(bio: string): string {
 }
 
 function getBio(post: any) {
-  if (post.object === "cast") {
-    return post.author.profile.bio.text ?? ""
-  } else {
-    return post && post.user ? post.user.description : ""
-  }
+  return post.author.bio
 }
 
 // Function to process posts and generate audience segments

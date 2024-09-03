@@ -25,7 +25,7 @@ const ValidateAudience = ({ posts }: any) => {
           chartConfig={postsCountChartConfig}
         />
       </div>
-      <div className="size-full rounded-xl border border-input bg-background px-6 py-8 shadow-lg ">
+      {/* <div className="size-full rounded-xl border border-input bg-background px-6 py-8 shadow-lg ">
         <AudienceSegmentPostsBreakdown
           data={postsByChannelCountChartsData}
           dataKey="value"
@@ -34,7 +34,7 @@ const ValidateAudience = ({ posts }: any) => {
           footerText="Showing total likes by audience segment"
           chartConfig={postsByChannelCountChartConfig}
         />
-      </div>
+      </div> */}
     </div>
   )
 }

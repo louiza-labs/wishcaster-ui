@@ -201,7 +201,7 @@ const Filters = ({ posts, asFilterBar }: FiltersProps) => {
           </p>
         )}
         <div className="flex flex-col items-center">
-          <div className=" flex flex-col items-start">
+          {/* <div className=" flex flex-col items-start">
             <p className="pb-4 text-lg font-extrabold leading-tight tracking-tighter sm:text-lg md:text-left md:text-xl">
               Sources
             </p>
@@ -224,7 +224,7 @@ const Filters = ({ posts, asFilterBar }: FiltersProps) => {
                 />
               </>
             </div>
-          </div>
+          </div> */}
           <div className={"flex flex-col items-center gap-y-6"}>
             <div className=" flex flex-col items-start">
               {asFilterBar ? null : (

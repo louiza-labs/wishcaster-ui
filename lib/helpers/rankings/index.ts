@@ -38,23 +38,29 @@ export const buildRankings = (
   return sorted
 }
 
+const filterItems = (
+  items: NormalizedPostType[],
+  target: NormalizedPostType,
+  filterField?: keyof NormalizedPostType
+): NormalizedPostType[] => {
+  if (!filterField || target[filterField] === undefined) return items
+
+  if (filterField === "category") {
+    return items.filter(
+      (item) => item["category"]?.id === target["category"]?.id // Use optional chaining
+    )
+  }
+
+  return items.filter((item) => item[filterField] === target[filterField])
+}
+
 export function getRanking(
   target: NormalizedPostType,
   items: NormalizedPostType[],
   metric: "likesCount" | "sharesCount" | "commentsCount",
   filterField?: keyof NormalizedPostType
 ): number | null {
-  const filteredItems =
-    filterField && target[filterField] !== undefined
-      ? filterField === "category"
-        ? items.filter(
-            (item) =>
-              item["category"] &&
-              target["category"] &&
-              item["category"].id === target["category"].id
-          )
-        : items.filter((item) => item[filterField] === target[filterField])
-      : items
+  const filteredItems = filterItems(items, target, filterField)
 
   const getValueByMetric = (objectToGetValueFrom: NormalizedPostType) => {
     if (metric === "likesCount") {
