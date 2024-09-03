@@ -50,7 +50,7 @@ export default function Component({
     post.text.slice(0, 100) + (post.text.length > 100 ? "..." : "")
 
   const handleVisitPage = (e: React.SyntheticEvent) => {
-    e.preventDefault()
+    e.stopPropagation() // Prevent routing when clicking the title
     router.push(`/post/${post.id}?source=${post.platform}`)
   }
 
@@ -92,11 +92,7 @@ export default function Component({
           {post.tagline ?? postWithTagline.tagline}
         </h3>
         {needsShortening ? (
-          <Collapsible
-            open={isExpanded}
-            onClick={handleVisitPage}
-            onOpenChange={setIsExpanded}
-          >
+          <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
             <p className="mb-1 text-sm text-gray-600 dark:text-gray-200">
               {isExpanded
                 ? renderTextWithLinks(
