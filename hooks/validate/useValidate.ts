@@ -6,7 +6,7 @@ import {
   addCategoryFieldsToCasts,
   addUserInfoToTweets,
   buildConfigForChart,
-  categorizeArrayOfCasts,
+  categorizeArrayOfPosts,
   extractUserIdsFromTweets,
   formatDataForPiechart,
   removeDuplicateTweets,
@@ -198,7 +198,7 @@ const useValidate = (castsAndTweets: any[], searchTerm = "") => {
       )
 
       const combinedPosts = [...initialCasts, ...tweetsWithUsers]
-      const categories: any = categorizeArrayOfCasts(combinedPosts)
+      const categories: any = categorizeArrayOfPosts(combinedPosts)
       const filteredPosts = addCategoryFieldsToCasts(combinedPosts, categories)
 
       const searchResults = await searchPostsWithKeywordsV2(filteredPosts, [

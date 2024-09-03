@@ -2,11 +2,10 @@
 
 import { Suspense, useCallback, useMemo } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Cast as CastType } from "@/types"
+import { NormalizedPostType } from "@/types"
 
 import { PRODUCT_CATEGORIES_AS_MAP } from "@/lib/constants"
 import { buildRankings } from "@/lib/helpers"
-import useAddCategoriesToCasts from "@/hooks/feed/useAddCategoriesToCasts"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardDescription, CardHeader } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -60,15 +59,12 @@ const CardStat: React.FC<CardStatProp> = ({
 }
 
 interface RankingsProps {
-  casts: CastType[]
-  tweets?: any
-  castsAndOrTweets?: any
+  casts: NormalizedPostType[]
   view?: "search" | "feed"
+  posts: NormalizedPostType[] // Assuming this can be a combination of normalized posts
 }
 
-const Rankings = ({ casts, view, castsAndOrTweets }: RankingsProps) => {
-  const { castsWithCategories } = useAddCategoriesToCasts(castsAndOrTweets)
-
+const Rankings = ({ casts, view, posts }: RankingsProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -120,22 +116,22 @@ const Rankings = ({ casts, view, castsAndOrTweets }: RankingsProps) => {
   }
 
   const rankedTopicsByLikes = buildRankings(
-    castsWithCategories,
+    posts,
     "category",
-    "likes_count",
+    "likesCount",
     view === "search" ? 100 : 10
   )
 
   const rankedTopicsByReplies = buildRankings(
-    castsWithCategories,
+    posts,
     "category",
-    "replies_count",
+    "commentsCount",
     view === "search" ? 100 : 10
   )
   const rankedTopicsByRecasts = buildRankings(
-    castsWithCategories,
+    posts,
     "category",
-    "recasts_count",
+    "sharesCount",
     view === "search" ? 100 : 10
   )
 
@@ -196,7 +192,7 @@ const Rankings = ({ casts, view, castsAndOrTweets }: RankingsProps) => {
           <h3
             className={`${
               view === "search" ? "md:hidden" : "md:block"
-            } hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter  md:text-3xl`}
+            } hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter  md:text-2xl`}
           >
             Trending Topics
           </h3>
@@ -242,7 +238,6 @@ const Rankings = ({ casts, view, castsAndOrTweets }: RankingsProps) => {
         </div>
       ) : (
         <div className="flex flex-col  gap-y-2">
-          {JSON.stringify(castsAndOrTweets)}
           <p className="gap-x-2 text-center text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
             Unable to generate topics
           </p>

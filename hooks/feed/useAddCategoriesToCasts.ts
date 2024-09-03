@@ -5,8 +5,8 @@ import { Cast as CastType, Category } from "@/types"
 
 import {
   addCategoryFieldsToCasts,
-  categorizeArrayOfCasts,
-  sortCastsByProperty,
+  categorizeArrayOfPosts,
+  sortPostsByProperty,
 } from "@/lib/helpers"
 
 const useAddCategoriesToCasts = (casts: CastType[], topic = "") => {
@@ -20,10 +20,13 @@ const useAddCategoriesToCasts = (casts: CastType[], topic = "") => {
   const path = usePathname()
 
   // Start with the initial set of casts
-  let castsWithCategories = casts && Array.isArray(casts) ? [...casts] : casts
+  let castsWithCategories: any =
+    casts && Array.isArray(casts) ? [...casts] : casts
 
   // Categorize and filter duplicate categories
-  const categories = categorizeArrayOfCasts(castsWithCategories) as Category[]
+  const categories = categorizeArrayOfPosts(
+    castsWithCategories as any
+  ) as Category[]
   const filteredCategories = categories
 
   // Add category fields to casts
@@ -34,8 +37,8 @@ const useAddCategoriesToCasts = (casts: CastType[], topic = "") => {
 
   // Sort by appropriate field if specified
   if (sortFieldFromParams) {
-    castsWithCategories = sortCastsByProperty(
-      castsWithCategories,
+    castsWithCategories = sortPostsByProperty(
+      castsWithCategories as any,
       sortFieldFromParams
     )
   }

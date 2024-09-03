@@ -134,7 +134,7 @@ export const generateTaglinesForCasts = async (
 export const generateProblemsAndSentimentScores = async (
   startupIdea: string,
   industryDescription: string,
-  posts: { text: string; hash: string }[],
+  posts: { text: string; id: string }[],
   batchSize = 10,
   delay = 1000,
   concurrencyLimit = 3
@@ -147,8 +147,8 @@ export const generateProblemsAndSentimentScores = async (
     const batch = posts.slice(i, i + batchSize)
     const prompt = `Based on the startup idea and industry description, identify the top 5 most relevant related problems along with a 1 sentence description of them. For each post, list the problems that could be addressed by the startup idea and give a sentiment score (positive, neutral, or negative). Also, return the respective relevant hashes for the corresponding posts that share this problem for reference. The startup idea and industry description are:\n\nStartup Idea: ${startupIdea}\nIndustry Description: ${industryDescription}\n\nThe user feedback is as follows:\n\n${batch
       .map(
-        ({ text, hash }: { text: string; hash?: string }, index: number) =>
-          `Feedback ${index + i}:\n${text}\nHash: ${hash}`
+        ({ text, id }: { text: string; id?: string }, index: number) =>
+          `Feedback ${index + i}:\n${text}\nHash: ${id}`
       )
       .join("\n\n")}`
 

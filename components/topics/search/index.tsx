@@ -2,7 +2,7 @@
 
 import { Suspense, useCallback, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Cast as CastType } from "@/types"
+import { NormalizedPostType } from "@/types"
 
 import { buildRankings, summarizeByCategory } from "@/lib/helpers"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
@@ -14,12 +14,12 @@ type RankedValueType = {
 }
 
 interface TopicsProps {
-  casts: CastType[]
+  posts: NormalizedPostType[]
   notionResults: any
 }
 
-const TopicSearchResults = ({ casts, notionResults }: TopicsProps) => {
-  let { filteredPosts } = useFilterFeed(casts)
+const TopicSearchResults = ({ posts, notionResults }: TopicsProps) => {
+  let { filteredPosts } = useFilterFeed(posts)
   const sortedTopics = summarizeByCategory(filteredPosts, "likes")
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -56,13 +56,13 @@ const TopicSearchResults = ({ casts, notionResults }: TopicsProps) => {
   //   5
   // )
   const rankedTopicsByLikes = useMemo(() => {
-    return buildRankings(filteredPosts, "category", "likes_count", 5)
+    return buildRankings(filteredPosts, "category", "likesCount", 5)
   }, [filteredPosts])
   const rankedTopicsByReplies = useMemo(() => {
-    return buildRankings(filteredPosts, "category", "replies_count", 3)
+    return buildRankings(filteredPosts, "category", "commentsCount", 3)
   }, [filteredPosts])
   const rankedTopicsByRecasts = useMemo(() => {
-    return buildRankings(filteredPosts, "category", "recasts_count", 3)
+    return buildRankings(filteredPosts, "category", "sharesCount", 3)
   }, [filteredPosts])
   const hasResults = useMemo(() => {
     return (

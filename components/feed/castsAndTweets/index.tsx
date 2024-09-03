@@ -7,6 +7,7 @@ import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import SpringItemCast from "@/components/cast/variants/SprintItem"
 import CastAsTableRow from "@/components/cast/variants/TableRow"
 import CastFeedSkeleton from "@/components/loading/feed/casts"
+import PostCard from "@/components/post"
 import TweetAsCard from "@/components/tweet/variants/card"
 import TweetAsRow from "@/components/tweet/variants/row"
 
@@ -145,51 +146,12 @@ const CastAndTweetsFeed = ({
           </div>
         ) : filteredPosts && filteredPosts.length ? (
           filteredPosts.map((tweetOrCast: any, index) => (
-            <Fragment key={tweetOrCast.hash || tweetOrCast.id || index}>
-              {tweetOrCast.type === "tweet" ? (
-                <TweetCardToUse
-                  text={tweetOrCast.text}
-                  likes={tweetOrCast.public_metrics.like_count}
-                  replies={tweetOrCast.public_metrics.reply_count}
-                  retweets={tweetOrCast.public_metrics.retweet_count}
-                  username={tweetOrCast.username}
-                  user={tweetOrCast.user}
-                  category={tweetOrCast.category}
-                  tweet={tweetOrCast}
-                  notionResults={notionResults}
-                  attachments={tweetOrCast.attachments}
-                  media={tweetOrCast.media}
-                  entities={tweetOrCast.entities}
-                  referencedTweet={tweetOrCast.referenced_tweet}
-                />
-              ) : (
-                <CastCardToUse
-                  key={tweetOrCast.hash}
-                  text={tweetOrCast.text}
-                  cast={tweetOrCast}
-                  timestamp={tweetOrCast.timestamp}
-                  parent_url={tweetOrCast.parent_url}
-                  reactions={tweetOrCast.reactions}
-                  replies={tweetOrCast.replies}
-                  embeds={tweetOrCast.embeds}
-                  tagline={tweetOrCast.tagline}
-                  author={tweetOrCast.author}
-                  hash={tweetOrCast.hash}
-                  thread_hash={tweetOrCast.thread_hash}
-                  mentionedProfiles={tweetOrCast.mentioned_profiles}
-                  parent_hash={tweetOrCast.parent_hash}
-                  parent_author={tweetOrCast.parent_author}
-                  root_parent_url={tweetOrCast.root_parent_url}
-                  category={tweetOrCast.category}
-                  notionResults={notionResults}
-                  handleToggleCategoryClick={() =>
-                    handleToggleCategoryClick(tweetOrCast.category?.id || "")
-                  }
-                  badgeIsToggled={badgeIsToggled(
-                    tweetOrCast.category?.id || ""
-                  )}
-                />
-              )}
+            <Fragment key={tweetOrCast.hash || tweetOrCast.id}>
+              <PostCard
+                renderEmbeds={true}
+                post={tweetOrCast}
+                notionResults={notionResults}
+              />
             </Fragment>
           ))
         ) : (

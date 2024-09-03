@@ -28,9 +28,9 @@ function getMaxEngagementValues(posts: any[]): any {
   let maxReplies = 0
 
   for (const post of posts) {
-    if (post.likes > maxLikes) maxLikes = post.likes
-    if (post.recasts > maxRecasts) maxRecasts = post.recasts
-    if (post.replies > maxReplies) maxReplies = post.replies
+    if (post.likesCount > maxLikes) maxLikes = post.likes
+    if (post.sharesCount > maxRecasts) maxRecasts = post.recasts
+    if (post.commentsCount > maxReplies) maxReplies = post.replies
   }
 
   return { likes: maxLikes, recasts: maxRecasts, replies: maxReplies }

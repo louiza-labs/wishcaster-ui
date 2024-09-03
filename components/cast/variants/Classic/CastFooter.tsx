@@ -40,7 +40,8 @@ const CastFooter = ({
 }: CastFooterProps) => {
   const router = useRouter()
   const params = useParams()
-  const isOnCastPage = params && params.hash ? params.hash === hash : false
+  const isOnCastPage =
+    params && params.source && params.id ? params.id === hash : false
   const handleRouteToWC = () => {
     if (typeof window !== "undefined") {
       window.open(
@@ -52,7 +53,7 @@ const CastFooter = ({
 
   const handleRouteToCastPage = () => {
     if (hash) {
-      router.push(`/cast/${hash}`)
+      router.push(`/post/${hash}?source=farcaster`)
     }
   }
 

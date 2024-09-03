@@ -20,20 +20,18 @@ interface RenderTextWithLinksProps {
   embeds: Embed[]
 }
 
-// Function to render text with links, mentions, and embeds
 export const renderTextWithLinks = (
   text: string,
-  mentionedProfiles: any[],
-  embeds: any[],
+  mentionedProfiles: UserProfile[],
+  embeds: Embed[],
   isTwitter = false
 ) => {
   if (!text || !embeds) return <span>{text}</span>
 
-  // Maps for quick access
   const profileMap = new Map<string, UserProfile>()
   mentionedProfiles.forEach((profile) => {
     if (isTwitter) {
-      profileMap.set(`@${profile}`, profile)
+      profileMap.set(`@${profile.username}`, profile)
     } else {
       profileMap.set(`@${profile.username}`, profile)
     }
@@ -44,11 +42,9 @@ export const renderTextWithLinks = (
     embedMap.set(embed.url, embed)
   })
 
-  // URL and user mention patterns
   const urlRegex = /https?:\/\/[^\s]+/g
   const atMentionRegex = /@\w+|\(@\w+\)/g
 
-  // Splitting the text to handle different parts
   const parts = text.split(/(https?:\/\/[^\s]+|@\w+|\(@\w+\))/g)
 
   return (
@@ -57,9 +53,8 @@ export const renderTextWithLinks = (
         if (urlRegex.test(part)) {
           if (embedMap.has(part)) {
             const embed = embedMap.get(part)
-            // Special rendering for embeds
             return (
-              <div key={index} className="">
+              <div key={index}>
                 <a
                   href={part}
                   target="_blank"
@@ -86,7 +81,7 @@ export const renderTextWithLinks = (
           if (profileMap.has(part)) {
             const profile = profileMap.get(part)
             if (!profile) return
-            const profileUrlOnTwitter = `https://x.com/${profile}`
+            const profileUrlOnTwitter = `https://x.com/${profile.username}`
             return (
               <a
                 key={index}
@@ -95,7 +90,7 @@ export const renderTextWithLinks = (
                 rel="noopener noreferrer"
                 className="font-semibold text-blue-600"
               >
-                {isTwitter ? `@${profile}` : `@${profile.username}`}
+                {isTwitter ? `@${profile.username}` : `@${profile.username}`}
               </a>
             )
           }

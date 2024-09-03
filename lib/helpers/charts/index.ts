@@ -123,8 +123,6 @@ export function transformAuthorSummariesForChart(authorSummaries: any[]) {
     impressions: summary.impressions,
     bookmarks: summary.bookmarks,
     totalPosts: summary.totalPosts,
-    followers:
-      summary.user.follower_count ||
-      summary.user.public_metrics.followers_count,
+    followers: summary.user.followerCount,
   }))
 }

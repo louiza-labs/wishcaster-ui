@@ -1,5 +1,6 @@
 "use server"
 
+import axios from "axios"
 import { Client, auth } from "twitter-api-sdk"
 
 import {
@@ -342,6 +343,35 @@ export async function fetchTweetByIds(tweetId: string) {
     return { data, errors, includes }
   } catch (e) {
     return { data: {}, errors: e }
+  }
+}
+
+export const fetchNormalizedTweet = async (tweetId: string) => {
+  try {
+    const buildUrl = () => {
+      let baseUrl = `${process.env.API_SERVICE_URL}/twitter/get_normalized_tweet_by_ids?tweetId=${tweetId}`
+
+      return baseUrl
+    }
+    const url = buildUrl()
+    const config = {
+      headers: {
+        accept: "application/json",
+      },
+    }
+
+    const response = await axios.get(url, config)
+
+    const data = response.data // Axios wraps the response data in a `data` property
+    // Assuming the API returns an object with casts and cursor for the next batch
+    const returnObject = {
+      data,
+    }
+
+    return returnObject
+  } catch (error) {
+    console.error("Error fetching normalized tweet:", error)
+    return { data: {}, nextCursor: "", error: error }
   }
 }
 

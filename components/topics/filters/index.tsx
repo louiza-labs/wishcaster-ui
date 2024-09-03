@@ -6,7 +6,7 @@ import { Category } from "@/types"
 import { useNeynarContext } from "@neynar/react"
 
 import {
-  categorizeArrayOfCasts,
+  categorizeArrayOfPosts,
   filterDuplicateCategories,
 } from "@/lib/helpers"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
@@ -22,7 +22,7 @@ const TopicFilters = ({ initialCasts }: CategoriesFeedProps) => {
   const { user, isAuthenticated } = useNeynarContext()
 
   let { filteredPosts } = useFilterFeed(initialCasts)
-  const categories = categorizeArrayOfCasts(filteredPosts) as Category[]
+  const categories = categorizeArrayOfPosts(filteredPosts) as Category[]
   const filteredCategories = filterDuplicateCategories(categories)
 
   const filtersFromParams = useMemo(
@@ -141,7 +141,7 @@ const TopicFilters = ({ initialCasts }: CategoriesFeedProps) => {
   return (
     <Suspense>
       <div className="relative  flex h-fit flex-row gap-x-10 rounded-xl border px-10 py-4 ">
-        <p className="bg-background absolute -top-3 left-1/2 -translate-x-1/2 px-4 font-semibold">
+        <p className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background px-4 font-semibold">
           Filters
         </p>
         <div className="flex flex-row gap-x-10 gap-y-6">

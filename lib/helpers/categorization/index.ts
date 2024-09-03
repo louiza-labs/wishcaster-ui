@@ -1,26 +1,26 @@
-import { Cast as CastType, Category } from "@/types"
+import { Cast as CastType, Category, NormalizedPostType } from "@/types"
 
 import { PRODUCT_CATEGORIES_AS_MAP } from "@/lib/constants"
 import { normalizeTweetText } from "@/lib/helpers"
 
-export const searchCastsForCategories = (
-  casts: any[],
+export const searchPostsForCategories = (
+  posts: NormalizedPostType[],
   searchTerm: string
-): CastType[] => {
-  if (!casts || !Array.isArray(casts)) return []
+): NormalizedPostType[] => {
+  if (!posts || !Array.isArray(posts)) return []
   const searchTerms = searchTerm
     .toLowerCase()
     .split(",")
     .map((term) => term.trim())
 
-  return casts.filter(
-    (cast) =>
-      cast.category &&
+  return posts.filter(
+    (post) =>
+      post.category &&
       searchTerms.some(
         (term) =>
-          cast.category &&
-          cast.category.id &&
-          cast.category.id.toLowerCase() === term
+          post.category &&
+          post.category.id &&
+          post.category.id.toLowerCase() === term
       )
   )
 }
@@ -126,12 +126,12 @@ export function categorizeText(
   return { label: categories[bestCategory].label, id: bestCategory }
 }
 
-export function categorizeArrayOfCasts(casts: CastType[]) {
-  if (!casts || !Array.isArray(casts) || !casts[0]) return []
+export function categorizeArrayOfPosts(posts: NormalizedPostType[]) {
+  if (!posts || !Array.isArray(posts) || !posts[0]) return []
 
-  let categorizedArray = casts.map((cast: CastType) => {
+  let categorizedArray = posts.map((post: NormalizedPostType) => {
     const castText =
-      cast.object === "cast" ? cast.text : normalizeTweetText(cast.text)
+      post.platform === "farcaster" ? post.text : normalizeTweetText(post.text)
     const category = categorizeText(castText, PRODUCT_CATEGORIES_AS_MAP)
     return {
       request: castText,
@@ -383,11 +383,7 @@ function determineSegment(bio: string): string {
 }
 
 function getBio(post: any) {
-  if (post.object === "cast") {
-    return post.author.profile.bio.text ?? ""
-  } else {
-    return post && post.user ? post.user.description : ""
-  }
+  return post.author.bio
 }
 
 // Function to process posts and generate audience segments

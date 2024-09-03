@@ -1,23 +1,20 @@
 import { FC } from "react"
-import { Cast as CastType, Category } from "@/types"
+import { Category } from "@/types"
 
 import { dateOptions } from "@/lib/constants"
 import {
-  addCategoryFieldsToCasts,
-  categorizeArrayOfCasts,
+  categorizeArrayOfPosts,
   generateWhimsicalErrorMessages,
-  searchCastsForCategories,
-  sortCastsByProperty,
+  searchPostsForCategories,
+  sortPostsByProperty,
 } from "@/lib/helpers"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import FilterBar from "@/components/filters/FilterBar"
+import FilterBar from "@/components/filters/FilterBar/new"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import RedirectButton from "@/components/redirect/Button"
 import Topics from "@/components/topics"
 import {
-  fetchCastsUntilCovered,
-  fetchChannelCasts,
-  fetchTweets,
+  fetchPosts,
   getUsersNotionAccessCode,
   searchNotion,
 } from "@/app/actions"
@@ -40,6 +37,15 @@ function extractTimeFilterParam(params: undefined | string | string[]) {
   }
 }
 
+function filterForOnlyCastsOrTweets(filter: "cast" | "tweet", posts: any[]) {
+  if (!(posts && Array.isArray(posts))) return []
+  if (filter === "cast") {
+    return posts.filter((post) => post.object === "cast")
+  } else {
+    return posts.filter((post) => !(post.object === "cast"))
+  }
+}
+
 const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const searchTerm = parseQueryParam(searchParams.search)
   const categoryParam = parseQueryParam(searchParams.categories)
@@ -54,34 +60,30 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
   const timeFilterParam = searchParams.filters
     ? extractTimeFilterParam(searchParams.filters)
     : undefined
-  const { casts: initialCasts, nextCursor: cursorToUse } = !timeFilterParam
-    ? await fetchChannelCasts("someone-build")
-    : await fetchCastsUntilCovered(
-        "someone-build",
-        timeFilterParam as "24-hours" | "7-days" | "30-days" | "ytd"
-      )
-  const tweets = await fetchTweets()
-  let filteredPosts = [...initialCasts, ...(tweets?.data ? tweets.data : [])]
-  const categories = categorizeArrayOfCasts(filteredPosts) as Category[]
 
-  filteredPosts = addCategoryFieldsToCasts(
-    filteredPosts,
-    categories
-  ) as Array<CastType>
+  let castsAndTweets = await fetchPosts({
+    timePeriod: timeFilterParam ?? "ytd",
+    channelId: "someone-build",
+  })
+
+  const categories = categorizeArrayOfPosts(castsAndTweets) as Category[]
+
   if (categoryParam.length) {
-    filteredPosts = searchCastsForCategories(filteredPosts, categoryParam)
+    castsAndTweets = searchPostsForCategories(castsAndTweets, categoryParam)
   }
   if (sortParam) {
-    filteredPosts = sortCastsByProperty(filteredPosts, sortParam)
+    castsAndTweets = sortPostsByProperty(castsAndTweets, sortParam)
   }
 
-  const isError = !filteredPosts.length
+  const isError = !castsAndTweets.length
   const breadCrumbPages = [{ name: "Topics", link: "/topics" }]
+  const onlyCasts = filterForOnlyCastsOrTweets("cast", castsAndTweets)
+  const onlyTweets = filterForOnlyCastsOrTweets("tweet", castsAndTweets)
 
   return (
     <>
       <div className="top-66 sticky z-10">
-        <FilterBar initialCasts={initialCasts} />
+        <FilterBar categories={categories} posts={castsAndTweets} />
       </div>
 
       <section className="relative mx-auto p-6 md:container sm:px-6 lg:px-20">
@@ -90,7 +92,7 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
         <main className="relative grid grid-cols-1 gap-4 py-10 lg:grid-cols-12 ">
           <article className="no-scrollbar lg:col-span-12 lg:px-2  ">
             <Topics
-              casts={filteredPosts}
+              posts={castsAndTweets}
               mobileView={mobileViewParam}
               notionResults={notionResults}
             />
@@ -99,8 +101,8 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
       </section>
       <div className="flex flex-col items-start lg:hidden">
         <BottomMobileNav
-          filteredPosts={filteredPosts}
-          initialCasts={initialCasts}
+          filteredPosts={castsAndTweets}
+          initialCasts={onlyCasts}
           page={"topics"}
         />
       </div>

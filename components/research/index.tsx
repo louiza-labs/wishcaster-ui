@@ -1,6 +1,6 @@
 "use client"
 
-import { sortCastsByProperty } from "@/lib/helpers"
+import { sortPostsByProperty } from "@/lib/helpers"
 import { prepareVisualizationData } from "@/lib/helpers/scoring"
 import useValidate from "@/hooks/validate/useValidate"
 import ValidateAudience from "@/components/research/audience"
@@ -27,7 +27,7 @@ const Research = ({
 }: ResearchProps) => {
   const { rawStatsMetricsForPosts, rawStatsbyUsers } =
     useValidate(tweetsAndCasts)
-  const sortedPosts = sortCastsByProperty(tweetsAndCasts, "likes_count")
+  const sortedPosts = sortPostsByProperty(tweetsAndCasts, "likesCount")
   const tweetsAndCastsForCurrentIdeaWithIdeaAdded = tweetsAndCasts.map(
     (posts: any) => {
       return {

@@ -3,18 +3,20 @@ import { Category } from "@/types"
 
 import { dateOptions } from "@/lib/constants"
 import {
-  categorizeArrayOfCasts,
+  categorizeArrayOfPosts,
   generateWhimsicalErrorMessages,
-  searchCastsForCategories,
-  sortCastsByProperty,
+  searchPostsForCategories,
+  sortPostsByProperty,
 } from "@/lib/helpers"
-import CastAndTweetsFeed from "@/components/feed/castsAndTweets"
-import Filters from "@/components/filters"
-import FilterBar from "@/components/filters/FilterBar"
+import PostsFeed from "@/components/feed/castsAndTweets"
+import CategoriesFeed from "@/components/feed/categories"
+import DateFilters from "@/components/filters/Date/new"
+import FilterBar from "@/components/filters/FilterBar/new"
+import UserFilters from "@/components/filters/User/new"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import Rankings from "@/components/rankings"
 import RedirectButton from "@/components/redirect/Button"
-import SortCasts from "@/components/sort/SortCasts"
+import SortCasts from "@/components/sort/new"
 import {
   fetchPosts,
   getUsersNotionAccessCode,
@@ -70,16 +72,16 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
     : undefined
 
   let castsAndTweets = await fetchPosts({
-    timePeriod: timeFilterParam ?? "ytd",
+    timePeriod: timeFilterParam ?? "30-days",
     channelId: "someone-build",
   })
 
-  const categories = categorizeArrayOfCasts(castsAndTweets) as Category[]
+  const categories = categorizeArrayOfPosts(castsAndTweets) as Category[]
   if (categoryParam.length) {
-    castsAndTweets = searchCastsForCategories(castsAndTweets, categoryParam)
+    castsAndTweets = searchPostsForCategories(castsAndTweets, categoryParam)
   }
-  if (sortParam) {
-    castsAndTweets = sortCastsByProperty(castsAndTweets, sortParam)
+  if (sortParam && sortParam.length) {
+    castsAndTweets = sortPostsByProperty(castsAndTweets, sortParam)
   }
 
   const isError = !castsAndTweets && castsAndTweets.length
@@ -88,16 +90,26 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
 
   return (
     <>
-      <div className="top-66 sticky z-10 lg:hidden">
-        <FilterBar initialCasts={onlyCasts} />
+      <div className="top-66 sticky z-10 w-full lg:hidden">
+        <FilterBar categories={categories} posts={castsAndTweets} />
       </div>{" "}
-      <section className="mx-auto py-6 md:container sm:px-6 lg:px-6">
-        <Header />
-        <main className="relative grid grid-cols-1 gap-4 lg:grid-cols-12 ">
-          <aside className="no-scrollbar sticky top-0 hidden h-screen w-fit flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:flex">
+      <section className="mx-auto grid grid-cols-1 py-6 md:container sm:px-6 lg:grid-cols-12 lg:px-6">
+        <div className="col-span-1 flex w-full flex-col items-center gap-x-4  lg:col-span-10 lg:items-start">
+          <Header />
+          {/* <FilterBarDesktop
+            initialCasts={castsAndTweets}
+            posts={castsAndTweets}
+          /> */}
+        </div>
+        <main className="relative col-span-12 grid grid-cols-1 gap-4 lg:grid-cols-12">
+          <aside className="no-scrollbar col-span- sticky top-0 hidden h-screen flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:flex">
             {/* <CardLayoutToggle /> */}
-            <SortCasts />
-            <Filters initialCasts={onlyCasts} />
+            {/* <SortCasts /> */}
+
+            <DateFilters />
+            {/* <SourceFilters /> */}
+            <UserFilters />
+            <CategoriesFeed categories={categories} />
           </aside>
           <article className="no-scrollbar lg:col-span-8 lg:px-2  ">
             {isError ? (
@@ -107,16 +119,22 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
                 categoryParam={categoryParam}
               />
             ) : (
-              <CastAndTweetsFeed
-                timeFilterParam={timeFilterParam}
-                nextCursor={""}
-                notionResults={notionResults}
-                posts={castsAndTweets}
-              />
+              <div className=" flex flex-col gap-y-4">
+                <div className=" hidden flex-col items-end lg:flex">
+                  <SortCasts />
+                </div>
+
+                <PostsFeed
+                  timeFilterParam={timeFilterParam}
+                  nextCursor={""}
+                  notionResults={notionResults}
+                  posts={castsAndTweets}
+                />
+              </div>
             )}
           </article>
           <aside className="no-scrollbar sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky lg:col-span-2 lg:flex lg:flex-col">
-            <Rankings casts={onlyCasts} castsAndOrTweets={castsAndTweets} />
+            <Rankings casts={onlyCasts} posts={castsAndTweets} />
           </aside>
         </main>
       </section>
@@ -134,7 +152,7 @@ interface HeaderProps {}
 
 const Header: FC<HeaderProps> = () => {
   return (
-    <div className="flex flex-col items-center gap-2 md:items-start md:pb-10">
+    <div className="flex flex-col items-center gap-2 md:pb-10 lg:items-start  ">
       <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
         What people want! <br className="hidden sm:inline" />
       </h1>

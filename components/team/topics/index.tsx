@@ -5,8 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { Cast as CastType } from "@/types"
 import { useNeynarContext } from "@neynar/react"
 
-import { aggregateCastMetricsByUser } from "@/lib/helpers"
-import useFetchCastsUntilCovered from "@/hooks/farcaster/casts/useFetchCastsUntilCovered"
+import { aggregateMetricsByUser, normalizePosts } from "@/lib/helpers"
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
 import {
   Accordion,
@@ -28,14 +27,10 @@ interface TeamProps {
 const TeamForTopics = ({ casts, cursor, topic }: TeamProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { castsToShow: castsWithUserInfo } = useFetchCastsUntilCovered(casts)
 
-  const { filteredPosts } = useFilterFeed(castsWithUserInfo, topic)
+  const { filteredPosts } = useFilterFeed(normalizePosts(casts), topic)
 
-  let sortedUsersByCasts = aggregateCastMetricsByUser(
-    filteredPosts,
-    "likes_count"
-  )
+  let sortedUsersByCasts = aggregateMetricsByUser(filteredPosts, "likesCount")
 
   const handleRouteBackHome = () => {
     router.push("/")

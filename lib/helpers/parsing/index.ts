@@ -1,10 +1,13 @@
 export const extractUserIdsFromTweets = (tweets: any) => {
   if (!tweets || !Array.isArray(tweets)) return []
-  return tweets.map((tweet: any) => tweet.author_id)
+  return tweets.map((tweet: any) =>
+    tweet && tweet.author ? tweet.author.id : ""
+  )
 }
 
 export function normalizeTweetText(text: string): string {
   // Remove leading/trailing whitespace
+  if (typeof text !== "string" || !text) return ""
   text = text.trim()
 
   // Replace newline characters with spaces

@@ -1,22 +1,24 @@
 "use client"
 
-import { Suspense, useCallback, useMemo } from "react"
+import { Suspense, useCallback, useMemo, useState } from "react"
 import {
   useParams,
   usePathname,
   useRouter,
   useSearchParams,
 } from "next/navigation"
+import { ChevronDown } from "lucide-react"
 
 import { PRODUCT_CATEGORIES_AS_MAP } from "@/lib/constants"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface Category {
   category: {
@@ -29,6 +31,31 @@ interface Category {
 interface CategoriesFeedProps {
   categories: Category[]
   asFilterBar?: boolean
+}
+
+const filterDuplicateCategories = (categories: Category[]) => {
+  if (
+    !categories ||
+    (Array.isArray(categories) && !categories.length) ||
+    !Array.isArray(categories)
+  ) {
+    return []
+  }
+  const categoriesIndex = categories.reduce(
+    (categoriesObj: any, category: any) => {
+      if (
+        !categoriesObj[category.category.id] &&
+        category.category.id &&
+        category.category.id.length
+      ) {
+        categoriesObj[category.category.id] = category.category
+      }
+      return categoriesObj
+    },
+    {}
+  )
+
+  return Object.values(categoriesIndex)
 }
 
 const CategoriesFeed = ({ categories, asFilterBar }: CategoriesFeedProps) => {
@@ -44,15 +71,22 @@ const CategoriesFeed = ({ categories, asFilterBar }: CategoriesFeedProps) => {
         : params.topic
       : ""
     : ""
+
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+
   const categoriesFromParams = useMemo(
     () => searchParams.getAll("topics"),
     [searchParams]
   )
 
+  const filteredCategories = useMemo(
+    () => filterDuplicateCategories(categories),
+    [categories]
+  )
+
   const createQueryString = useCallback(
     (name: string, value: string, addValue: boolean) => {
       const params = new URLSearchParams(searchParams.toString())
-
       const existingCategories = params.getAll(name)
 
       if (addValue) {
@@ -74,26 +108,20 @@ const CategoriesFeed = ({ categories, asFilterBar }: CategoriesFeedProps) => {
     [searchParams]
   )
 
-  const badgeIsToggled = useCallback(
-    (categoryName: string) => {
-      return categoriesFromParams.includes(categoryName)
-    },
-    [categoriesFromParams]
-  )
-
   const handleToggleCategoryClick = useCallback(
     (categoryName: string) => {
-      if (isOnTopicOrTopicsPage) {
-        router.push(`/topics/${categoryName}`)
-      } else {
-        const isToggled = categoriesFromParams.includes(categoryName)
-        const newSearchParams = createQueryString(
-          "topics",
-          categoryName,
-          !isToggled
-        )
-        router.push("?" + newSearchParams)
-      }
+      const isToggled = categoriesFromParams.includes(categoryName)
+      const newSearchParams = createQueryString(
+        "topics",
+        categoryName,
+        !isToggled
+      )
+      router.push("?" + newSearchParams)
+      setSelectedCategories((prev) =>
+        isToggled
+          ? prev.filter((category) => category !== categoryName)
+          : [...prev, categoryName]
+      )
     },
     [categoriesFromParams, createQueryString, router]
   )
@@ -113,57 +141,56 @@ const CategoriesFeed = ({ categories, asFilterBar }: CategoriesFeedProps) => {
             Topics
           </p>
         )}
-        {asFilterBar && categories && categories.length ? (
-          <Select
-            defaultValue={topicFromTopicPage ? topicFromTopicPage : "Select"}
-            onValueChange={(value) => handleToggleCategoryClick(value)}
-          >
-            <SelectTrigger className="size-fit gap-x-2 whitespace-nowrap rounded-full px-2 text-sm font-semibold focus:ring-0 focus:ring-transparent focus:ring-offset-0">
-              <SelectValue
-                placeholder="Select a Topic"
-                defaultValue={
-                  topicFromTopicPage ? topicFromTopicPage : "Select"
-                }
-              />
-              {categoryLabelFromPage ? categoryLabelFromPage : "Topic"}
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((category) => {
-                if (category.category) {
-                  return (
-                    <SelectItem
-                      value={category.category.id}
-                      key={category.request}
-                    >
-                      {category.category.label}
-                    </SelectItem>
-                  )
-                }
-              })}
-            </SelectContent>
-          </Select>
+        {asFilterBar && filteredCategories && filteredCategories.length ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-[120px] justify-between rounded-full"
+              >
+                {selectedCategories.length > 0
+                  ? selectedCategories.join(", ")
+                  : "Topics"}
+                <ChevronDown className="ml-2 size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[180px]">
+              {filteredCategories.map((category: any) => (
+                <DropdownMenuItem
+                  key={category.id}
+                  onSelect={() => handleToggleCategoryClick(category.id)}
+                >
+                  <div className="flex items-center">
+                    <Checkbox
+                      checked={categoriesFromParams.includes(category.id)}
+                      className="mr-2"
+                    />
+                    {category.label}
+                  </div>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         ) : (
-          <div className=" grid size-fit grid-cols-2 gap-y-1 md:flex md:size-full md:flex-wrap md:gap-2 lg:col-span-3">
-            {categories && categories.length > 0
-              ? categories.map((category) => {
-                  if (category.category) {
+          <div className="grid size-fit grid-cols-2 gap-y-1 md:flex md:size-full md:flex-wrap md:gap-2 lg:col-span-3">
+            {filteredCategories && filteredCategories.length > 0
+              ? filteredCategories.map((category: any) => {
+                  if (category.id) {
                     return (
                       <div
                         className="md:cols-span-3 col-span-1"
-                        key={category.request}
+                        key={category.id}
                       >
                         <Badge
-                          onClick={() =>
-                            handleToggleCategoryClick(category.category.id)
-                          }
+                          onClick={() => handleToggleCategoryClick(category.id)}
                           variant={
-                            badgeIsToggled(category.category.id)
+                            categoriesFromParams.includes(category.id)
                               ? "default"
                               : "outline"
                           }
                           className="h-10 w-fit cursor-pointer whitespace-nowrap"
                         >
-                          {category.category.label}
+                          {category.label}
                         </Badge>
                       </div>
                     )

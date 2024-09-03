@@ -1,3 +1,5 @@
+import { NormalizedPostType } from "@/types"
+
 export function formatAudienceData(audienceSegments: any, metricKey: any) {
   const metricHasDepth = metricKey.includes(".")
   const splitMetricKeyArr = metricKey.split(".")
@@ -249,7 +251,7 @@ function getBio(post: any) {
 }
 
 // Function to process posts and generate audience segments
-export function generateAudienceSegments(posts: any[]): any[] {
+export function generateAudienceSegments(posts: NormalizedPostType[]): any[] {
   const segmentsMap: Record<string, any> = {}
 
   posts.forEach((post) => {
@@ -272,17 +274,9 @@ export function generateAudienceSegments(posts: any[]): any[] {
     }
 
     // Aggregate engagement stats
-    if (post.reactions) {
-      segmentData.engagementStats.totalLikes += post.reactions.likes_count
-      segmentData.engagementStats.totalRecasts += post.reactions.recasts_count
-      segmentData.engagementStats.totalReplies += post.replies?.count || 0
-    } else if (post.public_metrics) {
-      segmentData.engagementStats.totalLikes += post.public_metrics.like_count
-      segmentData.engagementStats.totalRecasts +=
-        post.public_metrics.retweet_count
-      segmentData.engagementStats.totalReplies +=
-        post.public_metrics.reply_count
-    }
+    segmentData.engagementStats.totalLikes += post.likesCount
+    segmentData.engagementStats.totalRecasts += post.sharesCount
+    segmentData.engagementStats.totalReplies += post.commentsCount
 
     segmentData.userCount += 1
     segmentData.postCount += 1
@@ -304,7 +298,7 @@ interface PostSummary {
   averageFollowerCount: number
 }
 
-export function generateStatsForPosts(posts: any[]): {
+export function generateStatsForPosts(posts: NormalizedPostType[]): {
   overall: PostSummary
   farcaster: PostSummary
   twitter: PostSummary
@@ -329,52 +323,36 @@ export function generateStatsForPosts(posts: any[]): {
 
   posts.forEach((post) => {
     const targetSummary =
-      post.object === "cast" ? summary.farcaster : summary.twitter
+      post.platform === "farcaster" ? summary.farcaster : summary.twitter
 
-    summary.overall.likes +=
-      post.object === "cast"
-        ? post.reactions.likes_count
-        : post.public_metrics.like_count
-    targetSummary.likes +=
-      post.object === "cast"
-        ? post.reactions.likes_count
-        : post.public_metrics.like_count
+    summary.overall.likes += post.likesCount
+    targetSummary.likes += post.likesCount
 
-    summary.overall.recasts +=
-      post.object === "cast"
-        ? post.reactions.recasts_count
-        : post.public_metrics.retweet_count
-    targetSummary.recasts +=
-      post.object === "cast"
-        ? post.reactions.recasts_count
-        : post.public_metrics.retweet_count
+    summary.overall.recasts += post.sharesCount
+    targetSummary.recasts += post.sharesCount
 
-    summary.overall.replies +=
-      post.object === "cast"
-        ? post.replies.count
-        : post.public_metrics.reply_count
-    targetSummary.replies +=
-      post.object === "cast"
-        ? post.replies.count
-        : post.public_metrics.reply_count
+    summary.overall.replies += post.commentsCount
+    targetSummary.replies += post.commentsCount
 
-    summary.overall.bookmarks +=
-      post.object === "cast" ? 0 : post.public_metrics.bookmark_count
-    targetSummary.bookmarks +=
-      post.object === "cast" ? 0 : post.public_metrics.bookmark_count
+    summary.overall.bookmarks += post?.additionalMetrics
+      ? post.additionalMetrics.bookmarkCount ?? 0
+      : 0
+    targetSummary.bookmarks += post.additionalMetrics
+      ? post.additionalMetrics.bookmarkCount ?? 0
+      : 0
 
-    summary.overall.impressions +=
-      post.object === "cast" ? 0 : post.public_metrics.impression_count
-    targetSummary.impressions +=
-      post.object === "cast" ? 0 : post.public_metrics.impression_count
+    summary.overall.impressions += post.additionalMetrics
+      ? post.additionalMetrics.impressionCount ?? 0
+      : 0
+    targetSummary.impressions += post.additionalMetrics
+      ? post.additionalMetrics.impressionCount ?? 0
+      : 0
 
     summary.overall.count += 1
     targetSummary.count += 1
 
-    summary.overall.totalFollowers +=
-      post.object === "cast" ? post.author.follower_count : 0
-    targetSummary.totalFollowers +=
-      post.object === "cast" ? post.author.follower_count : 0
+    summary.overall.totalFollowers += post.author.followerCount ?? 0
+    targetSummary.totalFollowers += post.author.followerCount ?? 0
   })
 
   // Calculate the average follower count only if there are posts
@@ -441,7 +419,7 @@ function calculateDemandScore(summary: any, maxValues: any): number {
  * @returns A map of idea names to their engagement summaries.
  */
 export function summarizePostsByIdea(
-  posts: any[]
+  posts: NormalizedPostType[]
 ): Record<string, PostSummary> {
   const summaries: Record<string, PostSummary> | any = {}
 
@@ -463,37 +441,31 @@ export function summarizePostsByIdea(
         }
 
         const summary = summaries[idea]
-        const isFarcaster = post.object === "cast"
+        const isFarcaster = post.platform === "farcaster"
 
         // Accumulate likes
-        const likes = isFarcaster
-          ? post.reactions?.likes_count || 0
-          : post.public_metrics?.like_count || 0
+        const likes = post.likesCount
         summary.likes += likes
 
         // Accumulate recasts/retweets
-        const recasts = isFarcaster
-          ? post.reactions?.recasts_count || 0
-          : post.public_metrics?.retweet_count || 0
+        const recasts = post.sharesCount
         summary.recasts += recasts
 
         // Accumulate replies
-        const replies = isFarcaster
-          ? post.replies?.count || 0
-          : post.public_metrics?.reply_count || 0
+        const replies = post.commentsCount
         summary.replies += replies
 
         // Accumulate bookmarks and impressions (Twitter-specific)
         if (!isFarcaster) {
-          summary.bookmarks += post.public_metrics?.bookmark_count || 0
-          summary.impressions += post.public_metrics?.impression_count || 0
+          summary.bookmarks += post.additionalMetrics?.bookmarkCount || 0
+          summary.impressions += post.additionalMetrics?.impressionCount || 0
         }
 
         // Count the number of posts
         summary.count += 1
 
         // Accumulate total followers
-        const followers = isFarcaster ? post.author?.follower_count || 0 : 0
+        const followers = isFarcaster ? post.author?.followerCount || 0 : 0
         summary.totalFollowers += followers
       })
     }
@@ -512,7 +484,7 @@ export function summarizePostsByIdea(
 }
 
 export function generateDemandScoreAndBenchmarkData(
-  posts: any[],
+  posts: NormalizedPostType[],
   userIdeaName: string
 ): {
   userDemandScore: number

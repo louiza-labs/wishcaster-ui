@@ -8,8 +8,6 @@ import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 import useSubscribeToSessionChanges from "@/hooks/auth/useSubscribeToSessionChanges"
-import useLoadAllCastsToStore from "@/hooks/farcaster/casts/useLoadAllCastsToStore"
-import useLoadAllTweetsToStore from "@/hooks/twitter/tweets/useLoadAllTweetsToStore"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,8 +18,8 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import IntegrationsDropdown from "@/components/account/integrations/IntegrationsDropdown"
 import { Icons } from "@/components/icons"
+import IntegrationsDropdown from "@/components/integrations/IntegrationsDropdown"
 import Search from "@/components/search"
 import { ThemeToggle } from "@/components/theme-toggle"
 
@@ -34,8 +32,6 @@ export function DesktopNav({ items, notionResults }: MainNavProps) {
   const pathname = usePathname()
   const { user, isAuthenticated, logoutUser } = useNeynarContext()
   useSubscribeToSessionChanges()
-  useLoadAllCastsToStore()
-  useLoadAllTweetsToStore()
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
@@ -48,7 +44,7 @@ export function DesktopNav({ items, notionResults }: MainNavProps) {
           <Link href="/" className="flex items-center space-x-2">
             <span
               className={`${
-                pathname === "" ? "font-semibold" : ""
+                pathname === "/" ? "font-semibold" : ""
               } inline-block`}
             >
               Discover
@@ -74,7 +70,6 @@ export function DesktopNav({ items, notionResults }: MainNavProps) {
               Research Idea
             </span>
           </Link>
-          <div></div>
 
           {items?.length ? (
             <nav className="flex gap-6">
@@ -96,7 +91,7 @@ export function DesktopNav({ items, notionResults }: MainNavProps) {
             </nav>
           ) : null}
         </div>
-        {pathname.includes("research") || pathname === "/" ? null : (
+        {pathname.includes("/research") ? null : (
           <div className="mx-10 hidden w-full lg:block">
             <Search notionResults={notionResults} />
           </div>

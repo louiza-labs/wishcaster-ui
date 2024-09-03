@@ -6,7 +6,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Bounty from "@/components/bounties"
 import Cast from "@/components/cast/variants/Classic"
-import TeamForTopics from "@/components/team/topics"
 
 interface BuildProps {
   topic: string
@@ -50,7 +49,7 @@ const BuildComponent = ({ topic, casts, cursor }: BuildProps) => {
             </TabsContent> */}
         <TabsContent className=" h-fit  w-full min-w-full" value="find-team">
           <Suspense fallback={<Skeleton className="size-full" />}>
-            <TeamForTopics casts={casts} cursor={cursor} topic={topic} />
+            {/* <TeamForTopics casts={casts} cursor={cursor} topic={topic} /> */}
           </Suspense>
         </TabsContent>
         {castsWithBountyBotText && castsWithBountyBotText.length ? (

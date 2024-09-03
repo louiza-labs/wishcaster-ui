@@ -7,7 +7,9 @@ const neynarClient = new NeynarAPIClient(process.env.NEYNAR_API_KEY as string)
 
 // Function to build the URL with user IDs and viewer FID
 function buildUrl(userIDs: string, userFID: number): string {
-  let baseUrl = `https://api.neynar.com/v2/farcaster/user/bulk?fids=${userIDs}`
+  // Trim any trailing commas from userIDs
+  const trimmedUserIDs = userIDs.replace(/,+$/, "")
+  let baseUrl = `https://api.neynar.com/v2/farcaster/user/bulk?fids=${trimmedUserIDs}`
   if (userFID) {
     baseUrl += `&viewer_fid=${userFID}`
   }

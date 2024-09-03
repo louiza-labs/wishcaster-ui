@@ -5,9 +5,9 @@ import { dateOptions } from "@/lib/constants"
 import {
   addCategoryFieldsToCasts,
   addMetricsToProblems,
-  categorizeArrayOfCasts,
+  categorizeArrayOfPosts,
   matchIdeasToPosts,
-  sortCastsByProperty,
+  sortPostsByProperty,
 } from "@/lib/helpers"
 import {
   formatAudienceData,
@@ -16,13 +16,12 @@ import {
   generateStatsForPosts,
 } from "@/lib/helpers/summary"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import FilterBar from "@/components/filters/FilterBar"
+import FilterBar from "@/components/filters/FilterBar/new"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import ValidateRows from "@/components/research"
 import ValidateSearch from "@/components/search/ValidateSearch"
 import {
   fetchPosts,
-  fetchTweetsWithSearch,
   generateProblemsAndSentimentScores,
   generateSimilarIdeas,
   generateSummaryForIdea,
@@ -148,7 +147,7 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
     searchTerm: searchIdea,
   })
 
-  const categories = categorizeArrayOfCasts(posts) as Category[]
+  const categories = categorizeArrayOfPosts(posts) as Category[]
   const mobileViewParam = parseQueryParam(searchParams.view)
 
   const problemsResponse = await generateProblemsAndSentimentScores(
@@ -161,31 +160,32 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
   // fetch tweets with ideas
   const stringOfSimilarIdeasForTweetsSearch =
     formatNamesForQuery(similarIdeasResponse)
-  const { data: tweetsForSimilarIdeas } = await fetchTweetsWithSearch(
-    stringOfSimilarIdeasForTweetsSearch
-  )
-  const categoriesForSimilarIdeas = categorizeArrayOfCasts([
+  // const { data: tweetsForSimilarIdeas } = await fetchTweetsWithSearch(
+  //   stringOfSimilarIdeasForTweetsSearch
+  // )
+  const categoriesForSimilarIdeas = categorizeArrayOfPosts([
     ...posts,
-    ...(tweetsForSimilarIdeas && tweetsForSimilarIdeas.length
-      ? tweetsForSimilarIdeas
-      : []),
+    // ...(tweetsForSimilarIdeas && tweetsForSimilarIdeas.length
+    //   ? tweetsForSimilarIdeas
+    //   : []),
   ]) as Category[]
 
   let filteredPostsWithSimilarIdeas = addCategoryFieldsToCasts(
     [
       ...posts,
-      ...(tweetsForSimilarIdeas && tweetsForSimilarIdeas.length
-        ? tweetsForSimilarIdeas
-        : []),
+      // ...(tweetsForSimilarIdeas && tweetsForSimilarIdeas.length
+      //   ? tweetsForSimilarIdeas
+      //   : []),
     ],
     categoriesForSimilarIdeas
   ) as CastType[]
+
   const keywordsFromSimilarIdeas: any =
     extractKeywordsFromProjects(similarIdeasResponse)
 
   const postsWithSimilarIdeasWithIdeasAdded = matchIdeasToPosts(
     similarIdeasResponse,
-    filteredPostsWithSimilarIdeas
+    posts
   )
   // const res = true ? null : await uploadPostsDataToAlgolia(filteredPosts)
   const searchResultsForSimilarIdeas = await searchPostsWithKeywordsV2(
@@ -206,7 +206,7 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
   // const searchResultsFromAlgolia = await searchPostsData(searchIdea)
   // console.log("the search res from alg", searchResultsFromAlgolia)
   let topCast = posts.length === 1 ? posts[0] : undefined
-  const sortedCasts = sortCastsByProperty(posts, "likes_count")
+  const sortedCasts = sortPostsByProperty(posts, "likesCount")
   topCast = topCast ? topCast : sortedCasts[0]
 
   const isError = !posts.length || !searchIdea
@@ -217,12 +217,13 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
       link: `/research/${params.idea}`,
     },
   ]
+  console.log("the problems resp", problemsResponse)
   const problemsWithMetrics = addMetricsToProblems(problemsResponse, posts)
 
   return (
     <>
       <div className="top-66 sticky z-10">
-        <FilterBar initialCasts={posts} />
+        <FilterBar categories={categories} posts={posts} />
       </div>
       <section className="mx-auto h-fit py-6 md:container sm:px-6 lg:h-auto lg:px-10 xl:flex xl:flex-row">
         <div className="flex flex-col">
@@ -231,7 +232,7 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
           </div>
 
           {!(posts && posts.length) ? (
-            <div className="flex w-full flex-col items-center">
+            <div className="ml-[20vw] flex w-full flex-col items-center">
               <div className="flex w-full flex-col items-center justify-center gap-y-3">
                 <p className="text-center text-2xl font-semibold">
                   No results found, try searching again

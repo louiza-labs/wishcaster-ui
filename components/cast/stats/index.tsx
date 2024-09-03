@@ -74,13 +74,9 @@ const CastStats = ({ cast, overallChannelCasts, reactions }: CastStatProps) => {
     cast,
     "priority_likes"
   )
-  const channelRankByLikes = getRanking(cast, overallChannelCasts, "likes")
-  const categoryRankByLikes = getRanking(
-    cast,
-    overallChannelCasts,
-    "likes",
-    "category"
-  )
+  const channelRankByLikes = getRanking(cast, overallChannelCasts, "likesCount")
+  const categoryRankByLikes =
+    getRanking(cast, overallChannelCasts, "likesCount", "category") ?? 1
 
   const stats: any = generateStatsObjectForCast(
     castWithCategories,

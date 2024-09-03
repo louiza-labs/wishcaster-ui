@@ -1,0 +1,239 @@
+"use client"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { BarChart2, ChevronDown, ChevronUp, HeartIcon } from "lucide-react"
+
+import { renderTextWithLinks } from "@/lib/helpers"
+import { capitalizeFirstLetter, formatDateForCastTimestamp } from "@/lib/utils"
+import useAddTaglineToHash from "@/hooks/farcaster/casts/useAddTaglineToHash"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import SavePost from "@/components/cast/Save"
+import RenderContent from "@/components/post/content"
+import PostMetrics from "@/components/post/metrics"
+
+interface PostProps {
+  post: any
+  renderEmbeds: boolean
+  notionResults?: any
+}
+interface NormalizedUser {
+  profileImage: string
+  displayName: string
+  username: string
+  verified: boolean
+  powerBadge?: boolean
+}
+
+export default function Component({
+  post,
+  notionResults,
+  renderEmbeds,
+}: PostProps) {
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [showMetrics, setShowMetrics] = useState(false)
+  const router = useRouter()
+  const { castWithTagline: postWithTagline } = useAddTaglineToHash(post)
+
+  const fullText = post.text
+  const needsShortening =
+    post.text.length >= 100 || post.mediaUrls.length || post.embeds
+  const abridgedText =
+    post.text.slice(0, 100) + (post.text.length > 100 ? "..." : "")
+
+  const handleVisitPage = (e: React.SyntheticEvent) => {
+    e.preventDefault()
+    router.push(`/post/${post.id}?source=${post.platform}`)
+  }
+
+  return (
+    <Card className="relative flex size-full max-w-md flex-col justify-between border border-gray-200 shadow-sm">
+      <CardContent className="flex h-full flex-col justify-between border p-4">
+        <div className="mb-3 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Avatar className="size-8 border border-gray-200">
+              <AvatarImage
+                src={post.author.profileImageUrl}
+                alt={post.author.username}
+              />
+              <AvatarFallback>{post.author.username}</AvatarFallback>
+            </Avatar>
+            <div>
+              <h4 className="text-sm font-semibold text-gray-700">
+                {post.author.displayName}{" "}
+              </h4>
+              <p className="text-xs text-gray-500">
+                {formatDateForCastTimestamp(post.createdAt)}
+              </p>
+            </div>
+          </div>
+          {post.category.label ? (
+            <Badge
+              variant="secondary"
+              className="bg-indigo-100 text-xs text-indigo-800"
+            >
+              {post.category.label}
+            </Badge>
+          ) : null}
+        </div>
+
+        <h3
+          onClick={handleVisitPage}
+          className="mb-2 text-base font-bold text-gray-800"
+        >
+          {post.tagline ?? postWithTagline.tagline}
+        </h3>
+        {needsShortening ? (
+          <Collapsible
+            open={isExpanded}
+            onClick={handleVisitPage}
+            onOpenChange={setIsExpanded}
+          >
+            <p className="mb-1 text-sm text-gray-600">
+              {isExpanded
+                ? renderTextWithLinks(
+                    post.text,
+                    post.mentionedProfiles,
+                    post.embeds,
+                    post.platform === "twitter"
+                  )
+                : renderTextWithLinks(
+                    abridgedText,
+                    post.mentionedProfiles,
+                    post.embeds,
+                    post.platform === "twitter"
+                  )}
+            </p>
+            <CollapsibleContent className="mb-2 text-sm text-gray-600">
+              <RenderContent
+                text={post.text}
+                tagline={postWithTagline.tagline}
+                embeds={post.embeds}
+                media={post.mediaUrls}
+                referencedPost={post.referencedPost}
+                source={post.platform}
+                // hash={post.id}
+                author={post.author}
+                mentionedProfiles={post.mentionedProfiles}
+                renderEmbeds={renderEmbeds}
+              />
+            </CollapsibleContent>
+            <CollapsibleTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-auto p-0 font-normal text-indigo-600 hover:text-indigo-800"
+              >
+                {isExpanded ? (
+                  <>
+                    <ChevronUp className="mr-1 size-4" /> Show less
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="mr-1 size-4" /> Read more
+                  </>
+                )}
+              </Button>
+            </CollapsibleTrigger>
+          </Collapsible>
+        ) : (
+          <p onClick={handleVisitPage} className="mb-1 text-sm text-gray-600">
+            {renderTextWithLinks(
+              fullText,
+              post.mentionedProfiles,
+              post.embeds,
+              post.platform === "twitter"
+            )}
+          </p>
+        )}
+
+        <div className="mt-3 flex items-center justify-between space-x-2 text-sm">
+          <div className="flex items-center space-x-4">
+            <Badge
+              variant="outline"
+              className="border-yellow-200 bg-yellow-50 text-yellow-700"
+            >
+              <Avatar className="flex size-4 flex-col items-center rounded-full border  shadow-sm">
+                <AvatarImage
+                  src={
+                    post.platform === "farcaster"
+                      ? "/social-account-logos/farcaster-purple-white.png"
+                      : "/social-account-logos/twitter-logo-black.png"
+                  }
+                  alt={post.platform}
+                  className="rounded-full"
+                />
+              </Avatar>
+              <span className="ml-2">
+                {capitalizeFirstLetter(post.platform)}
+              </span>
+            </Badge>
+            {/* <Badge
+              variant="outline"
+              className="border-blue-200 bg-blue-50 text-blue-700"
+            >
+              <ArrowUpCircle className="mr-1 size-3" />
+              To Do
+            </Badge> */}
+            {/* <Badge variant="secondary" className="bg-gray-100 text-gray-600">
+              {categoryLabel}
+            </Badge> */}
+          </div>
+          {/* <Button
+            variant="outline"
+            size="sm"
+            className="border-indigo-200 text-indigo-600 hover:bg-indigo-50"
+          >
+            <PlayCircle className="mr-1 size-3" />
+            Start Task
+          </Button> */}
+          <SavePost
+            cast={post}
+            notionResults={notionResults}
+            isOnTweetsPage={post.platform === "twitter"}
+          />
+        </div>
+      </CardContent>
+
+      <CardFooter className="flex w-full flex-col items-center  justify-between bg-gray-50 p-0 ">
+        <div className="flex w-full flex-row justify-between px-6 py-3">
+          <div className="flex items-center space-x-2 text-sm text-gray-600">
+            <HeartIcon className="size-4" />
+            <span>{post.likesCount ? post.likesCount : "0"}</span>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowMetrics(!showMetrics)}
+            className="text-indigo-600 hover:text-indigo-800"
+          >
+            <BarChart2 className="mr-1 size-4" />
+            {showMetrics ? "Hide Metrics" : "Show Metrics"}
+          </Button>
+        </div>
+        <Collapsible className="w-full" open={showMetrics}>
+          <CollapsibleContent className="w-full bg-gray-100 py-2 text-sm">
+            <PostMetrics
+              likes={post.likesCount}
+              retweets={post.sharesCount}
+              replies={post.commentsCount}
+              impressions={
+                post.additionalMetrics
+                  ? post.additionalMetrics.impressionCount
+                  : 0
+              }
+            />
+          </CollapsibleContent>
+        </Collapsible>
+      </CardFooter>
+    </Card>
+  )
+}

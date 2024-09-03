@@ -75,7 +75,7 @@ const CastContent = ({
         href={
           routeToWarpcast
             ? `https://www.warpcast.com/${author.username}/${hash}`
-            : `/cast/${hash}`
+            : `/post/${hash}?source=farcaster`
         }
         target={routeToWarpcast ? "_blank" : undefined}
         rel={routeToWarpcast ? "noReferrer" : undefined}
