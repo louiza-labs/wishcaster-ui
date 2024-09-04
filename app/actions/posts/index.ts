@@ -25,7 +25,7 @@ export async function fetchPosts({
           timePeriod,
           channelId,
           searchTerm,
-          sortField,
+          // sortField,
           userFID,
         },
       }
