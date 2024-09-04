@@ -48,7 +48,7 @@ export default function Component() {
   }, [])
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4 transition-colors duration-200 dark:bg-gray-900">
+    <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-md space-y-4 rounded-lg bg-white p-6 shadow-lg transition-colors duration-200 dark:bg-gray-800">
         <div className="flex flex-col items-center justify-between">
           <Icons.logo />
