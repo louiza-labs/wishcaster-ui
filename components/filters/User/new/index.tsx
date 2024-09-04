@@ -106,6 +106,7 @@ const UserFilters = () => {
             value={filterIsSelected("following")}
             text={"Following"}
             id={"following"}
+            isDisabled={!isAuthenticated}
           />
 
           <InteractionsCheckbox
