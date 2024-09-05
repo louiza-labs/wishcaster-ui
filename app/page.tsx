@@ -8,11 +8,10 @@ import {
   searchPostsForCategories,
   sortPostsByProperty,
 } from "@/lib/helpers"
+import Banner from "@/components/banner"
 import PostsFeed from "@/components/feed/castsAndTweets"
-import CategoriesFeed from "@/components/feed/categories"
-import DateFilters from "@/components/filters/Date/new"
+import Filterbox from "@/components/filterbox"
 import FilterBar from "@/components/filters/FilterBar/new"
-import UserFilters from "@/components/filters/User/new"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
 import Rankings from "@/components/rankings"
 import RedirectButton from "@/components/redirect/Button"
@@ -94,28 +93,29 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
 
   return (
     <>
+      <Banner
+        titleText="Discover top product requests"
+        descriptionText="Discover top product requests to supercharge your roadmap "
+      />
       <div className="top-66 sticky z-10 w-full lg:hidden">
         <FilterBar categories={categories} posts={castsAndTweets} />
       </div>{" "}
-      <section className="mx-auto grid grid-cols-1 py-6 md:container sm:px-6 lg:grid-cols-12 lg:px-6">
-        <div className="col-span-1 flex w-full flex-col items-center gap-x-4  lg:col-span-10 lg:items-start">
-          <Header />
+      <section className="mx-auto grid w-full grid-cols-1 py-6 md:container sm:px-6 lg:grid-cols-12 lg:gap-x-10 lg:px-6">
+        <main className="col-span-1 flex w-full flex-col items-center gap-x-4 md:items-start  lg:col-span-9 lg:justify-start">
+          <div className="flex w-full flex-col items-center justify-between lg:flex-row">
+            <Header />
+            <div className=" hidden  lg:flex lg:flex-row lg:gap-x-2">
+              <SortCasts />
+
+              <Filterbox categories={categories} />
+            </div>
+          </div>
           {/* <FilterBarDesktop
             initialCasts={castsAndTweets}
             posts={castsAndTweets}
           /> */}
-        </div>
-        <main className="relative col-span-12 grid grid-cols-1 gap-4 lg:grid-cols-12">
-          <aside className="no-scrollbar col-span- sticky top-0 hidden h-screen flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:flex">
-            {/* <CardLayoutToggle /> */}
-            {/* <SortCasts /> */}
 
-            <DateFilters />
-            {/* <SourceFilters /> */}
-            <UserFilters />
-            <CategoriesFeed categories={categories} />
-          </aside>
-          <article className="no-scrollbar lg:col-span-8 lg:px-2  ">
+          <article className="no-scrollbar lg:col-span-9 lg:px-2  ">
             {isError ? (
               <ErrorDisplay
                 searchTerm={searchTerm}
@@ -123,24 +123,22 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
                 categoryParam={categoryParam}
               />
             ) : (
-              <div className=" flex flex-col gap-y-4">
-                <div className=" hidden flex-col items-end lg:flex">
-                  <SortCasts />
-                </div>
-
+              <div className=" flex flex-col gap-y-4 px-2 lg:px-0">
                 <PostsFeed
                   timeFilterParam={timeFilterParam}
                   nextCursor={""}
+                  columns={"grid-cols-1"}
+                  renderCardsAsSingleRow={true}
                   notionResults={notionResults}
                   posts={castsAndTweets}
                 />
               </div>
             )}
           </article>
-          <aside className="no-scrollbar sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky lg:col-span-2 lg:flex lg:flex-col">
-            <Rankings casts={onlyCasts} posts={castsAndTweets} />
-          </aside>
         </main>
+        <aside className="no-scrollbar sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky lg:col-span-3 lg:flex lg:flex-col">
+          <Rankings casts={onlyCasts} posts={castsAndTweets} />
+        </aside>
       </section>
       <div className="flex flex-col items-start lg:hidden">
         <BottomMobileNav
@@ -158,7 +156,7 @@ const Header: FC<HeaderProps> = () => {
   return (
     <div className="flex flex-col items-center gap-2 md:pb-10 lg:items-start  ">
       <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
-        What people want! <br className="hidden sm:inline" />
+        Top product requests <br className="hidden sm:inline" />
       </h1>
       <p className="text-center text-xs sm:text-lg md:text-left lg:max-w-[700px]">
         Sourced from <span className="font-semibold">Farcaster and X </span>
@@ -197,3 +195,14 @@ const ErrorDisplay: FC<ErrorDisplayProps> = ({
 }
 
 export default IndexPage
+
+{
+  /* <aside className="no-scrollbar col-span- sticky top-0 hidden h-screen flex-col gap-y-6 overflow-auto  pb-10 lg:col-span-2 lg:flex">
+
+
+<DateFilters />
+<UserFilters />
+<CategoriesFeed categories={categories} />
+</aside> 
+*/
+}

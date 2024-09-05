@@ -17,11 +17,13 @@ export async function fetchPosts({
   sortField,
   userFID,
 }: FetchPostsParams): Promise<any> {
+  const fcSearchTerm = `someone should build OR i would pay money for OR someone should make OR i would pay money for OR who is building the OR feature request`
   try {
     const response = await axios.get(
       `${process.env.API_SERVICE_URL}/posts/get_normalized_posts`,
       {
         params: {
+          // farcasterSearchTerm: fcSearchTerm,
           timePeriod,
           channelId,
           searchTerm,

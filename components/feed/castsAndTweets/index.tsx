@@ -18,6 +18,7 @@ interface CastFeedProps {
   notionResults?: any[]
   topic?: string
   posts: any
+  renderCardsAsSingleRow?: boolean
 }
 
 const CastAndTweetsFeed = ({
@@ -25,6 +26,7 @@ const CastAndTweetsFeed = ({
   timeFilterParam,
   columns,
   notionResults,
+  renderCardsAsSingleRow,
   topic,
   posts,
 }: CastFeedProps) => {
@@ -34,7 +36,7 @@ const CastAndTweetsFeed = ({
   const { filteredPosts } = useFilterFeed(posts, topic)
 
   const router = useRouter()
-  
+
   const categoriesFromParams = searchParams.getAll("topics").join(",")
   const cardLayoutFromParams = searchParams.getAll("card-layout").join(",")
 
@@ -146,11 +148,12 @@ const CastAndTweetsFeed = ({
             <CastFeedSkeleton count={4} />
           </div>
         ) : filteredPosts && filteredPosts.length ? (
-          filteredPosts.map((tweetOrCast: any, index) => (
+          filteredPosts.slice(0, 10).map((tweetOrCast: any, index) => (
             <Fragment key={tweetOrCast.hash || tweetOrCast.id}>
               <PostCard
                 renderEmbeds={true}
                 post={tweetOrCast}
+                asSingleRow={renderCardsAsSingleRow}
                 notionResults={notionResults}
               />
             </Fragment>

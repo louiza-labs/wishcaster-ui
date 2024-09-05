@@ -6,7 +6,6 @@ import { BarChart2, ChevronDown, ChevronUp, HeartIcon } from "lucide-react"
 
 import { renderTextWithLinks } from "@/lib/helpers"
 import { capitalizeFirstLetter, formatDateForCastTimestamp } from "@/lib/utils"
-import useAddTaglineToHash from "@/hooks/farcaster/casts/useAddTaglineToHash"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -24,6 +23,7 @@ interface PostProps {
   post: any
   renderEmbeds: boolean
   notionResults?: any
+  asSingleRow?: boolean
 }
 interface NormalizedUser {
   profileImage: string
@@ -37,17 +37,21 @@ export default function Component({
   post,
   notionResults,
   renderEmbeds,
+  asSingleRow,
 }: PostProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [showMetrics, setShowMetrics] = useState(false)
   const router = useRouter()
-  const { castWithTagline: postWithTagline } = useAddTaglineToHash(post)
-
+  // const { castWithTagline: postWithTagline } = useAddTaglineToHash(post)
+  let postWithTagline = post
   const fullText = post.text
   const needsShortening =
-    post.text.length >= 100 || post.mediaUrls.length || post.embeds
+    post.text.length >= (asSingleRow ? 500 : 100) ||
+    post.mediaUrls.length ||
+    post.embeds
   const abridgedText =
-    post.text.slice(0, 100) + (post.text.length > 100 ? "..." : "")
+    post.text.slice(0, asSingleRow ? 500 : 100) +
+    (post.text.length > (asSingleRow ? 500 : 100) ? "..." : "")
 
   const handleVisitPage = (e: React.SyntheticEvent) => {
     e.stopPropagation() // Prevent routing when clicking the title
@@ -55,7 +59,11 @@ export default function Component({
   }
 
   return (
-    <Card className="relative flex h-auto w-full max-w-md flex-col justify-between border border-gray-200 shadow-sm">
+    <Card
+      className={`relative flex h-auto w-full ${
+        asSingleRow ? "" : "max-w-md"
+      } flex-col justify-between border border-gray-200 shadow-sm`}
+    >
       <CardContent className="flex h-full flex-col justify-between border p-4">
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center space-x-2">
