@@ -202,7 +202,7 @@ const Rankings = ({ casts, view, posts }: RankingsProps) => {
             defaultValue="likes"
             className="hidden w-full flex-col items-center gap-y-2 md:w-fit md:items-start xl:flex xl:items-center"
           >
-            <TabsList className="flex size-auto items-start md:h-full md:w-fit md:flex-col lg:flex-col xl:flex-row">
+            <TabsList className="flex size-auto items-start md:size-full md:flex-col md:justify-around lg:flex-col xl:flex-row">
               <TabsTrigger
                 className="p-2 lg:w-fit lg:text-sm 2xl:text-base"
                 value="likes"

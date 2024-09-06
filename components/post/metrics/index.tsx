@@ -1,3 +1,5 @@
+import { Icons } from "@/components/icons"
+
 interface NormalizedMetric {
   label: string
   value: string | number
@@ -50,6 +52,7 @@ interface MetricsProps {
   retweets?: number
   replies?: number
   impressions?: number
+  renderOnCard?: boolean
   reactions?: {
     likes_count: number
     recasts_count: number
@@ -68,6 +71,7 @@ const PostMetrics = ({
   priorityScore,
   engagementRate,
   showImpressions,
+  renderOnCard,
 }: MetricsProps) => {
   const metrics = normalizeMetrics({
     likes,
@@ -82,14 +86,34 @@ const PostMetrics = ({
     ? metrics
     : metrics.filter((metrics) => metrics.label.toLowerCase() !== "impressions")
 
+  const iconMap: any = {
+    Likes: Icons.likes,
+    Reposts: Icons.recasts,
+    Replies: Icons.replies,
+    //    Impressions: Icons., // Add this if you have an impressions icon
+    //  }
+  }
+
   return (
-    <div className="grid grid-cols-3 gap-4 text-gray-600">
-      {filteredMetrics.map((metric, index) => (
-        <div key={index} className="flex flex-col items-center">
-          <span className="text-lg font-semibold">{metric.value}</span>
-          <span className="text-xs">{metric.label}</span>
-        </div>
-      ))}
+    <div
+      className={`${
+        renderOnCard
+          ? "flex flex-row justify-start gap-x-10"
+          : "grid grid-cols-3 gap-4"
+      }  text-gray-600`}
+    >
+      {filteredMetrics.map((metric, index) => {
+        const Icon = iconMap[metric.label] // Get the corresponding icon
+
+        return (
+          <div key={index} className="flex flex-row items-center gap-x-2">
+            <Icon className="size-4" />
+            <span className="text-lg font-semibold xl:text-sm">
+              {metric.value}
+            </span>
+          </div>
+        )
+      })}
     </div>
   )
 }
