@@ -89,7 +89,7 @@ export function summarizeByCategory(
 ): CategorySummary[] {
   const summaries = new Map<string, CategorySummary>()
   posts.forEach((post) => {
-    const { category, reactions, replies, author } = post
+    const { category, replies, author } = post
     if (!category || !(category && category.id)) return
 
     if (!summaries.has(category.id)) {
@@ -111,7 +111,7 @@ export function summarizeByCategory(
 
     const summary = summaries.get(category.id)!
     summary.likes += post.likesCount
-
+    summary.recasts += post.sharesCount
     summary.replies += post.commentsCount
     summary.bookmarks += post.additionalMetrics
       ? post.additionalMetrics.bookmarkCount

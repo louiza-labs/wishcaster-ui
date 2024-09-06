@@ -93,7 +93,7 @@ const UserFilters = () => {
           </Avatar>
         </div>
         <div
-          className={`md:gap-x-auto grid grid-cols-1 gap-y-2 md:flex md:flex-wrap xl:grid `}
+          className={`md:gap-x-auto grid grid-cols-1 gap-y-2 md:flex md:flex-wrap xl:grid xl:grid-cols-2 xl:gap-4 `}
         >
           <InteractionsCheckbox
             handleChange={handlePriorityBadgeFilterChange}

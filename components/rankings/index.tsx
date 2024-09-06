@@ -119,20 +119,20 @@ const Rankings = ({ casts, view, posts }: RankingsProps) => {
     posts,
     "category",
     "likesCount",
-    view === "search" ? 100 : 10
+    view === "search" ? 100 : 20
   )
 
   const rankedTopicsByReplies = buildRankings(
     posts,
     "category",
     "commentsCount",
-    view === "search" ? 100 : 10
+    view === "search" ? 100 : 20
   )
   const rankedTopicsByRecasts = buildRankings(
     posts,
     "category",
     "sharesCount",
-    view === "search" ? 100 : 10
+    view === "search" ? 100 : 20
   )
 
   const hasResults = useMemo(() => {
@@ -194,15 +194,15 @@ const Rankings = ({ casts, view, posts }: RankingsProps) => {
               view === "search" ? "md:hidden" : "md:block"
             } hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter  md:text-2xl`}
           >
-            Trending Topics
+            Trending Requests Topics
           </h3>
 
           <Tabs
             orientation="vertical"
             defaultValue="likes"
-            className="hidden w-full flex-col items-center gap-y-2 md:w-fit md:items-start xl:flex"
+            className="hidden w-full flex-col items-center gap-y-2 md:w-fit md:items-start xl:flex xl:items-center"
           >
-            <TabsList className="flex size-auto items-start md:h-full md:w-fit md:flex-col lg:flex-col xl:flex-row">
+            <TabsList className="flex size-auto items-start md:size-full md:flex-col md:justify-around lg:flex-col xl:flex-row">
               <TabsTrigger
                 className="p-2 lg:w-fit lg:text-sm 2xl:text-base"
                 value="likes"
