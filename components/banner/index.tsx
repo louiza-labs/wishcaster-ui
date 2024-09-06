@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { X } from "lucide-react"
 
 interface BannerProps {
@@ -10,10 +10,22 @@ interface BannerProps {
 export default function Banner({ titleText, descriptionText }: BannerProps) {
   const [isVisible, setIsVisible] = useState(true)
 
+  useEffect(() => {
+    const storedVisibility = localStorage.getItem(titleText)
+    if (storedVisibility === "hidden") {
+      setIsVisible(false)
+    }
+  }, [titleText])
+
+  const handleDismiss = () => {
+    setIsVisible(false)
+    localStorage.setItem(titleText, "hidden")
+  }
+
   if (!isVisible) return null
 
   return (
-    <div className="animate-fade-in-down  inset-x-0 top-20 z-50">
+    <div className="animate-fade-in-down inset-x-0 top-20 z-50">
       <div className="bg-primary text-primary-foreground shadow-lg">
         <div className="container mx-auto px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-between">
@@ -42,19 +54,11 @@ export default function Banner({ titleText, descriptionText }: BannerProps) {
                 </span>
               </p>
             </div>
-            {/* <div className="order-3 mt-2 w-full shrink-0 sm:order-2 sm:mt-0 sm:w-auto">
-              <a
-                href="#"
-                className="flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-2 text-sm font-medium text-primary hover:bg-primary-foreground"
-              >
-                Learn more
-              </a>
-            </div> */}
             <div className="order-2 shrink-0 sm:order-3 sm:ml-3">
               <button
                 type="button"
                 className="-mr-1 flex rounded-md p-2 hover:bg-primary-foreground focus:outline-none focus:ring-2 focus:ring-white sm:-mr-2"
-                onClick={() => setIsVisible(false)}
+                onClick={handleDismiss}
                 aria-label="Dismiss"
               >
                 <X
