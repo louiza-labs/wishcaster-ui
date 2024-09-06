@@ -98,7 +98,7 @@ const PostMetrics = ({
     <div
       className={`${
         renderOnCard
-          ? "flex flex-row justify-start gap-x-10"
+          ? " flex flex-row items-center justify-around gap-4 pl-2 lg:justify-start lg:pl-0"
           : "grid grid-cols-3 gap-4"
       }  text-gray-600`}
     >
@@ -107,8 +107,8 @@ const PostMetrics = ({
 
         return (
           <div key={index} className="flex flex-row items-center gap-x-2">
-            <Icon className="size-4" />
-            <span className="text-lg font-semibold xl:text-sm">
+            <Icon className="size-1 text-xs lg:size-4 lg:text-base" />
+            <span className="text-xs font-semibold lg:text-lg xl:text-sm">
               {metric.value}
             </span>
           </div>

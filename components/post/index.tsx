@@ -58,7 +58,6 @@ export default function Component({
     e.stopPropagation() // Prevent routing when clicking the title
     router.push(`/post/${post.id}?source=${post.platform}`)
   }
-
   return (
     <Card
       className={`relative flex h-auto w-full ${
@@ -209,13 +208,22 @@ export default function Component({
             <PlayCircle className="mr-1 size-3" />
             Start Task
           </Button> */}
-          {asSingleRow ? null : (
+          <div className="hidden lg:block">
+            {asSingleRow ? null : (
+              <SavePost
+                cast={post}
+                notionResults={notionResults}
+                isOnTweetsPage={post.platform === "twitter"}
+              />
+            )}
+          </div>
+          <div className="block lg:hidden">
             <SavePost
               cast={post}
               notionResults={notionResults}
               isOnTweetsPage={post.platform === "twitter"}
             />
-          )}
+          </div>
         </div>
       </CardContent>
 
@@ -224,7 +232,7 @@ export default function Component({
           <div
             className={
               asSingleRow
-                ? "hidden"
+                ? "flex flex-row items-center space-x-2 text-sm text-gray-600 dark:text-gray-200 lg:hidden "
                 : "flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-200"
             }
           >
@@ -233,7 +241,9 @@ export default function Component({
           </div>
           <div
             className={`${
-              asSingleRow ? "flex w-full flex-row justify-between " : "hidden"
+              asSingleRow
+                ? " hidden w-full lg:flex lg:flex-row lg:justify-between "
+                : "hidden "
             }`}
           >
             <PostMetrics
@@ -248,11 +258,13 @@ export default function Component({
                   : 0
               }
             />
-            <SavePostForCard
-              cast={post}
-              notionResults={notionResults}
-              isOnTweetsPage={post.platform === "twitter"}
-            />
+            <div className="hidden lg:block">
+              <SavePostForCard
+                cast={post}
+                notionResults={notionResults}
+                isOnTweetsPage={post.platform === "twitter"}
+              />
+            </div>
           </div>
 
           <Button
@@ -260,7 +272,7 @@ export default function Component({
             size="sm"
             onClick={() => setShowMetrics(!showMetrics)}
             className={`${
-              asSingleRow ? "hidden" : ""
+              asSingleRow ? "lg:hidden" : ""
             } text-indigo-600 hover:text-indigo-800 dark:hover:text-indigo-200`}
           >
             <BarChart2 className="mr-1 size-4 dark:hover:text-indigo-200" />
@@ -268,7 +280,7 @@ export default function Component({
           </Button>
         </div>
         <Collapsible
-          className={`w-full ${asSingleRow ? "hidden" : ""}`}
+          className={`w-full ${asSingleRow ? "lg:hidden" : ""}`}
           open={showMetrics}
         >
           <CollapsibleContent className="w-full bg-gray-100 py-2 text-sm dark:bg-indigo-100 dark:backdrop-blur-xl">
