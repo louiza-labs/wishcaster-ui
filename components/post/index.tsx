@@ -64,7 +64,10 @@ export default function Component({
         asSingleRow ? "" : "max-w-md"
       } flex-col justify-between border border-gray-200 shadow-sm`}
     >
-      <CardContent className="flex h-full flex-col justify-between border p-4">
+      <CardContent
+        onClick={handleVisitPage} // Added click handler here
+        className="flex h-full cursor-pointer flex-col justify-between border p-4"
+      >
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Avatar className="size-8 border border-gray-200">
@@ -114,10 +117,7 @@ export default function Component({
           </div>
         </div>
 
-        <h3
-          onClick={handleVisitPage}
-          className="mb-2 text-base font-bold text-gray-800 dark:text-gray-200"
-        >
+        <h3 className="mb-2 text-base font-extrabold text-gray-800 dark:text-gray-200">
           {post.tagline && post.tagline.length
             ? post.tagline
             : postWithTagline.tagline}
@@ -174,10 +174,7 @@ export default function Component({
             </div>
           </Collapsible>
         ) : (
-          <p
-            onClick={handleVisitPage}
-            className="mb-1 text-sm text-gray-600 dark:text-gray-200"
-          >
+          <p className="mb-1 text-sm text-gray-600 dark:text-gray-200">
             {renderTextWithLinks(
               fullText,
               post.mentionedProfiles,

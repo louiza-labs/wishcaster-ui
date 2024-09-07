@@ -108,7 +108,7 @@ const PostMetrics = ({
         return (
           <div key={index} className="flex flex-row items-center gap-x-2">
             <Icon className="size-1 text-xs lg:size-4 lg:text-base" />
-            <span className="text-xs font-semibold lg:text-lg xl:text-sm">
+            <span className="text-xs font-semibold lg:text-sm xl:text-sm">
               {metric.value}
             </span>
           </div>
