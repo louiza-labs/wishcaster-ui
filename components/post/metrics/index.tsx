@@ -1,3 +1,9 @@
+"use client"
+
+import { useMemo } from "react"
+import { MessageCircle, Repeat } from "lucide-react"
+import { useTheme } from "next-themes"
+
 import { Icons } from "@/components/icons"
 
 interface NormalizedMetric {
@@ -81,6 +87,10 @@ const PostMetrics = ({
     priorityScore,
     engagementRate,
   })
+  const { theme } = useTheme()
+  const isDarkMode = useMemo(() => {
+    return theme === "dark"
+  }, [theme])
 
   const filteredMetrics = showImpressions
     ? metrics
@@ -88,8 +98,8 @@ const PostMetrics = ({
 
   const iconMap: any = {
     Likes: Icons.likes,
-    Reposts: Icons.recasts,
-    Replies: Icons.replies,
+    Reposts: Repeat,
+    Replies: MessageCircle,
     //    Impressions: Icons., // Add this if you have an impressions icon
     //  }
   }
@@ -107,8 +117,10 @@ const PostMetrics = ({
 
         return (
           <div key={index} className="flex flex-row items-center gap-x-2">
-            <Icon className="size-1 text-xs lg:size-4 lg:text-base" />
-            <span className="text-xs font-semibold lg:text-sm xl:text-sm">
+            <Icon
+              className={`size-1 text-xs dark:text-white lg:size-4 lg:text-base`}
+            />
+            <span className="text-xs font-semibold dark:text-white lg:text-sm xl:text-sm">
               {metric.value}
             </span>
           </div>
