@@ -142,10 +142,10 @@ const CastAndTweetsFeed = ({
             {columns ? (
               <div className="hidden lg:block">
                 {" "}
-                <CastFeedSkeleton count={4} />{" "}
+                {/* <CastFeedSkeleton count={4} />{" "} */}
               </div>
             ) : null}
-            <CastFeedSkeleton count={4} />
+            {/* <CastFeedSkeleton count={4} /> */}
           </div>
         ) : filteredPosts && filteredPosts.length ? (
           filteredPosts.slice(0, 10).map((tweetOrCast: any, index) => (

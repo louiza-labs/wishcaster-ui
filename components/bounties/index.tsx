@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react"
 import { NeynarAuthButton, SIWN_variant, useNeynarContext } from "@neynar/react"
 

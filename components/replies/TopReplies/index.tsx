@@ -1,14 +1,13 @@
 "use client"
 
-import { sortPostsByProperty } from "@/lib/helpers"
-import useFetchCastConversation from "@/hooks/farcaster/conversations/useFetchCastConversation"
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
-import Cast from "@/components/cast/variants/SprintItem"
+  addCategoryFieldsToCasts,
+  categorizeArrayOfPosts,
+  normalizePosts,
+  sortPostsByProperty,
+} from "@/lib/helpers"
+import useFetchCastConversation from "@/hooks/farcaster/conversations/useFetchCastConversation"
+import Post from "@/components/post"
 
 interface TopRepliesProps {
   castHash: string
@@ -18,33 +17,38 @@ const TopReplies = ({ castHash, notionResults }: TopRepliesProps) => {
   const { conversation } = useFetchCastConversation(castHash)
   const sortedRepliesByLikes = sortPostsByProperty(conversation, "likesCount")
   const topFiveRepliesByLikes = sortedRepliesByLikes.slice(0, 5)
+  const categories = categorizeArrayOfPosts(topFiveRepliesByLikes) as any[]
+  let postsWithCategories = addCategoryFieldsToCasts(
+    topFiveRepliesByLikes,
+    categories
+  )
+  postsWithCategories = postsWithCategories.map((postWithCategories) => {
+    return {
+      ...postWithCategories,
+      category: postWithCategories.category ?? {
+        label: "",
+        id: "",
+      },
+    }
+  })
+  const normalizedTopFivePosts = normalizePosts(postsWithCategories)
 
   return (
     <div className="z-30 mt-2 flex h-full flex-col gap-y-4 overflow-y-auto px-4 md:px-0">
-      {topFiveRepliesByLikes && topFiveRepliesByLikes.length ? (
-        <Accordion type="single" defaultChecked={true} collapsible className="">
-          <AccordionItem value="replies">
-            <AccordionTrigger className="mt-2 text-xl font-bold  md:flex md:text-2xl">
-              <p>Top Replies</p>
-            </AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-y-2">
-              {topFiveRepliesByLikes && topFiveRepliesByLikes.length
-                ? topFiveRepliesByLikes.map((reply: any) => (
-                    <Cast
-                      {...reply}
-                      key={reply.hash}
-                      hideMetrics={false}
-                      badgeIsToggled={false}
-                      isReply={true}
-                      notionResults={notionResults}
-                      cast={reply}
-                      mentionedProfiles={reply.mentioned_profiles}
-                    />
-                  ))
-                : null}
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+      {normalizedTopFivePosts && normalizedTopFivePosts.length ? (
+        <div className="flex flex-col gap-y-4">
+          <p className="text-xl font-bold">Top Replies</p>
+
+          {normalizedTopFivePosts.map((reply: any) => (
+            <Post
+              key={reply.id}
+              renderEmbeds={true}
+              notionResults={notionResults}
+              post={reply}
+              asSingleRow={true}
+            />
+          ))}
+        </div>
       ) : null}
     </div>
   )

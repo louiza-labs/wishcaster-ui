@@ -324,3 +324,19 @@ Generate a 2 sentence summary that integrates these elements, providing a clear 
 
   return result.object.summary
 }
+
+export async function fetchGeneratedPostSummary(id: string, text: string) {
+  try {
+    const response = await axios.post(
+      `${process.env.API_SERVICE_URL}/ai/generate_summary_for_post`,
+      {
+        id,
+        text,
+      }
+    )
+
+    return response.data
+  } catch (e) {
+    console.error(e)
+  }
+}

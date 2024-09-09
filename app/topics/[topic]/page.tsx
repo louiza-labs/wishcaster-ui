@@ -66,7 +66,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
     : undefined
 
   let castsAndTweets = await fetchPosts({
-    timePeriod: timeFilterParam ?? "ytd",
+    timePeriod: timeFilterParam ?? "30-days",
     channelId: "someone-build",
     userFID: userFilterParam,
   })
@@ -186,8 +186,10 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
               posts={castsAndTweets}
               timeFilterParam={timeFilterParam}
               nextCursor={""}
+              renderCardsAsSingleRow={true}
               // columns={" lg:grid-cols-2 "}
               topic={params.topic}
+              columns={"grid-cols-1"}
             />
           </div>
         </main>

@@ -99,7 +99,7 @@ const DateFilters = () => {
         Date
       </p>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger defaultValue={"30-days"} asChild>
           <Button variant="outline" className="w-[200px] justify-between">
             <CalendarDays className="mr-2 size-4" />
             {selectedRange === "24-hours"
@@ -107,7 +107,7 @@ const DateFilters = () => {
               : selectedRange === "7-days"
               ? "1 week"
               : selectedRange === "30-days"
-              ? "3 months"
+              ? "1 month"
               : "YTD"}
             <ChevronDown className="ml-2 size-4" />
           </Button>
