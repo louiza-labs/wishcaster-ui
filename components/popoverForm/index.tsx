@@ -73,7 +73,7 @@ export function PopoverForm({
         <Button
           variant={isForCastPage ? "outline" : "ghost"}
           disabled={isDisabled}
-          className={`flex w-full flex-row justify-start gap-x-4 ${
+          className={`flex w-full flex-row justify-start gap-x-4 dark:text-white ${
             isForCastPage ? "text-xs" : ""
           }`}
         >
