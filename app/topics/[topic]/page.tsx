@@ -66,7 +66,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
     : undefined
 
   let castsAndTweets = await fetchPosts({
-    timePeriod: timeFilterParam ?? "ytd",
+    timePeriod: timeFilterParam ?? "30-days",
     channelId: "someone-build",
     userFID: userFilterParam,
   })
@@ -96,7 +96,7 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
         <FilterBar categories={categories} posts={castsAndTweets} />
       </div>
       <div className="relative col-span-12 grid grid-cols-1 gap-4 md:container lg:mt-10 lg:grid-cols-12 lg:gap-x-10">
-        <div className="col-span-1 px-6 md:px-0 lg:col-span-12">
+        <div className="col-span-1 px-6 pt-4 md:px-0 lg:col-span-12 lg:py-0">
           <Breadcrumbs pages={breadCrumbPages} />
         </div>
         <div className="col-span-1 mt-2 flex w-full flex-row justify-center gap-x-2 px-6  md:mb-0 md:flex-col md:gap-x-0 md:gap-y-4 md:px-0 lg:col-span-5 lg:mb-4 lg:mt-0">
@@ -186,8 +186,10 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
               posts={castsAndTweets}
               timeFilterParam={timeFilterParam}
               nextCursor={""}
+              renderCardsAsSingleRow={true}
               // columns={" lg:grid-cols-2 "}
               topic={params.topic}
+              columns={"grid-cols-1"}
             />
           </div>
         </main>

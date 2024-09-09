@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 const userOptions = [
-  { id: "priority-badge", label: "Power Badge" },
+  // { id: "priority-badge", label: "Power Badge" },
   { id: "following", label: "Following" },
   { id: "liked", label: "Liked", requiresAuth: true },
   { id: "recasted", label: "Recasted", requiresAuth: true },

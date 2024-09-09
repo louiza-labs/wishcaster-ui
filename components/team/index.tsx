@@ -12,7 +12,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import UserFeed from "@/components/feed/team"
 import { Icons } from "@/components/icons"
@@ -214,7 +213,7 @@ const Team = ({ cast, reactions, conversation }: TeamProps) => {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-            <div className="flex h-[55vh] w-full flex-col  gap-y-2 overflow-y-scroll  md:size-full md:h-full">
+            <div className="flex h-[55vh] w-full flex-col  gap-y-2 overflow-y-scroll  lg:size-full lg:h-full">
               <UserFeed
                 relevantUsers={likeOrRecastedUsers}
                 loadingUsers={
@@ -231,7 +230,6 @@ const Team = ({ cast, reactions, conversation }: TeamProps) => {
           <p className="text-center text-base font-bold md:text-lg">
             No users have engaged with this cast
           </p>
-          <Button onClick={handleRouteBackHome}>Back Home</Button>
         </div>
       )}
     </Suspense>
