@@ -21,8 +21,6 @@ import {
 
 // Comprehensive list of industries
 const industries = [
-  { value: "technology", label: "Technology" },
-  { value: "software", label: "Software" },
   { value: "hardware", label: "Hardware" },
   { value: "ai_machine_learning", label: "AI & Machine Learning" },
   { value: "blockchain", label: "Blockchain" },
@@ -62,11 +60,8 @@ const industries = [
   { value: "nuclear_energy", label: "Nuclear Energy" },
   { value: "mining", label: "Mining" },
   { value: "education", label: "Education" },
-  { value: "elearning", label: "E-Learning" },
   { value: "k12", label: "K-12" },
   { value: "higher_education", label: "Higher Education" },
-  { value: "vocational_training", label: "Vocational Training" },
-  { value: "corporate_training", label: "Corporate Training" },
   { value: "entertainment", label: "Entertainment" },
   { value: "film_tv", label: "Film & Television" },
   { value: "music", label: "Music" },
@@ -95,15 +90,12 @@ const industries = [
   { value: "forestry", label: "Forestry" },
   { value: "fisheries", label: "Fisheries" },
   { value: "government", label: "Government" },
-  { value: "public_administration", label: "Public Administration" },
   { value: "defense", label: "Defense" },
   { value: "international_relations", label: "International Relations" },
   { value: "public_health", label: "Public Health" },
   { value: "non_profit", label: "Non-Profit" },
   { value: "charities", label: "Charities" },
   { value: "foundations", label: "Foundations" },
-  { value: "social_enterprises", label: "Social Enterprises" },
-  { value: "advocacy_groups", label: "Advocacy Groups" },
 ]
 
 interface IndustrySelectionMenu {

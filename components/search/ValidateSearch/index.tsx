@@ -81,7 +81,7 @@ const ValidateSearch = ({}) => {
               variant={searching ? "outline" : "default"}
               className={`${
                 searching ? "animate:ping" : ""
-              } hover:bg-primary-600 focus:ring-primary-500  ml-2 w-1/3 rounded-md bg-primary px-4 py-2 text-white focus:outline-none focus:ring-2`}
+              } hover:bg-primary-600 focus:ring-primary-500  ml-2 w-1/3 rounded-md bg-primary px-4 py-2 text-white focus:outline-none focus:ring-2 dark:text-black`}
             >
               Search
             </Button>

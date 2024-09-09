@@ -38,13 +38,6 @@ const ValidatePage: FC<IndexPageProps> = async ({ searchParams }) => {
           </article>
         </main>
       </section>
-      <div className="flex flex-col items-start lg:hidden">
-        {/* <BottomMobileNav
-          filteredPosts={filteredPosts}
-          initialCasts={initialCasts}
-          page={"topics"}
-        /> */}
-      </div>
     </>
   )
 }
