@@ -60,8 +60,8 @@ const PostPage = ({
         </div>
       </header>
       <main className="flex w-full max-w-5xl flex-col items-center justify-center gap-8 gap-y-12 px-4 py-8 md:px-6">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-[1fr_300px] lg:gap-10">
-          <div className="flex flex-col gap-4">
+        <div className="grid w-full grid-cols-1 gap-6 lg:flex lg:flex-row lg:justify-between lg:gap-10">
+          <div className="flex flex-col gap-4 lg:w-2/3">
             <RenderContent
               text={post.text}
               tagline={post.tagline}
@@ -109,7 +109,7 @@ const PostPage = ({
               />
             </div>
           </div>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 lg:w-1/3">
             <Card className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">

@@ -408,19 +408,9 @@ export function generateAudienceSegments(posts: any[]): any[] {
       userCount: 0,
       postCount: 0,
     }
-
-    // Aggregate engagement stats
-    if (post.reactions) {
-      segmentData.engagementStats.totalLikes += post.reactions.likes_count
-      segmentData.engagementStats.totalRecasts += post.reactions.recasts_count
-      segmentData.engagementStats.totalReplies += post.replies?.count || 0
-    } else if (post.public_metrics) {
-      segmentData.engagementStats.totalLikes += post.public_metrics.like_count
-      segmentData.engagementStats.totalRecasts +=
-        post.public_metrics.retweet_count
-      segmentData.engagementStats.totalReplies +=
-        post.public_metrics.reply_count
-    }
+    segmentData.engagementStats.totalLikes += post.likesCount
+    segmentData.engagementStats.totalRecasts += post.sharesCount
+    segmentData.engagementStats.totalReplies += post.commentsCount
 
     segmentData.userCount += 1
     segmentData.postCount += 1
@@ -433,7 +423,7 @@ export function generateAudienceSegments(posts: any[]): any[] {
 export function categorizeAudienceByChannel(posts: any[]) {
   const segmentsMap: Record<string, any> = {}
   posts.forEach((post) => {
-    const segment = post.object && post.object === "cast" ? "Farcaster" : "X"
+    const segment = post.platform === "farcaster" ? "Farcaster" : "X"
 
     const segmentData = segmentsMap[segment] || {
       segmentName: segment,
@@ -447,17 +437,9 @@ export function categorizeAudienceByChannel(posts: any[]) {
     }
 
     // Aggregate engagement stats
-    if (post.reactions) {
-      segmentData.engagementStats.totalLikes += post.reactions.likes_count
-      segmentData.engagementStats.totalRecasts += post.reactions.recasts_count
-      segmentData.engagementStats.totalReplies += post.replies?.count || 0
-    } else if (post.public_metrics) {
-      segmentData.engagementStats.totalLikes += post.public_metrics.like_count
-      segmentData.engagementStats.totalRecasts +=
-        post.public_metrics.retweet_count
-      segmentData.engagementStats.totalReplies +=
-        post.public_metrics.reply_count
-    }
+    segmentData.engagementStats.totalLikes += post.likesCount
+    segmentData.engagementStats.totalRecasts += post.sharesCount
+    segmentData.engagementStats.totalReplies += post.commentsCount
 
     segmentData.userCount += 1
     segmentData.postCount += 1
