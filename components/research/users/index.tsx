@@ -1,92 +1,93 @@
 "use client"
 
+import React, { useMemo } from "react"
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Icons } from "@/components/icons"
 
-interface UsersProps {
-  usersStats: any[]
+// Define types properly
+interface User {
+  bio: string
+  displayName: string
+  username: string
+  profileImageUrl: string
+  verified: boolean
+  followerCount: number
+  followingCount: number
 }
+
+interface Stats {
+  likes: number
+  recasts: number
+  replies: number
+}
+
+interface UsersStats {
+  user: User
+  likes: number
+  recasts: number
+  replies: number
+}
+
+interface UsersProps {
+  usersStats: UsersStats[]
+}
+
 const Users = ({ usersStats }: UsersProps) => {
-  const formattedUserStats = usersStats.map((user) => {
-    const isFC = user.user.fid
-    return {
-      description: isFC ? user.user.profile.bio.text : user.user.description,
-      name: isFC ? user.user.display_name : user.user.name,
-      handle: isFC ? user.user.username : user.user.username,
-      profileImage: isFC ? user.user.pfp_url : user.user.profile_image_url,
-      isVerified: isFC ? user.user.power_badge : user.user.verified,
-      platform: isFC ? "farcaster" : "twitter",
-      stats: {
-        likes: {
-          count: isFC ? user.likes : user.likes,
-          icon: Icons.likes,
-          label: "Likes",
+  // Memoize the formattedUserStats without slicing in memoization
+  const formattedUserStats = useMemo(() => {
+    return usersStats.map((user) => {
+      const {
+        bio,
+        displayName,
+        username,
+        profileImageUrl,
+        verified,
+        followerCount,
+        followingCount,
+      } = user.user
+      return {
+        description: bio,
+        name: displayName,
+        handle: username,
+        profileImage: profileImageUrl,
+        isVerified: verified,
+        followersCount: followerCount,
+        followingCount: followingCount,
+        stats: {
+          likes: { count: user.likes, icon: Icons.likes, label: "Likes" },
+          reposts: {
+            count: user.recasts,
+            icon: Icons.recasts,
+            label: "Reposts",
+          },
+          replies: {
+            count: user.replies,
+            icon: Icons.replies,
+            label: "Replies",
+          },
         },
-        reposts: {
-          count: isFC ? user.recasts : user.recasts,
-          icon: Icons.recasts,
-          label: "Reposts",
-        },
-        replies: {
-          count: isFC ? user.replies : user.replies,
-          icon: Icons.replies,
-          label: "Replies",
-        },
-        impressions: {
-          count: isFC ? user.impressions : user.impressions,
-          icon: Icons.activity,
-          label: "Impressions",
-        },
-        bookmarks: {
-          count: isFC ? user.bookmarks : user.bookmarks,
-          icon: Icons.bookmark,
-          label: "Bookmarks",
-        },
-      },
-      followersCount: isFC
-        ? user.user.follower_count
-        : user.user.public_metrics.followers_count,
-      followingCount: isFC
-        ? user.user.following_count
-        : user.user.public_metrics.following_count,
-    }
-  })
+      }
+    })
+  }, [usersStats])
 
-  function UserCard({
-    userName,
-    userImage,
-    userHandle,
-    userDescription,
-    userIsVerified,
-    userStats,
-    platform,
-  }: any) {
-    return (
+  const UserCard = React.memo(
+    ({
+      userName,
+      userImage,
+      userHandle,
+      userDescription,
+      userIsVerified,
+      userStats,
+    }: any) => (
       <Card className="relative w-full max-w-md overflow-hidden rounded-2xl">
-        <div className="absolute left-2 top-2 z-50 -mb-4 mt-2 flex flex-col items-center">
-          <Avatar className="border-1 flex size-5 flex-col items-center rounded-full border  p-1 shadow">
-            {platform === "twitter" ? (
-              <AvatarImage
-                src={"/social-account-logos/twitter-logo-black.png"}
-                alt={"twitter"}
-              />
-            ) : (
-              <AvatarImage
-                src={"/social-account-logos/farcaster-purple-white.png"}
-                alt={"farcaster"}
-                className="rounded-full"
-              />
-            )}
-          </Avatar>
-        </div>
-
         <div className="relative h-20 bg-[#8c7ae6]">
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
             <Avatar className="size-16 ring-4 ring-background">
-              <AvatarImage src={userImage} />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarImage src={userImage} alt={userName} loading="lazy" />
+              <AvatarFallback>{userName[0]}</AvatarFallback>
             </Avatar>
           </div>
         </div>
@@ -106,7 +107,7 @@ const Users = ({ usersStats }: UsersProps) => {
               {userDescription}
             </div>
           </div>
-          <div className=" mt-4 flex h-fit flex-wrap gap-x-3 gap-y-2 px-3">
+          <div className="mt-4 flex h-fit flex-wrap gap-x-3 gap-y-2 px-3">
             {Object.entries(userStats).map(
               ([key, { icon: Icon, count, label }]: any) => (
                 <div
@@ -114,7 +115,6 @@ const Users = ({ usersStats }: UsersProps) => {
                   className="flex items-center justify-start gap-2 text-sm"
                 >
                   <Icon className="size-4 text-gray-700" />
-
                   <span>{count}</span>
                   <span className="text-gray-500">{label}</span>
                 </div>
@@ -124,10 +124,13 @@ const Users = ({ usersStats }: UsersProps) => {
         </CardContent>
       </Card>
     )
-  }
+  )
+
+  // Add displayName to the memoized component for clarity and ESLint compliance
+  UserCard.displayName = "UserCard"
 
   return (
-    <div className="grid w-full grid-cols-2   gap-4">
+    <div className="grid w-full grid-cols-2 gap-4">
       {formattedUserStats.slice(0, 5).map((user) => (
         <UserCard
           key={user.handle}

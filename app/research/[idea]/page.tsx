@@ -220,7 +220,6 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
       link: `/research/${params.idea}`,
     },
   ]
-  console.log("the problems resp", problemsResponse)
   const problemsWithMetrics = addMetricsToProblems(problemsResponse, posts)
 
   return (

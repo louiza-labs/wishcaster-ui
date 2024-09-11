@@ -31,16 +31,13 @@ const AudienceSegmentPostsBreakdown = ({
   return (
     <div className="flex w-full flex-col gap-y-4">
       <p className="text-inter text-xl font-semibold">{headerText}</p>
-      <ChartContainer
-        config={chartConfig}
-        className="max-h-[150px] min-h-[100px] w-full"
-      >
+      <ChartContainer config={chartConfig} className=" w-full">
         <BarChart
           data={data}
           layout="vertical"
           margin={{
-            right: 16,
-            left: 10,
+            right: 10,
+            left: 20,
           }}
         >
           <defs>
@@ -92,17 +89,10 @@ const AudienceSegmentPostsBreakdown = ({
             radius={4}
           >
             <LabelList
-              dataKey="segmentName"
+              dataKey={dataKey}
               position="insideLeft"
               offset={8}
               className="fill-[--color-label] font-bold"
-              fontSize={12}
-            />
-            <LabelList
-              dataKey={dataKey}
-              position="right"
-              offset={8}
-              className="fill-foreground  font-semibold"
               fontSize={12}
             />
           </Bar>

@@ -2,6 +2,7 @@ import { FC } from "react"
 
 import { dateOptions } from "@/lib/constants"
 import { generateWhimsicalErrorMessages } from "@/lib/helpers"
+import Banner from "@/components/banner"
 import RedirectButton from "@/components/redirect/Button"
 import ValidateSearch from "@/components/search/ValidateSearch"
 import { getUsersNotionAccessCode, searchNotion } from "@/app/actions"
@@ -30,6 +31,10 @@ const ValidatePage: FC<IndexPageProps> = async ({ searchParams }) => {
 
   return (
     <>
+      <Banner
+        titleText="Research a product idea"
+        descriptionText="Research a product idea by industry to see analytics and reports"
+      />
       <section className="relative mx-auto p-6 md:container sm:px-6 lg:px-20">
         <main className="relative grid grid-cols-1 gap-4 py-10 lg:grid-cols-12 ">
           <article className="no-scrollbar flex flex-col items-center lg:col-span-12 lg:px-2  ">

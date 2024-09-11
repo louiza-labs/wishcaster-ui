@@ -42,6 +42,8 @@ const PostAndUsersTabs = ({
           timeFilterParam={"ytd"}
           nextCursor={""}
           notionResults={[]}
+          renderCardsAsSingleRow={true}
+          columns="grid-cols-1"
           posts={tweetsAndCasts}
         />
       </TabsContent>

@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart, Tooltip } from "recharts"
 
 import {
@@ -18,12 +19,12 @@ function generateChartData(
   }))
 }
 
-const chartConfig = {
+const chartConfig: ChartConfig = {
   demandScore: {
     label: "Demand Score",
     color: "hsl(var(--chart-1))",
   },
-} satisfies ChartConfig
+}
 
 // Component to display radar chart for demand scores comparison
 export default function BenchmarkComparison({
@@ -31,17 +32,15 @@ export default function BenchmarkComparison({
 }: {
   benchmarkData: { name: string; demandScore: number }[]
 }) {
-  const chartData = generateChartData(benchmarkData)
+  // Memoize chart data to avoid recalculating on every render
+  const chartData = useMemo(
+    () => generateChartData(benchmarkData),
+    [benchmarkData]
+  )
 
   return (
     <ChartContainer config={chartConfig} className="w-full lg:min-h-[200px]">
-      <RadarChart
-        cx="50%"
-        cy="50%"
-        // className="size-full"
-        outerRadius="55%"
-        data={chartData}
-      >
+      <RadarChart cx="50%" cy="50%" outerRadius="55%" data={chartData}>
         <defs>
           <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="hsl(var(--chart-1))" stopOpacity={1} />
@@ -61,7 +60,6 @@ export default function BenchmarkComparison({
           fillOpacity={0.6}
         />
         <Tooltip content={<ChartTooltipContent />} />
-        {/* <Legend /> */}
       </RadarChart>
     </ChartContainer>
   )
