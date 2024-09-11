@@ -122,7 +122,7 @@ const DateFilters = () => {
             1 week
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => handleToggleFilterClick("30-days")}>
-            3 months
+            30 Days
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => handleToggleFilterClick("ytd")}>
             YTD
