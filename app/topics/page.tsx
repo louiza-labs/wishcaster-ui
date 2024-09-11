@@ -8,6 +8,7 @@ import {
   searchPostsForCategories,
   sortPostsByProperty,
 } from "@/lib/helpers"
+import Banner from "@/components/banner"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import FilterBar from "@/components/filters/FilterBar/new"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
@@ -84,6 +85,10 @@ const TopicPage: FC<IndexPageProps> = async ({ searchParams }) => {
 
   return (
     <>
+      <Banner
+        titleText="View top product request categories "
+        descriptionText="Dig into the most popular product categories that people are requesting"
+      />
       <div className="top-66 sticky z-10">
         <FilterBar categories={categories} posts={castsAndTweets} />
       </div>
@@ -118,7 +123,7 @@ const Header: FC<HeaderProps> = () => {
   return (
     <div className="flex flex-col items-center gap-2 md:items-start">
       <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
-        Trending Product Topics
+        Trending Product Categories
       </h1>
       {/* <p className="text-center text-xs sm:text-lg md:text-left lg:max-w-[700px]">
         Sourced from Farcaster&apos;s{" "}

@@ -6,6 +6,7 @@ import {
   categorizeArrayOfPosts,
   generateWhimsicalErrorMessages,
 } from "@/lib/helpers"
+import Banner from "@/components/banner"
 import PostPageElement from "@/components/postPage"
 import RedirectButton from "@/components/redirect/Button"
 import {
@@ -101,6 +102,10 @@ const PostPage: FC<PostPageProps> = async ({ searchParams, params }) => {
 
   return (
     <>
+      <Banner
+        titleText="Explore this product request "
+        descriptionText="Analyze this product request, see stats, summaries, and who is interested"
+      />
       <section className="mx-auto h-fit py-6 md:container sm:px-6 lg:h-auto lg:px-20">
         <PostPageElement
           post={post}

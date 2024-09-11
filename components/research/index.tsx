@@ -1,5 +1,7 @@
 "use client"
 
+import { useMemo } from "react"
+
 import { sortPostsByProperty } from "@/lib/helpers"
 import { prepareVisualizationData } from "@/lib/helpers/scoring"
 import useValidate from "@/hooks/validate/useValidate"
@@ -25,41 +27,51 @@ const Research = ({
   currentIdea,
   ideaSummary,
 }: ResearchProps) => {
+  // Memoize the validated data
   const { rawStatsMetricsForPosts, rawStatsbyUsers } =
     useValidate(tweetsAndCasts)
-  const sortedPosts = sortPostsByProperty(tweetsAndCasts, "likesCount")
-  const tweetsAndCastsForCurrentIdeaWithIdeaAdded = tweetsAndCasts.map(
-    (posts: any) => {
-      return {
-        ...posts,
-        idea: currentIdea,
-      }
-    }
+
+  // Memoize the sorting function to prevent recalculating on every render
+  const sortedPosts = useMemo(
+    () => sortPostsByProperty(tweetsAndCasts, "likesCount"),
+    [tweetsAndCasts]
   )
 
-  // Combine the posts into a single array
-  const allPosts = [
-    ...tweetsAndCastsForCurrentIdeaWithIdeaAdded,
-    ...tweetsAndCastsForSimilarIdeas,
-  ]
+  console.log("the raw stats", rawStatsbyUsers)
 
-  // Prepare visualization data using the combined posts
-  const { userDemandScore, benchmarkData } = prepareVisualizationData(
-    allPosts,
-    currentIdea
+  // Memoize the idea-added map logic
+  const tweetsAndCastsForCurrentIdeaWithIdeaAdded = useMemo(() => {
+    return tweetsAndCasts.map((posts: any) => ({
+      ...posts,
+      idea: currentIdea,
+    }))
+  }, [tweetsAndCasts, currentIdea])
+
+  // Combine posts and memoize the result to avoid recalculation
+  const allPosts = useMemo(
+    () => [
+      ...tweetsAndCastsForCurrentIdeaWithIdeaAdded,
+      ...tweetsAndCastsForSimilarIdeas,
+    ],
+    [tweetsAndCastsForCurrentIdeaWithIdeaAdded, tweetsAndCastsForSimilarIdeas]
   )
+
+  // Memoize the visualization data preparation
+  const { userDemandScore, benchmarkData } = useMemo(() => {
+    return prepareVisualizationData(allPosts, currentIdea)
+  }, [allPosts, currentIdea])
 
   return (
-    <div className="my-4 grid w-full grid-cols-12  gap-y-10 ">
-      <section className="col-span-12 my-2 mb-10 flex w-full flex-col  items-center justify-between gap-y-6 lg:flex-row lg:gap-y-0">
-        <div className=" flex w-full flex-col  items-center justify-start gap-y-2 md:mt-4 md:flex-col lg:items-start xl:w-6/12">
-          <div className=" flex w-full gap-x-2 px-6 md:mb-0 md:flex-col md:gap-x-0 md:gap-y-2 md:px-0 lg:flex-row">
+    <div className="my-4 grid w-full grid-cols-12 gap-y-10 ">
+      <section className="col-span-12 my-2 mb-10 flex w-full flex-col items-center justify-between gap-y-6 lg:flex-row lg:gap-y-0">
+        <div className="flex w-full flex-col items-center justify-start gap-y-2 md:mt-4 md:flex-col lg:items-start xl:w-6/12">
+          <div className="flex w-full gap-x-2 px-6 md:mb-0 md:flex-col md:gap-x-0 md:gap-y-2 md:px-0 lg:flex-row">
             <h1 className="text-center text-xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
               {currentIdea}
             </h1>
           </div>
           <p className="text-center text-sm font-light lg:text-left">
-            {ideaSummary}{" "}
+            {ideaSummary}
           </p>
         </div>
 
@@ -77,7 +89,7 @@ const Research = ({
             <ValidateAudience posts={tweetsAndCasts} />
           </div>
           <div className="flex flex-col items-center gap-y-4">
-            <div className="rounded-lg border border-input bg-background px-6 py-8 shadow-lg  sm:p-4 ">
+            <div className="rounded-lg border border-input bg-background px-6 py-8 shadow-lg sm:p-4">
               <p className="p-4 text-xl font-bold">
                 Where is this sourced from?
               </p>
@@ -89,20 +101,16 @@ const Research = ({
           </div>
         </div>
         <div className="col-span-12 mt-4 flex flex-col gap-y-4 px-4 lg:col-span-4 lg:mt-0 lg:px-0">
-          <div className="flex flex-col items-center gap-y-4  lg:px-0">
-            <div className=" flex flex-col gap-y-4 rounded-xl border border-input bg-background px-6 py-8 shadow-lg">
-              <p className="text-xl  font-bold">
+          <div className="flex flex-col items-center gap-y-4 lg:px-0">
+            <div className="flex flex-col gap-y-4 rounded-xl border border-input bg-background px-6 py-8 shadow-lg">
+              <p className="text-xl font-bold">
                 How does this compare to other ideas?
               </p>
-
               <BenchmarkChart benchmarkData={benchmarkData} />
             </div>
           </div>
-
           <ProblemsFeed problemsData={problems} />
         </div>
-
-        {/* <LineComboChart /> */}
       </section>
     </div>
   )

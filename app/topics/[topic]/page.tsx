@@ -9,6 +9,7 @@ import {
   sortPostsByProperty,
 } from "@/lib/helpers"
 import { Badge } from "@/components/ui/badge"
+import Banner from "@/components/banner"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import TopCasts from "@/components/feed/TopCasts"
 import PostsFeed from "@/components/feed/castsAndTweets"
@@ -91,117 +92,123 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
   ]
 
   return (
-    <div className=" grid grid-cols-1 md:container lg:grid-cols-12">
-      <div className="top-66 sticky z-10 lg:hidden">
-        <FilterBar categories={categories} posts={castsAndTweets} />
-      </div>
-      <div className="relative col-span-12 grid grid-cols-1 gap-4 md:container lg:mt-10 lg:grid-cols-12 lg:gap-x-10">
-        <div className="col-span-1 px-6 pt-4 md:px-0 lg:col-span-12 lg:py-0">
-          <Breadcrumbs pages={breadCrumbPages} />
+    <>
+      <Banner
+        titleText="See top posts for this category "
+        descriptionText="View stats and top posts for this product category"
+      />
+      <div className=" grid grid-cols-1 md:container lg:grid-cols-12">
+        <div className="top-66 sticky z-10 lg:hidden">
+          <FilterBar categories={categories} posts={castsAndTweets} />
         </div>
-        <div className="col-span-1 mt-2 flex w-full flex-row justify-center gap-x-2 px-6  md:mb-0 md:flex-col md:gap-x-0 md:gap-y-4 md:px-0 lg:col-span-5 lg:mb-4 lg:mt-0">
-          <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
-            {selectedTopic?.label}
-          </h1>
-          <div className="hidden flex-row items-center gap-x-2 md:flex">
-            <p className="text-sm font-semibold md:block">
-              Based on relevant posts that mention:
-            </p>
-            <div className="flex flex-wrap gap-1">
-              {Array.from(selectedTopic?.keywords || []).map((keyword) => (
-                <Badge
-                  variant={"outline"}
-                  key={keyword}
-                  className="text-sm font-light"
-                >
-                  {keyword}
-                </Badge>
-              ))}
+        <div className="relative col-span-12 grid grid-cols-1 gap-4 md:container lg:mt-10 lg:grid-cols-12 lg:gap-x-10">
+          <div className="col-span-1 px-6 pt-4 md:px-0 lg:col-span-12 lg:py-0">
+            <Breadcrumbs pages={breadCrumbPages} />
+          </div>
+          <div className="col-span-1 mt-2 flex w-full flex-row justify-center gap-x-2 px-6  md:mb-0 md:flex-col md:gap-x-0 md:gap-y-4 md:px-0 lg:col-span-5 lg:mb-4 lg:mt-0">
+            <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
+              {selectedTopic?.label}
+            </h1>
+            <div className="hidden flex-row items-center gap-x-2 md:flex">
+              <p className="text-sm font-semibold md:block">
+                Based on relevant posts that mention:
+              </p>
+              <div className="flex flex-wrap gap-1">
+                {Array.from(selectedTopic?.keywords || []).map((keyword) => (
+                  <Badge
+                    variant={"outline"}
+                    key={keyword}
+                    className="text-sm font-light"
+                  >
+                    {keyword}
+                  </Badge>
+                ))}
+              </div>
             </div>
           </div>
+          <div className="my-4 flex flex-col items-center justify-between gap-x-4  md:mt-0 lg:col-span-7 lg:grid lg:grid-cols-12">
+            <TopicStats
+              posts={castsAndTweets}
+              overallPosts={overallPosts}
+              categories={categories}
+              cursor={""}
+              topic={params.topic}
+              mobileView={mobileViewParam}
+            />
+          </div>
         </div>
-        <div className="my-4 flex flex-col items-center justify-between gap-x-4  md:mt-0 lg:col-span-7 lg:grid lg:grid-cols-12">
-          <TopicStats
-            posts={castsAndTweets}
-            overallPosts={overallPosts}
-            categories={categories}
-            cursor={""}
-            topic={params.topic}
-            mobileView={mobileViewParam}
+        <aside className="no-scrollbar container sticky  top-0  hidden  h-screen w-fit flex-col gap-y-6 overflow-auto pb-10   lg:col-span-2 lg:flex">
+          {/* <CardLayoutToggle /> */}
+          {/* <SortCasts /> */}
+
+          <DateFilters />
+          {/* <SourceFilters /> */}
+          <UserFilters />
+          {/* <CategoriesFeed categories={categories} /> */}
+        </aside>
+        <section className="col-span-1  mx-auto h-fit py-6 md:container sm:px-6 lg:col-span-10 lg:h-auto lg:px-20">
+          <main className="relative grid min-h-screen grid-cols-1 gap-4 lg:mt-10 lg:grid-cols-12 lg:gap-x-10">
+            <article
+              className={`${
+                mobileViewParam.length && mobileViewParam !== "popular"
+                  ? "hidden lg:flex"
+                  : "flex"
+              } overflow-y-auto lg:col-span-12`}
+            >
+              <div className="gap-y-4  overflow-y-auto px-4 pb-0 lg:px-0 lg:pb-2">
+                {topCast ? (
+                  <div className="flex flex-col flex-wrap gap-y-4 overflow-auto bg-background">
+                    <h2 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
+                      Top Posts
+                    </h2>
+                    <div className="flex size-fit flex-row items-start  xl:h-fit">
+                      <TopCasts
+                        posts={castsAndTweets}
+                        cursor={""}
+                        topic={params.topic}
+                        notionResults={notionResults}
+                        sortParam={sortParam}
+                      />
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            </article>
+
+            <div
+              className={`${
+                mobileViewParam !== "build" ? "hidden lg:block" : "block"
+              } col-span-12  overflow-y-auto sm:col-span-4`}
+            ></div>
+            <div
+              className={`${
+                mobileViewParam !== "feed" ? "hidden lg:flex" : "flex"
+              } h-fit w-full flex-col items-center gap-y-4  px-4 lg:col-span-12 lg:px-0`}
+            >
+              <h3 className="text-center text-2xl  font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
+                Feed
+              </h3>
+              <PostsFeed
+                posts={castsAndTweets}
+                timeFilterParam={timeFilterParam}
+                nextCursor={""}
+                renderCardsAsSingleRow={true}
+                // columns={" lg:grid-cols-2 "}
+                topic={params.topic}
+                columns={"grid-cols-1"}
+              />
+            </div>
+          </main>
+        </section>
+        <div className="flex flex-col items-start  lg:hidden">
+          <BottomMobileNav
+            filteredPosts={sortedCasts}
+            initialCasts={sortedCasts}
+            page="topic"
           />
         </div>
       </div>
-      <aside className="no-scrollbar container sticky  top-0  hidden  h-screen w-fit flex-col gap-y-6 overflow-auto pb-10   lg:col-span-2 lg:flex">
-        {/* <CardLayoutToggle /> */}
-        {/* <SortCasts /> */}
-
-        <DateFilters />
-        {/* <SourceFilters /> */}
-        <UserFilters />
-        {/* <CategoriesFeed categories={categories} /> */}
-      </aside>
-      <section className="col-span-1  mx-auto h-fit py-6 md:container sm:px-6 lg:col-span-10 lg:h-auto lg:px-20">
-        <main className="relative grid min-h-screen grid-cols-1 gap-4 lg:mt-10 lg:grid-cols-12 lg:gap-x-10">
-          <article
-            className={`${
-              mobileViewParam.length && mobileViewParam !== "popular"
-                ? "hidden lg:flex"
-                : "flex"
-            } overflow-y-auto lg:col-span-12`}
-          >
-            <div className="gap-y-4  overflow-y-auto px-4 pb-0 lg:px-0 lg:pb-2">
-              {topCast ? (
-                <div className="flex flex-col flex-wrap gap-y-4 overflow-auto bg-background">
-                  <h2 className="hidden text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
-                    Top Posts
-                  </h2>
-                  <div className="flex size-fit flex-row items-start  xl:h-fit">
-                    <TopCasts
-                      posts={castsAndTweets}
-                      cursor={""}
-                      topic={params.topic}
-                      notionResults={notionResults}
-                      sortParam={sortParam}
-                    />
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          </article>
-
-          <div
-            className={`${
-              mobileViewParam !== "build" ? "hidden lg:block" : "block"
-            } col-span-12  overflow-y-auto sm:col-span-4`}
-          ></div>
-          <div
-            className={`${
-              mobileViewParam !== "feed" ? "hidden lg:flex" : "flex"
-            } h-fit w-full flex-col items-center gap-y-4  px-4 lg:col-span-12 lg:px-0`}
-          >
-            <h3 className="text-center text-2xl  font-extrabold leading-tight tracking-tighter sm:text-3xl md:block md:text-left md:text-4xl">
-              Feed
-            </h3>
-            <PostsFeed
-              posts={castsAndTweets}
-              timeFilterParam={timeFilterParam}
-              nextCursor={""}
-              renderCardsAsSingleRow={true}
-              // columns={" lg:grid-cols-2 "}
-              topic={params.topic}
-              columns={"grid-cols-1"}
-            />
-          </div>
-        </main>
-      </section>
-      <div className="flex flex-col items-start  lg:hidden">
-        <BottomMobileNav
-          filteredPosts={sortedCasts}
-          initialCasts={sortedCasts}
-          page="topic"
-        />
-      </div>
-    </div>
+    </>
   )
 }
 
