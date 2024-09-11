@@ -107,7 +107,7 @@ const DateFilters = () => {
               : selectedRange === "7-days"
               ? "1 week"
               : selectedRange === "30-days"
-              ? "3 months"
+              ? "30 days"
               : "YTD"}
             <ChevronDown className="ml-2 size-4" />
           </Button>
@@ -122,7 +122,7 @@ const DateFilters = () => {
             1 week
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => handleToggleFilterClick("30-days")}>
-            3 months
+            30 days
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => handleToggleFilterClick("ytd")}>
             YTD

@@ -54,17 +54,17 @@ export default function Component({ categories }: FilterboxProps) {
           </CollapsibleTrigger>
         </div>
         <CollapsibleContent
-          className="absolute inset-x-0 z-10 w-fit rounded-b-md border-x border-b bg-background shadow-lg lg:min-w-[300px]"
+          className="absolute inset-x-0 z-10 w-fit rounded-b-md border-x border-b bg-background shadow-lg lg:min-w-[100px]"
           style={{
             top: "100%",
-            maxHeight: isOpen ? contentHeight : 0,
+            // maxHeight: isOpen ? "100%" : 0,
             overflow: "hidden",
-            minWidth: "500px",
+            // minWidth: "500px",
           }}
         >
           <div
             ref={contentRef}
-            className="flex w-full flex-row items-start justify-between   p-4"
+            className="flex size-full flex-col items-start justify-around gap-y-4 p-4"
           >
             <DateFilters />
             <UserFilters />
