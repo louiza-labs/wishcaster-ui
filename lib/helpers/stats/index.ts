@@ -393,6 +393,7 @@ interface AuthorSummary {
   impressions: number
   bookmarks: number
   totalPosts: number
+  platform: string
 }
 
 export function summarizeByAuthor(posts: any[]): AuthorSummary[] {
@@ -402,12 +403,14 @@ export function summarizeByAuthor(posts: any[]): AuthorSummary[] {
     const isCast = post.platform === "farcaster"
     const userId = post.author.id
     const user = post.author
+    const platform = post.platform
 
     if (!userId || !user) return // Skip if no valid author identifier
 
     if (!summaries.has(userId)) {
       summaries.set(userId, {
         user: user,
+        platform,
         likes: 0,
         recasts: 0,
         replies: 0,
@@ -481,6 +484,7 @@ export function summarizeByAuthorAndPlatform(
       if (!summaryMap.has(userId)) {
         summaryMap.set(userId, {
           user: user,
+          platform: post.platform,
           ...initialAuthorSummary,
         })
       }

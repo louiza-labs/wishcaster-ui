@@ -99,7 +99,6 @@ const Users = ({ usersStats }: UsersProps) => {
               {userIsVerified && (
                 <Badge variant="outline" className="px-2 py-1 text-xs">
                   <BadgeCheckIcon className="mr-1 size-3" />
-                  Verified
                 </Badge>
               )}
             </div>

@@ -15,6 +15,7 @@ import {
   generateDemandScoreAndBenchmarkData,
   generateStatsForPosts,
 } from "@/lib/helpers/summary"
+import Banner from "@/components/banner"
 import { Breadcrumbs } from "@/components/breadcrumbs"
 import FilterBar from "@/components/filters/FilterBar/new"
 import BottomMobileNav from "@/components/layout/Nav/Mobile/Bottom"
@@ -224,6 +225,10 @@ const ValidateIdeaPage: FC<ResearchPageProps> = async ({
 
   return (
     <>
+      <Banner
+        titleText="Dive into this product idea"
+        descriptionText="See breakdowns and AI summaries of this idea sourced from social media"
+      />
       <div className="top-66 sticky z-10">
         <FilterBar categories={categories} posts={posts} />
       </div>
