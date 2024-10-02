@@ -37,7 +37,7 @@ const PostPage = ({
     cast.text.includes("@bountybot")
   )
   return (
-    <div className="flex min-h-screen w-full flex-col  bg-background">
+    <div className="flex min-h-screen w-full flex-col items-center  bg-background">
       <header className="flex w-full max-w-5xl flex-col items-center justify-between px-4 py-0 md:px-6 lg:flex-row lg:py-6">
         <div className="flex items-center gap-2">
           <Avatar className="flex size-6 flex-col items-center rounded-full border shadow-sm  lg:size-8">
@@ -146,20 +146,20 @@ const PostPage = ({
           </div>
         </div>
         <div className="flex w-full flex-col items-center gap-y-4 lg:flex-row lg:items-start lg:gap-x-10 lg:gap-y-0">
-          <div className="flex flex-col items-center lg:w-1/2">
-            <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
-              Find Users
-            </h1>
-            {source === "farcaster" ? (
+          {source === "farcaster" ? (
+            <div className="flex flex-col items-center lg:w-1/2">
+              <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
+                Find Users
+              </h1>
               <Build
                 cast={post}
                 hash={post ? post.id ?? "" : ""}
                 reactions={reactionsObject}
                 hideBounties={true}
               />
-            ) : null}
-          </div>
-          <div className="mt-6 flex flex-col items-center space-y-4 lg:mt-0 lg:w-1/2">
+            </div>
+          ) : null}
+          <div className="mt-6 flex flex-col items-start space-y-4 lg:mt-0 lg:w-1/2">
             <h1 className="text-center text-2xl font-extrabold leading-tight tracking-tighter sm:text-3xl md:text-left md:text-4xl">
               Post Bounty
             </h1>{" "}

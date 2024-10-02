@@ -38,7 +38,7 @@ const CardStat: React.FC<CardStatProp> = ({
       className={`flex w-40 cursor-pointer snap-start flex-col items-center transition duration-150 ease-in-out md:w-fit md:min-w-24 ${
         isToggled
           ? "brightness-120 border-2 border-indigo-500 dark:border-indigo-300"
-          : "hover:brightness-105"
+          : ""
       } hover:scale-105 active:scale-95`}
     >
       <span className="mt-2 break-all px-2 text-xs">{topic}</span>
@@ -59,12 +59,11 @@ const CardStat: React.FC<CardStatProp> = ({
 }
 
 interface RankingsProps {
-  casts: NormalizedPostType[]
   view?: "search" | "feed"
   posts: NormalizedPostType[] // Assuming this can be a combination of normalized posts
 }
 
-const Rankings = ({ casts, view, posts }: RankingsProps) => {
+const Rankings: React.FC<RankingsProps> = ({ view, posts }) => {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -99,154 +98,152 @@ const Rankings = ({ casts, view, posts }: RankingsProps) => {
   )
 
   const badgeIsToggled = useCallback(
-    (categoryName: string) => {
-      return categoriesFromParams.includes(categoryName)
-    },
+    (categoryName: string) => categoriesFromParams.includes(categoryName),
     [categoriesFromParams]
   )
 
-  const handleToggleCategoryClick = (categoryName: string) => {
-    const isToggled = categoriesFromParams.includes(categoryName)
-    const newSearchParams = createQueryString(
-      "topics",
-      categoryName,
-      !isToggled
-    )
-    router.push("?" + newSearchParams)
-  }
-
-  const rankedTopicsByLikes = buildRankings(
-    posts,
-    "category",
-    "likesCount",
-    view === "search" ? 100 : 20
+  const handleToggleCategoryClick = useCallback(
+    (categoryName: string) => {
+      const isToggled = categoriesFromParams.includes(categoryName)
+      const newSearchParams = createQueryString(
+        "topics",
+        categoryName,
+        !isToggled
+      )
+      router.push(`?${newSearchParams}`)
+    },
+    [categoriesFromParams, createQueryString, router]
   )
 
-  const rankedTopicsByReplies = buildRankings(
-    posts,
-    "category",
-    "commentsCount",
-    view === "search" ? 100 : 20
-  )
-  const rankedTopicsByRecasts = buildRankings(
-    posts,
-    "category",
-    "sharesCount",
-    view === "search" ? 100 : 20
+  const rankedTopics = useMemo(
+    () => ({
+      likes: buildRankings(
+        posts,
+        "category",
+        "likesCount",
+        view === "search" ? 100 : 20
+      ),
+      replies: buildRankings(
+        posts,
+        "category",
+        "commentsCount",
+        view === "search" ? 100 : 20
+      ),
+      recasts: buildRankings(
+        posts,
+        "category",
+        "sharesCount",
+        view === "search" ? 100 : 20
+      ),
+    }),
+    [posts, view]
   )
 
-  const hasResults = useMemo(() => {
-    return (
-      (rankedTopicsByLikes && rankedTopicsByLikes.length) ||
-      (rankedTopicsByReplies && rankedTopicsByReplies.length) ||
-      (rankedTopicsByRecasts && rankedTopicsByRecasts.length)
-    )
-  }, [rankedTopicsByLikes, rankedTopicsByRecasts, rankedTopicsByReplies])
+  const hasResults = useMemo(
+    () =>
+      Object.values(rankedTopics).some((topics) => topics && topics.length > 0),
+    [rankedTopics]
+  )
 
-  const RankedCard = ({ value, index }: any) => {
-    const topicLabel =
-      PRODUCT_CATEGORIES_AS_MAP[value.name]?.label || value.name
-    return (
-      <>
-        <div className="flex xl:hidden">
-          <div className="md:cols-span-3 col-span-1">
-            <Badge
-              onClick={() => handleToggleCategoryClick(value.name)}
-              variant={badgeIsToggled(value.name) ? "default" : "outline"}
-              className="h-10 w-fit cursor-pointer whitespace-nowrap"
-            >
-              {topicLabel}
-            </Badge>
+  const RankedCard = useCallback(
+    ({ value, index }: any) => {
+      const topicLabel =
+        PRODUCT_CATEGORIES_AS_MAP[value.name]?.label || value.name
+      return (
+        <>
+          <div className="flex xl:hidden">
+            <div className="md:cols-span-3 col-span-1">
+              <Badge
+                onClick={() => handleToggleCategoryClick(value.name)}
+                variant={badgeIsToggled(value.name) ? "default" : "outline"}
+                className="h-10 w-fit cursor-pointer whitespace-nowrap"
+              >
+                {topicLabel}
+              </Badge>
+            </div>
           </div>
-        </div>
-        <div className="hidden xl:flex">
-          <CardStat
-            title={`#${index}`}
-            value={value.value}
-            rank={index}
-            topic={topicLabel}
-            isToggled={badgeIsToggled(value.name)}
-            handleClick={() => handleToggleCategoryClick(value.name)}
-          />
-        </div>
-      </>
-    )
-  }
+          <div className="hidden xl:flex">
+            <CardStat
+              title={`#${index}`}
+              value={value.value}
+              rank={index}
+              topic={topicLabel}
+              isToggled={badgeIsToggled(value.name)}
+              handleClick={() => handleToggleCategoryClick(value.name)}
+            />
+          </div>
+        </>
+      )
+    },
+    [badgeIsToggled, handleToggleCategoryClick]
+  )
 
-  const RankedValues = ({ values }: { values: RankedValueType[] }) => {
+  const RankedValues = useCallback(
+    ({ values }: { values: RankedValueType[] }) => {
+      return (
+        <ol className="mt-4 flex w-full flex-wrap gap-2">
+          {values && Array.isArray(values)
+            ? values.map((value: RankedValueType, index: number) => (
+                <RankedCard value={value} index={index + 1} key={index} />
+              ))
+            : null}
+        </ol>
+      )
+    },
+    [RankedCard]
+  )
+
+  if (!hasResults) {
     return (
-      <ol className="mt-4 flex w-full flex-wrap gap-2">
-        {values && Array.isArray(values)
-          ? values.map((value: RankedValueType, index: number) => (
-              <RankedCard value={value} index={index + 1} key={index} />
-            ))
-          : null}
-      </ol>
+      <div className="flex flex-col gap-y-2">
+        <p className="text-center text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
+          Unable to generate topics
+        </p>
+        <p className="text-center text-xl font-light leading-tight tracking-tighter md:text-xl">
+          This error is showing because no casts or categories can be generated.
+          Try clearing some filters or extending the timerange.
+        </p>
+      </div>
     )
   }
 
   return (
     <Suspense>
-      {hasResults ? (
-        <div className="  flex h-fit flex-col gap-y-6">
-          <h3
-            className={`${
-              view === "search" ? "md:hidden" : "md:block"
-            } hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter  md:text-2xl`}
-          >
-            Trending Requests Topics
-          </h3>
+      <div className="flex h-fit flex-col gap-y-6 px-4">
+        <h3
+          className={`${
+            view === "search" ? "md:hidden" : "md:block"
+          } hidden gap-x-2 text-2xl font-bold leading-tight tracking-tighter md:text-2xl`}
+        >
+          Trending Requests Topics
+        </h3>
 
-          <Tabs
-            orientation="vertical"
-            defaultValue="likes"
-            className="hidden w-full flex-col items-center gap-y-2 md:w-fit md:items-start xl:flex xl:items-center"
-          >
-            <TabsList className="flex size-auto items-start md:size-full md:flex-col md:justify-around lg:flex-col xl:flex-row">
+        <Tabs
+          orientation="vertical"
+          defaultValue="likes"
+          className="hidden w-full flex-col items-center gap-y-2 md:w-fit md:items-start xl:flex xl:items-center"
+        >
+          <TabsList className="flex size-auto items-start md:size-full md:flex-col md:justify-around lg:flex-col xl:flex-row">
+            {Object.keys(rankedTopics).map((topic) => (
               <TabsTrigger
+                key={topic}
                 className="p-2 lg:w-fit lg:text-sm 2xl:text-base"
-                value="likes"
+                value={topic}
               >
-                Likes
+                {topic.charAt(0).toUpperCase() + topic.slice(1)}
               </TabsTrigger>
-              <TabsTrigger
-                className="p-2 lg:w-fit lg:text-sm 2xl:text-base"
-                value="replies"
-              >
-                Replies
-              </TabsTrigger>
-              <TabsTrigger
-                className="p-2 lg:w-fit lg:text-sm 2xl:text-base"
-                value="recasts"
-              >
-                Reposts
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="likes">
-              <RankedValues values={rankedTopicsByLikes} />
+            ))}
+          </TabsList>
+          {Object.entries(rankedTopics).map(([topic, values]) => (
+            <TabsContent key={topic} value={topic}>
+              <RankedValues values={values} />
             </TabsContent>
-            <TabsContent value="replies">
-              <RankedValues values={rankedTopicsByReplies} />
-            </TabsContent>
-            <TabsContent value="recasts">
-              <RankedValues values={rankedTopicsByRecasts} />
-            </TabsContent>
-          </Tabs>
-          <div className="-mt-4 flex xl:hidden">
-            <RankedValues values={rankedTopicsByLikes} />
-          </div>
+          ))}
+        </Tabs>
+        <div className="-mt-4 flex xl:hidden">
+          <RankedValues values={rankedTopics.likes} />
         </div>
-      ) : (
-        <div className="flex flex-col  gap-y-2">
-          <p className="gap-x-2 text-center text-2xl font-bold leading-tight tracking-tighter md:text-3xl">
-            Unable to generate topics
-          </p>
-          <p className="gap-x-2 text-center text-xl font-light leading-tight tracking-tighter md:text-xl">
-            This error is showing because no casts or categories can be
-            generated, try clearing some filters or extending the timerange{" "}
-          </p>
-        </div>
-      )}
+      </div>
     </Suspense>
   )
 }
