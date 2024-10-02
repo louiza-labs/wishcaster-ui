@@ -40,6 +40,7 @@ export default function Component({
   renderEmbeds,
   asSingleRow,
 }: PostProps) {
+  console.log("the post", post)
   const [isExpanded, setIsExpanded] = useState(false)
   const [showMetrics, setShowMetrics] = useState(false)
   const router = useRouter()
@@ -281,7 +282,7 @@ export default function Component({
           open={showMetrics}
         >
           <CollapsibleContent className="w-full bg-gray-100 py-2 text-sm dark:bg-indigo-100 dark:backdrop-blur-xl">
-            <PostMetrics
+            {/* <PostMetrics
               likes={post.likesCount}
               showImpressions={post.platform === "twitter"}
               retweets={post.sharesCount}
@@ -292,7 +293,7 @@ export default function Component({
                   ? post.additionalMetrics.impressionCount
                   : 0
               }
-            />
+            /> */}
           </CollapsibleContent>
         </Collapsible>
       </CardFooter>

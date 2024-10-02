@@ -1,56 +1,24 @@
 "use client"
 
-import { useMemo } from "react"
 import { MessageCircle, Repeat } from "lucide-react"
 import { useTheme } from "next-themes"
 
 import { Icons } from "@/components/icons"
 
-interface NormalizedMetric {
-  label: string
-  value: string | number
+// Add this utility function at the top of the file
+const formatNumber = (num: number): string => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + "M"
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + "K"
+  } else {
+    return num.toString()
+  }
 }
 
-function normalizeMetrics({
-  likes,
-  retweets,
-  replies,
-  impressions,
-  priorityScore,
-  engagementRate,
-}: {
-  likes?: number
-  retweets?: number
-  replies?: number
-  impressions?: number
-
-  priorityScore?: number | string
-  engagementRate?: number | string
-}): NormalizedMetric[] {
-  const metrics: NormalizedMetric[] = []
-
-  if (likes !== undefined) {
-    metrics.push({ label: "Likes", value: likes })
-  }
-  if (retweets !== undefined) {
-    metrics.push({ label: "Reposts", value: retweets })
-  }
-  if (replies !== undefined) {
-    metrics.push({ label: "Replies", value: replies })
-  }
-  if (impressions !== undefined) {
-    metrics.push({ label: "Impressions", value: impressions })
-  }
-
-  // if (priorityScore !== undefined) {
-  //   metrics.push({ label: "Priority Score", value: priorityScore })
-  // }
-  // if (engagementRate !== undefined) {
-  //   metrics.push({ label: "Engagement", value: engagementRate })
-  // }
-
-  // Filter out any null values in case some metrics are conditionally added
-  return metrics.filter((metric): metric is NormalizedMetric => metric !== null)
+interface Metric {
+  label: string
+  value: string | number
 }
 
 interface MetricsProps {
@@ -59,61 +27,61 @@ interface MetricsProps {
   replies?: number
   impressions?: number
   renderOnCard?: boolean
-  reactions?: {
-    likes_count: number
-    recasts_count: number
-    bookmark_count?: number
-  }
-  priorityScore?: number | string
-  engagementRate?: number | string
   showImpressions: boolean
 }
 
-const PostMetrics = ({
+const normalizeMetrics = ({
   likes,
   retweets,
   replies,
   impressions,
-  priorityScore,
-  engagementRate,
+}: Omit<MetricsProps, "renderOnCard" | "showImpressions">): Metric[] => {
+  const metrics: Metric[] = []
+
+  if (likes !== undefined)
+    metrics.push({ label: "Likes", value: formatNumber(likes) })
+  if (retweets !== undefined)
+    metrics.push({ label: "Reposts", value: formatNumber(retweets) })
+  if (replies !== undefined)
+    metrics.push({ label: "Replies", value: formatNumber(replies) })
+  if (impressions !== undefined)
+    metrics.push({ label: "Impressions", value: formatNumber(impressions) })
+
+  return metrics
+}
+
+const PostMetrics: React.FC<MetricsProps> = ({
+  likes,
+  retweets,
+  replies,
+  impressions,
   showImpressions,
   renderOnCard,
-}: MetricsProps) => {
-  const metrics = normalizeMetrics({
-    likes,
-    retweets,
-    replies,
-    impressions,
-    priorityScore,
-    engagementRate,
-  })
+}) => {
+  const metrics = normalizeMetrics({ likes, retweets, replies, impressions })
   const { theme } = useTheme()
-  const isDarkMode = useMemo(() => {
-    return theme === "dark"
-  }, [theme])
 
   const filteredMetrics = showImpressions
     ? metrics
-    : metrics.filter((metrics) => metrics.label.toLowerCase() !== "impressions")
+    : metrics.filter((metric) => metric.label.toLowerCase() !== "impressions")
 
-  const iconMap: any = {
+  const iconMap: Record<string, React.ComponentType<any>> = {
     Likes: Icons.likes,
     Reposts: Repeat,
     Replies: MessageCircle,
-    //    Impressions: Icons., // Add this if you have an impressions icon
-    //  }
+    Impressions: Icons.impressions,
   }
 
   return (
     <div
       className={`${
         renderOnCard
-          ? " flex flex-row items-center justify-around gap-4 pl-2 lg:justify-start lg:pl-0"
+          ? "flex flex-row items-center justify-around gap-4 pl-2 lg:justify-start lg:pl-0"
           : "grid grid-cols-3 gap-4"
-      }  text-gray-600`}
+      } text-gray-600`}
     >
       {filteredMetrics.map((metric, index) => {
-        const Icon = iconMap[metric.label] // Get the corresponding icon
+        const Icon = iconMap[metric.label] || Icons.info
 
         return (
           <div key={index} className="flex flex-row items-center gap-x-2">

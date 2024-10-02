@@ -73,7 +73,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
     : undefined
 
   let castsAndTweets = await fetchPosts({
-    timePeriod: timeFilterParam ?? "30-days",
+    timePeriod: timeFilterParam ?? "7-days",
     channelId: "someone-build",
     // sortField: sortParam as any,
     userFID: userFilterParam,
