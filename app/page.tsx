@@ -137,7 +137,7 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
           </article>
         </main>
         <aside className="no-scrollbar sticky top-0 hidden h-screen gap-y-6 overflow-auto sm:sticky lg:col-span-3 lg:flex lg:flex-col">
-          <Rankings casts={onlyCasts} posts={castsAndTweets} />
+          <Rankings posts={castsAndTweets} />
         </aside>
       </section>
       <div className="flex flex-col items-start lg:hidden">

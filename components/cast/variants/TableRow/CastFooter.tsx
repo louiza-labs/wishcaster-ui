@@ -101,7 +101,7 @@ const CastFooter = ({
             <div>
               <h4 className="text-sm font-medium">Full Post</h4>
               <div className="text-sm text-gray-500 dark:text-gray-400">
-                {renderTextWithLinks(text, mentionedProfiles, embeds)}
+                {renderTextWithLinks(text, mentionedProfiles, embeds ?? [])}
               </div>
             </div>
             <>

@@ -84,7 +84,7 @@ const CastContent = ({
           {tagline ? <h3 className="text-lg font-bold">{tagline}</h3> : null}
 
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            {renderTextWithLinks(text, mentionedProfiles, embeds)}
+            {renderTextWithLinks(text, mentionedProfiles, embeds ?? [])}
           </div>
 
           <>

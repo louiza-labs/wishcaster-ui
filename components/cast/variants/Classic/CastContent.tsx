@@ -81,7 +81,7 @@ const CastContent = ({
       >
         <div className=" flex flex-col gap-y-4  break-words [overflow-wrap:anywhere]">
           <p className="text-xl font-bold">{tagline}</p>
-          {renderTextWithLinks(text, mentionedProfiles, embeds)}
+          {renderTextWithLinks(text, mentionedProfiles, embeds ?? [])}
 
           <>
             {hasUrl &&

@@ -26,71 +26,62 @@ export const renderTextWithLinks = (
   embeds: Embed[],
   isTwitter = false
 ) => {
-  if (!text || !embeds) return <span>{text}</span>
+  if (!text) return <span>{text}</span>
 
   const profileMap = new Map<string, UserProfile>()
   mentionedProfiles.forEach((profile) => {
-    if (isTwitter) {
-      profileMap.set(`@${profile.username}`, profile)
-    } else {
-      profileMap.set(`@${profile.username}`, profile)
-    }
+    profileMap.set(`@${profile.username.toLowerCase()}`, profile)
   })
+  if (!Array.isArray(embeds)) {
+    console.log("embeds", embeds)
+  }
+  let normalizedEmbeds = embeds && Array.isArray(embeds) ? embeds : []
 
   const embedMap = new Map<string, Embed>()
-  embeds.forEach((embed) => {
+  normalizedEmbeds.forEach((embed) => {
     embedMap.set(embed.url, embed)
   })
 
-  const urlRegex = /https?:\/\/[^\s]+/g
-  const atMentionRegex = /@\w+|\(@\w+\)/g
+  // Updated regex to match URLs and @mentions more accurately
+  const regex = /(https?:\/\/\S+)|(@\w+)/gi
 
-  const parts = text.split(/(https?:\/\/[^\s]+|@\w+|\(@\w+\))/g)
+  const parts = text.split(regex)
 
   return (
     <span className="flex-wrap break-all">
       {parts.map((part, index) => {
-        if (urlRegex.test(part)) {
-          if (embedMap.has(part)) {
-            const embed = embedMap.get(part)
-            return (
-              <div key={index}>
-                <a
-                  href={part}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold text-slate-500"
-                >
-                  {part}
-                </a>
-              </div>
-            )
-          }
+        if (part?.startsWith("http")) {
+          // Handle URLs
+          const embed = embedMap.get(part)
           return (
             <a
               key={index}
               href={part}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-semibold text-blue-500"
+              className={`font-semibold ${
+                embed ? "text-slate-500" : "text-blue-500"
+              }`}
             >
               {part}
             </a>
           )
-        } else if (atMentionRegex.test(part)) {
-          if (profileMap.has(part)) {
-            const profile = profileMap.get(part)
-            if (!profile) return
-            const profileUrlOnTwitter = `https://x.com/${profile.username}`
+        } else if (part?.startsWith("@")) {
+          // Handle @mentions
+          const profile = profileMap.get(part.toLowerCase())
+          if (profile) {
+            const profileUrl = isTwitter
+              ? `https://x.com/${profile.username}`
+              : profile.profile_url
             return (
               <a
                 key={index}
-                href={isTwitter ? profileUrlOnTwitter : profile.profile_url}
+                href={profileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-semibold text-blue-600"
               >
-                {isTwitter ? `@${profile.username}` : `@${profile.username}`}
+                {part}
               </a>
             )
           }

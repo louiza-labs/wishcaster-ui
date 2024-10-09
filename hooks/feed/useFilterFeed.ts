@@ -36,6 +36,10 @@ const useFilterFeed = (posts: NormalizedPostType[], topic = "") => {
   const filteredPosts = useMemo(() => {
     let result = [...posts]
 
+    result = result.filter(
+      (post) => post.tagline !== "No product request provided"
+    )
+
     // Apply filters based on flags
     if (filterFlags.priorityBadgeFilter) {
       result = result.filter((post) => post.author?.verified)

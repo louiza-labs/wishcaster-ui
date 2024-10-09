@@ -66,7 +66,7 @@ const TweetContent = ({
           {tagline ? <h3 className="text-lg font-bold">{tagline}</h3> : null}
 
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            {renderTextWithLinks(text, mentionsUserNames, embeds, true)}
+            {renderTextWithLinks(text, mentionsUserNames, embeds ?? [], true)}
           </div>
           {media && media.length ? (
             <div className="flex w-full flex-row gap-2  overflow-x-auto">

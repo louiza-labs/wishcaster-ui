@@ -97,7 +97,7 @@ const PostPage = ({
                 {renderTextWithLinks(
                   post.text,
                   post.mentionedProfiles,
-                  post.embeds,
+                  post.embeds ?? [],
                   post.platform === "twitter"
                 )}
               </p>

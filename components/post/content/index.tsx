@@ -38,20 +38,19 @@ interface RenderContentProps {
   renderEmbeds?: boolean
 }
 
-const RenderContent = ({
+const RenderContent: React.FC<RenderContentProps> = ({
   text,
   tagline,
   embeds = [],
   media = [],
   referencedPost,
   source,
-  // postId,
   author,
   maxCharacters = 150,
   mentionedProfiles,
   renderEmbeds = true,
-}: RenderContentProps) => {
-  const [aspectRatio, setAspectRatio] = useState("56.25%")
+}) => {
+  const [aspectRatio, setAspectRatio] = useState<string>("56.25%")
 
   const hasUrl = embeds.some((embed) => embed.url)
   const hasCast = embeds.some((embed) => embed.castId)
@@ -77,54 +76,57 @@ const RenderContent = ({
 
   return (
     <div className="flex flex-col gap-y-4 break-words [overflow-wrap:anywhere]">
-      {media.length && renderEmbeds ? (
-        <div className="flex w-full flex-row gap-2 overflow-x-auto">
-          <Carousel className="w-full max-w-xs">
-            <CarouselContent>
-              {media.map((mediaItem, index) => (
-                <CarouselItem key={index}>
-                  {mediaItem.type === "photo" && (
-                    <div
-                      className="relative size-full w-full"
-                      style={{ paddingTop: aspectRatio }}
+      {media.length > 0 && renderEmbeds && (
+        <Carousel className="w-full max-w-md">
+          <CarouselContent>
+            {media.map((mediaItem, index) => (
+              <CarouselItem key={index}>
+                {mediaItem.type === "photo" ? (
+                  <div
+                    className="relative w-full"
+                    style={{ maxHeight: "256px", height: "auto" }}
+                  >
+                    <Image
+                      src={mediaItem.url}
+                      alt={mediaItem.alt || "Media content"}
+                      layout="responsive"
+                      width={100}
+                      height={100}
+                      objectFit="contain"
+                      className="rounded-lg"
+                    />
+                  </div>
+                ) : mediaItem.type === "video" ? (
+                  <div className="w-full" style={{ maxHeight: "256px" }}>
+                    <video
+                      controls
+                      className="size-full max-h-64 rounded-lg object-contain"
                     >
-                      <Image
-                        src={mediaItem.url}
-                        alt={mediaItem.alt || text}
-                        objectFit="contain"
-                        height={0}
-                        width={0}
-                        sizes="100%"
-                        style={{ width: "100%", minHeight: "20rem" }}
-                        className="object-contain"
-                      />
-                    </div>
-                  )}
-                  {mediaItem.type === "video" && (
-                    <video controls style={{ width: "100%", height: "20rem" }}>
                       <source src={mediaItem.url} type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
-                  )}
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
-        </div>
-      ) : null}
+                  </div>
+                ) : null}
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
+      )}
 
-      {potentialUrl && isWarpcastStreamUrl && renderEmbeds ? (
-        <HLSVideoPlayer src={potentialUrl} />
-      ) : potentialUrl && !embeddedCastId && renderEmbeds ? (
-        <LinkPreview url={potentialUrl} />
-      ) : null}
+      {potentialUrl &&
+        renderEmbeds &&
+        (isWarpcastStreamUrl ? (
+          <HLSVideoPlayer src={potentialUrl} />
+        ) : !embeddedCastId ? (
+          <LinkPreview url={potentialUrl} />
+        ) : null)}
 
-      {referencedPost ? (
+      {referencedPost && (
         <div className="my-4">
-          {"test"}
+          {/* Uncomment and implement the Post component when ready */}
           {/* <Post post={referencedPost} renderEmbeds={false} notionResults={[]} /> */}
         </div>
-      ) : null}
+      )}
     </div>
   )
 }

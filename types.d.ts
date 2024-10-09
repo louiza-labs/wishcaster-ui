@@ -123,6 +123,7 @@ export interface NormalizedPostType {
     id: string | null
   }
   platform: "farcaster" | "twitter"
+  tagline?: string
   additionalMetrics?: {
     retweetCount?: number
     quoteCount?: number

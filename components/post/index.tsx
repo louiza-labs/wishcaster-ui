@@ -54,10 +54,19 @@ export default function Component({
     post.text.slice(0, asSingleRow ? 500 : 100) +
     (post.text.length > (asSingleRow ? 500 : 100) ? "..." : "")
 
-  const handleVisitPage = (e: React.SyntheticEvent) => {
-    e.stopPropagation() // Prevent routing when clicking the title
+  const handleVisitPage = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
     router.push(`/post/${post.id}?source=${post.platform}`)
   }
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Check if the click target is not part of the collapsible content
+    if (!(e.target as HTMLElement).closest(".collapsible-content")) {
+      handleVisitPage(e)
+    }
+  }
+
   return (
     <Card
       className={`relative flex h-auto w-full ${
@@ -65,7 +74,7 @@ export default function Component({
       } flex-col justify-between border border-gray-200 shadow-sm`}
     >
       <CardContent
-        onClick={handleVisitPage} // Added click handler here
+        onClick={handleCardClick}
         className="flex h-full cursor-pointer flex-col justify-between border p-4"
       >
         <div className="mb-3 flex items-center justify-between">
@@ -123,7 +132,11 @@ export default function Component({
             : postWithTagline.tagline}
         </h3>
         {needsShortening ? (
-          <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
+          <Collapsible
+            open={isExpanded}
+            onOpenChange={setIsExpanded}
+            className="collapsible-content"
+          >
             <p className="mb-1 text-sm text-gray-600 dark:text-gray-200">
               {isExpanded
                 ? renderTextWithLinks(
@@ -158,7 +171,8 @@ export default function Component({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-auto p-0 font-normal text-indigo-600 hover:text-indigo-800"
+                  className="h-auto  font-medium text-indigo-600 hover:text-indigo-800"
+                  onClick={(e) => e.stopPropagation()} // Prevent card click when toggling
                 >
                   {isExpanded ? (
                     <>
@@ -178,7 +192,7 @@ export default function Component({
             {renderTextWithLinks(
               fullText,
               post.mentionedProfiles,
-              post.embeds,
+              post.embeds ?? [],
               post.platform === "twitter"
             )}
           </p>
