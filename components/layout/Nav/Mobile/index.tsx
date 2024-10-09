@@ -37,12 +37,10 @@ export function MobileNav({ notionResults }: MobileNavProps) {
       return
     } else if (fid) {
       const params = new URLSearchParams(window.location.search)
-      console.log("the params", params)
 
       params.set("connected", fid.toString()) // Add connected-account param
       router.push("?" + params.toString()) // Update the URL with new params
     } else {
-      console.log(userFilterParam)
     }
   }, [])
 

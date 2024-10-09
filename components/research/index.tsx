@@ -37,8 +37,6 @@ const Research = ({
     [tweetsAndCasts]
   )
 
-  console.log("the raw stats", rawStatsbyUsers)
-
   // Memoize the idea-added map logic
   const tweetsAndCastsForCurrentIdeaWithIdeaAdded = useMemo(() => {
     return tweetsAndCasts.map((posts: any) => ({

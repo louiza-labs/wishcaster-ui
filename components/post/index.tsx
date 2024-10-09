@@ -40,7 +40,6 @@ export default function Component({
   renderEmbeds,
   asSingleRow,
 }: PostProps) {
-  console.log("the post", post)
   const [isExpanded, setIsExpanded] = useState(false)
   const [showMetrics, setShowMetrics] = useState(false)
   const router = useRouter()

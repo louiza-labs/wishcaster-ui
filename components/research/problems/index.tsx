@@ -5,7 +5,6 @@ interface ProblemsProps {
 }
 
 const Problems = ({ problemsData }: ProblemsProps) => {
-  console.log("the problems data", problemsData)
   return (
     <div className="flex flex-col gap-y-4 rounded-xl border border-input bg-background px-6 py-8 shadow-lg ">
       <p className="text-xl font-semibold">What problems exist?</p>
