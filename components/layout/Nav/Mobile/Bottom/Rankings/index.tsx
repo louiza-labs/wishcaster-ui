@@ -58,7 +58,7 @@ function MobileRankings({ initialCasts }: any) {
           <ScrollArea className="mt-6 h-[calc(100vh-8rem)] w-full pb-0 ">
             <div className="flex flex-col space-y-3">
               <aside className="relative  flex  flex-col gap-y-6 sm:col-span-3 sm:flex">
-                <Rankings posts={initialCasts} casts={initialCasts} />
+                <Rankings posts={initialCasts} />
               </aside>
             </div>
           </ScrollArea>
