@@ -54,7 +54,7 @@ const SavePostForCard = ({
     useBoundStore((state: any) => state)
 
   return (
-    <div className="flex flex-row items-center gap-x-10">
+    <div className="flex flex-row items-center ">
       <PopoverForm
         handleSubmit={handleSubmitForGithub}
         handleClose={() => {}}

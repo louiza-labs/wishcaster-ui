@@ -1,5 +1,3 @@
-"use server"
-
 import { Category, NormalizedPostType } from "@/types"
 
 export const filterDuplicateCategory = (categories: Category[]) => {
@@ -63,4 +61,55 @@ export const removeDuplicateTweets = (tweets: any) => {
     }
     return filteredTweets
   }, [])
+}
+
+interface IPost {
+  id: string
+  author: {
+    id: number
+    username: string
+    displayName: string
+    profileImageUrl: string
+    bio: string
+    verified: boolean
+    followerCount: number
+    followingCount: number
+  }
+  text: string
+  createdAt: string
+  likesCount: number
+  commentsCount: number
+  sharesCount: number
+  mediaUrls: string[]
+  category: {
+    label: string
+    id: string
+  }
+  platform: string
+  threadInfo: {
+    parentPostId: string | null
+    rootPostId: string
+  }
+  tagline: string
+  mentionedProfiles: any[]
+}
+
+export function filterPostsByKeywordsAndIndustry(
+  posts: IPost[],
+  keywords: string[],
+  industry: string
+): IPost[] {
+  return posts.filter((post) => {
+    // Check if the post's text includes any of the keywords (case-insensitive)
+    const hasKeyword = keywords.some((keyword) =>
+      post.text.toLowerCase().includes(keyword.toLowerCase())
+    )
+
+    // Check if the post's category matches the specified industry (case-insensitive)
+    const matchesIndustry =
+      (post.category.label ?? "").toLowerCase() === industry.toLowerCase()
+
+    // Return true if the post has at least one keyword and matches the industry
+    return hasKeyword && matchesIndustry
+  })
 }

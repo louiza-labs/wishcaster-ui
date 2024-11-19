@@ -207,3 +207,60 @@ export function rankTopics(
 
   return categoryMetrics
 }
+
+interface Post {
+  id: string
+  text: string
+  likesCount: number
+  sharesCount: number
+  // Add other properties as needed
+}
+
+interface KeywordStats {
+  count: number
+  likes: number
+  shares: number
+}
+
+interface TopKeywords {
+  [keyword: string]: KeywordStats
+}
+
+export function getTopKeywords(
+  posts: Post[],
+  keywords: string[],
+  industry: string
+): TopKeywords {
+  const topKeywords: TopKeywords = {}
+
+  // Convert keywords to lowercase for case-insensitive matching
+  const lowercaseKeywords = keywords.map((k) => k.toLowerCase())
+
+  // Filter posts by industry (assuming there's an 'industry' field in the Post interface)
+  const relevantPosts = posts.filter(
+    (post) => (post as any).industry === industry
+  )
+
+  relevantPosts.forEach((post) => {
+    const lowercaseText = post.text.toLowerCase()
+
+    lowercaseKeywords.forEach((keyword) => {
+      if (lowercaseText.includes(keyword)) {
+        if (!topKeywords[keyword]) {
+          topKeywords[keyword] = { count: 0, likes: 0, shares: 0 }
+        }
+        topKeywords[keyword].count++
+        topKeywords[keyword].likes += post.likesCount
+        topKeywords[keyword].shares += post.sharesCount
+      }
+    })
+  })
+
+  // Sort keywords by count (descending order)
+  const sortedKeywords = Object.entries(topKeywords).sort(
+    (a, b) => b[1].count - a[1].count
+  )
+
+  // Return top 10 keywords or all if less than 10
+  return Object.fromEntries(sortedKeywords.slice(0, 10))
+}

@@ -83,11 +83,11 @@ export function PopoverForm({
                 <AvatarImage src={buttonImage} alt={buttonText} />
               ) : null}
               <AvatarFallback className="text-sm font-semibold">
-                {buttonText}
+                {/* {buttonText} */}
               </AvatarFallback>
             </Avatar>
           ) : null}
-          {Icon ? <Icon /> : buttonText}
+          {Icon ? <Icon /> : null}
         </Button>
       </SheetTrigger>
       <SheetContent
@@ -103,7 +103,7 @@ export function PopoverForm({
                     <AvatarImage src={buttonImage} alt={buttonText} />
                   ) : null}
                   <AvatarFallback className="text-sm font-semibold">
-                    {buttonText}
+                    {/* {buttonText} */}
                   </AvatarFallback>
                 </Avatar>
               ) : null}
