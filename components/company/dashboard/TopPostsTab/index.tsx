@@ -23,10 +23,10 @@ export function TopPostsTab() {
                     <Badge
                       variant={
                         post.sentiment === "positive"
-                          ? "success"
+                          ? "default"
                           : post.sentiment === "neutral"
                           ? "secondary"
-                          : "warning"
+                          : "destructive"
                       }
                     >
                       {post.sentiment}

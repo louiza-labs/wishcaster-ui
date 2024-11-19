@@ -39,11 +39,8 @@ const PostAndUsersTabs = ({
       </TabsList>
       <TabsContent className=" h-fit  w-full " value="posts">
         <CastAndTweetsFeed
-          timeFilterParam={"ytd"}
-          nextCursor={""}
           notionResults={[]}
           renderCardsAsSingleRow={true}
-          columns="grid-cols-1"
           posts={tweetsAndCasts}
         />
       </TabsContent>

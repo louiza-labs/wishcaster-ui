@@ -125,9 +125,6 @@ const IndexPage: FC<IndexPageProps> = async ({ searchParams }) => {
             ) : (
               <div className=" flex flex-col gap-y-4 px-2 lg:px-0">
                 <PostsFeed
-                  timeFilterParam={timeFilterParam}
-                  nextCursor={""}
-                  columns={"grid-cols-1"}
                   renderCardsAsSingleRow={true}
                   notionResults={notionResults}
                   posts={castsAndTweets}

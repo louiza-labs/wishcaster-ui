@@ -37,10 +37,10 @@ export function KeyInfluencersTab() {
                         <Badge
                           variant={
                             user.sentiment === "positive"
-                              ? "success"
+                              ? "default"
                               : user.sentiment === "neutral"
                               ? "secondary"
-                              : "warning"
+                              : "destructive"
                           }
                         >
                           {user.sentiment}

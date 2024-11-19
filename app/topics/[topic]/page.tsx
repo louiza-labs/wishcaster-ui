@@ -190,12 +190,8 @@ const TopicPage: FC<CastPageProps> = async ({ searchParams, params }) => {
               </h3>
               <PostsFeed
                 posts={castsAndTweets}
-                timeFilterParam={timeFilterParam}
-                nextCursor={""}
                 renderCardsAsSingleRow={true}
-                // columns={" lg:grid-cols-2 "}
                 topic={params.topic}
-                columns={"grid-cols-1"}
               />
             </div>
           </main>
