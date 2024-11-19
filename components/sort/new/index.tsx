@@ -20,9 +20,7 @@ const SortPosts = ({ asFilterBar }: SortCastsProps) => {
   const searchParams = useSearchParams()
   const router = useRouter()
 
-  const [currentSort, setCurrentSort] = useState(
-    searchParams.get("sort") || "recent"
-  )
+  const [currentSort, setCurrentSort] = useState(searchParams.get("sort") || "")
 
   const sortOptions = useMemo(
     () => [
@@ -59,8 +57,17 @@ const SortPosts = ({ asFilterBar }: SortCastsProps) => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="w-[200px] justify-between">
-            Sort by:{" "}
-            {sortOptions.find((option) => option.value === currentSort)?.label}
+            {currentSort.length > 0 ? (
+              <>
+                Sort by:{" "}
+                {
+                  sortOptions.find((option) => option.value === currentSort)
+                    ?.label
+                }
+              </>
+            ) : (
+              "Sort"
+            )}
             <ArrowUpDown className="ml-2 size-4" />
           </Button>
         </DropdownMenuTrigger>
