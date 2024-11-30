@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useInView } from "react-intersection-observer"
 
 import useFilterFeed from "@/hooks/feed/useFilterFeed"
+import { EmptyState } from "@/components/ui/empty-state"
 import CastFeedSkeleton from "@/components/loading/feed/casts"
 import PostCard from "@/components/post"
 
@@ -83,18 +84,13 @@ const CastAndTweetsFeed: React.FC<CastFeedProps> = ({
     return `${baseClass} gap-4 px-2 md:px-4 lg:grid-cols-2 lg:px-10`
   }, [layoutValueIsSelected])
 
-  const EmptyStateFallBack = () => (
-    <div className="flex flex-col items-center justify-center py-2">
-      <p className="text-center text-2xl font-light">
-        No posts found, try adjusting the search terms or filters
-      </p>
-    </div>
-  )
-
   return (
     <div className={gridClassName}>
       {displayedPosts.length === 0 && filteredPosts.length === 0 ? (
-        <EmptyStateFallBack />
+        <EmptyState
+          title="No posts found"
+          description="Try searching for something else."
+        />
       ) : (
         <>
           {displayedPosts.map((post: any) => (
