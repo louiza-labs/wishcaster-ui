@@ -83,7 +83,7 @@ const Search = ({ notionResults }: SearchProps) => {
     if (inView) {
       setItemsToShow((prevItemsToShow) => prevItemsToShow + 10) // Load more items incrementally when the observed element is in view
     }
-  }, [inView]) // Trigger more items to be shown when the last item comes into view
+  }, [inView, setItemsToShow]) // Trigger more items to be shown when the last item comes into view
 
   useEffect(() => {
     if (justSearched) {
@@ -95,7 +95,7 @@ const Search = ({ notionResults }: SearchProps) => {
     return () => {
       document.removeEventListener("click", handleClickOutside)
     }
-  }, [justSearched])
+  }, [justSearched, handleClickOutside])
 
   function capitalizeFirstLetter(string: string) {
     return string.charAt(0).toUpperCase() + string.slice(1)

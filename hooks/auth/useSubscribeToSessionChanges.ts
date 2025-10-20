@@ -85,13 +85,7 @@ const useSubscribeToSessionChanges = () => {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [
-    setIsConnectedToGithub,
-    setIsConnectedToLinear,
-    setIsConnectedToNotion,
-    setIsConnectedToTwitter,
-    farcasterUser?.fid,
-  ])
+  }, [farcasterUser?.fid])
 }
 
 export default useSubscribeToSessionChanges

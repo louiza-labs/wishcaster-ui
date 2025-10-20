@@ -29,7 +29,7 @@ const FilterBar = ({ categories, posts }: FilterBarProps) => {
       loadCastsToStore(casts)
       loadTweetsToStore(tweets)
     }
-  }, [posts, tweetsFromStore, castsFromStore])
+  }, [posts, loadCastsToStore, loadTweetsToStore])
 
   return (
     <div className="xl:h-18 scroll-snap-x sticky top-0 flex min-w-full  flex-row items-center justify-center gap-x-4 overflow-auto overflow-x-scroll border-b bg-background p-2 px-4 lg:h-fit xl:justify-start xl:px-20">

@@ -10,31 +10,34 @@ export const useFetchReactionsForUser = (userFID: number) => {
   const [errorFetchingReactions, setErrorFetchingReactions] = useState(false)
   const [cursorToUse, setCursorToUse] = useState<string>("")
 
-  const loadReactions = useCallback(async () => {
-    try {
-      if (userFID) {
-        setFetchingReactions(true)
-        setErrorFetchingReactions(false)
-        const reactionsResponse = await fetchCastReactionsForUser(
-          userFID,
-          cursorToUse
-        )
+  const loadReactions = useCallback(
+    async (cursor: string = "") => {
+      try {
+        if (userFID) {
+          setFetchingReactions(true)
+          setErrorFetchingReactions(false)
+          const reactionsResponse = await fetchCastReactionsForUser(
+            userFID,
+            cursor
+          )
+          setFetchingReactions(false)
+          const reactions = reactionsResponse.reactions
+          const newCursor: any = reactionsResponse.cursor
+          setReactions(reactions)
+          setCursorToUse(newCursor)
+        }
+      } catch (error) {
         setFetchingReactions(false)
-        const reactions = reactionsResponse.reactions
-        const newCursor: any = reactionsResponse.cursor
-        setReactions(reactions)
-        setCursorToUse(newCursor)
+        setErrorFetchingReactions(true)
+        // console.error("Error fetching reactions:", error)
       }
-    } catch (error) {
-      setFetchingReactions(false)
-      setErrorFetchingReactions(true)
-      // console.error("Error fetching reactions:", error)
-    }
-  }, [])
+    },
+    [userFID]
+  )
 
   useEffect(() => {
-    loadReactions()
-  }, [userFID, loadReactions])
+    loadReactions("")
+  }, [loadReactions])
 
   return { reactions, cursorToUse, fetchingReactions, errorFetchingReactions }
 }

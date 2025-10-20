@@ -71,10 +71,10 @@ export const useLoadMoreCasts = (
       setCastsToShow(initialCasts)
       return
     }
-    if (castsToShow.length === 0) {
+    if (castsToShow.length === 0 && initialCasts.length === 0) {
       loadInitialCasts()
     }
-  }, [loggedInUserFID, castsToShow.length, loadInitialCasts])
+  }, [loggedInUserFID, loadInitialCasts, filtersFromParams, initialCasts])
 
   const loadMoreCasts = useCallback(async () => {
     if (!isRangeCovered && cursorToUse) {

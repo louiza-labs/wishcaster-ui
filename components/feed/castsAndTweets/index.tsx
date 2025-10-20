@@ -40,15 +40,19 @@ const CastAndTweetsFeed: React.FC<CastFeedProps> = ({
     setCurrentPage((prevPage) => prevPage + 1)
   }, [filteredPosts, currentPage, postsPerPage])
 
+  // Initial load when filteredPosts or postsPerPage changes
   useEffect(() => {
-    loadMorePosts()
-  }, [loadMorePosts])
+    setCurrentPage(1)
+    const initialPosts = filteredPosts.slice(0, postsPerPage)
+    setDisplayedPosts(initialPosts)
+  }, [filteredPosts, postsPerPage])
 
+  // Load more when scrolling into view
   useEffect(() => {
-    if (inView) {
+    if (inView && displayedPosts.length < filteredPosts.length) {
       loadMorePosts()
     }
-  }, [inView, loadMorePosts])
+  }, [inView, displayedPosts.length, filteredPosts.length, loadMorePosts])
 
   const createQueryString = useCallback(
     (name: string, value: string, addValue: boolean) => {

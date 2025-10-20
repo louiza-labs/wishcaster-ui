@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useNeynarContext } from "@neynar/react"
 
 import { fetchFarcasterUsers } from "@/app/actions"
@@ -8,7 +8,8 @@ const useGetProfiles = (stringOfFIDs: string) => {
   const [loadingProfiles, setLoadingProfiles] = useState(false)
   const { user } = useNeynarContext()
   const loggedInUsersFID = user?.fid ?? 0
-  const fetchAndSetProfiles = async () => {
+
+  const fetchAndSetProfiles = useCallback(async () => {
     if (stringOfFIDs && stringOfFIDs.length) {
       setLoadingProfiles(true)
       try {
@@ -24,11 +25,11 @@ const useGetProfiles = (stringOfFIDs: string) => {
         setLoadingProfiles(false)
       }
     }
-  }
+  }, [stringOfFIDs, loggedInUsersFID])
 
   useEffect(() => {
     fetchAndSetProfiles()
-  }, [stringOfFIDs, loggedInUsersFID])
+  }, [fetchAndSetProfiles])
 
   return {
     profiles,

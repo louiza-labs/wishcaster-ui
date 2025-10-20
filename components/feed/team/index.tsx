@@ -24,7 +24,7 @@ const UserFeed = ({
   loadingUsers,
   showMetrics,
 }: UserFeedProps) => {
-  const [listHeight, setListHeight] = useState(window.innerHeight)
+  const [listHeight, setListHeight] = useState(0)
   const [visibleStartIndex, setVisibleStartIndex] = useState(0)
 
   const gutter = 10
@@ -43,8 +43,15 @@ const UserFeed = ({
   }, [relevantUsers])
 
   useEffect(() => {
-    const updateSize = () => {
+    // Initialize height on mount
+    if (typeof window !== "undefined") {
       setListHeight(window.innerHeight)
+    }
+
+    const updateSize = () => {
+      if (typeof window !== "undefined") {
+        setListHeight(window.innerHeight)
+      }
     }
     window.addEventListener("resize", updateSize)
 
