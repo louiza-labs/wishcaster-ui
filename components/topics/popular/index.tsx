@@ -48,22 +48,22 @@ export default function PopularTopicCard({
         <h2 className="mb-6 text-lg font-bold text-primary">{name}</h2>
         <div className="mb-6 grid grid-cols-2 gap-6">
           <Stat
-            icon={<Icons.likes className="size-2 text-primary" />}
+            icon={<Icons.likes className="size-4 shrink-0 text-primary" />}
             value={formatNumber(likes)}
             label={likes === 1 ? "Like" : "Likes"}
           />
           <Stat
-            icon={<Icons.recasts className="size-2 text-primary" />}
+            icon={<Icons.recasts className="size-4 shrink-0 text-primary" />}
             value={formatNumber(recasts)}
             label={recasts === 1 ? "Repost" : "Reposts"}
           />
           <Stat
-            icon={<Icons.replies className="size-2 text-primary" />}
+            icon={<Icons.replies className="size-4 shrink-0 text-primary" />}
             value={formatNumber(replies)}
             label={replies === 1 ? "Reply" : "Replies"}
           />
           <Stat
-            icon={<Icons.boxes className="size-2 text-primary" />}
+            icon={<Icons.boxes className="size-4 shrink-0 text-primary" />}
             value={formatNumber(count)}
             label={"Count"}
           />
@@ -91,7 +91,9 @@ interface StatProps {
 function Stat({ icon, value, label }: StatProps) {
   return (
     <div className="flex items-center space-x-4 rounded-lg border bg-background/40 p-3 shadow-sm backdrop-blur-sm">
-      <div className="rounded-full bg-primary/10 p-2 text-primary">{icon}</div>
+      <div className="rounded-full w-10 h-10  flex flex-col items-center justify-center  bg-primary/10 p-2 text-primary">
+        {icon}
+      </div>
       <div>
         <div className="text-sm font-bold text-foreground">{value}</div>
         {/* <div className="text-xs text-muted-foreground">{label}</div> */}
